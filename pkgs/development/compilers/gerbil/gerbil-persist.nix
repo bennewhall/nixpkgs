@@ -1,21 +1,18 @@
-{ pkgs, lib, fetchFromGitHub, gerbil-unstable, gerbil-support, gambit-support }:
+{ lib, fetchFromGitHub, gerbilPackages, ... }:
 {
   pname = "gerbil-persist";
-  version = "unstable-2020-08-31";
-  git-version = "0.0-8-gd211390";
-  gerbil-package = "clan/persist";
-  gerbil = gerbil-unstable;
-  gerbilInputs = with gerbil-support.gerbilPackages-unstable; [gerbil-utils gerbil-crypto gerbil-poo];
-  buildInputs = [];
-  gambit-params = gambit-support.unstable-params;
-  version-path = "version";
+  version = "unstable-2021-02-25";
+  git-version = "0.0-16-gc5cc662";
   softwareName = "Gerbil-persist";
+  gerbil-package = "clan/persist";
+  version-path = "version";
+  gerbilInputs = with gerbilPackages; [gerbil-utils gerbil-crypto gerbil-poo];
   pre-src = {
     fun = fetchFromGitHub;
     owner = "fare";
     repo = "gerbil-persist";
-    rev = "d211390c8a199cf2b8c7400cd98977524e960015";
-    sha256 = "13s6ws8ziwalfp23nalss41qnz667z2712lr3y123sypm5n5axk7";
+    rev = "c5cc662e078355f625911e0463de070c40f112c9";
+    sha256 = "1zchgfg7ylpaw3jb01rka0724liapgyb1zxy5p1bz6vrb6ask72l";
   };
   meta = {
     description = "Gerbil Persist: Persistent data and activities";
