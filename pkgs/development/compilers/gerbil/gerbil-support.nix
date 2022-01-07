@@ -92,6 +92,16 @@ selfPop (gerbil-support: with gerbil-support; {
       };
       src = resolve-pre-src pre-src;
       buildInputs = [ gerbil ] ++ gerbilInputs ++ buildInputs_;
+
+      # disable stackprotector on aarch64-darwin for now
+      # build error:
+      # ```
+      # /private/tmp/nix-build-gerbil-utils-unstable-2021-12-20.drv-0/cceXZllY.s:144:15: error: index must be an integer in range [-256, 255].
+      #         ldr     x0, [x0, ___stack_chk_guard];momd
+      #                          ^
+      # ```
+      hardeningDisable = lib.optionals (pkgs.gccStdenv.isAarch64 && pkgs.gccStdenv.isDarwin) [ "stackprotector" ];
+
       postPatch = ''
         set -e ;
         ${lib.optionalString (version-path != "")
