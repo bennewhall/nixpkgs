@@ -2,8 +2,8 @@
 
 {
   pname = "ftw";
-  version = "unstable-2021-11-23";
-  git-version = "db34a16";
+  version = "unstable-2022-01-05";
+  git-version = "298787a";
   softwareName = "FTW: For The Web!";
   gerbil-package = "drewc/smug";
 
@@ -11,10 +11,10 @@
 
   pre-src = {
     fun = fetchFromGitHub;
-    owner = "fare-patches";
+    owner = "drewc";
     repo = "ftw";
-    rev = "db34a1638356698123aafed91b132e6c067635fc";
-    sha256 = "1wnwmsk9hbkgcbhhbvb2fy119gd66jaww60rz269pjpzmxli165n";
+    rev = "298787af95e544f873563c5f947f779c0e22b854";
+    sha256 = "1hwyvp2671iwc563wdinzrv2572b5h67iyyww3y3g0ldds0lss26";
   };
 
   meta = with lib; {
