@@ -1,14 +1,14 @@
-{ stdenv, fetchFromGitHub , gtk3, breeze-icons, pantheon, gnome-icon-theme, hicolor-icon-theme }:
+{ lib, stdenv, fetchFromGitHub, gtk3, breeze-icons, pantheon, gnome-icon-theme, hicolor-icon-theme }:
 
 stdenv.mkDerivation rec  {
   pname = "flat-remix-icon-theme";
-  version = "20200710";
+  version = "20211106";
 
-  src = fetchFromGitHub  {
+  src = fetchFromGitHub {
     owner = "daniruiz";
     repo = "flat-remix";
     rev = version;
-    sha256 = "0rlrmgimvs9rrj64g5jn04jgyi7wmn2dnsk7ckmxk6p8cdfjd0hx";
+    sha256 = "1dlz88bg764zzd0s3yqci4m1awhwdrrql9l9plsjjzgdx9r7ndmf";
   };
 
   nativeBuildInputs = [
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec  {
     done
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Flat remix is a pretty simple icon theme inspired on material design";
     homepage = "https://drasite.com/flat-remix";
     license = with licenses; [ gpl3 ];

@@ -1,4 +1,4 @@
-{ stdenv
+{ lib
 , buildPythonPackage
 , fetchurl
 , fetchPypi
@@ -18,9 +18,9 @@ buildPythonPackage rec {
     sha256 = "124s98m6hvxj6x90d7aynsjfz878zli771q96ns767r2mbqn7192";
   };
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Python API for communicating with the memcached distributed memory object cache daemon";
-    homepage = "http://www.tummy.com/Community/software/python-memcached/";
+    homepage = "https://github.com/linsomniac/python-memcached";
     license = licenses.psfl;
   };
 

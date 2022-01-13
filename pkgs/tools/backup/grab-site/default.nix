@@ -1,26 +1,45 @@
-{ stdenv, python37, fetchFromGitHub }:
-
+{ lib, python38, fetchFromGitHub }:
 let
-  python = python37.override {
+  python = python38.override {
     self = python;
     packageOverrides = self: super: {
+      sqlalchemy = super.sqlalchemy.overridePythonAttrs (oldAttrs: rec {
+        version = "1.3.24";
+        src = oldAttrs.src.override {
+          inherit version;
+          sha256 = "ebbb777cbf9312359b897bf81ba00dae0f5cb69fba2a18265dcc18a6f5ef7519";
+        };
+      });
       tornado = super.tornado_4;
     };
   };
 
-in with python.pkgs; buildPythonApplication rec {
-  version = "2.1.19";
-  name = "grab-site-${version}";
+in
+with python.pkgs; buildPythonApplication rec {
+  pname = "grab-site";
+  version = "2.2.2";
 
   src = fetchFromGitHub {
     rev = version;
     owner = "ArchiveTeam";
     repo = "grab-site";
-    sha256 = "1v1hnhv5knzdl0kj3574ccwlh171vcb7faddp095ycdmiiybalk4";
+    sha256 = "0af53g703kqpxa6bn72mb2l5l0qrjknq5wqwl4wryyscdp4xabx4";
   };
 
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace '"wpull @ https://github.com/ArchiveTeam/ludios_wpull/tarball/master#egg=wpull-${ludios_wpull.version}"' '"wpull"'
+  '';
+
   propagatedBuildInputs = [
-    click ludios_wpull manhole lmdb autobahn fb-re2 websockets cchardet
+    click
+    ludios_wpull
+    manhole
+    lmdb
+    autobahn
+    fb-re2
+    websockets
+    cchardet
   ];
 
   checkPhase = ''
@@ -28,7 +47,7 @@ in with python.pkgs; buildPythonApplication rec {
     bash ./tests/offline-tests
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Crawler for web archiving with WARC output";
     homepage = "https://github.com/ArchiveTeam/grab-site";
     license = licenses.mit;

@@ -1,24 +1,26 @@
-{ stdenv, fetchFromGitHub, buildGoModule }:
+{ lib, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "dnsproxy";
-  version = "0.33.2";
+  version = "0.40.1";
 
   src = fetchFromGitHub {
     owner = "AdguardTeam";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0x005lgncaf1fzs27fpcpf6dcncb7wia6fka64pmjxdsq7nmh1hh";
+    sha256 = "sha256-tvYurE+/ZPJeV/ZKMIC0yrwzomxd/3y0KtChei/HO6c=";
   };
 
   vendorSha256 = null;
 
+  ldflags = [ "-s" "-w" "-X" "main.VersionString=${version}" ];
+
   doCheck = false;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Simple DNS proxy with DoH, DoT, and DNSCrypt support";
     homepage = "https://github.com/AdguardTeam/dnsproxy";
-    license = licenses.gpl3;
+    license = licenses.asl20;
     maintainers = with maintainers; [ contrun ];
   };
 }

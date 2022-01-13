@@ -1,17 +1,25 @@
-{ lib, buildPythonPackage, pythonOlder, fetchPypi, pydsdl }:
+{ lib
+, buildPythonPackage
+, pythonOlder
+, fetchPypi
+, pydsdl
+, pyyaml
+}:
 
  buildPythonPackage rec {
   pname = "nunavut";
-  version = "0.6.2";
-  disabled = pythonOlder "3.5"; # only python>=3.5 is supported
+  version = "1.5.2";
+
+  disabled = pythonOlder "3.5";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "48b6802722d78542ca5d7bbc0d6aa9b0a31e1be0070c47b41527f227eb6a1443";
+    sha256 = "12703306872404be556648ab2282dc1566f4e77bfb9f14747fb13294c9235081";
   };
 
   propagatedBuildInputs = [
     pydsdl
+    pyyaml
   ];
 
   # allow for writable directory for darwin
@@ -19,7 +27,10 @@
     export HOME=$TMPDIR
   '';
 
-  # repo doesn't contain tests, ensure imports aren't broken
+  # No tests in pypy package and no git tags yet for release versions, see
+  # https://github.com/UAVCAN/nunavut/issues/182
+  doCheck = false;
+
   pythonImportsCheck = [
     "nunavut"
   ];

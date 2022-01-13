@@ -1,4 +1,4 @@
-{ stdenv
+{ lib, stdenv
 , python
 , qt
 , gtk
@@ -11,12 +11,9 @@
 # the main expressions
 , overrideSrc
 , fetchFromGitHub
-, fetchSubmodules
 }:
 
-let
-  lib = stdenv.lib;
-in rec {
+rec {
   version = builtins.concatStringsSep "." (
     lib.attrVals [ "major" "minor" "patch" ] versionAttr
   );
@@ -28,12 +25,11 @@ in rec {
       owner = "gnuradio";
       rev = "v${version}";
       sha256 = sourceSha256;
-      inherit fetchSubmodules;
     }
   ;
   # Check if a feature is enabled, while defaulting to true if feat is not
   # specified.
-  hasFeature = feat: features: (
+  hasFeature = feat: (
     if builtins.hasAttr feat features then
       features.${feat}
     else
@@ -41,7 +37,7 @@ in rec {
   );
   nativeBuildInputs = lib.flatten (lib.mapAttrsToList (
     feat: info: (
-      if hasFeature feat features then
+      if hasFeature feat then
         (if builtins.hasAttr "native" info then info.native else []) ++
         (if builtins.hasAttr "pythonNative" info then info.pythonNative else [])
       else
@@ -50,7 +46,7 @@ in rec {
   ) featuresInfo);
   buildInputs = lib.flatten (lib.mapAttrsToList (
     feat: info: (
-      if hasFeature feat features then
+      if hasFeature feat then
         (if builtins.hasAttr "runtime" info then info.runtime else []) ++
         (if builtins.hasAttr "pythonRuntime" info then info.pythonRuntime else [])
       else
@@ -65,7 +61,7 @@ in rec {
         # satisfied, let only our cmakeFlags decide.
         "-DENABLE_DEFAULT=OFF"
       else
-        if hasFeature feat features then
+        if hasFeature feat then
           "-DENABLE_${info.cmakeEnableFlag}=ON"
         else
           "-DENABLE_${info.cmakeEnableFlag}=OFF"
@@ -77,21 +73,17 @@ in rec {
     stdenv.cc.cc
   ]
     # If python-support is disabled, we probably don't want it referenced
-    ++ lib.optionals (!hasFeature "python-support" features) [ python ]
+    ++ lib.optionals (!hasFeature "python-support") [ python ]
   ;
   # Gcc references from examples
   stripDebugList = [ "lib" "bin" ]
-    ++ lib.optionals (hasFeature "gr-audio" features) [ "share/gnuradio/examples/audio" ]
-    ++ lib.optionals (hasFeature "gr-uhd" features) [ "share/gnuradio/examples/uhd" ]
-    ++ lib.optionals (hasFeature "gr-qtgui" features) [ "share/gnuradio/examples/qt-gui" ]
+    ++ lib.optionals (hasFeature "gr-audio") [ "share/gnuradio/examples/audio" ]
+    ++ lib.optionals (hasFeature "gr-uhd") [ "share/gnuradio/examples/uhd" ]
+    ++ lib.optionals (hasFeature "gr-qtgui") [ "share/gnuradio/examples/qt-gui" ]
   ;
-  postInstall = ''
-  ''
+  postInstall = ""
     # Gcc references
-    + lib.optionalString (hasFeature "volk" features) ''
-      ${removeReferencesTo}/bin/remove-references-to -t ${stdenv.cc} $(readlink -f $out/lib/libvolk.so)
-    ''
-    + lib.optionalString (hasFeature "gnuradio-runtime" features) ''
+    + lib.optionalString (hasFeature "gnuradio-runtime") ''
       ${removeReferencesTo}/bin/remove-references-to -t ${stdenv.cc} $(readlink -f $out/lib/libgnuradio-runtime.so)
     ''
   ;
@@ -106,12 +98,15 @@ in rec {
       features
       featuresInfo
       python
-      qt
-      gtk
     ;
+  } // lib.optionalAttrs (hasFeature "gr-qtgui") {
+    inherit qt;
+  } // lib.optionalAttrs (hasFeature "gnuradio-companion") {
+    inherit gtk;
   };
   # Wrapping is done with an external wrapper
   dontWrapPythonPrograms = true;
+  dontWrapQtApps = true;
   # Tests should succeed, but it's hard to get LD_LIBRARY_PATH right in order
   # for it to happen.
   doCheck = false;

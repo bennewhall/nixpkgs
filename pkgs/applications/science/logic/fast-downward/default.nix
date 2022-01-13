@@ -16,8 +16,6 @@ stdenv.mkDerivation {
   cmakeFlags =
     lib.optional osi.withCplex [ "-DDOWNWARD_CPLEX_ROOT=${cplex}/cplex" ];
 
-  enableParallelBuilding = true;
-
   configurePhase = ''
     python build.py release
   '';
@@ -52,9 +50,9 @@ stdenv.mkDerivation {
       --replace 'args.build = "release"' "args.build = \"$out/libexec/fast-downward\""
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A domain-independent planning system";
-    homepage = "http://www.fast-downward.org/";
+    homepage = "https://www.fast-downward.org/";
     license = licenses.gpl3Plus;
     platforms = with platforms; (linux ++ darwin);
     maintainers = with maintainers; [ abbradar ];

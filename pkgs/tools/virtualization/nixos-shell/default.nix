@@ -1,26 +1,26 @@
-{ stdenv, nix, fetchFromGitHub, makeWrapper }:
+{ lib, stdenv, nix, fetchFromGitHub, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "nixos-shell";
-  version = "0.2";
+  version = "0.2.2";
 
   src = fetchFromGitHub {
     owner = "Mic92";
     repo = "nixos-shell";
     rev = version;
-    sha256 = "sha256-C0K20X0P4SYQV+xtQAUcEiX32kr3IF1RoYdkJ4R3aRM=";
+    sha256 = "sha256-a3NJJv7MscAXhIdr07gEAQDYX0Qgb6ax5E8zSdCIgE8=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
 
   postInstall = ''
     wrapProgram $out/bin/nixos-shell \
-      --prefix PATH : ${stdenv.lib.makeBinPath [ nix ]}
+      --prefix PATH : ${lib.makeBinPath [ nix ]}
   '';
 
   installFlags = [ "PREFIX=${placeholder "out"}" ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Spawns lightweight nixos vms in a shell";
     inherit (src.meta) homepage;
     license = licenses.mit;

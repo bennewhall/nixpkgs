@@ -6,16 +6,18 @@
 , mock
 , pytz
 , tornado
-, prometheus_client
+, prometheus-client
+, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "flower";
-  version = "0.9.5";
+  version = "1.0.0";
+  format = "setuptools";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "171zckhk9ni14f1d82wf62hhciy0gx13fd02sr9m9qlj50fnv4an";
+    sha256 = "1gcczr04g7wx99h7pxxx1p9n50sbyi0zxrzy7f7m0sf5apxw85rf";
   };
 
   postPatch = ''
@@ -26,18 +28,31 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     celery
+    humanize
+    prometheus-client
     pytz
     tornado
-    humanize
-    prometheus_client
   ];
 
-  checkInputs = [ mock ];
+  checkInputs = [
+    mock
+    pytestCheckHook
+  ];
+
+  disabledTests = [
+    # AssertionError as the celery release can't be detected
+    "test_default"
+    "test_with_app"
+  ];
+
+  pythonImportsCheck = [
+    "flower"
+  ];
 
   meta = with lib; {
     description = "Celery Flower";
     homepage = "https://github.com/mher/flower";
     license = licenses.bsdOriginal;
-    maintainers = [ maintainers.arnoldfarkas ];
+    maintainers = with maintainers; [ arnoldfarkas ];
   };
 }

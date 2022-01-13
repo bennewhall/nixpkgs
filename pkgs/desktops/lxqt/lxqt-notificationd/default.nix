@@ -15,13 +15,13 @@
 
 mkDerivation rec {
   pname = "lxqt-notificationd";
-  version = "0.15.0";
+  version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "0vqk1rc4fn2s0ls6sl03vzsb16xczrxab4rzjim3azm4pwsxjd1k";
+    sha256 = "06gb8k1p24gm5axy42npq7n4lmsxb03a9kvzqby44qmgwh8pn069";
   };
 
   nativeBuildInputs = [
@@ -42,9 +42,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    description = "The LXQt notification daemon";
     homepage = "https://github.com/lxqt/lxqt-notificationd";
-    license = licenses.lgpl21;
+    description = "The LXQt notification daemon";
+    license = licenses.lgpl21Plus;
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];
   };

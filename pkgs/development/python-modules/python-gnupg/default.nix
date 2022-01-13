@@ -1,12 +1,12 @@
-{ stdenv, buildPythonPackage, fetchPypi, gnupg }:
+{ lib, buildPythonPackage, fetchPypi, gnupg }:
 
 buildPythonPackage rec {
   pname   = "python-gnupg";
-  version = "0.4.6";
+  version = "0.4.8";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "3aa0884b3bd414652c2385b9df39e7b87272c2eca1b8fcc3089bc9e58652019a";
+    sha256 = "b64de1ae5cedf872b437201a566fa2c62ce0c95ea2e30177eb53aee1258507d7";
   };
 
   # Let's make the library default to our gpg binary
@@ -18,7 +18,7 @@ buildPythonPackage rec {
     --replace "test_search_keys" "disabled__test_search_keys"
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A wrapper for the Gnu Privacy Guard";
     homepage    = "https://pypi.python.org/pypi/python-gnupg";
     license     = licenses.bsd3;

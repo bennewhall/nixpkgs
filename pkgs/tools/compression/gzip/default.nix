@@ -1,4 +1,4 @@
-{ stdenv
+{ lib, stdenv
 , fetchurl
 , xz
 , writeText
@@ -11,11 +11,11 @@
 
 stdenv.mkDerivation rec {
   pname = "gzip";
-  version = "1.10";
+  version = "1.11";
 
   src = fetchurl {
     url = "mirror://gnu/gzip/${pname}-${version}.tar.xz";
-    sha256 = "1h6p374d3j8d4cdfydzls021xa2yby8myc0h8d6m8bc7k6ncq9c4";
+    sha256 = "01vrly90rvc98af6rcmrb3gwv1l6pylasvsdka23dffwizb9b6lv";
   };
 
   outputs = [ "out" "man" "info" ];
@@ -57,8 +57,8 @@ stdenv.mkDerivation rec {
         is just a bonus.
       '';
 
-    platforms = stdenv.lib.platforms.all;
+    platforms = lib.platforms.all;
 
-    license = stdenv.lib.licenses.gpl3Plus;
+    license = lib.licenses.gpl3Plus;
   };
 }

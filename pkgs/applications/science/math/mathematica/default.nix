@@ -1,10 +1,10 @@
-{ stdenv
+{ lib, stdenv
 , coreutils
 , patchelf
 , requireFile
 , callPackage
 , makeWrapper
-, alsaLib
+, alsa-lib
 , dbus
 , fontconfig
 , freetype
@@ -12,7 +12,7 @@
 , glib
 , libssh2
 , ncurses
-, opencv2
+, opencv4
 , openssl
 , unixODBC
 , xkeyboard_config
@@ -28,7 +28,7 @@
 let
   l10n =
     import ./l10ns.nix {
-      lib = stdenv.lib;
+      lib = lib;
       inherit requireFile lang;
     };
 in
@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
     coreutils
     patchelf
     makeWrapper
-    alsaLib
+    alsa-lib
     coreutils
     dbus
     fontconfig
@@ -49,7 +49,7 @@ stdenv.mkDerivation rec {
     glib
     libssh2
     ncurses
-    opencv2
+    opencv4
     openssl
     stdenv.cc.cc.lib
     unixODBC
@@ -74,9 +74,9 @@ stdenv.mkDerivation rec {
     libSM
   ]);
 
-  ldpath = stdenv.lib.makeLibraryPath buildInputs
-    + stdenv.lib.optionalString (stdenv.hostPlatform.system == "x86_64-linux")
-      (":" + stdenv.lib.makeSearchPathOutput "lib" "lib64" buildInputs);
+  ldpath = lib.makeLibraryPath buildInputs
+    + lib.optionalString (stdenv.hostPlatform.system == "x86_64-linux")
+      (":" + lib.makeSearchPathOutput "lib" "lib64" buildInputs);
 
   unpackPhase = ''
     echo "=== Extracting makeself archive ==="
@@ -90,7 +90,16 @@ stdenv.mkDerivation rec {
     cd Installer
     # don't restrict PATH, that has already been done
     sed -i -e 's/^PATH=/# PATH=/' MathInstaller
-    sed -i -e 's/\/bin\/bash/\/bin\/sh/' MathInstaller
+
+    # Fix the installation script as follows:
+    # 1. Adjust the shebang
+    # 2. Use the wrapper in the desktop items
+    substituteInPlace MathInstaller \
+      --replace "/bin/bash" "/bin/sh" \
+      --replace "Executables/Mathematica" "../../bin/mathematica"
+
+    # Install the desktop items
+    export XDG_DATA_HOME="$out/share"
 
     echo "=== Running MathInstaller ==="
     ./MathInstaller -auto -createdir=y -execdir=$out/bin -targetdir=$out/libexec/Mathematica -silent
@@ -125,7 +134,7 @@ stdenv.mkDerivation rec {
         echo "patching $f executable <<"
         patchelf --shrink-rpath "$f"
         patchelf \
-	  --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+    --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
           --set-rpath "$(patchelf --print-rpath "$f"):${ldpath}" \
           "$f" \
           && patchelf --shrink-rpath "$f" \
@@ -144,7 +153,7 @@ stdenv.mkDerivation rec {
   '';
 
   dontBuild = true;
-  
+
   # This is primarily an IO bound build; there's little benefit to building remotely.
   preferLocalBuild = true;
 
@@ -154,7 +163,7 @@ stdenv.mkDerivation rec {
   # we did this in prefixup already
   dontPatchELF = true;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Wolfram Mathematica computational software system";
     homepage = "http://www.wolfram.com/mathematica/";
     license = licenses.unfree;

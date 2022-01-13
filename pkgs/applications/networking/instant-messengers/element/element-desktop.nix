@@ -1,30 +1,60 @@
-{ stdenv, fetchFromGitHub
-, makeWrapper, makeDesktopItem, mkYarnPackage
-, electron_9, element-web
+{ lib
+, stdenv
+, fetchFromGitHub
+, makeWrapper
+, makeDesktopItem
+, mkYarnPackage
+, fetchYarnDeps
+, electron
+, element-web
+, callPackage
+, Security
+, AppKit
+, CoreServices
+
+, useWayland ? false
 }:
-# Notes for maintainers:
-# * versions of `element-web` and `element-desktop` should be kept in sync.
-# * the Yarn dependency expression must be updated with `./update-element-desktop.sh <git release tag>`
 
 let
+  pinData = lib.importJSON ./pin.json;
   executableName = "element-desktop";
-  version = "1.7.15";
+  electron_exec = if stdenv.isDarwin then "${electron}/Applications/Electron.app/Contents/MacOS/Electron" else "${electron}/bin/electron";
+in
+mkYarnPackage rec {
+  pname = "element-desktop";
+  inherit (pinData) version;
+  name = "${pname}-${version}";
   src = fetchFromGitHub {
     owner = "vector-im";
     repo = "element-desktop";
     rev = "v${version}";
-    sha256 = "sha256-7kWf8MXSB4/sX1bjMsfkzgzElS/AYu5VHAKGcqgvH54=";
+    sha256 = pinData.desktopSrcHash;
   };
-  electron = electron_9;
-
-in mkYarnPackage rec {
-  name = "element-desktop-${version}";
-  inherit version src;
 
   packageJSON = ./element-desktop-package.json;
-  yarnNix = ./element-desktop-yarndeps.nix;
+  offlineCache = fetchYarnDeps {
+    yarnLock = src + "/yarn.lock";
+    sha256 = pinData.desktopYarnHash;
+  };
 
   nativeBuildInputs = [ makeWrapper ];
+
+  seshat = callPackage ./seshat { inherit CoreServices; };
+  keytar = callPackage ./keytar { inherit Security AppKit; };
+
+  buildPhase = ''
+    runHook preBuild
+    export HOME=$(mktemp -d)
+    pushd deps/element-desktop/
+    npx tsc
+    yarn run i18n
+    node ./scripts/copy-res.js
+    popd
+    rm -rf node_modules/matrix-seshat node_modules/keytar
+    ln -s $keytar node_modules/keytar
+    ln -s $seshat node_modules/matrix-seshat
+    runHook postBuild
+  '';
 
   installPhase = ''
     # resources
@@ -34,6 +64,8 @@ in mkYarnPackage rec {
     cp -r './deps/element-desktop/res/img' "$out/share/element"
     rm "$out/share/element/electron/node_modules"
     cp -r './node_modules' "$out/share/element/electron"
+    cp $out/share/element/electron/lib/i18n/strings/en_EN.json $out/share/element/electron/lib/i18n/strings/en-us.json
+    ln -s $out/share/element/electron/lib/i18n/strings/en{-us,}.json
 
     # icons
     for icon in $out/share/element/electron/build/icons/*.png; do
@@ -46,8 +78,8 @@ in mkYarnPackage rec {
     ln -s "${desktopItem}/share/applications" "$out/share/applications"
 
     # executable wrapper
-    makeWrapper '${electron}/bin/electron' "$out/bin/${executableName}" \
-      --add-flags "$out/share/element/electron"
+    makeWrapper '${electron_exec}' "$out/bin/${executableName}" \
+      --add-flags "$out/share/element/electron${lib.optionalString useWayland " --enable-features=UseOzonePlatform --ozone-platform=wayland"}"
   '';
 
   # Do not attempt generating a tarball for element-web again.
@@ -57,10 +89,10 @@ in mkYarnPackage rec {
   '';
 
   # The desktop item properties should be kept in sync with data from upstream:
-  # https://github.com/vector-im/riot-desktop/blob/develop/package.json
+  # https://github.com/vector-im/element-desktop/blob/develop/package.json
   desktopItem = makeDesktopItem {
     name = "element-desktop";
-    exec = executableName;
+    exec = "${executableName} %u";
     icon = "element";
     desktopName = "Element (Riot)";
     genericName = "Matrix Client";
@@ -68,12 +100,16 @@ in mkYarnPackage rec {
     categories = "Network;InstantMessaging;Chat;";
     extraEntries = ''
       StartupWMClass=element
+      MimeType=x-scheme-handler/element;
     '';
   };
 
-  meta = with stdenv.lib; {
+  passthru.updateScript = ./update.sh;
+
+  meta = with lib; {
     description = "A feature-rich client for Matrix.org";
     homepage = "https://element.io/";
+    changelog = "https://github.com/vector-im/element-desktop/blob/v${version}/CHANGELOG.md";
     license = licenses.asl20;
     maintainers = teams.matrix.members;
     inherit (electron.meta) platforms;

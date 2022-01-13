@@ -1,12 +1,13 @@
-{ config, pkgs, lib, ... }:
+{ config, options, pkgs, lib, ... }:
 
 with lib;
 
 let
   dataDir = "/var/lib/matrix-appservice-discord";
   registrationFile = "${dataDir}/discord-registration.yaml";
-  appDir = "${pkgs.matrix-appservice-discord}/lib/node_modules/matrix-appservice-discord";
+  appDir = "${pkgs.matrix-appservice-discord}/${pkgs.matrix-appservice-discord.passthru.nodeAppDir}";
   cfg = config.services.matrix-appservice-discord;
+  opt = options.services.matrix-appservice-discord;
   # TODO: switch to configGen.json once RFC42 is implemented
   settingsFile = pkgs.writeText "matrix-appservice-discord-settings.json" (builtins.toJSON cfg.settings);
 
@@ -22,12 +23,6 @@ in {
         default = {
           database = {
             filename = "${dataDir}/discord.db";
-
-            # TODO: remove those old config keys once the following issues are solved:
-            # * https://github.com/Half-Shot/matrix-appservice-discord/issues/490
-            # * https://github.com/Half-Shot/matrix-appservice-discord/issues/498
-            userStorePath = "${dataDir}/user-store.db";
-            roomStorePath = "${dataDir}/room-store.db";
           };
 
           # empty values necessary for registration file generation
@@ -37,7 +32,7 @@ in {
             botToken = "";
           };
         };
-        example = literalExample ''
+        example = literalExpression ''
           {
             bridge = {
               domain = "public-domain.tld";
@@ -80,6 +75,7 @@ in {
       url = mkOption {
         type = types.str;
         default = "http://localhost:${toString cfg.port}";
+        defaultText = literalExpression ''"http://localhost:''${toString config.${opt.port}}"'';
         description = ''
           The URL where the application service is listening for HS requests.
         '';
@@ -104,6 +100,9 @@ in {
       serviceDependencies = mkOption {
         type = with types; listOf str;
         default = optional config.services.matrix-synapse.enable "matrix-synapse.service";
+        defaultText = literalExpression ''
+          optional config.services.matrix-synapse.enable "matrix-synapse.service"
+        '';
         description = ''
           List of Systemd services to require and wait for when starting the application service,
           such as the Matrix homeserver if it's running on the same host.

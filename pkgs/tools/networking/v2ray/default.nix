@@ -1,43 +1,23 @@
-{ lib, fetchFromGitHub, fetchurl, linkFarm, buildGoModule, runCommand, makeWrapper, nixosTests
-, assetOverrides ? {}
+{ lib, fetchFromGitHub, fetchurl, symlinkJoin, buildGoModule, runCommand, makeWrapper, nixosTests
+, v2ray-geoip, v2ray-domain-list-community, assets ? [ v2ray-geoip v2ray-domain-list-community ]
 }:
 
 let
-  version = "4.33.0";
+  version = "4.44.0";
 
   src = fetchFromGitHub {
     owner = "v2fly";
     repo = "v2ray-core";
     rev = "v${version}";
-    sha256 = "05w714i56nipp7m985g6zqq6ljz0w5ihxrgs93j10llfdd089iig";
+    sha256 = "1yk02n2lllbcwqkz4f3l3d2df1w3m768zxvdawgmafjgmbqf0gjf";
   };
 
-  vendorSha256 = "0ix5kxldgbcb10jh0l64lrh8qzla4qvsxi6vanb73y7lbsix120w";
+  vendorSha256 = "sha256-7zSIAKcMwtaTvokKuLJ8orqJc2jGuaw5FglEJadeZ9I=";
 
-  assets = {
-    # MIT licensed
-    "geoip.dat" = let
-      geoipRev = "202012030015";
-      geoipSha256 = "1qy9h0721y5kjcp0s859lhj253jfi3d3i658gpc4kmij2l5dxm5w";
-    in fetchurl {
-      url = "https://github.com/v2fly/geoip/releases/download/${geoipRev}/geoip.dat";
-      sha256 = geoipSha256;
-    };
-
-    # MIT licensed
-    "geosite.dat" = let
-      geositeRev = "20201207123222";
-      geositeSha256 = "03xckk39rrda42cam2awbsh0gib6rhmz28asc8vx29lsp9g2bj6n";
-    in fetchurl {
-      url = "https://github.com/v2fly/domain-list-community/releases/download/${geositeRev}/dlc.dat";
-      sha256 = geositeSha256;
-    };
-
-  } // assetOverrides;
-
-  assetsDrv = linkFarm "v2ray-assets" (lib.mapAttrsToList (name: path: {
-    inherit name path;
-  }) assets);
+  assetsDrv = symlinkJoin {
+    name = "v2ray-assets";
+    paths = assets;
+  };
 
   core = buildGoModule rec {
     pname = "v2ray-core";
@@ -48,11 +28,10 @@ let
     doCheck = false;
 
     buildPhase = ''
+      buildFlagsArray=(-v -p $NIX_BUILD_CORES -ldflags="-s -w")
       runHook preBuild
-
-      go build -o v2ray v2ray.com/core/main
-      go build -o v2ctl v2ray.com/core/infra/control/main
-
+      go build "''${buildFlagsArray[@]}" -o v2ray ./main
+      go build "''${buildFlagsArray[@]}" -o v2ctl -tags confonly ./infra/control/main
       runHook postBuild
     '';
 
@@ -69,7 +48,7 @@ let
   };
 
 in runCommand "v2ray-${version}" {
-  inherit version;
+  inherit src version;
   inherit (core) meta;
 
   nativeBuildInputs = [ makeWrapper ];
@@ -85,6 +64,6 @@ in runCommand "v2ray-${version}" {
 } ''
   for file in ${core}/bin/*; do
     makeWrapper "$file" "$out/bin/$(basename "$file")" \
-      --set-default V2RAY_LOCATION_ASSET ${assetsDrv}
+      --set-default V2RAY_LOCATION_ASSET ${assetsDrv}/share/v2ray
   done
 ''

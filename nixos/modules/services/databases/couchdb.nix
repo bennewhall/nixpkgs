@@ -4,25 +4,17 @@ with lib;
 
 let
   cfg = config.services.couchdb;
-  useVersion2 = strings.versionAtLeast (strings.getVersion cfg.package) "2.0";
   configFile = pkgs.writeText "couchdb.ini" (
     ''
       [couchdb]
       database_dir = ${cfg.databaseDir}
       uri_file = ${cfg.uriFile}
       view_index_dir = ${cfg.viewIndexDir}
-    '' + (if cfg.adminPass != null then
-    ''
+    '' + (optionalString (cfg.adminPass != null) ''
       [admins]
       ${cfg.adminUser} = ${cfg.adminPass}
-    '' else
-    ''
-    '') + (if useVersion2 then
-    ''
+    '' + ''
       [chttpd]
-    '' else
-    ''
-      [httpd]
     '') +
     ''
       port = ${toString cfg.port}
@@ -31,8 +23,7 @@ let
       [log]
       file = ${cfg.logFile}
     '');
-  executable = if useVersion2 then "${cfg.package}/bin/couchdb"
-    else ''${cfg.package}/bin/couchdb -a ${configFile} -a ${pkgs.writeText "couchdb-extra.ini" cfg.extraConfig} -a ${cfg.configFile}'';
+  executable = "${cfg.package}/bin/couchdb";
 
 in {
 
@@ -52,9 +43,8 @@ in {
 
       package = mkOption {
         type = types.package;
-        default = pkgs.couchdb;
-        defaultText = "pkgs.couchdb";
-        example = literalExample "pkgs.couchdb";
+        default = pkgs.couchdb3;
+        defaultText = literalExpression "pkgs.couchdb3";
         description = ''
           CouchDB package to use.
         '';
@@ -160,6 +150,14 @@ in {
         '';
       };
 
+      argsFile = mkOption {
+        type = types.path;
+        default = "${cfg.package}/etc/vm.args";
+        description = ''
+          vm.args configuration. Overrides Couchdb's Erlang VM parameters file.
+        '';
+      };
+
       configFile = mkOption {
         type = types.path;
         description = ''
@@ -178,8 +176,7 @@ in {
 
     environment.systemPackages = [ cfg.package ];
 
-    services.couchdb.configFile = mkDefault
-      (if useVersion2 then "/var/lib/couchdb/local.ini" else "/var/lib/couchdb/couchdb.ini");
+    services.couchdb.configFile = mkDefault "/var/lib/couchdb/local.ini";
 
     systemd.tmpfiles.rules = [
       "d '${dirOf cfg.uriFile}' - ${cfg.user} ${cfg.group} - -"
@@ -196,13 +193,15 @@ in {
         touch ${cfg.configFile}
       '';
 
-      environment = mkIf useVersion2 {
-        # we are actually specifying 4 configuration files:
+      environment = {
+        # we are actually specifying 5 configuration files:
         # 1. the preinstalled default.ini
         # 2. the module configuration
         # 3. the extraConfig from the module options
         # 4. the locally writable config file, which couchdb itself writes to
         ERL_FLAGS= ''-couch_ini ${cfg.package}/etc/default.ini ${configFile} ${pkgs.writeText "couchdb-extra.ini" cfg.extraConfig} ${cfg.configFile}'';
+        # 5. the vm.args file
+        COUCHDB_ARGS_FILE=''${cfg.argsFile}'';
       };
 
       serviceConfig = {

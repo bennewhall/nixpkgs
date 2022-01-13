@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
   inherit libsOnly;
 
   unpackPhase = ''
-    undmg < "${src}"
+    undmg "${src}"
 
     export sourceRoot=prl-tools-build
     7z x "Parallels Desktop.app/Contents/Resources/Tools/prl-tools-lin.iso" -o$sourceRoot
@@ -64,7 +64,7 @@ stdenv.mkDerivation rec {
   '';
 
   libPath = with xorg;
-            stdenv.lib.makeLibraryPath ([ stdenv.cc.cc libXrandr libXext libX11 libXcomposite libXinerama ]
+            lib.makeLibraryPath ([ stdenv.cc.cc libXrandr libXext libX11 libXcomposite libXinerama ]
             ++ lib.optionals (!libsOnly) [ libXi glib dbus-glib zlib ]);
 
 
@@ -156,7 +156,7 @@ stdenv.mkDerivation rec {
   dontStrip = true;
   dontPatchELF = true;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Parallels Tools for Linux guests";
     homepage = "https://parallels.com";
     platforms = [ "i686-linux" "x86_64-linux" ];

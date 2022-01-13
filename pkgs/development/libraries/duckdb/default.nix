@@ -1,23 +1,23 @@
-{ stdenv
+{ lib, stdenv
 , fetchFromGitHub
 , cmake
 }:
 
 stdenv.mkDerivation rec {
   pname = "duckdb";
-  version = "0.2.2";
+  version = "0.3.1";
 
   src = fetchFromGitHub {
-    owner = "cwida";
-    repo = "duckdb";
+    owner = pname;
+    repo = pname;
     rev = "v${version}";
-    sha256 = "1pzz2zjzpvji5am21vd9kjxj0pnxsjmrsfqrym9h2rk2mi7p2cx8";
+    sha256 = "sha256-apTU7WgKw/YEnT4maibyffqOrCoVwHPOkNINlAmtYYI=";
   };
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with stdenv.lib; {
-    homepage = "https://github.com/cwida/duckdb";
+  meta = with lib; {
+    homepage = "https://github.com/duckdb/duckdb";
     description = "Embeddable SQL OLAP Database Management System";
     license = licenses.mit;
     platforms = platforms.all;

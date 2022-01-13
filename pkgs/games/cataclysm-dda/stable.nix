@@ -1,4 +1,4 @@
-{ lib, callPackage, CoreFoundation, fetchFromGitHub, pkgs, wrapCDDA
+{ lib, callPackage, CoreFoundation, fetchFromGitHub, pkgs, wrapCDDA, attachPkgs
 , tiles ? true, Cocoa
 , debug ? false
 , useXdgDir ? false
@@ -10,19 +10,19 @@ let
   };
 
   self = common.overrideAttrs (common: rec {
-    version = "0.E-2";
+    version = "0.F-3";
 
     src = fetchFromGitHub {
       owner = "CleverRaven";
       repo = "Cataclysm-DDA";
       rev = version;
-      sha256 = "15l6w6lxays7qmsv0ci2ry53asb9an9dh7l7fc13256k085qcg68";
+      sha256 = "sha256-2su1uQaWl9WG41207dRvOTdVKcQsEz/y0uTi9JX52uI=";
     };
 
-    passthru = common.passthru // {
-      pkgs = pkgs.override { build = self; };
-      withMods = wrapCDDA self;
-    };
+    makeFlags = common.makeFlags ++ [
+      # Makefile declares version as 0.F, with no minor release number
+      "VERSION=${version}"
+    ];
 
     meta = common.meta // {
       maintainers = with lib.maintainers;
@@ -31,4 +31,4 @@ let
   });
 in
 
-self
+attachPkgs pkgs self

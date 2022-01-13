@@ -1,16 +1,21 @@
-{ stdenv, fetchurl, fastjet, fastjet-contrib, ghostscript, gsl, hepmc, imagemagick, less, python3, rsync, texlive, yoda, which, makeWrapper }:
+{ lib, stdenv, fetchurl, fetchpatch, fastjet, fastjet-contrib, ghostscript, hepmc, imagemagick, less, python3, rsync, texlive, yoda, which, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "rivet";
-  version = "3.1.2";
+  version = "3.1.5";
 
   src = fetchurl {
     url = "https://www.hepforge.org/archive/rivet/Rivet-${version}.tar.bz2";
-    sha256 = "0yjpx7n6ry3pfgkf7d7v7mcc3yv7681kf8nq2b1fgspl8jbd0hf0";
+    hash = "sha256-YhcXW3gab7z3EJd3qGePeplVEapV4a5WKIc151hQXZo=";
   };
 
   patches = [
-    ./darwin.patch # configure relies on impure sw_vers to -Dunix
+    # Fixes build
+    (fetchpatch {
+      name = "rivet-3.1.5-namespace-fix.patch";
+      url = "https://gitlab.com/hepcedar/rivet/-/commit/17a99b38b52e65a4a3fd6289124bd9dd874c30bf.diff";
+      sha256 = "sha256-OknqghpMMB5nRHeeRc2ddxybhnkVGRB1x8jfOjrkyms=";
+    })
   ];
 
   latex = texlive.combine { inherit (texlive)
@@ -22,6 +27,7 @@ stdenv.mkDerivation rec {
     mathastext
     pgf
     relsize
+    sansmath
     sfmath
     siunitx
     xcolor
@@ -60,7 +66,7 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--with-fastjet=${fastjet}"
     "--with-yoda=${yoda}"
-  ] ++ (if stdenv.lib.versions.major hepmc.version == "3" then [
+  ] ++ (if lib.versions.major hepmc.version == "3" then [
     "--with-hepmc3=${hepmc}"
   ] else [
     "--with-hepmc=${hepmc}"
@@ -74,7 +80,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A framework for comparison of experimental measurements from high-energy particle colliders to theory predictions";
     license     = licenses.gpl3;
     homepage    = "https://rivet.hepforge.org";

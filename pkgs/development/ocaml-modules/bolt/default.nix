@@ -1,6 +1,6 @@
-{ stdenv, fetchurl, fetchpatch, ocaml, findlib, ocamlbuild, which, camlp4 }:
+{ lib, stdenv, fetchurl, fetchpatch, ocaml, findlib, ocamlbuild, which, camlp4 }:
 
-let inherit (stdenv.lib) getVersion versionAtLeast; in
+let inherit (lib) getVersion versionAtLeast; in
 
 assert versionAtLeast (getVersion ocaml) "4.00.0";
 assert versionAtLeast (getVersion findlib) "1.3.3";
@@ -10,17 +10,18 @@ then throw "bolt is not available for OCaml ${ocaml.version}"
 else
 
 stdenv.mkDerivation rec {
-
-  name = "bolt-1.4";
+  pname = "bolt";
+  version = "1.4";
 
   src = fetchurl {
-    url = "https://forge.ocamlcore.org/frs/download.php/1043/${name}.tar.gz";
+    url = "https://forge.ocamlcore.org/frs/download.php/1043/bolt-${version}.tar.gz";
     sha256 = "1c807wrpxra9sbb34lajhimwra28ldxv04m570567lh2b04n38zy";
   };
 
   buildInputs = [ ocaml findlib ocamlbuild which camlp4 ];
 
-  patches = [ (fetchpatch {
+  patches = [
+    (fetchpatch {
       url = "https://raw.githubusercontent.com/ocaml/opam-repository/master/packages/bolt/bolt.1.4/files/opam.patch";
       sha256 = "08cl39r98w312sw23cskd5wian6zg20isn9ki41hnbcgkazhi7pb";
     })
@@ -42,6 +43,8 @@ EOF
   # The custom `configure` script does not expect the --prefix
   # option. Installation is handled by ocamlfind.
   dontAddPrefix = true;
+  dontAddStaticConfigureFlags = true;
+  configurePlatforms = [ ];
 
   createFindlibDestdir = true;
 
@@ -50,7 +53,7 @@ EOF
   doCheck = true;
   checkTarget = "tests";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "http://bolt.x9c.fr";
     description = "A logging tool for the OCaml language";
     longDescription = ''
@@ -58,7 +61,7 @@ EOF
       modeled after the famous log4j logging framework for Java.
     '';
     license = licenses.lgpl3;
-    platforms = ocaml.meta.platforms or [];
+    platforms = ocaml.meta.platforms or [ ];
     maintainers = [ maintainers.jirkamarsik ];
   };
 }

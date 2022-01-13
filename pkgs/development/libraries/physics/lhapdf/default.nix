@@ -1,32 +1,38 @@
-{ stdenv, fetchurl, python2, makeWrapper }:
+{ lib, stdenv, fetchurl, python, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "lhapdf";
-  version = "6.3.0";
+  version = "6.4.0";
 
   src = fetchurl {
     url = "https://www.hepforge.org/archive/lhapdf/LHAPDF-${version}.tar.gz";
-    sha256 = "0pcvigpjqzfng06n98bshhhpimiqfg416ak8lz8jdgp6nxr8fkgd";
+    sha256 = "sha256-fS8CZ+LWWw3e4EhVOzQtfIk6bbq+HjJsrWLeABDdgQw=";
   };
 
+  # The Apple SDK only exports locale_t from xlocale.h whereas glibc
+  # had decided that xlocale.h should be a part of locale.h
+  postPatch = lib.optionalString (stdenv.isDarwin && stdenv.cc.isGNU) ''
+    substituteInPlace src/GridPDF.cc --replace '#include <locale>' '#include <xlocale.h>'
+  '';
+
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ python2 ];
+  buildInputs = [ python ];
 
   enableParallelBuilding = true;
 
   passthru = {
-    pdf_sets = import ./pdf_sets.nix { inherit stdenv fetchurl; };
+    pdf_sets = import ./pdf_sets.nix { inherit lib stdenv fetchurl; };
   };
 
   postInstall = ''
     wrapProgram $out/bin/lhapdf --prefix PYTHONPATH : "$(toPythonPath "$out")"
   '';
 
-  meta = {
+  meta = with lib; {
     description = "A general purpose interpolator, used for evaluating Parton Distribution Functions from discretised data files";
-    license     = stdenv.lib.licenses.gpl2;
+    license     = licenses.gpl2;
     homepage    = "http://lhapdf.hepforge.org";
-    platforms   = stdenv.lib.platforms.unix;
-    maintainers = with stdenv.lib.maintainers; [ veprbl ];
+    platforms   = platforms.unix;
+    maintainers = with maintainers; [ veprbl ];
   };
 }

@@ -1,25 +1,28 @@
 { lib
 , fetchPypi
 , buildPythonPackage
-, pytest, pytestrunner, pytestcov
-, isPy3k
-, isPy38
+, pytestCheckHook
+, pythonOlder
 }:
 
 buildPythonPackage rec {
   pname = "multidict";
-  version = "5.0.2";
+  version = "5.2.0";
+
+  disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "e5bf89fe57f702a046c7ec718fe330ed50efd4bcf74722940db2eb0919cddb1c";
+    sha256 = "0dd1c93edb444b33ba2274b66f63def8a327d607c6c790772f448a53b6ea59ce";
   };
 
-  checkInputs = [ pytest pytestrunner pytestcov ];
+  postPatch = ''
+    sed -i '/^addopts/d' setup.cfg
+  '';
 
-  disabled = !isPy3k;
-  # pickle files needed for 3.8 https://github.com/aio-libs/multidict/pull/363
-  doCheck = !isPy38;
+  checkInputs = [ pytestCheckHook ];
+
+  pythonImportsCheck = [ "multidict" ];
 
   meta = with lib; {
     description = "Multidict implementation";

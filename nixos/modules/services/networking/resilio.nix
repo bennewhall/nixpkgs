@@ -58,6 +58,7 @@ in
         type = types.str;
         example = "Voltron";
         default = config.networking.hostName;
+        defaultText = literalExpression "config.networking.hostName";
         description = ''
           Name of the Resilio Sync device.
         '';
@@ -183,6 +184,7 @@ in
 
       sharedFolders = mkOption {
         default = [];
+        type = types.listOf (types.attrsOf types.anything);
         example =
           [ { secret         = "AHMYFPCQAHBM7LQPFXQ7WV6Y42IGUXJ5Y";
               directory      = "/home/user/sync_test";

@@ -1,4 +1,4 @@
-{ stdenv
+{ lib, stdenv
 , fetchFromGitHub
 , fetchpatch
 , autoreconfHook
@@ -26,6 +26,13 @@ stdenv.mkDerivation rec {
       sha256 = "0cdv9g87c1y8zwhqkd9ba2zjw4slcvg7yzcqv43idvnwb5fl29n7";
       excludes = [ "doc/history.d" ];
     })
+
+    # Pull upstream fix for gcc-11:
+    (fetchpatch {
+      name = "gcc-11.patch";
+      url = "https://github.com/amadvance/advancecomp/commit/7b08f7a2af3f66ab95437e4490499cebb20e5e41.patch";
+      sha256 = "0gpppq6b760m1429g7d808ipdgb4lrqc1b6xk2457y66pbaiwc9s";
+    })
   ];
 
   # autover.sh relies on 'git describe', which obviously doesn't work as we're not cloning
@@ -35,8 +42,8 @@ stdenv.mkDerivation rec {
     echo "${version}" >.version
   '';
 
-  meta = with stdenv.lib; {
-    description = ''A set of tools to optimize deflate-compressed files'';
+  meta = with lib; {
+    description = "A set of tools to optimize deflate-compressed files";
     license = licenses.gpl3 ;
     maintainers = [ maintainers.raskin ];
     platforms = platforms.linux ++ platforms.darwin;

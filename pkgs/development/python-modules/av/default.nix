@@ -4,22 +4,22 @@
 , isPy27
 , numpy
 , ffmpeg
-, pkgconfig
+, pkg-config
 }:
 
 buildPythonPackage rec {
   pname = "av";
-  version = "8.0.2";
+  version = "8.1.0";
   disabled = isPy27; # setup.py no longer compatible
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "a3bba6bf68766b8a1a057f28869c7078cf0a1ec3207c7788c2ce8fe6f6bd8267";
+    sha256 = "0402169bc27e38e0f44e0e0e1854cf488337e86206b6d25d6dae2bfd7a1a0230";
   };
 
   checkInputs = [ numpy ];
 
-  nativeBuildInputs = [ pkgconfig ];
+  nativeBuildInputs = [ pkg-config ];
   buildInputs = [ ffmpeg ];
 
   # Tests require downloading files from internet

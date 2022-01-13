@@ -1,4 +1,4 @@
-{ stdenv
+{ lib
 , buildPythonPackage
 , fetchPypi
 , trezor
@@ -24,7 +24,16 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ setuptools trezor libagent ecdsa ed25519 mnemonic keepkey semver wheel pinentry ];
 
-  meta = with stdenv.lib; {
+  # relax dependency constraint
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace "trezor[hidapi]>=0.12.0,<0.13" "trezor[hidapi]>=0.12.0,<0.14"
+  '';
+
+  doCheck = false;
+  pythonImportsCheck = [ "libagent" ];
+
+  meta = with lib; {
     description = "Using Trezor as hardware SSH agent";
     homepage = "https://github.com/romanz/trezor-agent";
     license = licenses.gpl3;

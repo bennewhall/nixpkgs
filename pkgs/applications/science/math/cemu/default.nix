@@ -1,6 +1,5 @@
 { fetchFromGitHub
-, stdenv
-, mkDerivation
+, lib
 , SDL2
 , libGL
 , libarchive
@@ -9,10 +8,12 @@
 , qmake
 , git
 , libpng_apng
-, pkgconfig
+, pkg-config
+, wrapQtAppsHook
+, stdenv
 }:
 
-mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "CEmu";
   version = "1.3";
   src = fetchFromGitHub {
@@ -26,7 +27,8 @@ mkDerivation rec {
   nativeBuildInputs = [
     qmake
     git
-    pkgconfig
+    wrapQtAppsHook
+    pkg-config
   ];
 
   buildInputs = [
@@ -40,14 +42,16 @@ mkDerivation rec {
 
   qmakeFlags = [
     "gui/qt"
+    "CONFIG+=ltcg"
   ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     changelog = "https://github.com/CE-Programming/CEmu/releases/tag/v${version}";
     description = "Third-party TI-84 Plus CE / TI-83 Premium CE emulator, focused on developer features";
     homepage = "https://ce-programming.github.io/CEmu";
     license = licenses.gpl3;
     maintainers = with maintainers; [ luc65r ];
     platforms = [ "x86_64-linux" "x86_64-darwin" ];
+    broken = stdenv.isDarwin;
   };
 }

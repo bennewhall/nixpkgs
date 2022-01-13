@@ -1,10 +1,11 @@
-{ stdenv
-, fetchFromGitHub
+{ lib
 , rustPlatform
+, fetchFromGitHub
+, installShellFiles
+, stdenv
 , pkg-config
 , openssl
 , Security
-, installShellFiles
 }:
 
 rustPlatform.buildRustPackage rec {
@@ -19,20 +20,21 @@ rustPlatform.buildRustPackage rec {
   };
 
   nativeBuildInputs = [ installShellFiles ]
-    ++ stdenv.lib.optionals stdenv.isLinux [ pkg-config ];
-  buildInputs = stdenv.lib.optionals stdenv.isLinux [ openssl ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ Security ];
+    ++ lib.optionals stdenv.isLinux [ pkg-config ];
+  buildInputs = lib.optionals stdenv.isLinux [ openssl ]
+    ++ lib.optionals stdenv.isDarwin [ Security ];
 
-  cargoSha256 = "08scc6vh703245rg3xkffhalrk5pisd0wg54fd49d7gdbyjivgi6";
+  cargoSha256 = "0zgzaq303zy8lymhldm6dpm5hwsxi2ph42zw5brvsdjmgm9ga0rb";
 
   postInstall = ''
     installShellCompletion completions/dog.{bash,fish,zsh}
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Command-line DNS client";
     homepage = "https://dns.lookup.dog";
     license = licenses.eupl12;
     maintainers = with maintainers; [ bbigras ];
+    mainProgram = "dog";
   };
 }

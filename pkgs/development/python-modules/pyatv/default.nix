@@ -1,53 +1,77 @@
-{ stdenv, buildPythonPackage
+{ lib
+, buildPythonPackage
 , aiohttp
-, aiozeroconf
-, asynctest
+, bitarray
 , cryptography
 , deepdiff
+, fetchFromGitHub
+, mediafile
+, miniaudio
 , netifaces
 , protobuf
-, pytest
 , pytest-aiohttp
 , pytest-asyncio
-, pytestrunner
+, pytest-timeout
+, pytestCheckHook
+, pythonOlder
 , srptools
 , zeroconf
-, fetchFromGitHub
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "pyatv";
-  version = "0.7.4";
+  version = "0.9.6";
+  format = "setuptools";
+
+  disabled = pythonOlder "3.6";
+
   src = fetchFromGitHub {
     owner = "postlund";
     repo = pname;
     rev = "v${version}";
-    sha256 = "17gsamn4aibsx4w50r9dwr5kr9anc7dd0f0dvmdl717rkgh13zyi";
+    sha256 = "0navm7a0k1679kj7nbkbyl7s2q0wq0xmcnizmnvp0arkd5xqmqv1";
   };
 
-  nativeBuildInputs = [ pytestrunner];
-
   propagatedBuildInputs = [
-    aiozeroconf
-    srptools
     aiohttp
-    protobuf
+    bitarray
     cryptography
+    mediafile
+    miniaudio
     netifaces
+    protobuf
+    srptools
     zeroconf
   ];
 
   checkInputs = [
     deepdiff
-    pytest
     pytest-aiohttp
     pytest-asyncio
+    pytest-timeout
     pytestCheckHook
   ];
 
-  meta = with stdenv.lib; {
-    description = "A python client library for the Apple TV";
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace "pytest-runner" ""
+    # Remove all version pinning
+    sed -i -e "s/==[0-9.]*//" requirements/requirements.txt
+  '';
+
+  disabledTestPaths = [
+    # Test doesn't work in the sandbox
+    "tests/protocols/companion/test_companion_auth.py"
+  ];
+
+  __darwinAllowLocalNetworking = true;
+
+  pythonImportsCheck = [
+    "pyatv"
+  ];
+
+  meta = with lib; {
+    description = "Python client library for the Apple TV";
     homepage = "https://github.com/postlund/pyatv";
     license = licenses.mit;
     maintainers = with maintainers; [ elseym ];

@@ -2,7 +2,7 @@
 , cinnamon-desktop
 , glib
 , file
-, gnome3
+, gnome
 , gnome-doc-utils
 , fetchpatch
 , gobject-introspection
@@ -13,7 +13,8 @@
 , libstartup_notification
 , libXtst
 , libxkbcommon
-, pkgconfig
+, pkg-config
+, lib
 , stdenv
 , udev
 , xorg
@@ -35,13 +36,13 @@
 
 stdenv.mkDerivation rec {
   pname = "muffin";
-  version = "4.6.3";
+  version = "5.2.0";
 
   src = fetchFromGitHub {
     owner = "linuxmint";
     repo = pname;
     rev = version;
-    sha256 = "1p8irzf20wari1id5rfx5sypywih1jsrmn0f83zlyhc5fxg02r5p";
+    hash = "sha256-WAp0HbfRtwsPjJX1kPBqUStqLaudQPZ8E+h4jmggmw8=";
   };
 
   buildInputs = [
@@ -61,7 +62,7 @@ stdenv.mkDerivation rec {
     xorg.xkeyboardconfig
 
     libxkbcommon
-    gnome3.zenity
+    gnome.zenity
     libinput
     libstartup_notification
     libXtst
@@ -75,7 +76,7 @@ stdenv.mkDerivation rec {
     gettext
     libtool
     wrapGAppsHook
-    pkgconfig
+    pkg-config
     intltool
 
     gnome-doc-utils
@@ -90,7 +91,7 @@ stdenv.mkDerivation rec {
     NOCONFIGURE=1 ./autogen.sh
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://github.com/linuxmint/muffin";
     description = "The window management library for the Cinnamon desktop (libmuffin) and its sample WM binary (muffin)";
     license = licenses.gpl2;

@@ -1,22 +1,24 @@
-{ stdenv, fetchzip, expat, libiconv, libjpeg, libpng, libtiff, zlib
+{ lib, stdenv, fetchFromGitHub, expat, libiconv, libjpeg, libpng, libtiff, zlib
 # darwin only attributes
 , derez, rez, setfile
-, AGL, Cocoa, Kernel
+, AGL, Cocoa, Kernel, WebKit
 }:
 
 stdenv.mkDerivation rec {
-  version = "3.0.4";
+  version = "3.0.5.1";
   pname = "wxmac";
 
-  src = fetchzip {
-    url = "https://github.com/wxWidgets/wxWidgets/archive/v${version}.tar.gz";
-    sha256 = "19mqglghjjqjgz4rbybn3qdgn2cz9xc511nq1pvvli9wx2k8syl1";
+  src = fetchFromGitHub {
+    owner = "wxWidgets";
+    repo = "wxWidgets";
+    rev = "v${version}";
+    sha256 = "sha256-I91douzXDAfDgm4Pplf17iepv4vIRhXZDRFl9keJJq0=";
   };
 
   buildInputs = [
     expat libiconv libjpeg libpng libtiff zlib
     derez rez setfile
-    AGL Cocoa Kernel
+    AGL Cocoa Kernel WebKit
   ];
 
   postPatch = ''
@@ -58,7 +60,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     platforms = platforms.darwin;
     license = licenses.wxWindows;
     maintainers = [ maintainers.lnl7 ];

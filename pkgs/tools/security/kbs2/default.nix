@@ -1,30 +1,31 @@
-{ stdenv, rustPlatform, fetchFromGitHub, installShellFiles, python3, libxcb, AppKit }:
+{ lib, stdenv, rustPlatform, fetchFromGitHub, installShellFiles, python3, libxcb, AppKit, libiconv }:
 
 rustPlatform.buildRustPackage rec {
   pname = "kbs2";
-  version = "0.1.6";
+  version = "0.4.0";
 
   src = fetchFromGitHub {
     owner = "woodruffw";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0n83d4zvy74rn38fqq84lm58l24c3r87m2di2sw4cdr1hkjg3nbl";
+    sha256 = "1bipphrzfz4dfzaqn1q60qazs7ylcx0b34gyl4q6d6jivsrhi8a4";
   };
 
-  cargoSha256 = "0kafyljn3b87k5m0wdii0gfa4wj1yfys8jqx79inj82m0w1khprk";
+  cargoSha256 = "0r254k85hqf2v8kdhwld8k7b350qjvkwfw2v22ikk2b41b2g4gbw";
 
   nativeBuildInputs = [ installShellFiles ]
-    ++ stdenv.lib.optionals stdenv.isLinux [ python3 ];
+    ++ lib.optionals stdenv.isLinux [ python3 ];
 
   buildInputs = [ ]
-    ++ stdenv.lib.optionals stdenv.isLinux [ libxcb ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ AppKit ];
+    ++ lib.optionals stdenv.isLinux [ libxcb ]
+    ++ lib.optionals stdenv.isDarwin [ AppKit libiconv ];
 
   preCheck = ''
     export HOME=$TMPDIR
   '';
 
-  checkFlagsArray = [ "--skip=kbs2::config::tests::test_find_config_dir" ];
+  checkFlags = [ "--skip=kbs2::config::tests::test_find_config_dir" ]
+    ++ lib.optionals stdenv.isDarwin [ "--skip=test_ragelib_rewrap_keyfile" ];
 
   postInstall = ''
     mkdir -p $out/share/kbs2
@@ -35,9 +36,10 @@ rustPlatform.buildRustPackage rec {
     done
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A secret manager backed by age";
     homepage = "https://github.com/woodruffw/kbs2";
+    changelog = "https://github.com/woodruffw/kbs2/blob/v${version}/CHANGELOG.md";
     license = licenses.mit;
     maintainers = [ maintainers.marsam ];
   };

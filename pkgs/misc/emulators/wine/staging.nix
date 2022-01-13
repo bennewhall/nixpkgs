@@ -1,24 +1,24 @@
-{ stdenv, callPackage, wineUnstable }:
+{ lib, callPackage, wineUnstable }:
 
 with callPackage ./util.nix {};
 
 let patch = (callPackage ./sources.nix {}).staging;
     build-inputs = pkgNames: extra:
       (mkBuildInputs wineUnstable.pkgArches pkgNames) ++ extra;
-in assert stdenv.lib.getVersion wineUnstable == patch.version;
+in assert lib.getVersion wineUnstable == patch.version;
 
-(stdenv.lib.overrideDerivation wineUnstable (self: {
+(lib.overrideDerivation wineUnstable (self: {
   buildInputs = build-inputs [ "perl" "util-linux" "autoconf" "gitMinimal" ] self.buildInputs;
 
   name = "${self.name}-staging";
 
-  postPatch = self.postPatch or "" + ''
+  prePatch = self.prePatch or "" + ''
     patchShebangs tools
     cp -r ${patch}/patches .
     chmod +w patches
     cd patches
     patchShebangs gitapply.sh
-    ./patchinstall.sh DESTDIR="$PWD/.." --all ${stdenv.lib.concatMapStringsSep " " (ps: "-W ${ps}") patch.disabledPatchsets}
+    ./patchinstall.sh DESTDIR="$PWD/.." --all ${lib.concatMapStringsSep " " (ps: "-W ${ps}") patch.disabledPatchsets}
     cd ..
   '';
 })) // {

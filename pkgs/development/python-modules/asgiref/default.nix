@@ -1,29 +1,45 @@
-{ stdenv, buildPythonPackage, pythonOlder, fetchFromGitHub, async-timeout, pytest, pytest-asyncio }:
+{ lib
+, stdenv
+, async-timeout
+, buildPythonPackage
+, fetchFromGitHub
+, pytest-asyncio
+, pytestCheckHook
+, pythonOlder
+}:
+
 buildPythonPackage rec {
-  version = "3.2.10";
+  version = "3.4.1";
   pname = "asgiref";
 
-  disabled = pythonOlder "3.5";
+  disabled = pythonOlder "3.6";
 
-  # PyPI tarball doesn't include tests directory
   src = fetchFromGitHub {
     owner = "django";
     repo = pname;
     rev = version;
-    sha256 = "1sj4yy2injaskwfi5pkb542jl8s6ljijnyra81gpw0pgd3d0bgxv";
+    sha256 = "sha256-aXD46qH5sTTmp0rlzQGLAN+MfIz1u6obCwtfqoIYgBA=";
   };
 
-  propagatedBuildInputs = [ async-timeout ];
+  propagatedBuildInputs = [
+    async-timeout
+  ];
 
-  checkInputs = [ pytest pytest-asyncio ];
+  checkInputs = [
+    pytestCheckHook
+    pytest-asyncio
+  ];
 
-  checkPhase = ''
-    py.test
-  '';
+  disabledTests = lib.optionals stdenv.isDarwin [
+    "test_multiprocessing"
+  ];
 
-  meta = with stdenv.lib; {
+  pythonImportsCheck = [ "asgiref" ];
+
+  meta = with lib; {
     description = "Reference ASGI adapters and channel layers";
-    license = licenses.bsd3;
     homepage = "https://github.com/django/asgiref";
+    license = licenses.bsd3;
+    maintainers = with maintainers; [ ];
   };
 }

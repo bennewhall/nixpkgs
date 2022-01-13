@@ -1,36 +1,47 @@
 { lib
-, fetchFromGitHub
-, buildPythonPackage
-, pythonOlder
-, withVoice ? true, libopus
 , aiohttp
-, websockets
+, buildPythonPackage
+, fetchFromGitHub
+, libopus
+, pynacl
+, pythonOlder
+, withVoice ? true
+, ffmpeg
 }:
 
 buildPythonPackage rec {
   pname = "discord.py";
-  version = "1.5.1";
-  disabled = pythonOlder "3.5.3";
+  version = "1.7.3";
+  format = "setuptools";
 
-  # only distributes wheels on pypi now
+  disabled = pythonOlder "3.8";
+
   src = fetchFromGitHub {
     owner = "Rapptz";
     repo = pname;
     rev = "v${version}";
-    sha256 = "1bidyclwv20p1kfphj21r5gm3kr2vxx0zd151wg7fcngbbx7gmza";
+    sha256 = "sha256-eKXCzGFSzxpdZed4/4G6uJ96s5yCm6ci8K8XYR1zQlE=";
   };
 
-  propagatedBuildInputs = [ aiohttp websockets ];
+  propagatedBuildInputs = [
+    aiohttp
+  ] ++ lib.optionals withVoice [
+    libopus
+    pynacl
+    ffmpeg
+  ];
+
   patchPhase = ''
-    substituteInPlace "requirements.txt" \
-      --replace "aiohttp>=3.6.0,<3.7.0" "aiohttp~=3.6.0" \
-      --replace "websockets>=6.0,!=7.0,!=8.0,!=8.0.1,<9.0" "websockets>=6"
-  '' + lib.optionalString withVoice ''
     substituteInPlace "discord/opus.py" \
       --replace "ctypes.util.find_library('opus')" "'${libopus}/lib/libopus.so.0'"
+    substituteInPlace requirements.txt \
+      --replace "aiohttp>=3.6.0,<3.8.0" "aiohttp>=3.6.0,<4"
+  '' + lib.optionalString withVoice ''
+    substituteInPlace "discord/player.py" \
+      --replace "executable='ffmpeg'" "executable='${ffmpeg}/bin/ffmpeg'"
   '';
 
-  # only have integration tests with discord
+  # Only have integration tests with discord
   doCheck = false;
 
   pythonImportsCheck = [
@@ -45,9 +56,9 @@ buildPythonPackage rec {
   ];
 
   meta = with lib; {
-    description = "A python wrapper for the Discord API";
+    description = "Python wrapper for the Discord API";
     homepage = "https://discordpy.rtfd.org/";
-    maintainers = [ maintainers.ivar ];
     license = licenses.mit;
+    maintainers = with maintainers; [ ivar ];
   };
 }

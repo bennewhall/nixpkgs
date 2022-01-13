@@ -75,7 +75,7 @@ let
              else "${convertedFont}");
     });
 
-  bootDeviceCounters = fold (device: attr: attr // { ${device} = (attr.${device} or 0) + 1; }) {}
+  bootDeviceCounters = foldr (device: attr: attr // { ${device} = (attr.${device} or 0) + 1; }) {}
     (concatMap (args: args.devices) cfg.mirroredBoots);
 
   convertedFont = (pkgs.runCommand "grub-font-converted.pf2" {}
@@ -99,6 +99,7 @@ in
 
       enable = mkOption {
         default = !config.boot.isContainer;
+        defaultText = literalExpression "!config.boot.isContainer";
         type = types.bool;
         description = ''
           Whether to enable the GNU GRUB boot loader.
@@ -327,6 +328,26 @@ in
         '';
       };
 
+      extraInstallCommands = mkOption {
+        default = "";
+        example = ''
+          # the example below generates detached signatures that GRUB can verify
+          # https://www.gnu.org/software/grub/manual/grub/grub.html#Using-digital-signatures
+          ''${pkgs.findutils}/bin/find /boot -not -path "/boot/efi/*" -type f -name '*.sig' -delete
+          old_gpg_home=$GNUPGHOME
+          export GNUPGHOME="$(mktemp -d)"
+          ''${pkgs.gnupg}/bin/gpg --import ''${priv_key} > /dev/null 2>&1
+          ''${pkgs.findutils}/bin/find /boot -not -path "/boot/efi/*" -type f -exec ''${pkgs.gnupg}/bin/gpg --detach-sign "{}" \; > /dev/null 2>&1
+          rm -rf $GNUPGHOME
+          export GNUPGHOME=$old_gpg_home
+        '';
+        type = types.lines;
+        description = ''
+          Additional shell commands inserted in the bootloader installer
+          script after generating menu entries.
+        '';
+      };
+
       extraPerEntryConfig = mkOption {
         default = "";
         example = "root (hd0)";
@@ -372,7 +393,7 @@ in
       extraFiles = mkOption {
         type = types.attrsOf types.path;
         default = {};
-        example = literalExample ''
+        example = literalExpression ''
           { "memtest.bin" = "''${pkgs.memtest86plus}/memtest.bin"; }
         '';
         description = ''
@@ -393,7 +414,7 @@ in
 
       splashImage = mkOption {
         type = types.nullOr types.path;
-        example = literalExample "./my-background.png";
+        example = literalExpression "./my-background.png";
         description = ''
           Background image used for GRUB.
           Set to <literal>null</literal> to run GRUB in text mode.
@@ -429,7 +450,7 @@ in
 
       theme = mkOption {
         type = types.nullOr types.path;
-        example = literalExample "pkgs.nixos-grub2-theme";
+        example = literalExpression "pkgs.nixos-grub2-theme";
         default = null;
         description = ''
           Grub theme to be used.
@@ -455,7 +476,7 @@ in
       font = mkOption {
         type = types.nullOr types.path;
         default = "${realGrub}/share/grub/unicode.pf2";
-        defaultText = ''"''${pkgs.grub2}/share/grub/unicode.pf2"'';
+        defaultText = literalExpression ''"''${pkgs.grub2}/share/grub/unicode.pf2"'';
         description = ''
           Path to a TrueType, OpenType, or pf2 font to be used by Grub.
         '';
@@ -463,7 +484,7 @@ in
 
       fontSize = mkOption {
         type = types.nullOr types.int;
-        example = literalExample 16;
+        example = 16;
         default = null;
         description = ''
           Font size for the grub menu. Ignored unless <literal>font</literal>
@@ -533,6 +554,8 @@ in
         apply = toString;
         description = ''
           Index of the default menu item to be booted.
+          Can also be set to "saved", which will make GRUB select
+          the menu item that was used at the last boot.
         '';
       };
 
@@ -708,14 +731,18 @@ in
             utillinux = pkgs.util-linux;
             btrfsprogs = pkgs.btrfs-progs;
           };
+          perl = pkgs.perl.withPackages (p: with p; [
+            FileSlurp FileCopyRecursive
+            XMLLibXML XMLSAX XMLSAXBase
+            ListCompare JSON
+          ]);
         in pkgs.writeScript "install-grub.sh" (''
         #!${pkgs.runtimeShell}
         set -e
-        export PERL5LIB=${with pkgs.perlPackages; makePerlPath [ FileSlurp FileCopyRecursive XMLLibXML XMLSAX XMLSAXBase ListCompare JSON ]}
         ${optionalString cfg.enableCryptodisk "export GRUB_ENABLE_CRYPTODISK=y"}
       '' + flip concatMapStrings cfg.mirroredBoots (args: ''
-        ${pkgs.perl}/bin/perl ${install-grub-pl} ${grubConfig args} $@
-      ''));
+        ${perl}/bin/perl ${install-grub-pl} ${grubConfig args} $@
+      '') + cfg.extraInstallCommands);
 
       system.build.grub = grub;
 

@@ -7,70 +7,76 @@
 , blis
 , catalogue
 , cymem
+, jinja2
 , jsonschema
 , murmurhash
 , numpy
-, pathlib
-, plac
 , preshed
 , requests
 , setuptools
 , srsly
+, spacy-legacy
 , thinc
+, typer
 , wasabi
+, packaging
+, pathy
+, pydantic
+, python
+, tqdm
+, typing-extensions
 }:
 
 buildPythonPackage rec {
   pname = "spacy";
-  version = "2.3.4";
+  version = "3.2.0";
+
+  disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "a5c8805759114aac3a1db1b20f42af1124da5315be903ccb4c472cc8452393fb";
+    sha256 = "68e54b2a14ce74eeecea9bfb0b9bdadf8a4a8157765dbefa7e50d25a1bf0f2f3";
   };
 
   propagatedBuildInputs = [
-   blis
-   catalogue
-   cymem
-   jsonschema
-   murmurhash
-   numpy
-   plac
-   preshed
-   requests
-   setuptools
-   srsly
-   thinc
-   wasabi
-  ] ++ lib.optional (pythonOlder "3.4") pathlib;
+    blis
+    catalogue
+    cymem
+    jinja2
+    jsonschema
+    murmurhash
+    numpy
+    packaging
+    pathy
+    preshed
+    pydantic
+    requests
+    setuptools
+    srsly
+    spacy-legacy
+    thinc
+    tqdm
+    typer
+    wasabi
+  ] ++ lib.optional (pythonOlder "3.8") typing-extensions;
 
   checkInputs = [
     pytest
   ];
 
   doCheck = false;
-  # checkPhase = ''
-  #   ${python.interpreter} -m pytest spacy/tests --vectors --models --slow
-  # '';
-
-  postPatch = ''
-    substituteInPlace setup.cfg \
-      --replace "blis>=0.4.0,<0.5.0" "blis>=0.4.0,<1.0" \
-      --replace "catalogue>=0.0.7,<1.1.0" "catalogue>=0.0.7,<3.0" \
-      --replace "plac>=0.9.6,<1.2.0" "plac>=0.9.6,<2.0" \
-      --replace "srsly>=1.0.2,<1.1.0" "srsly>=1.0.2,<3.0" \
-      --replace "thinc==7.4.1" "thinc>=7.4.1,<8"
+  checkPhase = ''
+    ${python.interpreter} -m pytest spacy/tests --vectors --models --slow
   '';
 
   pythonImportsCheck = [ "spacy" ];
 
-  passthru.tests = callPackage ./annotation-test {};
+  passthru.tests.annotation = callPackage ./annotation-test { };
 
   meta = with lib; {
     description = "Industrial-strength Natural Language Processing (NLP) with Python and Cython";
     homepage = "https://github.com/explosion/spaCy";
     license = licenses.mit;
-    maintainers = with maintainers; [ danieldk sdll ];
+    maintainers = with maintainers; [ ];
   };
 }

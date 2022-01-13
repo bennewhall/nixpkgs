@@ -2,35 +2,32 @@
 , buildPythonPackage
 , fetchPypi
 , pythonOlder
-, setuptools_scm
+, setuptools-scm
 , six
-, pytest
+, pytestCheckHook
 }:
 
 buildPythonPackage rec {
-  version = "0.2.3";
+  version = "0.3.0";
   pname = "pyvcd";
   disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "c0fd7321143e821033f59dd41fc6b0350d1533ddccd4c8fc1d1f76e21cd667de";
+    sha256 = "ec4d9198bd20f9e07d78f6558ff8bcd45b172ee332e7e8a4588727eeb6a362bc";
   };
 
-  buildInputs = [ setuptools_scm ];
+  buildInputs = [ setuptools-scm ];
+
   propagatedBuildInputs = [ six ];
 
-  checkPhase = ''
-    py.test
-  '';
-
-  checkInputs = [ pytest ];
+  checkInputs = [ pytestCheckHook ];
 
   meta = with lib; {
     description = "Python package for writing Value Change Dump (VCD) files";
     homepage = "https://github.com/SanDisk-Open-Source/pyvcd";
     changelog = "https://github.com/SanDisk-Open-Source/pyvcd/blob/${version}/CHANGELOG.rst";
     license = licenses.mit;
-    maintainers = [ maintainers.sb0 maintainers.emily ];
+    maintainers = with maintainers; [ sb0 emily ];
   };
 }

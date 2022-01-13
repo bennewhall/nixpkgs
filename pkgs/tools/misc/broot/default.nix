@@ -1,39 +1,44 @@
-{ stdenv
+{ lib
+, stdenv
 , rustPlatform
 , fetchCrate
 , installShellFiles
 , makeWrapper
-, coreutils
+, pkg-config
+, libgit2
+, oniguruma
 , libiconv
-, zlib
 , Security
+, libxcb
+, zlib
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "broot";
-  version = "1.0.8";
+  version = "1.7.4";
 
   src = fetchCrate {
     inherit pname version;
-    sha256 = "06881c8qnh917y2mn5q5qlf86idz17xi2dapsad3m1zbdr53c25j";
+    sha256 = "sha256-laFLm6A0EeprSHuqBi3p4ykgBbCinYU1sf0iRV0PY/M=";
   };
 
-  cargoSha256 = "1k5qm4h028172r7i2pz5l8886qviy7ni83qxn10a8d5hsgalarvx";
+  cargoHash = "sha256-0ybig1S56cJjf6QGWuDasfsIiwRhK+bpWNKOjs4D7P8=";
 
   nativeBuildInputs = [
-    makeWrapper
     installShellFiles
+    makeWrapper
+    pkg-config
   ];
 
-  buildInputs = stdenv.lib.optionals stdenv.isDarwin [
+  buildInputs = [ libgit2 oniguruma libxcb ] ++ lib.optionals stdenv.isDarwin [
     libiconv
     Security
     zlib
   ];
 
-  postPatch = ''
-    substituteInPlace src/verb/builtin.rs --replace '"/bin/' '"${coreutils}/bin/'
+  RUSTONIG_SYSTEM_LIBONIG = true;
 
+  postPatch = ''
     # Fill the version stub in the man page. We can't fill the date
     # stub reproducibly.
     substitute man/page man/broot.1 \
@@ -68,10 +73,16 @@ rustPlatform.buildRustPackage rec {
     installManPage man/broot.1
   '';
 
-  meta = with stdenv.lib; {
+  doInstallCheck = true;
+  installCheckPhase = ''
+    $out/bin/broot --version | grep "${version}"
+  '';
+
+  meta = with lib; {
     description = "An interactive tree view, a fuzzy search, a balanced BFS descent and customizable commands";
     homepage = "https://dystroy.org/broot/";
-    maintainers = with maintainers; [ danieldk ];
+    changelog = "https://github.com/Canop/broot/releases/tag/v${version}";
+    maintainers = with maintainers; [ dywedir ];
     license = with licenses; [ mit ];
   };
 }

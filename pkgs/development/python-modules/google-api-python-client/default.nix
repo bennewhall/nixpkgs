@@ -1,22 +1,43 @@
-{ lib, buildPythonPackage, fetchPypi
-, google_auth, google-auth-httplib2, google_api_core
-, httplib2, six, uritemplate, oauth2client }:
+{ lib
+, buildPythonPackage
+, fetchPypi
+, google-auth
+, google-auth-httplib2
+, google-api-core
+, httplib2
+, uritemplate
+, oauth2client
+, setuptools
+, pythonOlder
+}:
 
 buildPythonPackage rec {
   pname = "google-api-python-client";
-  version = "1.12.8";
+  version = "2.31.0";
+  format = "setuptools";
+
+  disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "f3b9684442eec2cfe9f9bb48e796ef919456b82142c7528c5fd527e5224f08bb";
+    sha256 = "3f64a5eee6fa03ab51806dccf48e342fda83fea60c290518c6a2dfdbf2de9efd";
   };
+
+  propagatedBuildInputs = [
+    google-auth
+    google-auth-httplib2
+    google-api-core
+    httplib2
+    uritemplate
+    oauth2client
+    setuptools
+  ];
 
   # No tests included in archive
   doCheck = false;
 
-  propagatedBuildInputs = [
-    google_auth google-auth-httplib2 google_api_core
-    httplib2 six uritemplate oauth2client
+  pythonImportsCheck = [
+    "googleapiclient"
   ];
 
   meta = with lib; {
@@ -30,6 +51,6 @@ buildPythonPackage rec {
     homepage = "https://github.com/google/google-api-python-client";
     changelog = "https://github.com/googleapis/google-api-python-client/releases/tag/v${version}";
     license = licenses.asl20;
-    maintainers = with maintainers; [ primeos ];
+    maintainers = with maintainers; [ ];
   };
 }

@@ -1,4 +1,4 @@
-{ stdenv
+{ lib
 , buildPythonPackage
 , fetchPypi
 , boltons
@@ -6,7 +6,6 @@
 , face
 , pytest
 , pyyaml
-, isPy37
 }:
 
 buildPythonPackage rec {
@@ -24,7 +23,7 @@ buildPythonPackage rec {
   # test_cli.py checks the output of running "glom"
   checkPhase = "PATH=$out/bin:$PATH pytest glom/test";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://github.com/mahmoud/glom";
     description = "Restructuring data, the Python way";
     longDescription = ''

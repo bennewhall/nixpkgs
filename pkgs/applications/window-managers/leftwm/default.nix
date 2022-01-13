@@ -1,35 +1,38 @@
-{ stdenv, fetchFromGitHub, rustPlatform, libX11, libXinerama, makeWrapper }:
+{ lib, fetchFromGitHub, rustPlatform, libX11, libXinerama }:
 
 let
-    rpath = stdenv.lib.makeLibraryPath [ libXinerama libX11 ];
+  rpathLibs = [ libXinerama libX11 ];
 in
 
 rustPlatform.buildRustPackage rec {
   pname = "leftwm";
-  version = "0.2.5";
+  version = "0.2.10";
 
   src = fetchFromGitHub {
     owner = "leftwm";
     repo = "leftwm";
     rev = version;
-    sha256 = "03kk3vg0r88317zv8j2bj44wq2fwxi25rv1aasvayrh1i5j6zr10";
+    sha256 = "sha256-WGss/XmryULq8Ly5MFmEqsL+9r4fnrvBEtetngJ05NY=";
   };
 
-  cargoSha256 = "0m4sv4chxzk60njixlyja44rpn04apf3bm04fgd3v7abpr169f2s";
+  cargoSha256 = "sha256-9qvXzsAu4H2TAcArajrGqXwKF3BBDvmZbny7hiVO9Yo=";
 
-  buildInputs = [ makeWrapper libX11 libXinerama ];
+  buildInputs = rpathLibs;
 
   postInstall = ''
-    wrapProgram $out/bin/leftwm --prefix LD_LIBRARY_PATH : "${rpath}"
-    wrapProgram $out/bin/leftwm-state --prefix LD_LIBRARY_PATH : "${rpath}"
-    wrapProgram $out/bin/leftwm-worker --prefix LD_LIBRARY_PATH : "${rpath}"
+    for p in $out/bin/leftwm*; do
+      patchelf --set-rpath "${lib.makeLibraryPath rpathLibs}" $p
+    done
   '';
 
-  meta = with stdenv.lib; {
+  dontPatchELF = true;
+
+  meta = with lib; {
     description = "A tiling window manager for the adventurer";
     homepage = "https://github.com/leftwm/leftwm";
     license = licenses.mit;
     platforms = platforms.linux;
     maintainers = with maintainers; [ mschneider ];
+    changelog = "https://github.com/leftwm/leftwm/blob/${version}/CHANGELOG";
   };
 }

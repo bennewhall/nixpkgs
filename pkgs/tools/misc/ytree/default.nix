@@ -1,4 +1,4 @@
-{ stdenv
+{ lib, stdenv
 , fetchurl
 , ncurses
 , readline
@@ -6,15 +6,16 @@
 
 stdenv.mkDerivation rec {
   pname = "ytree";
-  version = "2.02";
+  version = "2.04";
 
   src = fetchurl {
     url = "https://han.de/~werner/${pname}-${version}.tar.gz";
-    sha256 = "1v70l244rc22f20gac1zha1smrhqkag45jn0iwgcyngfdfml3gz5";
+    sha256 = "sha256-bnqLf2jv5tNlq+M6HQbXOa2F8io9VN3QrsJKNHjWZkI=";
   };
 
   buildInputs = [
-    ncurses readline
+    ncurses
+    readline
   ];
 
   # don't save timestamp, in order to improve reproducibility
@@ -28,7 +29,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin $out/share/man/man1
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A curses-based file manager similar to DOS Xtree(TM)";
     homepage = "https://www.han.de/~werner/ytree.html";
     license = licenses.gpl2Plus;

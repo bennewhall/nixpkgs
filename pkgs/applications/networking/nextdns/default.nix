@@ -2,20 +2,20 @@
 
 buildGoModule rec {
   pname = "nextdns";
-  version = "1.9.4";
+  version = "1.37.3";
 
   src = fetchFromGitHub {
     owner = "nextdns";
     repo = "nextdns";
     rev = "v${version}";
-    sha256 = "0bd3nvisdg64wcy5syb1iyrv3vy4c6j8gy68dbf141hn1qiah1bg";
+    sha256 = "sha256-BCDVn4JaRYIexI7NrRDchUl9u4AEJa+An9ItYYJDs3A=";
   };
 
-  vendorSha256 = "09whpzsn16znyrknfm5zlhla253r69j6d751czza4c83m4r36swj";
+  vendorSha256 = "sha256-YZm+DUrH+1xdJrGjmlajbcsnqVODVbZKivVjmqZ2e48=";
 
   doCheck = false;
 
-  buildFlagsArray = [ "-ldflags=-s -w -X main.version=${version}" ];
+  ldflags = [ "-s" "-w" "-X main.version=${version}" ];
 
   meta = with lib; {
     description = "NextDNS DNS/53 to DoH Proxy";

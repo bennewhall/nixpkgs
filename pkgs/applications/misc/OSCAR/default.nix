@@ -1,13 +1,13 @@
-{ stdenv, mkDerivation, fetchFromGitLab, qmake, qtbase, qttools, qtserialport, libGLU }:
+{ lib, stdenv, mkDerivation, fetchFromGitLab, qmake, qtbase, qttools, qtserialport, libGLU }:
 mkDerivation rec {
   pname = "OSCAR";
-  version = "1.2.0";
+  version = "1.3.0";
 
   src = fetchFromGitLab {
     owner = "pholy";
     repo = "OSCAR-code";
     rev = "v${version}";
-    sha256 = "10r37d8c2avr167n2s9lhld1c9hmckm444fq163z1jsy9jpid6mg";
+    sha256 = "sha256-oKKwX5HiT8RACiqzZegOxH6IHQn/u0N4ih/ubH6YYjg=";
   };
 
   buildInputs = [ qtbase qttools qtserialport libGLU ];
@@ -34,7 +34,7 @@ mkDerivation rec {
     install -T Building/Linux/OSCAR.desktop $out/share/applications/OSCAR.desktop
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://www.sleepfiles.com/OSCAR/";
     description = "Software for reviewing and exploring data produced by CPAP and related machines used in the treatment of sleep apnea";
     license = licenses.gpl3;

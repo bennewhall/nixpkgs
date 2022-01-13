@@ -1,16 +1,16 @@
-{ stdenv, buildGoModule, fetchFromGitHub, gnum4, pam, fscrypt-experimental }:
+{ lib, buildGoModule, fetchFromGitHub, gnum4, pam, fscrypt-experimental }:
 
 # Don't use this for anything important yet!
 
 buildGoModule rec {
   pname = "fscrypt";
-  version = "0.2.9";
+  version = "0.3.1";
 
   src = fetchFromGitHub {
     owner = "google";
     repo = "fscrypt";
     rev = "v${version}";
-    sha256 = "020hhdarbn3bwlc2j2g89868v8nfx8562z1a778ihpvvsa4ykr31";
+    sha256 = "0gi91vm0ai4vjzj6cfnjsfy8kbfxjiq2n7jnbhf5470qbx49qixr";
   };
 
   postPatch = ''
@@ -19,7 +19,7 @@ buildGoModule rec {
       --replace "/usr/local" "$out"
   '';
 
-  vendorSha256 = "0yak221mlyfacvlsaq9g3xiyk94n94vqgkbaji8d21pi8hhr38m6";
+  vendorSha256 = "1gw3q2pn8v6n9wkl5881rbxglislnr98a9gjqnqm894gnz7hfdzb";
 
   doCheck = false;
 
@@ -34,7 +34,7 @@ buildGoModule rec {
     make install
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description =
       "A high-level tool for the management of Linux filesystem encryption";
     longDescription = ''

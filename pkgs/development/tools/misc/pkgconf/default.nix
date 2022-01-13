@@ -1,8 +1,8 @@
-{ stdenv, fetchurl, removeReferencesTo }:
+{ lib, stdenv, fetchurl, removeReferencesTo }:
 
 stdenv.mkDerivation rec {
   pname = "pkgconf";
-  version = "1.7.3";
+  version = "1.8.0";
 
   nativeBuildInputs = [ removeReferencesTo ];
 
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://distfiles.dereferenced.org/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "1h7rf5cch0cbxp8nmjkkf272zrz2jgpqpr8a58ww75pn3jjswimq";
+    sha256 = "sha256-75x+YYIrfLg1bm6eHcpY2VVvMgDXisqzXkNH6dTCu68=";
   };
 
   # Debian has outputs like these too:
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     mv ${placeholder "dev"}/share ${placeholder "out"}
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Package compiler and linker metadata toolkit";
     homepage = "https://git.dereferenced.org/pkgconf/pkgconf";
     platforms = platforms.all;

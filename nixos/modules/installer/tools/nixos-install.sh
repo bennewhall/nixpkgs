@@ -1,4 +1,5 @@
 #! @runtimeShell@
+# shellcheck shell=bash
 
 set -e
 shopt -s nullglob
@@ -58,7 +59,7 @@ while [ "$#" -gt 0 ]; do
         --no-channel-copy)
             noChannelCopy=1
             ;;
-        --no-root-passwd)
+        --no-root-password|--no-root-passwd)
             noRootPasswd=1
             ;;
         --no-bootloader)
@@ -125,7 +126,7 @@ fi
 
 # Resolve the flake.
 if [[ -n $flake ]]; then
-    flake=$(nix "${flakeFlags[@]}" flake info --json "${extraBuildFlags[@]}" "${lockFlags[@]}" -- "$flake" | jq -r .url)
+    flake=$(nix "${flakeFlags[@]}" flake metadata --json "${extraBuildFlags[@]}" "${lockFlags[@]}" -- "$flake" | jq -r .url)
 fi
 
 if [[ ! -e $NIXOS_CONFIG && -z $system && -z $flake ]]; then

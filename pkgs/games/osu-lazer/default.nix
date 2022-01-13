@@ -1,100 +1,70 @@
-{ lib, stdenv, fetchFromGitHub, fetchurl, makeWrapper, makeDesktopItem, linkFarmFromDrvs
-, dotnet-sdk, dotnet-netcore, dotnetPackages
-, ffmpeg_4, alsaLib, SDL2, lttng-ust, numactl, alsaPlugins
+{ lib
+, stdenvNoCC
+, buildDotnetModule
+, fetchFromGitHub
+, makeDesktopItem
+, copyDesktopItems
+, ffmpeg
+, alsa-lib
+, SDL2
+, lttng-ust
+, numactl
 }:
 
-let
-  runtimeDeps = [
-    ffmpeg_4 alsaLib SDL2 lttng-ust numactl
-  ];
-
-  # https://docs.microsoft.com/en-us/dotnet/core/rid-catalog#using-rids
-  runtimeId = "linux-x64";
-
-in stdenv.mkDerivation rec {
+buildDotnetModule rec {
   pname = "osu-lazer";
-  version = "2020.1204.0";
+  version = "2021.1225.0";
 
   src = fetchFromGitHub {
     owner = "ppy";
     repo = "osu";
     rev = version;
-    sha256 = "1yr9rkkmm15lgbfbrvpyp0d66i5v2xs39abw8yv6qlf70qh4bsg5";
+    sha256 = "sha256-kN5pR37b0giKGJVnJo/Mce+MWFwZiY+mZAHG/fUt0O4=";
   };
 
-  patches = [ ./bypass-tamper-detection.patch ];
-  patchFlags = [ "--binary" "-p1" ];
+  projectFile = "osu.Desktop/osu.Desktop.csproj";
+  nugetDeps = ./deps.nix;
 
-  nativeBuildInputs = [ dotnet-sdk dotnetPackages.Nuget makeWrapper ];
+  nativeBuildInputs = [ copyDesktopItems ];
 
-  nugetDeps = linkFarmFromDrvs "${pname}-nuget-deps" (import ./deps.nix {
-    fetchNuGet = { name, version, sha256 }: fetchurl {
-      name = "nuget-${name}-${version}.nupkg";
-      url = "https://www.nuget.org/api/v2/package/${name}/${version}";
-      inherit sha256;
-    };
-  });
-
-  configurePhase = ''
-    runHook preConfigure
-
-    export HOME=$(mktemp -d)
-    export DOTNET_CLI_TELEMETRY_OPTOUT=1
-    export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
-
-    nuget sources Add -Name nixos -Source "$PWD/nixos"
-    nuget init "$nugetDeps" "$PWD/nixos"
-
-    # FIXME: https://github.com/NuGet/Home/issues/4413
-    mkdir -p $HOME/.nuget/NuGet
-    cp $HOME/.config/NuGet/NuGet.Config $HOME/.nuget/NuGet
-
-    dotnet restore --source "$PWD/nixos" osu.Desktop
-
-    runHook postConfigure
+  preConfigure = ''
+    dotnetFlags+=(
+      --runtime linux-x64
+    )
   '';
 
-  buildPhase = ''
-    runHook preBuild
-    dotnet build osu.Desktop \
-      --no-restore \
-      --configuration Release \
-      -p:Version=${version}
-    runHook postBuild
-  '';
+  runtimeDeps = [
+    ffmpeg
+    alsa-lib
+    SDL2
+    lttng-ust
+    numactl
+  ];
 
-  installPhase = ''
-    runHook preInstall
+  executables = [ "osu!" ];
 
-    dotnet publish osu.Desktop \
-      --no-build \
-      --configuration Release \
-      --no-self-contained \
-      --output $out/lib/osu
-    shopt -s extglob
-    rm -r $out/lib/osu/runtimes/!(${runtimeId})
+  fixupPhase = ''
+    runHook preFixup
 
-    makeWrapper $out/lib/osu/osu\! $out/bin/osu\! \
-      --set DOTNET_ROOT "${dotnet-netcore}" \
-      --suffix LD_LIBRARY_PATH : "${lib.makeLibraryPath runtimeDeps}"
     for i in 16 32 48 64 96 128 256 512 1024; do
       install -D ./assets/lazer.png $out/share/icons/hicolor/''${i}x$i/apps/osu\!.png
     done
-    cp -r ${makeDesktopItem {
-      desktopName = "osu!";
-      name = "osu";
-      exec = "osu!";
-      icon = "osu!";
-      comment = meta.description;
-      type = "Application";
-      categories = "Game;";
-    }}/share/applications $out/share
 
-    runHook postInstall
+    ln -sft $out/lib/${pname} ${SDL2}/lib/libSDL2${stdenvNoCC.hostPlatform.extensions.sharedLibrary}
+    cp -f ${./osu.runtimeconfig.json} "$out/lib/${pname}/osu!.runtimeconfig.json"
+
+    runHook postFixup
   '';
 
-  # Strip breaks the executable.
-  dontStrip = true;
+  desktopItems = [(makeDesktopItem {
+    desktopName = "osu!";
+    name = "osu";
+    exec = "osu!";
+    icon = "osu!";
+    comment = meta.description;
+    type = "Application";
+    categories = "Game;";
+  })];
 
   meta = with lib; {
     description = "Rhythm is just a *click* away";
@@ -106,6 +76,7 @@ in stdenv.mkDerivation rec {
     ];
     maintainers = with maintainers; [ oxalica ];
     platforms = [ "x86_64-linux" ];
+    mainProgram = "osu!";
   };
   passthru.updateScript = ./update.sh;
 }

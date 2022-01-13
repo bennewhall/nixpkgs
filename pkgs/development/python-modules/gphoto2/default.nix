@@ -1,23 +1,23 @@
-{ stdenv, fetchPypi, buildPythonPackage
-, pkgconfig
+{ lib, fetchPypi, buildPythonPackage
+, pkg-config
 , libgphoto2 }:
 
 buildPythonPackage rec {
   pname = "gphoto2";
-  version = "2.2.4";
+  version = "2.3.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "48b4c4ab70826d3ddaaf7440564d513c02d78680fa690994b0640d383ffb8a7d";
+    sha256 = "5affd12421ba75f4c04f5678aef62f78aae2a7ae74aa23614c6f3799d2784b28";
   };
 
-  nativeBuildInputs = [ pkgconfig ];
+  nativeBuildInputs = [ pkg-config ];
 
   buildInputs = [ libgphoto2 ];
 
   doCheck = false; # No tests available
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Python interface to libgphoto2";
     homepage = "https://github.com/jim-easterbrook/python-gphoto2";
     license = licenses.gpl3;

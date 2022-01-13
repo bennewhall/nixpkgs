@@ -1,7 +1,7 @@
-{ stdenv
+{ lib
 , buildPythonPackage
 , fetchPypi
-,
+, pytestCheckHook
 }:
 
 buildPythonPackage rec {
@@ -13,10 +13,19 @@ buildPythonPackage rec {
     sha256 = "0hnbabsmqimx5hqh0jbd2f64i8fhzhhbrvid57048hs5sd9ll241";
   };
 
-  meta = with stdenv.lib; {
-    homepage = "https://bitbucket.org/flyingcircus/pycountry";
+  checkInputs = [
+    pytestCheckHook
+  ];
+
+  pythonImportsCheck = [
+    "pycountry"
+  ];
+
+  meta = with lib; {
+    homepage = "https://github.com/flyingcircusio/pycountry";
     description = "ISO country, subdivision, language, currency and script definitions and their translations";
     license = licenses.lgpl2;
+    maintainers = with maintainers; [ ];
   };
 
 }

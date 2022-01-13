@@ -15,13 +15,13 @@
 
 mkDerivation rec {
   pname = "lxqt-qtplugin";
-  version = "0.15.1";
+  version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "0if01bdhz8ph4k1mwvjjjw0fw6mxzprgz17ap23xbsdr009hxdf0";
+    sha256 = "1vr2hlv1q9xwkh9bapy29g9fi90d33xw7pr9zc1bfma6j152qs36";
   };
 
   nativeBuildInputs = [
@@ -47,9 +47,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    description = "LXQt Qt platform integration plugin";
     homepage = "https://github.com/lxqt/lxqt-qtplugin";
-    license = licenses.lgpl21;
+    description = "LXQt Qt platform integration plugin";
+    license = licenses.lgpl21Plus;
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];
   };

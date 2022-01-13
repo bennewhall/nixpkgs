@@ -1,19 +1,19 @@
-{ stdenv, python3Packages }:
+{ lib, python3Packages }:
 
 with python3Packages;
 
 buildPythonApplication rec {
   pname = "pirate-get";
-  version = "0.4.0";
+  version = "0.4.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "07s5ss9dxccx1mip7pyga1fagywkqchxmzz55ng47ac9053ffxkq";
+    sha256 = "0pr703fwinr2f4rba86zp57mpf5j2jgvp5n50rc5vy5g7yfwsddm";
   };
 
   propagatedBuildInputs = [ colorama veryprettytable pyperclip ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A command line interface for The Pirate Bay";
     homepage = "https://github.com/vikstrous/pirate-get";
     license = licenses.gpl1;

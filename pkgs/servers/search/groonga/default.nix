@@ -1,33 +1,40 @@
-{ stdenv, fetchurl, mecab, kytea, libedit, pkgconfig
-, suggestSupport ? false, zeromq, libevent, msgpack
+{ lib, stdenv, fetchurl, autoreconfHook, mecab, kytea, libedit, pkg-config
+, suggestSupport ? false, zeromq, libevent, msgpack, openssl
 , lz4Support  ? false, lz4
-, zlibSupport ? false, zlib
+, zlibSupport ? true, zlib
 }:
 
 stdenv.mkDerivation rec {
 
   pname = "groonga";
-  version = "10.0.9";
+  version = "11.0.9";
 
   src = fetchurl {
     url    = "https://packages.groonga.org/source/groonga/${pname}-${version}.tar.gz";
-    sha256 = "191saqanv8k6ijl96mw4jdhh9pkpdn651f1bg4kfb34p7vy8ld9k";
+    sha256 = "sha256-yE/Ok0QNY9+a4vfNJWZjR4W8E/i+lw7T85X2+oOw8m4=";
   };
 
-  buildInputs = with stdenv.lib;
-     [ pkgconfig mecab kytea libedit ]
+  preConfigure = ''
+    # To avoid problems due to libc++abi 11 using `#include <version>`.
+    rm version
+  '';
+
+  buildInputs = with lib;
+     [ mecab kytea libedit openssl ]
     ++ optional lz4Support lz4
     ++ optional zlibSupport zlib
     ++ optionals suggestSupport [ zeromq libevent msgpack ];
 
-  configureFlags = with stdenv.lib;
+  nativeBuildInputs = [ autoreconfHook pkg-config ];
+
+  configureFlags = with lib;
        optional zlibSupport "--with-zlib"
     ++ optional lz4Support  "--with-lz4";
 
   doInstallCheck    = true;
   installCheckPhase = "$out/bin/groonga --version";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage    = "https://groonga.org/";
     description = "An open-source fulltext search engine and column store";
     license     = licenses.lgpl21;

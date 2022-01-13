@@ -7,11 +7,11 @@
 
 buildPythonPackage rec {
   pname = "numexpr";
-  version = "2.7.1";
+  version = "2.8.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1c82z0zx0542j9df6ckjz6pn1g13b21hbza4hghcw6vyhbckklmh";
+    sha256 = "9fec076b76c90a5f3929373f548834bb203c6d23a81a895e60d0fe9cca075e99";
   };
 
   # Remove existing site.cfg, use the one we built for numpy.

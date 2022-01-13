@@ -1,15 +1,16 @@
-{ stdenv, fetchFromGitHub, cmake, writeText, vulkan-headers, jq }:
+{ lib, stdenv, fetchFromGitHub, cmake, writeText, vulkan-headers, jq }:
 
 stdenv.mkDerivation rec {
   pname = "vulkan-extension-layer";
-  version = "2020-11-20";
+  version = "1.2.189.1";
 
-  src = fetchFromGitHub {
-    owner = "KhronosGroup";
-    repo = "Vulkan-ExtensionLayer";
-    rev = "7474cb8e1f70e9f4a8bf382708a7f15465453af5";
-    sha256 = "1lxkgcnv32wqk4hlckv13xy84g38jzgc4qxp9vsbkrgz87hkdvwj";
-  };
+  src = (assert version == vulkan-headers.version;
+    fetchFromGitHub {
+      owner = "KhronosGroup";
+      repo = "Vulkan-ExtensionLayer";
+      rev = "sdk-${version}";
+      sha256 = "0qi9ps215pmrh8vgi81wvlzjyxs44bama2x3d43a1bbvcyp9s6kp";
+    });
 
   nativeBuildInputs = [ cmake jq ];
 
@@ -29,7 +30,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Layers providing Vulkan features when native support is unavailable";
     homepage = "https://github.com/KhronosGroup/Vulkan-ExtensionLayer/";
     platforms = platforms.linux;

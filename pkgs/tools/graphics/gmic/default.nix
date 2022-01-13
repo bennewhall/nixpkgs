@@ -1,4 +1,4 @@
-{ stdenv
+{ lib, stdenv
 , fetchurl
 , cmake
 , ninja
@@ -15,13 +15,13 @@
 
 stdenv.mkDerivation rec {
   pname = "gmic";
-  version = "2.9.4";
+  version = "3.0.0";
 
   outputs = [ "out" "lib" "dev" "man" ];
 
   src = fetchurl {
     url = "https://gmic.eu/files/source/gmic_${version}.tar.gz";
-    sha256 = "1ixcdq16gmgh1brrb6mgdibypq9lvh8gnz86b5mmyxlnyi4fw2vr";
+    sha256 = "sha256-PwVruebb8GdK9Mjc5Z9BmBchh2Yvf7s2zGPryMG3ESA=";
   };
 
   nativeBuildInputs = [
@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
     "-DENABLE_DYNAMIC_LINKING=ON"
   ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Open and full-featured framework for image processing";
     homepage = "https://gmic.eu/";
     license = licenses.cecill20;

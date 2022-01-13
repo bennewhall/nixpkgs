@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, meson, ninja, python37Packages }:
+{ lib, stdenv, fetchFromGitHub, meson, ninja, python3Packages }:
 
 stdenv.mkDerivation rec {
   version = "unstable-2019-10-09";
@@ -17,17 +17,19 @@ stdenv.mkDerivation rec {
     patchShebangs ci/isdir.py
   '';
 
-  checkInputs = with python37Packages; [ cram ];
+  checkInputs = with python3Packages; [ cram ];
 
   doCheck = true;
 
   outputs = [ "dev" "out" ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Convenient & cross-platform sandboxing C library";
     homepage = "https://github.com/Snaipe/BoxFort";
     license = licenses.mit;
     maintainers = with maintainers; [ thesola10 Yumasi ];
     platforms = platforms.unix;
+    # Upstream currently broken for macOS https://cirrus-ci.com/build/5624937369042944
+    broken = stdenv.targetPlatform.isDarwin;
   };
 }

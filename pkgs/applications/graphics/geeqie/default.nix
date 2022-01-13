@@ -1,15 +1,17 @@
-{ stdenv, fetchurl, pkgconfig, autoconf, automake, gettext, intltool
+{ lib, stdenv, fetchFromGitHub, pkg-config, autoconf, automake, gettext, intltool
 , gtk3, lcms2, exiv2, libchamplain, clutter-gtk, ffmpegthumbnailer, fbida
 , wrapGAppsHook, fetchpatch
 }:
 
 stdenv.mkDerivation rec {
   pname = "geeqie";
-  version = "1.5.1";
+  version = "1.6";
 
-  src = fetchurl {
-    url = "http://geeqie.org/${pname}-${version}.tar.xz";
-    sha256 = "02m1vqaasin249xx792cdj11xyag8lnanwzxd108y7y34g9xam28";
+  src = fetchFromGitHub {
+    owner = "BestImageViewer";
+    repo = "geeqie";
+    rev = "v${version}";
+    sha256 = "sha256-fvqpimrtzNy2UStOw3qLfC8i8V1fSrmTTsvc1ihqPsU=";
   };
 
   patches = [
@@ -23,9 +25,10 @@ stdenv.mkDerivation rec {
 
   preConfigure = "./autogen.sh";
 
-  nativeBuildInputs = [ pkgconfig autoconf automake gettext intltool
-    wrapGAppsHook
-  ];
+  nativeBuildInputs =
+    [ pkg-config autoconf automake gettext intltool
+      wrapGAppsHook
+    ];
 
   buildInputs = [
     gtk3 lcms2 exiv2 libchamplain clutter-gtk ffmpegthumbnailer fbida
@@ -35,12 +38,12 @@ stdenv.mkDerivation rec {
     # Allow geeqie to find exiv2 and exiftran, necessary to
     # losslessly rotate JPEG images.
     sed -i $out/lib/geeqie/geeqie-rotate \
-        -e '1 a export PATH=${stdenv.lib.makeBinPath [ exiv2 fbida ]}:$PATH'
+        -e '1 a export PATH=${lib.makeBinPath [ exiv2 fbida ]}:$PATH'
   '';
 
   enableParallelBuilding = true;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Lightweight GTK based image viewer";
 
     longDescription =

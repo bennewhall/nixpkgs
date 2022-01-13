@@ -29,7 +29,7 @@ in
 {
   name = "fenics";
   meta = {
-    maintainers = with pkgs.stdenv.lib.maintainers; [ knedlsepp ];
+    maintainers = with pkgs.lib.maintainers; [ knedlsepp ];
   };
 
   nodes = {
@@ -38,7 +38,6 @@ in
         gcc
         (python3.withPackages (ps: with ps; [ fenics ]))
       ];
-      virtualisation.memorySize = 512;
     };
   };
   testScript =

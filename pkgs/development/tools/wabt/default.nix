@@ -1,22 +1,21 @@
-{ stdenv, fetchpatch, fetchFromGitHub, cmake, python3, substituteAll }:
+{ lib, stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "wabt";
-  version = "1.0.20";
+  version = "1.0.25";
 
   src = fetchFromGitHub {
     owner = "WebAssembly";
     repo = "wabt";
     rev = version;
-    sha256 = "1wwyljppxz03slvgx809g87mdrglpimz4xaici71a9mqwjpgj0l8";
+    sha256 = "sha256-2go4HR/z96ONisXBGZDSIB5vXtHvRqBMhHOQTBL5G5w=";
     fetchSubmodules = true;
   };
 
   nativeBuildInputs = [ cmake ];
   cmakeFlags = [ "-DBUILD_TESTS=OFF" "-DCMAKE_PROJECT_VERSION=${version}" ];
-  buildInputs = [ python3 ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "The WebAssembly Binary Toolkit";
     longDescription = ''
       WABT (pronounced "wabbit") is a suite of tools for WebAssembly, including:

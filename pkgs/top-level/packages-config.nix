@@ -6,8 +6,39 @@
   # Enable recursion into attribute sets that nix-env normally doesn't look into
   # so that we can get a more complete picture of the available packages for the
   # purposes of the index.
-  packageOverrides = super: {
-    haskellPackages = super.recurseIntoAttrs super.haskellPackages;
-    rPackages = super.recurseIntoAttrs super.rPackages;
+  packageOverrides = super: with super; lib.mapAttrs (_: set: recurseIntoAttrs set) {
+    inherit (super)
+      apacheHttpdPackages
+      atomPackages
+      fdbPackages
+      fusePackages
+      gns3Packages
+      haskellPackages
+      idrisPackages
+      nodePackages
+      nodePackages_latest
+      platformioPackages
+      quicklispPackagesClisp
+      quicklispPackagesSBCL
+      rPackages
+      roundcubePlugins
+      sconsPackages
+      sourceHanPackages
+      steamPackages
+      ut2004Packages
+      zabbix40
+      zabbix50
+      zeroadPackages
+    ;
+
+    # Make sure haskell.compiler is included, so alternative GHC versions show up,
+    # but don't add haskell.packages.* since they contain the same packages (at
+    # least by name) as haskellPackages.
+    haskell = super.haskell // {
+      compiler = recurseIntoAttrs super.haskell.compiler;
+    };
+
+    # This is an alias which we disallow by default; explicitly allow it
+    emacs27Packages = emacs27.pkgs;
   };
 }

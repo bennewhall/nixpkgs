@@ -3,7 +3,7 @@
 , fetchFromGitHub
 , bluez-tools
 , cinnamon
-, gnome3
+, gnome
 , gobject-introspection
 , intltool
 , pavucontrol
@@ -14,13 +14,13 @@
 
 stdenv.mkDerivation rec {
   pname = "blueberry";
-  version = "1.3.9";
+  version = "1.4.6";
 
   src = fetchFromGitHub {
     owner = "linuxmint";
     repo = pname;
     rev = version;
-    sha256 = "0llvz1h2dmvhvwkkvl0q4ggi1nmdbllw34ppnravs5lybqkicyw9";
+    sha256 = "sha256-4SKEkoIEflOX5WXJ7X3onrieecT2NoH/eV3H3Cx/SYQ=";
   };
 
   nativeBuildInputs = [
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     bluez-tools
     cinnamon.xapps
-    gnome3.gnome-bluetooth
+    gnome.gnome-bluetooth
     python3Packages.python
     util-linux
   ];

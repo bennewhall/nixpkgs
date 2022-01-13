@@ -1,9 +1,7 @@
 { lib, stdenv, fetchurl, writeText, jq, conf ? {} }:
 
-# Note for maintainers:
-# Versions of `element-web` and `element-desktop` should be kept in sync.
-
 let
+  pinData = lib.importJSON ./pin.json;
   noPhoningHome = {
     disable_guests = true; # disable automatic guest account registration at matrix.org
     piwik = false; # disable analytics
@@ -12,11 +10,11 @@ let
 
 in stdenv.mkDerivation rec {
   pname = "element-web";
-  version = "1.7.15";
+  inherit (pinData) version;
 
   src = fetchurl {
     url = "https://github.com/vector-im/element-web/releases/download/v${version}/element-v${version}.tar.gz";
-    sha256 = "sha256-ZSi0OLA5dyPXn1NlZkkhCmWhrSryfyj/O6Ux1lO12ns=";
+    sha256 = pinData.webHash;
   };
 
   installPhase = ''
@@ -32,9 +30,10 @@ in stdenv.mkDerivation rec {
   meta = {
     description = "A glossy Matrix collaboration client for the web";
     homepage = "https://element.io/";
-    maintainers = stdenv.lib.teams.matrix.members;
-    license = stdenv.lib.licenses.asl20;
-    platforms = stdenv.lib.platforms.all;
+    changelog = "https://github.com/vector-im/element-web/blob/v${version}/CHANGELOG.md";
+    maintainers = lib.teams.matrix.members;
+    license = lib.licenses.asl20;
+    platforms = lib.platforms.all;
     hydraPlatforms = [];
   };
 }

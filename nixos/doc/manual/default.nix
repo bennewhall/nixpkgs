@@ -12,7 +12,7 @@ let
   # E.g. if some `options` came from modules in ${pkgs.customModules}/nix,
   # you'd need to include `extraSources = [ pkgs.customModules ]`
   prefixesToStrip = map (p: "${toString p}/") ([ ../../.. ] ++ extraSources);
-  stripAnyPrefixes = lib.flip (lib.fold lib.removePrefix) prefixesToStrip;
+  stripAnyPrefixes = lib.flip (lib.foldr lib.removePrefix) prefixesToStrip;
 
   optionsDoc = buildPackages.nixosOptionsDoc {
     inherit options revision;
@@ -161,7 +161,7 @@ let
 in rec {
   inherit generatedSources;
 
-  inherit (optionsDoc) optionsJSON optionsXML optionsDocBook;
+  inherit (optionsDoc) optionsJSON optionsDocBook;
 
   # Generate the NixOS manual.
   manualHTML = runCommand "nixos-manual-html"
