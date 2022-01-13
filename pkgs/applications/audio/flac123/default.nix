@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoreconfHook, flac, libao, libogg, popt }:
+{ stdenv, fetchurl, autoreconfHook, flac, libao, libogg, popt }:
 
 stdenv.mkDerivation rec {
   pname = "flac123";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [ flac libao libogg popt ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://flac-tools.sourceforge.net/";
     description = "A command-line program for playing FLAC audio files";
     license = licenses.gpl2Plus;

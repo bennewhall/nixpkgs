@@ -1,24 +1,16 @@
-{ lib, stdenv, fetchurl, foomatic-filters, bc, ghostscript, systemd, vim, time }:
+{ stdenv, fetchurl, foomatic-filters, bc, unzip, ghostscript, systemd, vim, time }:
 
 stdenv.mkDerivation rec {
-  pname = "foo2zjs";
-  version = "20210116";
+  name = "foo2zjs-20180519";
 
   src = fetchurl {
-    url = "http://www.loegria.net/mirrors/foo2zjs/foo2zjs-${version}.tar.gz";
-    sha256 = "14x3wizvncdy0xgvmcx541qanwb7bg76abygqy17bxycn1zh5r1x";
+    url = "http://www.loegria.net/mirrors/foo2zjs/${name}.tar.gz";
+    sha256 = "1rmw4jmxn2lqp124mapvnic0ma8ipyvisx2vj848mvad5g5w9x3z";
   };
 
-  buildInputs = [ foomatic-filters bc ghostscript systemd vim ];
+  buildInputs = [ foomatic-filters bc unzip ghostscript systemd vim ];
 
-  patches = [
-    ./no-hardcode-fw.diff
-    # Support HBPL1 printers https://www.dechifro.org/hbpl/
-    ./hbpl1.patch
-    # Fix "Unimplemented paper code" error for hbpl1 printers
-    # https://github.com/mikerr/foo2zjs/pull/2
-    ./papercode-format-fix.patch
-  ];
+  patches = [ ./no-hardcode-fw.diff ];
 
   makeFlags = [
     "PREFIX=$(out)"
@@ -60,7 +52,7 @@ stdenv.mkDerivation rec {
     cp -v getweb arm2hpdl "$out/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ZjStream printer drivers";
     maintainers = with maintainers;
     [

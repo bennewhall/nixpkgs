@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl, perlPackages }:
+{ stdenv, fetchFromGitHub, perl, perlPackages }:
 
 assert stdenv ? glibc;
 
@@ -26,7 +26,7 @@ perlPackages.buildPerlPackage {
     perl Makefile.PL
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A sentence based license detector";
     homepage = "http://ninka.turingmachine.org/";
     license = licenses.gpl2;

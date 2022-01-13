@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchurl, makeDesktopItem, patchelf, zlib, freetype, fontconfig
+{ stdenv, fetchurl, makeDesktopItem, patchelf, zlib, freetype, fontconfig
 , openssl, libXrender, libXrandr, libXcursor, libX11, libXext, libXi
 , libxcb, cups, xkeyboardconfig, runtimeShell
 }:
 
 let
 
-  libPath = lib.makeLibraryPath
+  libPath = stdenv.lib.makeLibraryPath
     [ zlib freetype fontconfig openssl libXrender libXrandr libXcursor libX11
       libXext libXi libxcb cups
     ];
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
       libX11 libXext libXi
     ];
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   # NOTES:
   # Eagle for Linux comes as a self-extracting shell script with embedded
@@ -87,7 +87,7 @@ stdenv.mkDerivation rec {
     ln -s "$out/eagle-${version}/bin/eagleicon50.png" "$out"/share/icons/eagle.png
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Schematic editor and PCB layout tool from CadSoft";
     homepage = "http://www.cadsoftusa.com/";
     license = licenses.unfree;

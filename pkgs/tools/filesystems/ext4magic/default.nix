@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, file, libuuid, e2fsprogs, zlib, bzip2 }:
+{ stdenv, fetchurl, fetchpatch, file, libuuid, e2fsprogs, zlib, bzip2 }:
 
 stdenv.mkDerivation rec {
   version = "0.3.2";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ file libuuid e2fsprogs zlib bzip2 ];
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Recover / undelete files from ext3 or ext4 partitions";
     longDescription = ''
       ext4magic can recover/undelete files from ext3 or ext4 partitions
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
 
       If the information in the journal are sufficient, ext4magic can
       recover the most file types, with original filename, owner and group,
-      file mode bits and also the old atime/mtime stamps.
+      file mode bits and also the old atime/mtime stamps. 
 
       It's much more effective and works much better than extundelete.
     '';

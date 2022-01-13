@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , fetchpatch
 , cmake
@@ -20,13 +20,13 @@
 
 stdenv.mkDerivation rec {
   pname = "pdal";
-  version = "2.3.0";
+  version = "2.2.0";
 
   src = fetchFromGitHub {
     owner = "PDAL";
     repo = "PDAL";
     rev = version;
-    sha256 = "sha256-DKIraCyp8fcgnVp5dFrtQ4Wq96cQGC9SiAPLS6htUZc=";
+    sha256 = "1i7nbfvv60jjlf3iq7a7xci4dycmg2wrd35dqvjwl6hpfynpb6wz";
   };
 
   nativeBuildInputs = [
@@ -71,7 +71,7 @@ stdenv.mkDerivation rec {
     "-DBUILD_PLUGIN_RIVLIB=OFF"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PDAL is Point Data Abstraction Library. GDAL for point cloud data";
     homepage = "https://pdal.io";
     license = licenses.bsd3;

@@ -1,25 +1,22 @@
-{ lib, fetchurl, buildDunePackage, ocaml
+{ lib, fetchurl, buildDunePackage
 , dune-configurator
-, bos, ctypes, fmt, logs, rresult
-, mdx, alcotest, crowbar, junit_alcotest, ezjsonm
+, ppx_sexp_conv
+, bos, ctypes, fmt, logs, rresult, sexplib
 }:
 
 buildDunePackage rec {
   pname = "yaml";
-  version = "3.0.0";
+  version = "2.1.0";
 
   useDune2 = true;
 
   src = fetchurl {
     url = "https://github.com/avsm/ocaml-yaml/releases/download/v${version}/yaml-v${version}.tbz";
-    sha256 = "1iws6lbnrrd5hhmm7lczfvqp0aidx5xn7jlqk2s5rjfmj9qf4j2c";
+    sha256 = "03g8vsh5jgi1cm5q78v15slgnzifp91fp7n4v1i7pa8yk0bkh585";
   };
 
   buildInputs = [ dune-configurator ];
-  propagatedBuildInputs = [ bos ctypes rresult ];
-  # crowbar is not available for OCaml < 4.08
-  doCheck = lib.versionAtLeast ocaml.version "4.08";
-  checkInputs = [ fmt logs mdx.bin alcotest crowbar junit_alcotest ezjsonm ];
+  propagatedBuildInputs = [ bos ctypes fmt logs ppx_sexp_conv rresult sexplib ];
 
   meta = {
     description = "Parse and generate YAML 1.1 files";

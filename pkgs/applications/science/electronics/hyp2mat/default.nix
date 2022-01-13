@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , bison
 , flex
@@ -7,7 +7,7 @@
 , groff
 , libharu
 , autoreconfHook
-, pkg-config
+, pkgconfig
 , libpng
 , zlib
 }:
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoreconfHook
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Import Hyperlynx Boardsim files to openEMS, an open source 3D full-wave electromagnetic field solver";
     homepage = "https://github.com/koendv/hyp2mat";
     license = licenses.gpl3Plus;

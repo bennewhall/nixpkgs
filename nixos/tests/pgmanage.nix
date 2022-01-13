@@ -6,7 +6,7 @@ let
 in
 {
   name = "pgmanage";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ basvandijk ];
   };
   nodes = {

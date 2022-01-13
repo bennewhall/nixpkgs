@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, isPy3k, fetchFromGitHub, fetchpatch, substituteAll
+{ stdenv, buildPythonPackage, isPy3k, fetchFromGitHub, substituteAll
 , python, util-linux, pygit2, gitMinimal, git-annex, cacert
 }:
 
@@ -17,11 +17,6 @@ buildPythonPackage rec {
   };
 
   patches = [
-    # fix tests with recent versions of git-annex
-    (fetchpatch {
-      url = "https://github.com/alpernebbi/git-annex-adapter/commit/6c210d828e8a57b12c716339ad1bf15c31cd4a55.patch";
-      sha256 = "17kp7pnm9svq9av4q7hfic95xa1w3z02dnr8nmg14sjck2rlmqsi";
-    })
     (substituteAll {
       src = ./git-annex-path.patch;
       gitAnnex = "${git-annex}/bin/git-annex";
@@ -40,7 +35,7 @@ buildPythonPackage rec {
   '';
   pythonImportsCheck = [ "git_annex_adapter" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/alpernebbi/git-annex-adapter";
     description = "Call git-annex commands from Python";
     license = licenses.gpl3Plus;

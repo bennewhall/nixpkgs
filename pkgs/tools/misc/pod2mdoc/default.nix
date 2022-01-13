@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "pod2mdoc";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     install -m 0444 pod2mdoc.1 $out/share/man/man1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://mdocml.bsd.lv/";
     description = "converter from POD into mdoc";
     license = licenses.isc;

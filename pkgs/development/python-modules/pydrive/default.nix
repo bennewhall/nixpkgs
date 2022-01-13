@@ -1,7 +1,7 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, google-api-python-client
+, google_api_python_client
 , oauth2client
 , pyyaml
 }:
@@ -17,7 +17,7 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    google-api-python-client
+    google_api_python_client
     oauth2client
     pyyaml
   ];

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, postgresql, openssl } :
+{ stdenv, fetchFromGitHub, postgresql, openssl } :
 
 stdenv.mkDerivation rec {
   pname = "pgmanage";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ postgresql openssl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fast replacement for PGAdmin";
     longDescription = ''
       At the heart of pgManage is a modern, fast, event-based C-binary, built in

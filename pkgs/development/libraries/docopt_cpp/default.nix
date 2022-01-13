@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, python2 }:
+{ stdenv, fetchFromGitHub, cmake, python }:
 
 stdenv.mkDerivation rec {
   version = "0.6.3";
@@ -11,11 +11,9 @@ stdenv.mkDerivation rec {
     sha256 = "0cz3vv7g5snfbsqcf3q8bmd6kv5qp84gj3avwkn4vl00krw13bl7";
   };
 
-  nativeBuildInputs = [ cmake python2 ];
+  nativeBuildInputs = [ cmake python ];
 
   cmakeFlags = ["-DWITH_TESTS=ON"];
-
-  strictDeps = true;
 
   doCheck = true;
 
@@ -27,7 +25,7 @@ stdenv.mkDerivation rec {
 
   checkPhase = "LD_LIBRARY_PATH=$(pwd) python ./run_tests";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++11 port of docopt";
     homepage = "https://github.com/docopt/docopt.cpp";
     license = with licenses; [ mit boost ];

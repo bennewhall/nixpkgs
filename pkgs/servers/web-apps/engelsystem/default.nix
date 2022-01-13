@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip, php, writeText, nixosTests }:
+{ stdenv, fetchzip, php, writeText, nixosTests }:
 
 let
   phpExt = php.withExtensions
@@ -39,7 +39,7 @@ in stdenv.mkDerivation rec {
 
   passthru.tests = nixosTests.engelsystem;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description =
       "Coordinate your volunteers in teams, assign them to work shifts or let them decide for themselves when and where they want to help with what";
     license = licenses.gpl2;

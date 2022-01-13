@@ -1,4 +1,4 @@
-{ lib, mkDerivation, fetchFromGitHub
+{ stdenv, mkDerivation, fetchFromGitHub
 , cmake, gcc-arm-embedded, python3Packages
 , qtbase, qtmultimedia, qttranslations, SDL, gtest
 , dfu-util, avrdude
@@ -6,17 +6,16 @@
 
 mkDerivation rec {
   pname = "opentx";
-  version = "2.3.14";
+  version = "2.3.10";
 
   src = fetchFromGitHub {
     owner = "opentx";
     repo = "opentx";
-    # 2.3.14 release tag points to the commit before the one that updates the
-    # version number.
-    # rev = "release/${version}";
-    rev = "1e09791a1e2fe2a0ca9835019d634a4c6a4fa3bf";
-    sha256 = "0mhzp1j6nmqvkjxg8lv8xa637m1lavdsak30mdlq0g25dhwg6k92";
+    rev = "release/${version}";
+    sha256 = "1pp3k1802gl1rji98clv17wj0619dliq821mpi4446lk22q692yq";
   };
+
+  enableParallelBuilding = true;
 
   nativeBuildInputs = [ cmake gcc-arm-embedded python3Packages.pillow ];
 
@@ -36,7 +35,7 @@ mkDerivation rec {
     #"-DAVRDUDE_PATH=${avrdude}/bin/avrdude"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "OpenTX Companion transmitter support software";
     longDescription = ''
       OpenTX Companion is used for many different tasks like loading OpenTX
@@ -44,7 +43,7 @@ mkDerivation rec {
       running radio simulators.
     '';
     homepage = "https://www.open-tx.org/";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = [ "i686-linux" "x86_64-linux" "aarch64-linux" ];
     maintainers = with maintainers; [ elitak lopsided98 ];
   };

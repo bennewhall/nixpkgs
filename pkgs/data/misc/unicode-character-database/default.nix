@@ -1,15 +1,15 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , unzip
 }:
 
 stdenv.mkDerivation rec {
   pname = "unicode-character-database";
-  version = "14.0.0";
+  version = "13.0.0";
 
   src = fetchurl {
     url = "https://www.unicode.org/Public/zipped/${version}/UCD.zip";
-    sha256 = "sha256-AzpSdrXXr4hEWJ+ONILzl3qDhecdEH03UFVGUXjCNgA=";
+    sha256 = "0ld97ppkb5f8d5b3mlkxfwnr6f3inijyqias9xc4bbin9lxrfxig";
   };
 
   nativeBuildInputs = [
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Unicode Character Database";
     homepage = "https://www.unicode.org/";
     license = licenses.unicode-dfs-2016;

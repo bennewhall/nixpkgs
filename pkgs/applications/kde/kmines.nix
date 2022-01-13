@@ -1,7 +1,7 @@
 { mkDerivation, lib, extra-cmake-modules, libkdegames, kconfig, kcrash, kdoctools, ki18n, kio }:
 
 mkDerivation {
-  pname = "kmines";
+  name = "kmines";
   meta = with lib; {
     homepage = "https://kde.org/applications/en/games/org.kde.kmines";
     description = "A classic Minesweeper game";

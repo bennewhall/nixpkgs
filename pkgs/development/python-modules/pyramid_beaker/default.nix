@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pytest, beaker, pyramid }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest, beaker, pyramid }:
 
 buildPythonPackage rec {
   pname = "pyramid_beaker";
@@ -18,11 +18,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ beaker pyramid ];
 
-  meta = with lib; {
-    description = "Beaker session factory backend for Pyramid";
-    homepage = "https://docs.pylonsproject.org/projects/pyramid_beaker/en/latest/";
-    # idk, see https://github.com/Pylons/pyramid_beaker/blob/master/LICENSE.txt
-    # license = licenses.mpl20;
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ domenkozar ];
   };
 }

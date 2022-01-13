@@ -4,45 +4,57 @@
 , rustPlatform
 , withFzf ? true
 , fzf
-, installShellFiles
-, libiconv
-}:
 
-rustPlatform.buildRustPackage rec {
+  # checkInputs
+, fish
+, powershell
+, shellcheck
+, shfmt
+, xonsh
+, zsh
+}:
+let
+  version = "0.5.0";
+in
+rustPlatform.buildRustPackage {
   pname = "zoxide";
-  version = "0.8.0";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "ajeetdsouza";
     repo = "zoxide";
     rev = "v${version}";
-    sha256 = "sha256-5syCq2Qjjk/XoYqW4MGoSSTRLqzgBwadBJwZDDdWNgU=";
+    sha256 = "143lh94mw31pm9q7ib63h2k842g3h222mdabhf25hpb19lka2w5y";
   };
 
-  nativeBuildInputs = [ installShellFiles ];
+  # tests are broken on darwin
+  doCheck = !stdenv.isDarwin;
 
-  buildInputs = lib.optionals stdenv.isDarwin [ libiconv ];
+  # fish needs a writable HOME for whatever reason
+  preCheck = ''
+    export HOME=$(mktemp -d)
+  '';
+
+  checkInputs = [
+    fish
+    powershell
+    shellcheck
+    shfmt
+    xonsh
+    zsh
+  ];
 
   postPatch = lib.optionalString withFzf ''
     substituteInPlace src/fzf.rs \
       --replace '"fzf"' '"${fzf}/bin/fzf"'
   '';
 
-  cargoSha256 = "sha256-egZqMiN53k2R1b1dbCn4j0KEJqb27TdE25YYEZ4Nvao=";
-
-  postInstall = ''
-    installManPage man/*
-    installShellCompletion --cmd zoxide \
-      --bash contrib/completions/zoxide.bash \
-      --fish contrib/completions/zoxide.fish \
-      --zsh contrib/completions/_zoxide
-  '';
+  cargoSha256 = "05mp101yk1zkjj1gwbkldizq6f9f8089gqgvq42c4ngq88pc7v9a";
 
   meta = with lib; {
     description = "A fast cd command that learns your habits";
     homepage = "https://github.com/ajeetdsouza/zoxide";
-    changelog = "https://github.com/ajeetdsouza/zoxide/raw/v${version}/CHANGELOG.md";
     license = with licenses; [ mit ];
-    maintainers = with maintainers; [ ysndr cole-h SuperSandro2000 ];
+    maintainers = with maintainers; [ ysndr cole-h ];
   };
 }

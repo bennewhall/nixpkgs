@@ -6,7 +6,7 @@
 }:
 
 mkDerivation {
-  pname = "libkmahjongg";
+  name = "libkmahjongg";
   meta = {
     license = with lib.licenses; [ gpl2 ];
     maintainers = with lib.maintainers; [ ];

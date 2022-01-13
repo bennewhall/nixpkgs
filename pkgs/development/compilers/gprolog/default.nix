@@ -1,18 +1,17 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "gprolog";
-  version = "1.5.0";
+  name = "gprolog-1.4.5";
 
   src = fetchurl {
     urls = [
-      "mirror://gnu/gprolog/gprolog-${version}.tar.gz"
-      "http://www.gprolog.org/gprolog-${version}.tar.gz"
+      "mirror://gnu/gprolog/${name}.tar.gz"
+      "http://www.gprolog.org/${name}.tar.gz"
     ];
-    sha256 = "sha256-ZwZCtDwPqifr1olh77F+vnB2iPkbaAlWbd1gYTlRLAE=";
+    sha256 = "0z4cc42n3k6i35b8mr816iwsvrpxshw6d7dgz6s2h1hy0l7g1p5z";
   };
 
-  hardeningDisable = lib.optional stdenv.isi686 "pic";
+  hardeningDisable = stdenv.lib.optional stdenv.isi686 "pic";
 
   patchPhase = ''
     sed -i -e "s|/tmp/make.log|$TMPDIR/make.log|g" src/Pl2Wam/check_boot
@@ -23,13 +22,13 @@ stdenv.mkDerivation rec {
     configureFlagsArray=(
       "--with-install-dir=$out"
       "--without-links-dir"
-      "--with-examples-dir=$out/share/gprolog-${version}/examples"
-      "--with-doc-dir=$out/share/gprolog-${version}/doc"
+      "--with-examples-dir=$out/share/${name}/examples"
+      "--with-doc-dir=$out/share/${name}/doc"
     )
   '';
 
   postInstall = ''
-    mv -v $out/[A-Z]* $out/gprolog.ico $out/share/gprolog-${version}/
+    mv -v $out/[A-Z]* $out/gprolog.ico $out/share/${name}/
   '';
 
   doCheck = true;
@@ -37,7 +36,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://www.gnu.org/software/gprolog/";
     description = "GNU Prolog, a free Prolog compiler with constraint solving over finite domains";
-    license = lib.licenses.lgpl3Plus;
+    license = stdenv.lib.licenses.lgpl3Plus;
 
     longDescription = ''
       GNU Prolog is a free Prolog compiler with constraint solving
@@ -63,6 +62,7 @@ stdenv.mkDerivation rec {
       declarativity of logic programming.
     '';
 
-    platforms = lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.peti ];
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;
   };
 }

@@ -1,37 +1,27 @@
-{ lib
-, mkDerivation
-, fetchFromGitHub
-, qmake
-, qtbase
-, qtwebengine
-}:
+{ lib, mkDerivation, fetchFromGitHub, qmake, qtbase, qtwebengine }:
 
-mkDerivation rec {
+let
+  description = "A note-taking application that knows programmers and Markdown better";
+in mkDerivation rec {
+  version = "2.10";
   pname = "vnote";
-  version = "3.11.0";
 
   src = fetchFromGitHub {
-    owner = "vnotex";
-    repo = pname;
+    owner = "tamlok";
+    repo = "vnote";
     fetchSubmodules = true;
     rev = "v${version}";
-    sha256 = "sha256-JZqV+ZDYRWiuKLSctB2L2SGPmboLeL3HeecMoaNXY+4=";
+    sha256 = "EeeVGnKI0irLO1zJQxlVlIUhqG987JIgxNvKpUgLxUQ=";
   };
 
-  nativeBuildInputs = [
-    qmake
-  ];
-
-  buildInputs = [
-    qtbase
-    qtwebengine
-  ];
+  nativeBuildInputs = [ qmake ];
+  buildInputs = [ qtbase qtwebengine ];
 
   meta = with lib; {
-    homepage = "https://vnotex.github.io/vnote";
-    description = "A pleasant note-taking platform";
+    inherit description;
+    homepage = "https://tamlok.github.io/vnote";
     license = licenses.mit;
-    maintainers = with maintainers; [ AndersonTorres ];
     platforms = platforms.linux;
+    maintainers = [ maintainers.kuznero ];
   };
 }

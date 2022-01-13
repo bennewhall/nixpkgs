@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, freeglut, libGLU, libGL, glfw2, glew, libX11, xorgproto
+{ stdenv, fetchurl, cmake, freeglut, libGLU, libGL, glfw2, glew, libX11, xorgproto
 , libXi, libXmu, fetchpatch, libXrandr
 }:
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     cp demo/chipmunk_demos $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fast and lightweight 2D game physics library";
     homepage = "http://chipmunk2d.net/";
     license = licenses.mit;

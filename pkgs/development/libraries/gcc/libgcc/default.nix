@@ -1,4 +1,4 @@
-{ lib, stdenvNoLibs, buildPackages
+{ stdenvNoLibs, buildPackages
 , gcc, glibc
 , libiberty
 }:
@@ -21,8 +21,6 @@ stdenvNoLibs.mkDerivation rec {
   postPatch = ''
     sourceRoot=$(readlink -e "./libgcc")
   '';
-
-  hardeningDisable = [ "pie" ];
 
   preConfigure = ''
     cd "$buildRoot"
@@ -130,7 +128,7 @@ stdenvNoLibs.mkDerivation rec {
     "--disable-vtable-verify"
 
     "--with-system-zlib"
-  ] ++ lib.optional (stdenvNoLibs.hostPlatform.libc == "glibc")
+  ] ++ stdenvNoLibs.lib.optional (stdenvNoLibs.hostPlatform.libc == "glibc")
        "--with-glibc-version=${glibc.version}";
 
   configurePlatforms = [ "build" "host" ];

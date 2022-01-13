@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, cmake, pkg-config, alsa-lib, ffmpeg, glib, openssl
+{ stdenv, lib, fetchFromGitHub, cmake, pkgconfig, alsaLib, ffmpeg, glib, openssl
 , pcre, zlib, libX11, libXcursor, libXdamage, libXext, libXi, libXinerama
 , libXrandr, libXrender, libXv, libXtst, libxkbcommon, libxkbfile, wayland
 , gstreamer, gst-plugins-base, gst-plugins-good, libunwind, orc, libxslt, cairo
@@ -18,13 +18,13 @@ let
 
 in stdenv.mkDerivation rec {
   pname = "freerdp";
-  version = "2.4.1";
+  version = "2.2.0";
 
   src = fetchFromGitHub {
     owner = "FreeRDP";
     repo = "FreeRDP";
     rev = version;
-    sha256 = "sha256-0wwIuE6Gv8khhLAbWSHOBfHGrTUjR4f/C5bzYJpvWIQ=";
+    sha256 = "02zlg5r704zbryx09a5rjjf7q137kj16i9qh25dw9q1y69ri619n";
   };
 
   postPatch = ''
@@ -49,7 +49,7 @@ in stdenv.mkDerivation rec {
 
   buildInputs = with lib;
     [
-      alsa-lib
+      alsaLib
       cairo
       cups
       ffmpeg
@@ -82,7 +82,7 @@ in stdenv.mkDerivation rec {
       zlib
     ] ++ optional stdenv.isLinux systemd;
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   doCheck = true;
 

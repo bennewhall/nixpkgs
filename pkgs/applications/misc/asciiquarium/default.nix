@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, perlPackages }:
+{ stdenv, fetchurl, makeWrapper, perlPackages }:
 
 let version = "1.1";
 in stdenv.mkDerivation {
@@ -20,7 +20,7 @@ in stdenv.mkDerivation {
       --set PERL5LIB ${perlPackages.makeFullPerlPath [ perlPackages.TermAnimation ] }
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Enjoy the mysteries of the sea from the safety of your own terminal!";
     homepage = "https://robobunny.com/projects/asciiquarium/html/";
     license = licenses.gpl2;

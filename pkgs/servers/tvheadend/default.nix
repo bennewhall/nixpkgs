@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, cmake, makeWrapper, pkg-config
-, avahi, dbus, gettext, git, gnutar, gzip, bzip2, ffmpeg_4, libiconv, openssl, python
+{ stdenv, fetchFromGitHub, cmake, makeWrapper, pkgconfig
+, avahi, dbus, gettext, git, gnutar, gzip, bzip2, ffmpeg_3, libiconv, openssl, python
 , v4l-utils, which, zlib }:
 
 let
@@ -29,11 +29,13 @@ in stdenv.mkDerivation {
   };
 
   buildInputs = [
-    avahi dbus gettext git gnutar gzip bzip2 ffmpeg_4 libiconv openssl python
+    avahi dbus gettext git gnutar gzip bzip2 ffmpeg_3 libiconv openssl python
     which zlib
   ];
 
-  nativeBuildInputs = [ cmake makeWrapper pkg-config ];
+  nativeBuildInputs = [ cmake makeWrapper pkgconfig ];
+
+  enableParallelBuilding = true;
 
   NIX_CFLAGS_COMPILE = [ "-Wno-error=format-truncation" "-Wno-error=stringop-truncation" ];
 
@@ -65,15 +67,15 @@ in stdenv.mkDerivation {
 
   postInstall = ''
     wrapProgram $out/bin/tvheadend \
-      --prefix PATH : ${lib.makeBinPath [ bzip2 ]}
+      --prefix PATH : ${stdenv.lib.makeBinPath [ bzip2 ]}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "TV streaming server";
     longDescription = ''
-        Tvheadend is a TV streaming server and recorder for Linux, FreeBSD and Android
+	Tvheadend is a TV streaming server and recorder for Linux, FreeBSD and Android
         supporting DVB-S, DVB-S2, DVB-C, DVB-T, ATSC, IPTV, SAT>IP and HDHomeRun as input sources.
-        Tvheadend offers the HTTP (VLC, MPlayer), HTSP (Kodi, Movian) and SAT>IP streaming.'';
+	Tvheadend offers the HTTP (VLC, MPlayer), HTSP (Kodi, Movian) and SAT>IP streaming.'';
     homepage = "https://tvheadend.org";
     license = licenses.gpl3;
     platforms = platforms.unix;

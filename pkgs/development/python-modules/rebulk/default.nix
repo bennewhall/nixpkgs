@@ -1,20 +1,20 @@
-{ lib, buildPythonPackage, fetchPypi, pytest, pytest-runner, six, regex}:
+{ stdenv, buildPythonPackage, fetchPypi, pytest, pytestrunner, six, regex}:
 
 buildPythonPackage rec {
   pname = "rebulk";
-  version = "3.1.0";
+  version = "2.0.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "809de3a97c68afa831f7101b10d316fe62e061dc9f7f67a44b7738128721173a";
+    sha256 = "320ded3cc456347d828f95e9aa5f8bab77ac01943cad024c06012069fe19690a";
   };
 
   # Some kind of trickery with imports that doesn't work.
   doCheck = false;
-  buildInputs = [ pytest pytest-runner ];
+  buildInputs = [ pytest pytestrunner ];
   propagatedBuildInputs = [ six regex ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Toilal/rebulk/";
     license = licenses.mit;
     description = "Advanced string matching from simple patterns";

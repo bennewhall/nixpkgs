@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation {
-  pname = "devmem2";
-  version = "unstable-2004-08-05";
+  name = "devmem2-2004-08-05";
 
   src = fetchurl {
     urls = [
@@ -19,7 +18,7 @@ stdenv.mkDerivation {
     install -D devmem2 "$out/bin/devmem2"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple program to read/write from/to any location in memory";
     homepage = "http://lartmaker.nl/lartware/port/";
     license = licenses.gpl2Plus;

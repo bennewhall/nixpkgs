@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub, installShellFiles, nixosTests }:
+{ stdenv, buildGoModule, fetchFromGitHub, installShellFiles, nixosTests }:
 
 buildGoModule {
   pname = "mailexporter";
@@ -22,7 +22,7 @@ buildGoModule {
 
   passthru.tests = { inherit (nixosTests.prometheus-exporters) mail; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Export Prometheus-style metrics about mail server functionality";
     homepage = "https://github.com/cherti/mailexporter";
     license = licenses.gpl3;

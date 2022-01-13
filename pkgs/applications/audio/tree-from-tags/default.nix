@@ -1,4 +1,4 @@
-{ lib, stdenv, bundlerEnv, ruby, fetchFromGitHub }:
+{ stdenv, bundlerEnv, ruby, fetchFromGitHub }:
 let
   version = "1.1";
   gems = bundlerEnv {
@@ -28,7 +28,7 @@ EOF
     chmod +x $bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Create file hierarchies from media tags";
     homepage = "https://www.emacswiki.org/emacs/Bongo";
     platforms = ruby.meta.platforms;

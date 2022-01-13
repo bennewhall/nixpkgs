@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pandoc, installShellFiles, withManpage ? false }:
+{ stdenv, fetchFromGitHub, pandoc, installShellFiles, withManpage ? false }:
 
 stdenv.mkDerivation rec {
   pname = "earlyoom";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq";
   };
 
-  nativeBuildInputs = lib.optionals withManpage [ pandoc installShellFiles ];
+  nativeBuildInputs = stdenv.lib.optionals withManpage [ pandoc installShellFiles ];
 
   patches = [ ./fix-dbus-path.patch ];
 
@@ -19,11 +19,11 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     install -D earlyoom $out/bin/earlyoom
-  '' + lib.optionalString withManpage ''
+  '' + stdenv.lib.optionalString withManpage ''
     installManPage earlyoom.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Early OOM Daemon for Linux";
     homepage = "https://github.com/rfjakob/earlyoom";
     license = licenses.mit;

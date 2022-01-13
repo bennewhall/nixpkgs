@@ -1,24 +1,24 @@
-{ lib, stdenv, rustPlatform, fetchFromGitHub, openssl, pkg-config, libiconv, Security }:
+{ stdenv, rustPlatform, fetchFromGitHub, openssl, pkg-config, libiconv, Security }:
 
 rustPlatform.buildRustPackage rec {
   pname = "so";
-  version = "0.4.5";
+  version = "0.4.2";
 
   src = fetchFromGitHub {
     owner = "samtay";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-KiIffq8olpNpynmV4lwdY0yu2ch4MAwp5VspfLZtkf4=";
+    sha256 = "09zswxxli9f5ayjwmvqhkp1yv2s4f435dcfp4cyia1zddbrh2zck";
   };
 
-  cargoSha256 = "sha256-VBuWKit50cSHYg7WzUP5ein3MEoZN/KFfm+YEEu544Q=";
+  cargoSha256 = "1ddbhy1plag4ckbmlyj47wnky7vgmfa68msl3hl25h1lwmzaf1aq";
 
   nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ openssl ] ++ lib.optionals stdenv.isDarwin [
+  buildInputs = [ openssl ] ++ stdenv.lib.optionals stdenv.isDarwin [
     libiconv Security
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A TUI interface to the StackExchange network";
     homepage = "https://github.com/samtay/so";
     license = licenses.mit;

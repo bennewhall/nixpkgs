@@ -2,17 +2,17 @@
 , ps, dnsutils # dig is recommended for multiple categories
 , withRecommends ? false # Install (almost) all recommended tools (see --recommends)
 , withRecommendedSystemPrograms ? withRecommends, util-linuxMinimal, dmidecode
-, file, hddtemp, iproute2, ipmitool, usbutils, kmod, lm_sensors, smartmontools
-, binutils, tree, upower, pciutils
+, file, hddtemp, iproute, ipmitool, usbutils, kmod, lm_sensors, smartmontools
+, binutils, tree, upower
 , withRecommendedDisplayInformationPrograms ? withRecommends, glxinfo, xorg
 }:
 
 let
   prefixPath = programs:
-    "--prefix PATH ':' '${lib.makeBinPath programs}'";
+    "--prefix PATH ':' '${stdenv.lib.makeBinPath programs}'";
   recommendedSystemPrograms = lib.optionals withRecommendedSystemPrograms [
-    util-linuxMinimal dmidecode file hddtemp iproute2 ipmitool usbutils kmod
-    lm_sensors smartmontools binutils tree upower pciutils
+    util-linuxMinimal dmidecode file hddtemp iproute ipmitool usbutils kmod
+    lm_sensors smartmontools binutils tree upower
   ];
   recommendedDisplayInformationPrograms = lib.optionals
     withRecommendedDisplayInformationPrograms
@@ -22,17 +22,16 @@ let
     ++ recommendedDisplayInformationPrograms;
 in stdenv.mkDerivation rec {
   pname = "inxi";
-  version = "3.3.04-1";
+  version = "3.1.09-1";
 
   src = fetchFromGitHub {
     owner = "smxi";
     repo = "inxi";
     rev = version;
-    sha256 = "sha256-/EutIHQGLiRcRD/r8LJYG7oJBb7EAhR5cn6QiC7zMOc=";
+    sha256 = "0m6s8kxjppy3jm39is5i1lbrah29cw86rq0vamvx46izbdyf84y5";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ perl ];
+  buildInputs = [ perl makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -44,7 +43,7 @@ in stdenv.mkDerivation rec {
     cp inxi.1 $out/share/man/man1/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A full featured CLI system information tool";
     longDescription = ''
       inxi is a command line system information script built for console and
@@ -57,6 +56,6 @@ in stdenv.mkDerivation rec {
     changelog = "https://github.com/smxi/inxi/blob/${version}/inxi.changelog";
     license = licenses.gpl3Plus;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ primeos ];
   };
 }

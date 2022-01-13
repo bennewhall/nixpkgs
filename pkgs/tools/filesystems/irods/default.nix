@@ -1,13 +1,15 @@
-{ lib, stdenv, fetchFromGitHub, bzip2, zlib, autoconf, automake, cmake, gnumake, help2man , texinfo, libtool , cppzmq , libarchive, avro-cpp_llvm, boost, jansson, zeromq, openssl , pam, libiodbc, libkrb5, gcc, libcxx, which, catch2 }:
+{ stdenv, fetchFromGitHub, bzip2, zlib, autoconf, automake, cmake, gnumake, help2man , texinfo, libtool , cppzmq , libarchive, avro-cpp_llvm, boost, jansson, zeromq, openssl , pam, libiodbc, kerberos, gcc, libcxx, which, catch2 }:
+
+with stdenv;
 
 let
   avro-cpp=avro-cpp_llvm;
 in
 let
   common = import ./common.nix {
-    inherit lib stdenv bzip2 zlib autoconf automake cmake gnumake
+    inherit stdenv bzip2 zlib autoconf automake cmake gnumake
             help2man texinfo libtool cppzmq libarchive jansson
-            zeromq openssl pam libiodbc libkrb5 gcc libcxx
+            zeromq openssl pam libiodbc kerberos gcc libcxx
             boost avro-cpp which catch2;
   };
 in rec {
@@ -55,7 +57,8 @@ in rec {
     '';
 
     meta = common.meta // {
-      longDescription = common.meta.longDescription + "This package provides the servers and libraries.";
+      longDescription = common.meta.longDescription + ''
+        This package provides the servers and libraries.'';
     };
   });
 
@@ -81,7 +84,7 @@ in rec {
      '';
 
      cmakeFlags = common.cmakeFlags ++ [
-       "-DCMAKE_INSTALL_PREFIX=${stdenv.out}"
+       "-DCMAKE_INSTALL_PREFIX=${out}"
        "-DIRODS_DIR=${irods}/lib/irods/cmake"
        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath,${irods}/lib"
        "-DCMAKE_MODULE_LINKER_FLAGS=-Wl,-rpath,${irods}/lib"
@@ -90,7 +93,8 @@ in rec {
 
      meta = common.meta // {
        description = common.meta.description + " CLI clients";
-       longDescription = common.meta.longDescription + "This package provides the CLI clients, called 'icommands'.";
+       longDescription = common.meta.longDescription + ''
+         This package provides the CLI clients, called 'icommands'.'';
      };
   });
 }

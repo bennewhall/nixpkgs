@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchurl, pkg-config, gtk2, libXinerama, libSM, libXxf86vm, xorgproto
+{ stdenv, fetchurl, pkgconfig, gtk2, libXinerama, libSM, libXxf86vm, xorgproto
 , libX11, cairo
-, libGLSupported ? lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms
-, withMesa ? lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms
+, libGLSupported ? stdenv.lib.elem stdenv.hostPlatform.system stdenv.lib.platforms.mesaPlatforms
+, withMesa ? stdenv.lib.elem stdenv.hostPlatform.system stdenv.lib.platforms.mesaPlatforms
 , libGLU ? null, libGL ? null
 , compat24 ? false, compat26 ? true, unicode ? true,
 }:
 
 assert withMesa -> libGLU != null && libGL != null;
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   version = "2.8.12.1";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ gtk2 libXinerama libSM libXxf86vm xorgproto libX11 cairo ]
     ++ optional withMesa libGLU;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   hardeningDisable = [ "format" ];
 

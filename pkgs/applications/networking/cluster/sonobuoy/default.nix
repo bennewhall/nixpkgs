@@ -1,29 +1,31 @@
 { lib, buildGoModule, fetchFromGitHub }:
 
-# SHA of ${version} for the tool's help output. Unfortunately this is needed in build flags.
-let rev = "237bd35906f5c4bed1f4de4aa58cc6a6a676d4fd";
+# SHA of ${version} for the tool's help output
+let rev = "e03f9ee353717ccc5f58c902633553e34b2fe46a";
 in
 buildGoModule rec {
   pname = "sonobuoy";
-  version = "0.55.1"; # Do not forget to update `rev` above
+  version = "0.19.0";
 
-  ldflags =
-    let t = "github.com/vmware-tanzu/sonobuoy";
-    in [
-      "-s"
-      "-X ${t}/pkg/buildinfo.Version=v${version}"
-      "-X ${t}/pkg/buildinfo.GitSHA=${rev}"
-      "-X ${t}/pkg/buildDate=unknown"
-    ];
+  goPackagePath = "github.com/vmware-tanzu/sonobuoy";
+
+  buildFlagsArray =
+    let t = goPackagePath;
+    in ''
+      -ldflags=
+        -s -X ${t}/pkg/buildinfo.Version=v${version}
+           -X ${t}/pkg/buildinfo.GitSHA=${rev}
+           -X ${t}/pkg/buildDate=unknown
+    '';
 
   src = fetchFromGitHub {
-    owner = "vmware-tanzu";
-    repo = "sonobuoy";
+    sha256 = "1gw58a30akidk15wk8kk7f8lsyqr1q180j6fzr4462ahwxdbjgkr";
     rev = "v${version}";
-    sha256 = "sha256-pHpnh+6O9yjnDA8u0jyLvqNQbXC+xz8fRn47aQNdOAo=";
+    repo = "sonobuoy";
+    owner = "vmware-tanzu";
   };
 
-  vendorSha256 = "sha256-jPKCWTFABKRZCg6X5VVdrmOU/ZFc7yGD7R8RJrpcITg=";
+  vendorSha256 = "1kxzd4czv8992y7y47la5jjrbhk76sxcj3v5sx0k4xplgki7np6i";
 
   subPackages = [ "." ];
 

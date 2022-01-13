@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip, fpc, lazarus }:
+{ stdenv, fetchurl, unzip, fpc, lazarus }:
 
 let
   date = "07.apr.2016";
@@ -33,7 +33,7 @@ in stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Convert .mht files to .html";
     homepage    = "http://pgm.bpalanka.com/mht2htm.html";
     license     = licenses.gpl3;

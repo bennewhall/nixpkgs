@@ -274,10 +274,7 @@ in
 
         I find cows to be evil don't you?
       '';
-      users.users.tester = {
-        isNormalUser = true;
-        password = "test";
-      };
+      users.users.tester.password = "test";
       services.postfix = {
         enable = true;
         destination = ["example.com"];

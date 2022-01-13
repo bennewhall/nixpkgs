@@ -1,14 +1,11 @@
-{ lib
-, fetchFromGitHub
-, python3
-, neovim
-}:
+{ stdenv, fetchFromGitHub, pythonPackages }:
 
-with lib;
+with stdenv.lib;
 
-with python3.pkgs; buildPythonApplication rec {
+pythonPackages.buildPythonApplication rec {
   pname = "neovim-remote";
   version = "2.4.0";
+  disabled = !pythonPackages.isPy3k;
 
   src = fetchFromGitHub {
     owner = "mhinz";
@@ -17,22 +14,10 @@ with python3.pkgs; buildPythonApplication rec {
     sha256 = "0jlw0qksak4bdzddpsj74pm2f2bgpj3cwrlspdjjy0j9qzg0mpl9";
   };
 
-  propagatedBuildInputs = [
+  propagatedBuildInputs = with pythonPackages; [
     pynvim
     psutil
     setuptools
-  ];
-
-  checkInputs = [
-    neovim
-    pytestCheckHook
-  ];
-
-  disabledTests = [
-    # these tests get stuck and never return
-    "test_escape_filenames_properly"
-    "test_escape_single_quotes_in_filenames"
-    "test_escape_double_quotes_in_filenames"
   ];
 
   meta = {

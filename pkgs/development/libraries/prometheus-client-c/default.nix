@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , fetchpatch
 , cmake
@@ -50,9 +50,9 @@ let
       meta = {
         homepage = "https://github.com/digitalocean/prometheus-client-c/";
         inherit description;
-        platforms = lib.platforms.unix;
-        license = lib.licenses.asl20;
-        maintainers = [ lib.maintainers.cfsmp3 ];
+        platforms = stdenv.lib.platforms.unix;
+        license = stdenv.lib.licenses.asl20;
+        maintainers = [ stdenv.lib.maintainers.cfsmp3 ];
       };
     };
 in

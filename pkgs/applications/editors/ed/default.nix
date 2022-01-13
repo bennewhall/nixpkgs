@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, lzip
+{ stdenv, fetchurl, lzip
 }:
 
 # Note: this package is used for bootstrapping fetchurl, and thus
@@ -7,12 +7,12 @@
 # files.
 
 stdenv.mkDerivation (rec {
-  pname = "ed";
-  version = "1.17";
+  name = "ed-${version}";
+  version = "1.16";
 
   src = fetchurl {
-    url = "mirror://gnu/ed/${pname}-${version}.tar.lz";
-    sha256 = "0m2yrkfjjraakxr98nsiakqrn351h99n706x9asgmdi57j43kpki";
+    url = "mirror://gnu/ed/${name}.tar.lz";
+    sha256 = "0b4b1lwizvng9bvpcjnmpj2i80xz9xw2w8nfff27b2h4mca7mh6g";
   };
 
   nativeBuildInputs = [ lzip ];
@@ -33,14 +33,14 @@ stdenv.mkDerivation (rec {
       full-screen editors such as GNU Emacs or GNU Moe.
     '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
     homepage = "https://www.gnu.org/software/ed/";
 
     maintainers = [ ];
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
-} // lib.optionalAttrs (stdenv.hostPlatform != stdenv.buildPlatform) {
+} // stdenv.lib.optionalAttrs (stdenv.hostPlatform != stdenv.buildPlatform) {
   # This may be moved above during a stdenv rebuild.
   preConfigure = ''
     configureFlagsArray+=("CC=$CC")

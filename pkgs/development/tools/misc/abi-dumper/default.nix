@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ctags, perl, elfutils, vtable-dumper }:
+{ stdenv, fetchFromGitHub, ctags, perl, elfutils, vtable-dumper }:
 
 stdenv.mkDerivation rec {
   pname = "abi-dumper";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   preBuild = "mkdir -p $out";
   makeFlags = [ "prefix=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/lvc/abi-dumper";
     description = "Dump ABI of an ELF object containing DWARF debug info";
     license = licenses.lgpl21;

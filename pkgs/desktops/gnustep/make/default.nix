@@ -1,12 +1,16 @@
-{ lib, stdenv, fetchurl, clang, which, libobjc }:
+{ stdenv, fetchurl, clang, which, libobjc }:
 
-stdenv.mkDerivation rec {
+let
+  version = "2.8.0";
+in
+
+stdenv.mkDerivation {
   pname = "gnustep-make";
-  version = "2.9.0";
+  inherit version;
 
   src = fetchurl {
     url = "ftp://ftp.gnustep.org/pub/gnustep/core/gnustep-make-${version}.tar.gz";
-    sha256 = "sha256-oLBmwRJXh5x8hTEd6mnGf23HQe8znbZRT4W2SZLEDSo=";
+    sha256 = "0pfaylrr3xgn5026anmja4rv4l7nzzaqsrkxycyi0p4lvm12kklz";
   };
 
   configureFlags = [
@@ -28,9 +32,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A build manager for GNUstep";
     homepage = "http://gnustep.org/";
-    changelog = "https://github.com/gnustep/tools-make/releases/tag/make-${builtins.replaceStrings [ "." ] [ "_" ] version}";
-    license = lib.licenses.lgpl2Plus;
-    maintainers = with lib.maintainers; [ ashalkhakov matthewbauer ];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.lgpl2Plus;
+    maintainers = with stdenv.lib.maintainers; [ ashalkhakov matthewbauer ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

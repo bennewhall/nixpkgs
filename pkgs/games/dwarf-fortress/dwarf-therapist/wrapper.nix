@@ -1,42 +1,33 @@
-{ stdenv, dwarf-therapist, dwarf-fortress, substituteAll, coreutils, wrapQtAppsHook }:
+{ pkgs, stdenv, dwarf-therapist, dwarf-fortress, makeWrapper }:
 
 let
-  platformSlug =
-    if stdenv.targetPlatform.is32bit then
-      "linux32" else "linux64";
+  platformSlug = if stdenv.targetPlatform.is32bit then
+    "linux32" else "linux64";
   inifile = "linux/v0.${dwarf-fortress.baseVersion}.${dwarf-fortress.patchVersion}_${platformSlug}.ini";
 
 in
-
+  
 stdenv.mkDerivation {
   name = "dwarf-therapist-${dwarf-therapist.version}";
-
-  wrapper = substituteAll {
-    src = ./dwarf-therapist.in;
-    stdenv_shell = "${stdenv.shell}";
-    rm = "${coreutils}/bin/rm";
-    ln = "${coreutils}/bin/ln";
-    cat = "${coreutils}/bin/cat";
-    mkdir = "${coreutils}/bin/mkdir";
-    dirname = "${coreutils}/bin/dirname";
-    therapist = "${dwarf-therapist}";
-  };
+  
+  wrapper = ./dwarf-therapist.in;
 
   paths = [ dwarf-therapist ];
 
-  nativeBuildInputs = [ wrapQtAppsHook ];
+  buildInputs = [ makeWrapper ];
 
   passthru = { inherit dwarf-fortress dwarf-therapist; };
 
   buildCommand = ''
     mkdir -p $out/bin
-
-    install -Dm755 $wrapper $out/bin/dwarftherapist
     ln -s $out/bin/dwarftherapist $out/bin/DwarfTherapist
+    substitute $wrapper $out/bin/dwarftherapist \
+      --subst-var-by stdenv_shell ${stdenv.shell} \
+      --subst-var-by install $out \
+      --subst-var-by therapist ${dwarf-therapist} \
+      --subst-var-by qt_plugin_path "${pkgs.qt5.qtbase}/lib/qt-${pkgs.qt5.qtbase.qtCompatVersion}/plugins/platforms"
 
-    substituteInPlace $out/bin/dwarftherapist \
-      --subst-var-by install $out
-    wrapQtApp $out/bin/dwarftherapist
+    chmod 755 $out/bin/dwarftherapist
 
     # Fix up memory layouts
     rm -rf $out/share/dwarftherapist/memory_layouts/linux

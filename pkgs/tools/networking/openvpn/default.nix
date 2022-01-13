@@ -1,20 +1,23 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , pkg-config
 , makeWrapper
 , runtimeShell
-, iproute2
+, iproute ? null
 , lzo
 , openssl
 , pam
 , useSystemd ? stdenv.isLinux
-, systemd
-, util-linux
+, systemd ? null
+, util-linux ? null
 , pkcs11Support ? false
-, pkcs11helper
+, pkcs11helper ? null
 }:
 
-with lib;
+assert useSystemd -> (systemd != null);
+assert pkcs11Support -> (pkcs11helper != null);
+
+with stdenv.lib;
 let
   # Check if the script needs to have other binaries wrapped when changing this.
   update-resolved = fetchurl {
@@ -40,13 +43,13 @@ let
 
         buildInputs = [ lzo openssl ]
           ++ optional stdenv.isLinux pam
-          ++ optional withIpRoute iproute2
+          ++ optional withIpRoute iproute
           ++ optional useSystemd systemd
           ++ optional pkcs11Support pkcs11helper;
 
         configureFlags = optionals withIpRoute [
           "--enable-iproute2"
-          "IPROUTE=${iproute2}/sbin/ip"
+          "IPROUTE=${iproute}/sbin/ip"
         ]
         ++ optional useSystemd "--enable-systemd"
         ++ optional pkcs11Support "--enable-pkcs11"
@@ -60,12 +63,12 @@ let
         '' + optionalString useSystemd ''
           install -Dm555 ${update-resolved} $out/libexec/update-systemd-resolved
           wrapProgram $out/libexec/update-systemd-resolved \
-            --prefix PATH : ${makeBinPath [ runtimeShell iproute2 systemd util-linux ]}
+            --prefix PATH : ${makeBinPath [ runtimeShell iproute systemd util-linux ]}
         '';
 
         enableParallelBuilding = true;
 
-        meta = with lib; {
+        meta = with stdenv.lib; {
           description = "A robust and highly flexible tunneling application";
           downloadPage = "https://openvpn.net/community-downloads/";
           homepage = "https://openvpn.net/";
@@ -78,12 +81,12 @@ let
 in
 {
   openvpn_24 = generic {
-    version = "2.4.11";
-    sha256 = "06s4m0xvixjhd3azrzbsf4j86kah4xwr2jp6cmcpc7db33rfyyg5";
+    version = "2.4.9";
+    sha256 = "1qpbllwlha7cffsd5dlddb8rl22g9rar5zflkz1wrcllhvfkl7v4";
   };
 
   openvpn = generic {
-    version = "2.5.2";
-    sha256 = "sha256-sSdDg2kB82Xvr4KrJJOWfhshwh60POmo2hACoXycHcg=";
+    version = "2.5.0";
+    sha256 = "sha256-AppCbkTWVstOEYkxnJX+b8mGQkdyT1WZ2Z35xMNHj70=";
   };
 }

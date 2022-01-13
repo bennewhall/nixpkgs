@@ -1,7 +1,8 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, pythonOlder
+, isPy27
+, future
 , h5py
 , ipython
 , numba
@@ -13,16 +14,16 @@
 
 buildPythonPackage rec {
   pname = "clifford";
-  version = "1.4.0";
-
-  disabled = pythonOlder "3.5";
+  version = "1.3.1";
+  disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-eVE8FrD0YHoRreY9CrNb8v4v4KrG83ZU0oFz+V+p+Q0=";
+    sha256 = "ade11b20d0631dfc9c2f18ce0149f1e61e4baf114108b27cfd68e5c1619ecc0c";
   };
 
   propagatedBuildInputs = [
+    future
     h5py
     numba
     numpy
@@ -35,33 +36,26 @@ buildPythonPackage rec {
     ipython
   ];
 
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace "'numba==0.43'" "'numba'"
+  '';
+
   # avoid collecting local files
   preCheck = ''
     cd clifford/test
   '';
 
-  disabledTests = [
-    "veryslow"
-    "test_algebra_initialisation"
-    "test_cga"
-    "test_grade_projection"
-    "test_multiple_grade_projection"
-    "test_inverse"
-    "test_inv_g4"
+  pytestFlagsArray = [
+    "-m \"not veryslow\""
+    "--ignore=test_algebra_initialisation.py" # fails without JIT
+    "--ignore=test_cga.py"
   ];
-
-  disabledTestPaths = [
-    # Disable failing tests
-    "test_g3c_tools.py"
-    "test_multivector_inverse.py"
-  ];
-
-  pythonImportsCheck = [ "clifford" ];
 
   meta = with lib; {
     description = "Numerical Geometric Algebra Module";
     homepage = "https://clifford.readthedocs.io";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ costrouc ];
+    maintainers = [ maintainers.costrouc ];
   };
 }

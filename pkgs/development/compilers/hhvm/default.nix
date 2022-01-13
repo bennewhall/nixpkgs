@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, cmake, pkg-config, boost, libunwind, libmemcached
+{ stdenv, fetchgit, cmake, pkgconfig, boost, libunwind, libmemcached
 , pcre, libevent, gd, curl, libxml2, icu, flex, bison, openssl, zlib, php
 , expat, libcap, oniguruma, libdwarf, libmcrypt, tbb, gperftools, glog, libkrb5
 , bzip2, openldap, readline, libelf, uwimap, binutils, cyrus_sasl, pam, libpng
@@ -18,10 +18,9 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ cmake pkg-config flex bison ];
   buildInputs =
-    [ boost libunwind libmysqlclient libmemcached pcre gdb git perl
-      libevent gd curl libxml2 icu openssl zlib php expat libcap
+    [ cmake pkgconfig boost libunwind libmysqlclient libmemcached pcre gdb git perl
+      libevent gd curl libxml2 icu flex bison openssl zlib php expat libcap
       oniguruma libdwarf libmcrypt tbb gperftools bzip2 openldap readline
       libelf uwimap binutils cyrus_sasl pam glog libpng libxslt libkrb5
       gmp libyaml libedit libvpx imagemagick fribidi gperf which
@@ -32,6 +31,7 @@ stdenv.mkDerivation rec {
     ./flexible-array-members-gcc6.patch
   ];
 
+  enableParallelBuilding = true;
   dontUseCmakeBuildDir = true;
   NIX_LDFLAGS = "-lpam -L${pam}/lib";
 
@@ -62,7 +62,7 @@ stdenv.mkDerivation rec {
     homepage    = "https://hhvm.com";
     license     = "PHP/Zend";
     platforms   = [ "x86_64-linux" ];
-    maintainers = [ lib.maintainers.thoughtpolice ];
+    maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
     broken = true; # Since 2018-04-21, see https://hydra.nixos.org/build/73059373
   };
 }

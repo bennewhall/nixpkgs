@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub
-, pkg-config
+{ stdenv, fetchFromGitHub
+, pkgconfig
 , autoconf
 , automake111x
 , libtool
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     intltool
     automake111x
     autoconf
@@ -57,7 +57,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://alarm-clock.pseudoberries.com/";
     description = "A fully-featured alarm clock for your GNOME panel or equivalent";
     license = licenses.gpl2;

@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchurl
-, automake, autoconf, bzip2, libtar, libtool, pkg-config, autoconf-archive
+{ stdenv, fetchurl
+, automake, autoconf, bzip2, libtar, libtool, pkgconfig, autoconf-archive
 , libxml2
 , languageMachines
 }:
 
 let
-  release = lib.importJSON ./release-info/LanguageMachines-mbt.json;
+  release = builtins.fromJSON (builtins.readFile ./release-info/LanguageMachines-mbt.json);
 in
 
 stdenv.mkDerivation {
@@ -13,7 +13,7 @@ stdenv.mkDerivation {
   version = release.version;
   src = fetchurl { inherit (release) url sha256;
                    name = "mbt-${release.version}.tar.gz"; };
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ automake autoconf bzip2 libtar libtool autoconf-archive
                   libxml2
                   languageMachines.ticcutils
@@ -24,7 +24,7 @@ stdenv.mkDerivation {
     sh bootstrap.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Memory Based Tagger";
     homepage    = "https://languagemachines.github.io/mbt/";
     license     = licenses.gpl3;

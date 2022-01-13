@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, python3, fixDarwinDylibNames }:
+{ stdenv, fetchFromGitHub, python }:
 
 stdenv.mkDerivation rec {
   pname = "jxrlib";
@@ -13,22 +13,17 @@ stdenv.mkDerivation rec {
     sha256 = "0rk3hbh00nw0wgbfbqk1szrlfg3yq7w6ar16napww3nrlm9cj65w";
   };
 
-  postPatch = ''
-    substituteInPlace Makefile \
-      --replace "cc" "$CC"
-  '' + lib.optionalString stdenv.isDarwin ''
+  postPatch = stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace Makefile \
       --replace '-shared' '-dynamiclib -undefined dynamic_lookup' \
       --replace '.so' '.dylib'
   '';
 
-  nativeBuildInputs = [ python3 ] ++ lib.optional stdenv.isDarwin fixDarwinDylibNames;
-
-  strictDeps = true;
+  nativeBuildInputs = [ python ];
 
   makeFlags = [ "DIR_INSTALL=$(out)" "SHARED=1" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Implementation of the JPEG XR image codec standard";
     homepage = "https://jxrlib.codeplex.com";
     license = licenses.bsd2;

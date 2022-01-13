@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch }:
+{ stdenv, fetchurl, fetchpatch }:
 
 stdenv.mkDerivation {
   version = "3.3.2";
@@ -28,8 +28,8 @@ stdenv.mkDerivation {
       performance enhancements.
     '';
     homepage = "http://www.rahul.net/dholmes/ctorrent/";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.devhell ];
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.devhell ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, zlib }:
+{ stdenv, fetchFromGitHub, cmake, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "nifticlib";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   '';
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://nifti-imaging.github.io";
     description = "Medical imaging format C API";
     maintainers = with maintainers; [ bcdarwin ];

@@ -1,10 +1,10 @@
-{ lib, buildPythonPackage, fetchPypi, pkg-config }:
+{ lib, buildPythonPackage, fetchPypi, nose, pkgconfig }:
 
 buildPythonPackage rec {
   pname = "pkgconfig";
-  version = "1.5.5";
+  version = "1.5.1";
 
-  inherit (pkg-config)
+  inherit (pkgconfig)
     setupHooks
     wrapperName
     suffixSalt
@@ -14,20 +14,21 @@ buildPythonPackage rec {
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "deb4163ef11f75b520d822d9505c1f462761b4309b1bb713d08689759ea8b899";
+    sha256 = "97bfe3d981bab675d5ea3ef259045d7919c93897db7d3b59d4e8593cba8d354f";
   };
 
+  checkInputs = [ nose ];
 
-  propagatedNativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  doCheck = false;
+  checkPhase = ''
+    nosetests
+  '';
 
   patches = [ ./executable.patch ];
   postPatch = ''
-    substituteInPlace pkgconfig/pkgconfig.py --replace 'PKG_CONFIG_EXE = "pkg-config"' 'PKG_CONFIG_EXE = "${pkg-config}/bin/${pkg-config.targetPrefix}pkg-config"'
+    substituteInPlace pkgconfig/pkgconfig.py --replace 'PKG_CONFIG_EXE = "pkg-config"' 'PKG_CONFIG_EXE = "${pkgconfig}/bin/${pkgconfig.targetPrefix}pkg-config"'
   '';
-
-  pythonImportsCheck = [ "pkgconfig" ];
 
   meta = with lib; {
     description = "Interface Python with pkg-config";

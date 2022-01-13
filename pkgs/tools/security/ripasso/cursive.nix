@@ -1,37 +1,35 @@
-{ stdenv, lib, rustPlatform, fetchFromGitHub, pkg-config, ncurses, python3, openssl, libgpg-error, gpgme, xorg, AppKit, Security, installShellFiles }:
+{ stdenv, lib, rustPlatform, fetchFromGitHub, pkgconfig, ncurses, python3, openssl, libgpgerror, gpgme, xorg, AppKit, Security }:
 
 with rustPlatform;
 buildRustPackage rec {
-  version = "0.5.2";
+  version = "0.4.0";
   pname = "ripasso-cursive";
 
   src = fetchFromGitHub {
     owner = "cortex";
     repo = "ripasso";
     rev  = "release-${version}";
-    sha256 = "sha256-De/xCDzdRHCslD0j6vT8bwjcMTf5R8KZ32aaB3i+Nig=";
+    sha256 = "164da20j727p8l7hh37j2r8pai9sj402nhswvg0nrlgj53nr6083";
   };
 
   patches = [ ./fix-tests.patch ];
 
-  cargoSha256 = "sha256-ZmHzxHV4uIxPlLkkOLJApPNLo0GGVj9EopoIwi/j6DE=";
+  cargoSha256 = "1wpn67v0xmxhn1dgzhh1pwz1yc3cizmfxhpb7qv9b27ynx4486ji";
 
-  cargoBuildFlags = [ "-p ripasso-cursive" ];
+  cargoBuildFlags = [ "-p ripasso-cursive -p ripasso-man" ];
 
-  nativeBuildInputs = [ pkg-config gpgme python3 installShellFiles ];
+  nativeBuildInputs = [ pkgconfig gpgme python3 ];
   buildInputs = [
-    ncurses openssl libgpg-error gpgme xorg.libxcb
-  ] ++ lib.optionals stdenv.isDarwin [ AppKit Security ];
+    ncurses openssl libgpgerror gpgme xorg.libxcb
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [ AppKit Security ];
 
-  preCheck = ''
-    export HOME=$TMPDIR
+  preFixup = ''
+    mkdir -p "$out/man/man1"
+    $out/bin/ripasso-man > $out/man/man1/ripasso-cursive.1
+    rm $out/bin/ripasso-man
   '';
 
-  postInstall = ''
-    installManPage target/man-page/cursive/ripasso-cursive.1
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple password manager written in Rust";
     homepage = "https://github.com/cortex/ripasso";
     license = licenses.gpl3;

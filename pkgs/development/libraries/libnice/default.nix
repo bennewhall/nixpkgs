@@ -1,9 +1,9 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , fetchpatch
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , python3
 , gobject-introspection
 , gtk-doc
@@ -16,15 +16,13 @@
 }:
 
 stdenv.mkDerivation rec {
-  pname = "libnice";
-  version = "0.1.18";
+  name = "libnice-0.1.16";
 
-  outputs = [ "bin" "out" "dev" ]
-    ++ lib.optionals (stdenv.buildPlatform == stdenv.hostPlatform) [ "devdoc" ];
+  outputs = [ "bin" "out" "dev" "devdoc" ];
 
   src = fetchurl {
-    url = "https://libnice.freedesktop.org/releases/${pname}-${version}.tar.gz";
-    sha256 = "1x3kj9b3dy9m2h6j96wgywfamas1j8k2ca43k5v82kmml9dx5asy";
+    url = "https://nice.freedesktop.org/releases/${name}.tar.gz";
+    sha256 = "1pzgxq0qrqlrhd78qnvpfgp8bl5c4znqh599ljaybpcldw37idh6";
   };
 
   patches = [
@@ -40,7 +38,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     gobject-introspection
 
@@ -62,8 +60,7 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Dgtk_doc=${if (stdenv.buildPlatform == stdenv.hostPlatform) then "enabled" else "disabled"}"
-    "-Dintrospection=${if (stdenv.buildPlatform == stdenv.hostPlatform) then "enabled" else "disabled"}"
+    "-Dgtk_doc=enabled" # Disabled by default as of libnice-0.1.15
     "-Dexamples=disabled" # requires many dependencies and probably not useful for our users
   ];
 
@@ -71,7 +68,7 @@ stdenv.mkDerivation rec {
   # see https://github.com/NixOS/nixpkgs/pull/53293#issuecomment-453739295
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GLib ICE implementation";
     longDescription = ''
       Libnice is an implementation of the IETF's Interactice Connectivity
@@ -80,7 +77,7 @@ stdenv.mkDerivation rec {
 
       It provides a GLib-based library, libnice and a Glib-free library,
       libstun as well as GStreamer elements.'';
-    homepage = "https://libnice.freedesktop.org/";
+    homepage = "https://nice.freedesktop.org/wiki/";
     platforms = platforms.linux;
     license = with licenses; [ lgpl21 mpl11 ];
   };

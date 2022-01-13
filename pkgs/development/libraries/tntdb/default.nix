@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cxxtools, postgresql, libmysqlclient, sqlite, zlib, openssl }:
+{ stdenv, fetchurl, cxxtools, postgresql, libmysqlclient, sqlite, zlib, openssl }:
 
 stdenv.mkDerivation rec {
   pname = "tntdb";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.tntnet.org/tntdb.html";
     description = "C++ library which makes accessing SQL databases easy and robust";
     platforms = platforms.linux ;

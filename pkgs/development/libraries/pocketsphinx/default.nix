@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , sphinxbase
-, pkg-config
+, pkgconfig
 , python27 # >= 2.6
 , swig2 # 2.0
 }:
@@ -16,14 +16,14 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ sphinxbase ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ python27 swig2 ];
 
   meta = {
     description = "Voice recognition library written in C";
     homepage = "http://cmusphinx.sourceforge.net";
-    license = lib.licenses.free;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.free;
+    platforms = stdenv.lib.platforms.linux;
   };
 }
 

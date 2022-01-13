@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, numpy, cython }:
+{ stdenv, buildPythonPackage, fetchPypi, numpy, cython }:
 
 buildPythonPackage rec {
   pname = "libmr";
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # No tests in the pypi tarball
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "libMR provides core MetaRecognition and Weibull fitting functionality";
     homepage = "https://github.com/Vastlab/libMR";
     license = licenses.bsd3;

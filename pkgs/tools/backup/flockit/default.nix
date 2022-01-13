@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, runtimeShell }:
+{ stdenv, fetchFromGitHub, runtimeShell }:
 
 stdenv.mkDerivation {
   pname = "flockit";
@@ -23,7 +23,7 @@ stdenv.mkDerivation {
     chmod +x $out/bin/flockit
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "LD_PRELOAD shim to add file locking to programs that don't do it (I'm looking at you, rsync!)";
     longDescription = ''
       This library and tool exists solely because rsync doesn't have file locking.

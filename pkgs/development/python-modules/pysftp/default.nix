@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPyPy
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ paramiko ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://bitbucket.org/dundeemt/pysftp";
     description = "A friendly face on SFTP";
     license = licenses.mit;

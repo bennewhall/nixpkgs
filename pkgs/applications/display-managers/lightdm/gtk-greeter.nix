@@ -1,15 +1,15 @@
-{ lib, stdenv
+{ stdenv
 , lightdm_gtk_greeter
 , fetchurl
 , lightdm
-, pkg-config
+, pkgconfig
 , intltool
 , linkFarm
 , wrapGAppsHook
 , useGTK2 ? false
 , gtk2
 , gtk3 # gtk3 seems better supported
-, xfce4-dev-tools
+, exo
 , at-spi2-core
 , librsvg
 , hicolor-icon-theme
@@ -31,8 +31,8 @@ stdenv.mkDerivation rec {
     sha256 = "1g7wc3d3vqfa7mrdhx1w9ywydgjbffla6rbrxq9k3sc62br97qms";
   };
 
-  nativeBuildInputs = [ pkg-config intltool xfce4-dev-tools wrapGAppsHook ];
-  buildInputs = [ lightdm librsvg hicolor-icon-theme ]
+  nativeBuildInputs = [ pkgconfig intltool wrapGAppsHook ];
+  buildInputs = [ lightdm exo librsvg hicolor-icon-theme ]
     ++ (if useGTK2 then [ gtk2 ] else [ gtk3 ]);
 
   configureFlags = [
@@ -40,14 +40,7 @@ stdenv.mkDerivation rec {
     "--sysconfdir=/etc"
     "--disable-indicator-services-command"
     "--sbindir=${placeholder "out"}/bin" # for wrapGAppsHook to wrap automatically
-  ] ++ lib.optional useGTK2 "--with-gtk2";
-
-  postPatch = ''
-    # exo-csource has been dropped from exo, and replaced by xdt-csource from xfce4-dev-tools
-    for f in configure.ac src/Makefile.am; do
-      substituteInPlace $f --replace exo-csource xdt-csource
-    done
-  '';
+  ] ++ stdenv.lib.optional useGTK2 "--with-gtk2";
 
   preConfigure = ''
     configureFlagsArray+=( --enable-at-spi-command="${at-spi2-core}/libexec/at-spi-bus-launcher --launch-immediately" )
@@ -70,10 +63,10 @@ stdenv.mkDerivation rec {
     name = "lightdm-gtk-greeter.desktop";
   }];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://launchpad.net/lightdm-gtk-greeter";
     platforms = platforms.linux;
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ ];
   };
 }

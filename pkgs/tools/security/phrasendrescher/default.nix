@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, openssl, libssh2, gpgme }:
+{ stdenv, fetchurl, openssl, libssh2, gpgme }:
 
 stdenv.mkDerivation rec {
   pname = "phrasendrescher";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--with-plugins" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A modular and multi processing pass phrase cracking tool";
     homepage = "https://leidecker.info/projects/phrasendrescher/index.shtml";
     license = licenses.gpl2Plus;

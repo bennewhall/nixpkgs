@@ -1,8 +1,12 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
-stdenv.mkDerivation rec {
-  pname = "nix-zsh-completions";
+let
   version = "0.4.4";
+in
+
+stdenv.mkDerivation {
+  pname = "nix-zsh-completions";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "spwhitt";
@@ -17,10 +21,9 @@ stdenv.mkDerivation rec {
     cp *.zsh $out/share/zsh/plugins/nix
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/spwhitt/nix-zsh-completions";
     description = "ZSH completions for Nix, NixOS, and NixOps";
-    priority = 6; # prevent collisions with nix 2.4's built-in completions
     license = licenses.bsd3;
     platforms = platforms.all;
     maintainers = with maintainers; [ spwhitt olejorgenb hedning ma27 ];

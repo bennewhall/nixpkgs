@@ -1,41 +1,23 @@
-{ fetchurl
-, fetchpatch
-, lib
-, stdenv
-, pkg-config
-, intltool
-, libpulseaudio
-, gtkmm3
-, libsigcxx
-, libcanberra-gtk3
-, json-glib
-, gnome
-, wrapGAppsHook
-}:
+{ fetchurl, stdenv, pkgconfig, intltool, libpulseaudio, gtkmm3
+, libcanberra-gtk3, gnome3, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
   pname = "pavucontrol";
-  version = "5.0";
+  version = "4.0";
 
   src = fetchurl {
     url = "https://freedesktop.org/software/pulseaudio/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "sha256-zityw7XxpwrQ3xndgXUPlFW9IIcNHTo20gU2ry6PTno=";
+    sha256 = "1qhlkl3g8d7h72xjskii3g1l7la2cavwp69909pzmbi2jyn5pi4g";
   };
 
-  buildInputs = [
-    libpulseaudio
-    gtkmm3
-    libsigcxx
-    libcanberra-gtk3
-    json-glib
-    gnome.adwaita-icon-theme
-  ];
+  buildInputs = [ libpulseaudio gtkmm3 libcanberra-gtk3
+                  gnome3.adwaita-icon-theme ];
 
-  nativeBuildInputs = [ pkg-config intltool wrapGAppsHook ];
+  nativeBuildInputs = [ pkgconfig intltool wrapGAppsHook ];
 
   configureFlags = [ "--disable-lynx" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PulseAudio Volume Control";
 
     longDescription = ''
@@ -46,7 +28,7 @@ stdenv.mkDerivation rec {
 
     homepage = "http://freedesktop.org/software/pulseaudio/pavucontrol/";
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
     maintainers = with maintainers; [ abbradar globin ];
     platforms = platforms.linux;

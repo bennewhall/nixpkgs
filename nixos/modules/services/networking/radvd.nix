@@ -33,7 +33,6 @@ in
     };
 
     services.radvd.config = mkOption {
-      type = types.lines;
       example =
         ''
           interface eth0 {
@@ -55,12 +54,9 @@ in
   config = mkIf cfg.enable {
 
     users.users.radvd =
-      {
-        isSystemUser = true;
-        group = "radvd";
+      { uid = config.ids.uids.radvd;
         description = "Router Advertisement Daemon User";
       };
-    users.groups.radvd = {};
 
     systemd.services.radvd =
       { description = "IPv6 Router Advertisement Daemon";

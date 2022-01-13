@@ -3,7 +3,7 @@
 , libmusicbrainz5 }:
 
 mkDerivation {
-  pname = "libkcddb";
+  name = "libkcddb";
   meta = with lib; {
     license = with licenses; [ gpl2 lgpl21 bsd3 ];
     maintainers = with maintainers; [ peterhoeg ];

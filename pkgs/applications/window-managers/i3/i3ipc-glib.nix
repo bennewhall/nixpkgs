@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, xorgproto, libxcb
+{ stdenv, fetchFromGitHub, pkgconfig, xorgproto, libxcb
 , autoreconfHook, json-glib, gtk-doc, which
 , gobject-introspection
 }:
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     sha256 = "01fzvrbnzcwx0vxw29igfpza9zwzp2s7msmzb92v01z0rz0y5m0p";
   };
 
-  nativeBuildInputs = [ autoreconfHook which pkg-config ];
+  nativeBuildInputs = [ autoreconfHook which pkgconfig ];
 
   buildInputs = [ libxcb json-glib gtk-doc xorgproto gobject-introspection ];
 
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     gtkdocize
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A C interface library to i3wm";
     homepage = "https://github.com/acrisci/i3ipc-glib";
     maintainers = with maintainers; [teto];

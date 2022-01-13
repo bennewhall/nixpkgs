@@ -1,4 +1,4 @@
-{ lib, fetchsvn, stdenv, gnum4, tet }:
+{ fetchsvn, stdenv, gnum4, tet }:
 
 stdenv.mkDerivation (rec {
   version = "3258";
@@ -6,9 +6,8 @@ stdenv.mkDerivation (rec {
 
   src = fetchsvn {
     url = "svn://svn.code.sf.net/p/elftoolchain/code/trunk";
-    rev = (lib.strings.toInt version);
+    rev = (stdenv.lib.strings.toInt version);
     name = "elftoolchain-${version}";
-    sha256 = "1rcmddjanlsik0b055x8k914r9rxs8yjsvslia2nh1bhzf1lxmqz";
   };
 
   buildInputs = [ gnum4 tet ];
@@ -30,9 +29,9 @@ stdenv.mkDerivation (rec {
 
     homepage = "https://sourceforge.net/p/elftoolchain/wiki/Home/";
 
-    license = lib.licenses.bsd2;
+    license = stdenv.lib.licenses.bsd2;
 
-    platforms = lib.platforms.freebsd;
+    platforms = stdenv.lib.platforms.freebsd;
     maintainers = [ ];
   };
 })

@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl, dpkg, makeWrapper, buildFHSUserEnv
+{ stdenv, fetchurl, dpkg, makeWrapper, buildFHSUserEnv
 , gtk3, gdk-pixbuf, cairo, libjpeg_original, glib, pango, libGLU
-, libGL, nvidia_cg_toolkit, zlib, openssl, libuuid , alsa-lib, udev, libjack2
+, nvidia_cg_toolkit, zlib, openssl, portaudio
 }:
 let
-  fullPath = lib.makeLibraryPath [
+  fullPath = stdenv.lib.makeLibraryPath [
     stdenv.cc.cc
     gtk3
     gdk-pixbuf
@@ -11,33 +11,28 @@ let
     libjpeg_original
     glib
     pango
-    libGL
     libGLU
     nvidia_cg_toolkit
     zlib
     openssl
-    libuuid
-    alsa-lib
-    libjack2
-    udev
+    portaudio
   ];
 
   lightworks = stdenv.mkDerivation rec {
-    version = "2021.2.1";
-    rev = "128456";
+    version = "14.0.0";
     pname = "lightworks";
 
     src =
       if stdenv.hostPlatform.system == "x86_64-linux" then
         fetchurl {
-          url = "https://cdn.lwks.com/releases/${version}/lightworks_${lib.versions.majorMinor version}_r${rev}.deb";
-          sha256 = "sha256-GkTg43IUF1NgEm/wT9CZw68Dw/R2BYBU/F4bsCxQowQ=";
+          url = "http://downloads.lwks.com/v14/lwks-14.0.0-amd64.deb";
+          sha256 = "66eb9f9678d979db76199f1c99a71df0ddc017bb47dfda976b508849ab305033";
         }
       else throw "${pname}-${version} is not supported on ${stdenv.hostPlatform.system}";
 
-    nativeBuildInputs = [ makeWrapper ];
-    buildInputs = [ dpkg ];
+    buildInputs = [ dpkg makeWrapper ];
 
+    phases = [ "unpackPhase" "installPhase" ];
     unpackPhase = "dpkg-deb -x ${src} ./";
 
     installPhase = ''
@@ -85,8 +80,8 @@ in buildFHSUserEnv {
   meta = {
     description = "Professional Non-Linear Video Editor";
     homepage = "https://www.lwks.com/";
-    license = lib.licenses.unfree;
-    maintainers = with lib.maintainers; [ antonxy vojta001 ];
+    license = stdenv.lib.licenses.unfree;
+    maintainers = [ stdenv.lib.maintainers.antonxy ];
     platforms = [ "x86_64-linux" ];
   };
 }

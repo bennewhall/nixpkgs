@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl }:
+{ stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation rec {
   pname = "gnused";
@@ -30,10 +30,9 @@ stdenv.mkDerivation rec {
       multiple occurrences of a string within a file.
     '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
-    platforms = lib.platforms.unix;
-    maintainers = with lib.maintainers; [ mic92 ];
-    mainProgram = "sed";
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ ];
   };
 }

@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchurl, asciidoc, libxml2, docbook_xml_dtd_45, libxslt
+{ stdenv, fetchurl, asciidoc, libxml2, docbook_xml_dtd_45, libxslt
 , docbook_xsl, diffutils, coreutils, gnugrep, gnused
 }:
 
 stdenv.mkDerivation rec {
   pname = "autorevision";
-  version = "1.22";
+  version = "1.21";
 
   src = fetchurl {
     url = "https://github.com/Autorevision/autorevision/releases/download/v%2F${version}/autorevision-${version}.tgz";
-    sha256 = "sha256-3ktLVC73m2xddq5BhxVKw/FJd6pZ5RVb7fv29dxUoRE=";
+    sha256 = "07ssirjy2mgbqxr792n3rqa408hm7qnhwfjzd73rqfwvjcahy1q8";
   };
 
   buildInputs = [
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
         -i "$out/bin/autorevision"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extracts revision metadata from your VCS repository";
     homepage = "https://autorevision.github.io/";
     license = licenses.mit;

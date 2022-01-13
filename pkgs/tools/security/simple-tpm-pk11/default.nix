@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, trousers, openssl, opencryptoki, autoreconfHook, libtool }:
+{ stdenv, fetchFromGitHub, trousers, openssl, opencryptoki, autoreconfHook, libtool }:
 
 stdenv.mkDerivation rec {
   pname = "simple-tpm-pk11";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple PKCS11 provider for TPM chips";
     longDescription = ''
       A simple library for using the TPM chip to secure SSH keys.

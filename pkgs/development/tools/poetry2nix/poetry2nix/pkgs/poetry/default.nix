@@ -1,18 +1,11 @@
-{ lib
-, poetry2nix
-, python
-, fetchFromGitHub
-, projectDir ? ./.
-, pyproject ? projectDir + "/pyproject.toml"
-, poetrylock ? projectDir + "/poetry.lock"
-}:
+{ lib, poetry2nix, python, fetchFromGitHub }:
 
 
 poetry2nix.mkPoetryApplication {
 
   inherit python;
 
-  inherit projectDir pyproject poetrylock;
+  projectDir = ./.;
 
   # Don't include poetry in inputs
   __isBootstrap = true;

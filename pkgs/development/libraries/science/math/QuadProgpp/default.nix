@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "QuadProgpp";
@@ -12,8 +12,9 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ cmake ];
+  buildInputs = [ ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/liuq/QuadProgpp";
     license = licenses.mit;
     description = ''
@@ -21,6 +22,6 @@ stdenv.mkDerivation rec {
       Goldfarb-Idnani active-set dual method.
     '';
     maintainers = with maintainers; [ ];
-    platforms = platforms.all;
+    platforms = with platforms; linux;
   };
 }

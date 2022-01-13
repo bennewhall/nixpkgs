@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , fetchFromGitHub
 , python3Packages
 , gobject-introspection
@@ -21,7 +21,7 @@ python3Packages.buildPythonPackage rec {
     gnome-online-accounts
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Mailnag GNOME Online Accounts plugin.";
     homepage = "https://github.com/pulb/mailnag-goa-plugin";
     license = licenses.gpl2;

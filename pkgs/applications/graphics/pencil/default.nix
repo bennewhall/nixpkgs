@@ -1,13 +1,13 @@
 { stdenv, fetchurl, lib, makeWrapper, wrapGAppsHook,
   # build dependencies
-  alsa-lib, atk, at-spi2-atk, at-spi2-core, cairo, cups, dbus, expat, fontconfig,
+  alsaLib, atk, at-spi2-atk, at-spi2-core, cairo, cups, dbus, expat, fontconfig,
   freetype, gdk-pixbuf, glib, glibc, gtk3, libuuid, nspr, nss, pango,
   xorg, systemd
 }:
 let
 
   deps = [
-    alsa-lib
+    alsaLib
     atk
     at-spi2-atk
     at-spi2-core
@@ -96,7 +96,7 @@ in stdenv.mkDerivation rec {
       --prefix LD_LIBRARY_PATH : $out/opt/pencil
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GUI prototyping/mockup tool";
     homepage    = "https://pencil.evolus.vn/";
     license     = licenses.gpl2; # Commercial license is also available

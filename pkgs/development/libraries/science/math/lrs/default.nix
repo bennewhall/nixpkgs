@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, gmp}:
+{stdenv, fetchurl, gmp}:
 
 stdenv.mkDerivation rec {
   pname = "lrs";
@@ -16,10 +16,11 @@ stdenv.mkDerivation rec {
   '';
 
   meta = {
+    inherit version;
     description = "Implementation of the reverse search algorithm for vertex enumeration/convex hull problems";
-    license = lib.licenses.gpl2 ;
-    maintainers = [lib.maintainers.raskin];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2 ;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
     homepage = "http://cgm.cs.mcgill.ca/~avis/C/lrs.html";
   };
 }

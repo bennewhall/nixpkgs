@@ -1,4 +1,4 @@
-{ lib, python3, fetchFromGitHub, ncurses }:
+{ stdenv, python3, fetchFromGitHub, ncurses }:
 
 with python3.pkgs; buildPythonApplication rec {
   pname = "almonds";
@@ -17,7 +17,7 @@ with python3.pkgs; buildPythonApplication rec {
 
   checkPhase = "py.test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Terminal Mandelbrot fractal viewer";
     homepage = "https://github.com/Tenchi2xh/Almonds";
     license = licenses.mit;

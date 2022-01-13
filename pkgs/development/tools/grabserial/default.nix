@@ -1,6 +1,6 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ lib, fetchFromGitHub, pythonPackages }:
 
-python3Packages.buildPythonApplication rec {
+pythonPackages.buildPythonApplication rec {
   pname = "grabserial";
   version = "2.0.2";
 
@@ -11,10 +11,7 @@ python3Packages.buildPythonApplication rec {
     sha256 = "0ryk4w8q6zfmia71nwnk5b7xaxw0sf45dw9q50xp7k76i3k5f9f3";
   };
 
-  propagatedBuildInputs = [ python3Packages.pyserial ];
-
-  # no usable tests
-  doCheck = false;
+  propagatedBuildInputs = [ pythonPackages.pyserial ];
 
   meta = with lib; {
     description = "Python based serial dump and timing program";

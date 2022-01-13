@@ -5,7 +5,7 @@ symlinkJoin {
 
   paths = [ fcitx fcitx-configtool libsForQt5.fcitx-qt5 ] ++ plugins;
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   postBuild = ''
     wrapProgram $out/bin/fcitx \

@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, pkg-config
+, pkgconfig
 , meson
 , ninja
 , python3
@@ -12,30 +12,29 @@
 , docbook_xsl
 , docbook_xml_dtd_43
 , gobject-introspection
-, makeWrapper
 }:
 
 stdenv.mkDerivation rec {
   pname = "graphene";
-  version = "1.10.6";
+  version = "1.10.2";
 
-  outputs = [ "out" ]
-    ++ lib.optionals (stdenv.buildPlatform == stdenv.hostPlatform) [ "devdoc" "installedTests" ];
+  outputs = [ "out" "devdoc" "installedTests" ];
 
   src = fetchFromGitHub {
     owner = "ebassi";
     repo = pname;
     rev = version;
-    sha256 = "v6YH3fRMTzhp7wmU8in9ukcavzHmOAW54EK9ZwQyFxc=";
+    sha256 = "1ljhhjafi1nlndjswx7mg0d01zci90wz77yvz5w8bd9mm8ssw38s";
   };
 
   patches = [
-    # Add option for changing installation path of installed tests.
     ./0001-meson-add-options-for-tests-installation-dirs.patch
   ];
 
-  depsBuildBuild = [
-    pkg-config
+  mesonFlags = [
+    "-Dgtk_doc=true"
+    "-Dinstalled_test_datadir=${placeholder "installedTests"}/share"
+    "-Dinstalled_test_bindir=${placeholder "installedTests"}/libexec"
   ];
 
   nativeBuildInputs = [
@@ -44,43 +43,21 @@ stdenv.mkDerivation rec {
     gtk-doc
     meson
     ninja
-    pkg-config
+    pkgconfig
     gobject-introspection
     python3
-    makeWrapper
   ];
 
   buildInputs = [
     glib
+    gobject-introspection
   ];
 
   checkInputs = [
     mutest
   ];
 
-  mesonFlags = [
-    "-Dgtk_doc=${lib.boolToString (stdenv.buildPlatform == stdenv.hostPlatform)}"
-    "-Dintrospection=${if (stdenv.buildPlatform == stdenv.hostPlatform) then "enabled" else "disabled"}"
-    "-Dinstalled_test_datadir=${placeholder "installedTests"}/share"
-    "-Dinstalled_test_bindir=${placeholder "installedTests"}/libexec"
-  ];
-
   doCheck = true;
-
-  postPatch = ''
-    patchShebangs tests/gen-installed-test.py
-  '' + lib.optionalString (stdenv.buildPlatform == stdenv.hostPlatform) ''
-    PATH=${python3.withPackages (pp: [ pp.pygobject3 pp.tappy ])}/bin:$PATH patchShebangs tests/introspection.py
-  '';
-
-  postFixup = let
-    introspectionPy = "${placeholder "installedTests"}/libexec/installed-tests/graphene-1.0/introspection.py";
-  in ''
-    if [ -x '${introspectionPy}' ] ; then
-      wrapProgram '${introspectionPy}' \
-        --prefix GI_TYPELIB_PATH : "$out/lib/girepository-1.0"
-    fi
-  '';
 
   passthru = {
     tests = {
@@ -92,11 +69,11 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A thin layer of graphic data types";
-    homepage = "https://github.com/ebassi/graphene";
+    homepage = "https://ebassi.github.com/graphene";
     license = licenses.mit;
-    maintainers = teams.gnome.members ++ (with maintainers; [ ]);
+    maintainers = with maintainers; [ worldofpeace ];
     platforms = platforms.unix;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , python
 , pkgs
 , isPy3k
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     "SITELIB=$(out)/${python.sitePackages}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.centos.org/docs/5/html/5.4/Technical_Notes/python-pyblock.html";
     description = "Interface for working with block devices";
     license = licenses.gpl2Plus;

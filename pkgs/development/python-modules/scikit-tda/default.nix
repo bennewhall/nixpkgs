@@ -3,7 +3,7 @@
 , fetchFromGitHub
 , numpy
 , scipy
-, scikit-learn
+, scikitlearn
 , matplotlib
 , numba
 , umap-learn
@@ -32,7 +32,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     numpy
     scipy
-    scikit-learn
+    scikitlearn
     matplotlib
     numba
     umap-learn

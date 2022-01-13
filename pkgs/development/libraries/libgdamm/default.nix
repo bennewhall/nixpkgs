@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, glibmm, libgda, libxml2, gnome
+{ stdenv, fetchurl, pkgconfig, glibmm, libgda, libxml2, gnome3
 , mysqlSupport ? false
 , postgresSupport ? false }:
 
@@ -13,24 +13,23 @@ in stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "1fyh15b3f8hmwbswalxk1g4l04yvvybksn5nm7gznn5jl5q010p9";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ glibmm libxml2 ];
   propagatedBuildInputs = [ gda ];
 
   enableParallelBuilding = true;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "none"; # Should be odd-unstable but stable version has not been released yet.
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ bindings for libgda";
     homepage = "https://www.gnome-db.org/";
     license = licenses.lgpl21Plus;

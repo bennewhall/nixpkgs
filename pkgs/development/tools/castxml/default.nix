@@ -1,69 +1,52 @@
-{ lib
-, stdenv
-, fetchFromGitHub
+{ lib, stdenv, fetchFromGitHub
+, python3Packages
 , cmake
-, libclang
-, libffi
-, libxml2
-, llvm
-, sphinx
-, zlib
-, withManual ? true
-, withHTML ? true
+, llvmPackages
+, libffi, libxml2, zlib
+, withMan ? true
 }:
-
 stdenv.mkDerivation rec {
-  pname = "CastXML";
-  version = "0.4.4";
+
+  pname   = "CastXML";
+  version = "0.3.4";
 
   src = fetchFromGitHub {
-    owner = pname;
-    repo = pname;
-    rev = "v${version}";
-    hash = "sha256-VtkMjZOcF5OAHkezlupXOpNwqUD1oKHdRbtG2FZBRL4=";
+    owner  = pname;
+    repo   = pname;
+    rev    = "v${version}";
+    sha256 = "0ypj67xrgj228myp7l1gsjw1ja97q68nmj98dsd33srmiayqraj4";
   };
 
-  nativeBuildInputs = [
-    cmake
-    llvm.dev
-  ] ++ lib.optionals (withManual || withHTML) [
-    sphinx
+  nativeBuildInputs = [ cmake ] ++ stdenv.lib.optionals withMan [ python3Packages.sphinx ];
+
+  clangVersion = lib.getVersion llvmPackages.clang;
+
+  cmakeFlags = [
+    "-DCLANG_RESOURCE_DIR=${llvmPackages.clang-unwrapped}/lib/clang/${clangVersion}/"
+    "-DSPHINX_MAN=${if withMan then "ON" else "OFF"}"
   ];
 
   buildInputs = [
-    libclang
-    libffi
-    libxml2
-    zlib
+    llvmPackages.clang-unwrapped
+    llvmPackages.llvm
+    libffi libxml2 zlib
   ];
 
-  propagatedBuildInputs = [
-    libclang
-  ];
-
-  cmakeFlags = [
-    "-DCLANG_RESOURCE_DIR=${libclang.dev}/"
-    "-DSPHINX_HTML=${if withHTML then "ON" else "OFF"}"
-    "-DSPHINX_MAN=${if withManual then "ON" else "OFF"}"
-  ];
+  propagatedBuildInputs = [ llvmPackages.libclang ];
 
   # 97% tests passed, 97 tests failed out of 2881
   # mostly because it checks command line and nix append -isystem and all
   doCheck = false;
-  # -E exclude 4 tests based on names
-  # see https://github.com/CastXML/CastXML/issues/90
   checkPhase = ''
-    runHook preCheck
+    # -E exclude 4 tests based on names
+    # see https://github.com/CastXML/CastXML/issues/90
     ctest -E 'cmd.cc-(gnu|msvc)-((c-src-c)|(src-cxx))-cmd'
-    runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/CastXML/CastXML";
-    description = "C-family Abstract Syntax Tree XML Output";
     license = licenses.asl20;
-    maintainers = with maintainers; [ AndersonTorres ];
+    description = "Abstract syntax tree XML output tool";
     platforms = platforms.unix;
-    broken = stdenv.isDarwin;
   };
 }

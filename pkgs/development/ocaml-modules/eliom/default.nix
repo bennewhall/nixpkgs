@@ -1,41 +1,27 @@
-{ stdenv
-, lib
-, fetchFromGitHub
-, which
-, ocsigen_server
-, ocaml
-, lwt_react
-, opaline
-, ppx_deriving
-, findlib
-, js_of_ocaml-ocamlbuild
-, js_of_ocaml-ppx
-, js_of_ocaml-ppx_deriving_json
+{ stdenv, fetchzip, which, ocsigen_server, ocaml,
+  lwt_react,
+  opaline, ppx_deriving, findlib
+, js_of_ocaml-ocamlbuild, js_of_ocaml-ppx, js_of_ocaml-ppx_deriving_json
 , js_of_ocaml-lwt
 , js_of_ocaml-tyxml
 , lwt_ppx
-, ocamlnet
 }:
 
-stdenv.mkDerivation rec {
-  pname = "eliom";
-  version = "8.9.0";
+if !stdenv.lib.versionAtLeast ocaml.version "4.07"
+then throw "eliom is not available for OCaml ${ocaml.version}"
+else
 
-  src = fetchFromGitHub {
-    owner = "ocsigen";
-    repo = "eliom";
-    rev = version;
-    sha256 = "sha256-VNxzpVpXEGlixyjadbW0GjL83jcKV5TWd46UReNYO6w=";
+stdenv.mkDerivation rec
+{
+  pname = "eliom";
+  version = "6.12.1";
+
+  src = fetchzip {
+    url = "https://github.com/ocsigen/eliom/archive/${version}.tar.gz";
+    sha256 = "04c1sz113015gyhj3w7flw7l4bv0v50q6n04kk8dybcravzy2xgx";
   };
 
-  buildInputs = [
-    ocaml
-    which
-    findlib
-    js_of_ocaml-ocamlbuild
-    js_of_ocaml-ppx_deriving_json
-    opaline
-    ocamlnet
+  buildInputs = [ ocaml which findlib js_of_ocaml-ocamlbuild js_of_ocaml-ppx_deriving_json opaline
   ];
 
   propagatedBuildInputs = [
@@ -56,7 +42,7 @@ stdenv.mkDerivation rec {
     homepage = "http://ocsigen.org/eliom/";
     description = "OCaml Framework for programming Web sites and client/server Web applications";
 
-    longDescription = ''Eliom is a framework for programming Web sites
+    longDescription =''Eliom is a framework for programming Web sites
     and client/server Web applications. It introduces new concepts to
     simplify programming common behaviours and uses advanced static
     typing features of OCaml to check many properties of the Web site
@@ -66,8 +52,8 @@ stdenv.mkDerivation rec {
     distinguish both parts and the client side is compiled to JS using
     Ocsigen Js_of_ocaml.'';
 
-    license = lib.licenses.lgpl21;
+    license = stdenv.lib.licenses.lgpl21;
 
-    maintainers = [ lib.maintainers.gal_bolle ];
+    maintainers = [ stdenv.lib.maintainers.gal_bolle ];
   };
 }

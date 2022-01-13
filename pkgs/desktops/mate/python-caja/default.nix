@@ -1,16 +1,16 @@
-{ lib, stdenv, fetchurl, pkg-config, gettext, gtk3, mate, python3Packages, mateUpdateScript }:
+{ stdenv, fetchurl, pkgconfig, gettext, gtk3, mate, python3Packages }:
 
 stdenv.mkDerivation rec {
   pname = "python-caja";
-  version = "1.26.0";
+  version = "1.24.0";
 
   src = fetchurl {
-    url = "https://pub.mate-desktop.org/releases/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "181zcs1pi3762chm4xraqs8048jm7jzwnvgwla1v3z2nqzpp3xr1";
+    url = "https://pub.mate-desktop.org/releases/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1wp61q64cgzr3syd3niclj6rjk87wlib5m86i0myf5ph704r3qgg";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     gettext
     python3Packages.wrapPython
   ];
@@ -26,13 +26,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  passthru.updateScript = mateUpdateScript { inherit pname version; };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python binding for Caja components";
     homepage = "https://github.com/mate-desktop/python-caja";
     license = [ licenses.gpl2Plus ];
     platforms = platforms.unix;
-    maintainers = teams.mate.members;
+    maintainers = [ maintainers.romildo ];
   };
 }

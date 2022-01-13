@@ -4,5 +4,5 @@ in
 pkgs.mkShell {
   name = "nixos-manual";
 
-  packages = with pkgs; [ xmlformat jing xmloscopy ruby ];
+  buildInputs = with pkgs; [ xmlformat jing xmloscopy ruby ];
 }

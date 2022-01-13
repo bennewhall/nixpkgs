@@ -1,21 +1,14 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, libsass
-, six
-, pytestCheckHook
-, werkzeug
-}:
+{ lib, buildPythonPackage, fetchFromGitHub, libsass, six, pytest, werkzeug }:
 
 buildPythonPackage rec {
   pname = "libsass";
-  version = "0.21.0";
+  version = "0.20.1";
 
   src = fetchFromGitHub {
     owner = "sass";
     repo = "libsass-python";
     rev = version;
-    sha256 = "sha256-4doz3kkRlyfVfeUarYw2tcybeDVeE2jpgmHxFJsPiVc=";
+    sha256 = "1r0kgl7i6nnhgjl44sjw57k08gh2qr7l8slqih550dyxbf1akbxh";
   };
 
   buildInputs = [ libsass ];
@@ -27,16 +20,16 @@ buildPythonPackage rec {
   '';
 
   checkInputs = [
-    pytestCheckHook
+    pytest
     werkzeug
   ];
 
-  pytestFlagsArray = [ "sasstests.py" ];
-
-  pythonImportsCheck = [ "sass" ];
+  checkPhase = ''
+    pytest sasstests.py
+  '';
 
   meta = with lib; {
-    description = "Python binding for libsass to compile Sass/SCSS";
+    description = "A straightforward binding of libsass for Python. Compile Sass/SCSS in Python with no Ruby stack at all!";
     homepage = "https://sass.github.io/libsass-python/";
     license = licenses.mit;
     maintainers = with maintainers; [ SuperSandro2000 ];

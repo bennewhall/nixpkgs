@@ -1,42 +1,42 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, python3Packages, makeWrapper
+{ stdenv, fetchFromGitHub, pkgconfig, python3Packages, makeWrapper
 , bash, libsamplerate, libsndfile, readline, eigen, celt
 , wafHook
 # Darwin Dependencies
 , aften, AudioUnit, CoreAudio, libobjc, Accelerate
 
 # Optional Dependencies
-, dbus ? null, libffado ? null, alsa-lib ? null
+, dbus ? null, libffado ? null, alsaLib ? null
 , libopus ? null
 
 # Extra options
 , prefix ? ""
 }:
 
-with lib;
+with stdenv.lib;
 let
   inherit (python3Packages) python dbus-python;
-  shouldUsePkg = pkg: if pkg != null && lib.meta.availableOn stdenv.hostPlatform pkg then pkg else null;
+  shouldUsePkg = pkg: if pkg != null && stdenv.lib.any (stdenv.lib.meta.platformMatch stdenv.hostPlatform) pkg.meta.platforms then pkg else null;
 
   libOnly = prefix == "lib";
 
   optDbus = if stdenv.isDarwin then null else shouldUsePkg dbus;
   optPythonDBus = if libOnly then null else shouldUsePkg dbus-python;
   optLibffado = if libOnly then null else shouldUsePkg libffado;
-  optAlsaLib = if libOnly then null else shouldUsePkg alsa-lib;
+  optAlsaLib = if libOnly then null else shouldUsePkg alsaLib;
   optLibopus = shouldUsePkg libopus;
 in
 stdenv.mkDerivation rec {
-  pname = "${prefix}jack2";
-  version = "1.9.19";
+  name = "${prefix}jack2-${version}";
+  version = "1.9.16";
 
   src = fetchFromGitHub {
     owner = "jackaudio";
     repo = "jack2";
     rev = "v${version}";
-    sha256 = "01s8i64qczxqawgrzrw19asaqmcspf5l2h3203xzg56wnnhhzcw7";
+    sha256 = "0pzgrjy5fi2nif2j442fs3j2bbshxpnmq9kzwcqz54wx1w8fzdfr";
   };
 
-  nativeBuildInputs = [ pkg-config python makeWrapper wafHook ];
+  nativeBuildInputs = [ pkgconfig python makeWrapper wafHook ];
   buildInputs = [ libsamplerate libsndfile readline eigen celt
     optDbus optPythonDBus optLibffado optAlsaLib optLibopus
   ] ++ optionals stdenv.isDarwin [
@@ -48,9 +48,6 @@ stdenv.mkDerivation rec {
         --replace /bin/bash ${bash}/bin/bash
   '';
 
-  PKGCONFIG = "${stdenv.cc.targetPrefix}pkg-config";
-
-  dontAddWafCrossFlags = "true";
   wafConfigureFlags = [
     "--classic"
     "--autostart=${if (optDbus != null) then "dbus" else "classic"}"

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # No tests distributed
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/seb-m/pyinotify/wiki";
     description = "Monitor filesystems events on Linux platforms with inotify";
     license = licenses.mit;

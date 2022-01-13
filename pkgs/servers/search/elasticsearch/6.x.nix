@@ -1,6 +1,6 @@
 { elk6Version
 , enableUnfree ? true
-, lib, stdenv
+, stdenv
 , fetchurl
 , makeWrapper
 , jre_headless
@@ -9,18 +9,18 @@
 , zlib
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation (rec {
   version = elk6Version;
-  pname = "elasticsearch${optionalString (!enableUnfree) "-oss"}";
+  name = "elasticsearch-${optionalString (!enableUnfree) "oss-"}${version}";
 
   src = fetchurl {
-    url = "https://artifacts.elastic.co/downloads/elasticsearch/${pname}-${version}.tar.gz";
+    url = "https://artifacts.elastic.co/downloads/elasticsearch/${name}.tar.gz";
     sha256 =
       if enableUnfree
-      then "1hkcgqsrnnx3zjpgar4424mxfaxrx0zbrp7n7n0dlbhphshwnkmd"
-      else "1pglg60aigy31xmpfchnxcc04nd18zwc3av4m0kyp00yk5mnlyqm";
+      then "09dy3iyzk460vra6na6vk7d3mzpbv4cl0pl7kjmybxy947j7hh42"
+      else "0s04xz3j4psyhawvy503sp2nl5s0gswmpd9wfvwnavgcrr23wk39";
   };
 
   patches = [ ./es-home-6.x.patch ];
@@ -35,8 +35,7 @@ stdenv.mkDerivation (rec {
       "ES_CLASSPATH=\"\$ES_CLASSPATH:$out/\$additional_classpath_directory/*\""
   '';
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jre_headless util-linux ]
+  buildInputs = [ makeWrapper jre_headless util-linux ]
              ++ optional enableUnfree zlib;
 
   installPhase = ''
@@ -62,7 +61,7 @@ stdenv.mkDerivation (rec {
   };
 } // optionalAttrs enableUnfree {
   dontPatchELF = true;
-  nativeBuildInputs = [ makeWrapper autoPatchelfHook ];
+  nativeBuildInputs = [ autoPatchelfHook ];
   runtimeDependencies = [ zlib ];
   postFixup = ''
     for exe in $(find $out/modules/x-pack-ml/platform/linux-x86_64/bin -executable -type f); do

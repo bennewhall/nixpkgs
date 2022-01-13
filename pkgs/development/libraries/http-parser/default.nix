@@ -1,8 +1,10 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
-stdenv.mkDerivation rec {
-  pname = "http-parser";
+let
   version = "2.9.4";
+in stdenv.mkDerivation {
+  pname = "http-parser";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "nodejs";
@@ -18,7 +20,7 @@ stdenv.mkDerivation rec {
   doCheck = true;
   checkTarget = "test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An HTTP message parser written in C";
     homepage = "https://github.com/nodejs/http-parser";
     maintainers = with maintainers; [ matthewbauer ];

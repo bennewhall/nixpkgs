@@ -1,9 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
 
-  pname = "tracefilegen";
-  version = "unstable-2017-05-13";
+  name = "tracefilegen-2017-05-13";
 
   src = fetchFromGitHub {
     owner = "GarCoSim";
@@ -18,11 +17,11 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     install -Dm755 TraceFileGen $out/bin/TraceFileGen
-    mkdir -p $out/share/doc/${pname}-${version}/
-    cp -ar $src/Documentation/html $out/share/doc/${pname}-${version}/.
+    mkdir -p $out/share/doc/${name}/
+    cp -ar $src/Documentation/html $out/share/doc/${name}/.
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Automatically generate all types of basic memory management operations and write into trace files";
     homepage = "https://github.com/GarCoSim";
     maintainers = [ maintainers.cmcdragonkai ];

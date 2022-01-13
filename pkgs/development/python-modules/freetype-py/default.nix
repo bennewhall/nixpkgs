@@ -1,12 +1,4 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, fetchPypi
-, substituteAll
-, setuptools-scm
-, freetype
-, pytestCheckHook
-}:
+{ lib, buildPythonPackage, fetchPypi, substituteAll, stdenv, setuptools_scm, freetype }:
 
 buildPythonPackage rec {
   pname = "freetype-py";
@@ -24,17 +16,9 @@ buildPythonPackage rec {
     })
   ];
 
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools_scm ];
 
   propagatedBuildInputs = [ freetype ];
-
-  preCheck = ''
-    cd tests
-  '';
-
-  checkInputs = [
-    pytestCheckHook
-  ];
 
   pythonImportsCheck =  [ "freetype" ];
 

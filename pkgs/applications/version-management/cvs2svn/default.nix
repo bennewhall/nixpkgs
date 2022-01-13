@@ -12,7 +12,7 @@ python2Packages.buildPythonApplication  rec {
     sha256 = "1ska0z15sjhyfi860rjazz9ya1gxbf5c0h8dfqwz88h7fccd22b4";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   checkInputs = [ subversion git breezy ];
 

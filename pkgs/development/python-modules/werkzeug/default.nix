@@ -1,61 +1,32 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, pythonOlder
-, fetchPypi
-, watchdog
-, dataclasses
+{ stdenv, buildPythonPackage, fetchPypi
+, itsdangerous, hypothesis
+, pytestCheckHook, requests
 , pytest-timeout
-, pytest-xprocess
-, pytestCheckHook
-}:
+, isPy3k
+ }:
 
 buildPythonPackage rec {
-  pname = "werkzeug";
-  version = "2.0.2";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
+  pname = "Werkzeug";
+  version = "1.0.1";
 
   src = fetchPypi {
-    pname = "Werkzeug";
-    inherit version;
-    sha256 = "sha256-qiu2/I3ujWxQTArB5/X33FgQqZA+eTtvcVqfAVva25o=";
+    inherit pname version;
+    sha256 = "6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c";
   };
 
-  propagatedBuildInputs = lib.optionals (!stdenv.isDarwin) [
-    # watchdog requires macos-sdk 10.13+
-    watchdog
-  ] ++ lib.optionals (pythonOlder "3.7") [
-    dataclasses
-  ];
+  propagatedBuildInputs = [ itsdangerous ];
+  checkInputs = [ pytestCheckHook requests hypothesis pytest-timeout ];
 
-  checkInputs = [
-    pytest-timeout
-    pytest-xprocess
-    pytestCheckHook
-  ];
-
-  disabledTests = lib.optionals stdenv.isDarwin [
+  disabledTests = stdenv.lib.optionals stdenv.isDarwin [
     "test_get_machine_id"
   ];
 
-  pytestFlagsArray = [
-    # don't run tests that are marked with filterwarnings, they fail with
-    # warnings._OptionError: unknown warning category: 'pytest.PytestUnraisableExceptionWarning'
-    "-m 'not filterwarnings'"
-  ];
+  # Python 2 pytest fails with INTERNALERROR due to a deprecation warning.
+  doCheck = isPy3k;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://palletsprojects.com/p/werkzeug/";
-    description = "The comprehensive WSGI web application library";
-    longDescription = ''
-      Werkzeug is a comprehensive WSGI web application library. It
-      began as a simple collection of various utilities for WSGI
-      applications and has become one of the most advanced WSGI
-      utility libraries.
-    '';
+    description = "A WSGI utility library for Python";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
   };
 }

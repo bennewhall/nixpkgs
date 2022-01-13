@@ -1,5 +1,4 @@
-{ lib
-
+{ stdenv
 , buildPythonPackage
 , notmuch
 , python
@@ -10,15 +9,11 @@ buildPythonPackage {
   pname = "notmuch2";
   inherit (notmuch) version src;
 
-  sourceRoot = "notmuch-${notmuch.version}/bindings/python-cffi";
+  sourceRoot = "${notmuch.src.name}/bindings/python-cffi";
 
   buildInputs = [ python notmuch cffi ];
 
-  # no tests
-  doCheck = false;
-  pythonImportsCheck = [ "notmuch2" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pythonic bindings for the notmuch mail database using CFFI";
     homepage = "https://notmuchmail.org/";
     license = licenses.gpl3;

@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "mtx";
-  version = "1.3.12";
+  name = "mtx-1.3.12";
 
   src = fetchurl {
-    url = "mirror://gentoo/distfiles/mtx-${version}.tar.gz";
+    url = "mirror://gentoo/distfiles/${name}.tar.gz";
     sha256 = "0261c5e90b98b6138cd23dadecbc7bc6e2830235145ed2740290e1f35672d843";
   };
 
@@ -21,8 +20,8 @@ stdenv.mkDerivation rec {
       specification.
     '';
     homepage = "https://sourceforge.net/projects/mtx/";
-    license = lib.licenses.gpl2;
-    maintainers = [ lib.maintainers.redvers ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = [ stdenv.lib.maintainers.redvers ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

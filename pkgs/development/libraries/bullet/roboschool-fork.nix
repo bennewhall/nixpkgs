@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, libGLU, libGL, freeglut
+{ stdenv, fetchFromGitHub, cmake, libGLU, libGL, freeglut
 , Cocoa,  OpenGL
 }:
 
@@ -18,12 +18,12 @@ stdenv.mkDerivation {
   };
 
   nativeBuildInputs = [ cmake ];
-  buildInputs = lib.optionals stdenv.isLinux [ libGLU libGL freeglut ]
-    ++ lib.optionals stdenv.isDarwin [ Cocoa OpenGL ];
+  buildInputs = stdenv.lib.optionals stdenv.isLinux [ libGLU libGL freeglut ]
+    ++ stdenv.lib.optionals stdenv.isDarwin [ Cocoa OpenGL ];
 
   patches = [ ./gwen-narrowing.patch ];
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
+  postPatch = stdenv.lib.optionalString stdenv.isDarwin ''
     sed -i 's/FIND_PACKAGE(OpenGL)//' CMakeLists.txt
     sed -i 's/FIND_LIBRARY(COCOA_LIBRARY Cocoa)//' CMakeLists.txt
   '';
@@ -32,7 +32,7 @@ stdenv.mkDerivation {
     "-DBUILD_SHARED_LIBS=ON"
     "-DBUILD_CPU_DEMOS=OFF"
     "-DINSTALL_EXTRA_LIBS=ON"
-  ] ++ lib.optionals stdenv.isDarwin [
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
     "-DOPENGL_FOUND=true"
     "-DOPENGL_LIBRARIES=${OpenGL}/Library/Frameworks/OpenGL.framework"
     "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks/OpenGL.framework"
@@ -42,7 +42,9 @@ stdenv.mkDerivation {
     "-DBUILD_UNIT_TESTS=OFF"
   ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "A professional free 3D Game Multiphysics Library";
     longDescription = ''
       Bullet 3D Game Multiphysics Library provides state of the art collision

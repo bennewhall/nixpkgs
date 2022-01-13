@@ -1,7 +1,7 @@
-{ lib, stdenv, substituteAll, fetchurl
-, zlib ? null, zlibSupport ? true, bzip2, pkg-config, libffi, libunwind, Security
+{ stdenv, substituteAll, fetchurl
+, zlib ? null, zlibSupport ? true, bzip2, pkgconfig, libffi, libunwind, Security
 , sqlite, openssl, ncurses, python, expat, tcl, tk, tix, xlibsWrapper, libX11
-, self, gdbm, db, xz
+, self, gdbm, db, lzma
 , python-setup-hook
 # For the Python package set
 , packageOverrides ? (self: super: {})
@@ -14,12 +14,12 @@
 , pythonVersion
 , sha256
 , passthruFun
-, pythonAttr ? "pypy${lib.substring 0 1 pythonVersion}${lib.substring 2 3 pythonVersion}"
+, pythonAttr ? "pypy${stdenv.lib.substring 0 1 pythonVersion}${stdenv.lib.substring 2 3 pythonVersion}"
 }:
 
 assert zlibSupport -> zlib != null;
 
-with lib;
+with stdenv.lib;
 
 let
   isPy3k = substring 0 1 pythonVersion == "3";
@@ -45,15 +45,15 @@ in with passthru; stdenv.mkDerivation rec {
   inherit pname version;
 
   src = fetchurl {
-    url = "https://downloads.python.org/pypy/pypy${pythonVersion}-v${version}-src.tar.bz2";
+    url = "https://bitbucket.org/pypy/pypy/downloads/pypy${pythonVersion}-v${version}-src.tar.bz2";
     inherit sha256;
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     bzip2 openssl pythonForPypy libffi ncurses expat sqlite tk tcl xlibsWrapper libX11 gdbm db
   ]  ++ optionals isPy3k [
-    xz
+    lzma
   ] ++ optionals (stdenv ? cc && stdenv.cc.libc != null) [
     stdenv.cc.libc
   ] ++ optionals zlibSupport [
@@ -73,8 +73,6 @@ in with passthru; stdenv.mkDerivation rec {
   LD_LIBRARY_PATH = makeLibraryPath (filter (x : x.outPath != stdenv.cc.libc.outPath or "") buildInputs);
 
   patches = [
-    ./dont_fetch_vendored_deps.patch
-
     (substituteAll {
       src = ./tk_tcl_paths.patch;
       inherit tk tcl;
@@ -83,18 +81,12 @@ in with passthru; stdenv.mkDerivation rec {
       tk_libprefix = tk.libPrefix;
       tcl_libprefix = tcl.libPrefix;
     })
-
-    (substituteAll {
-      src = ./sqlite_paths.patch;
-      inherit (sqlite) out dev;
-    })
   ];
 
   postPatch = ''
-    substituteInPlace lib_pypy/pypy_tools/build_cffi_imports.py \
-      --replace "multiprocessing.cpu_count()" "$NIX_BUILD_CORES"
-
     substituteInPlace "lib-python/${if isPy3k then "3/tkinter/tix.py" else "2.7/lib-tk/Tix.py"}" --replace "os.environ.get('TIX_LIBRARY')" "os.environ.get('TIX_LIBRARY') or '${tix}/lib'"
+
+    sed -i "s@libraries=\['sqlite3'\]\$@libraries=['sqlite3'], include_dirs=['${sqlite.dev}/include'], library_dirs=['${sqlite.out}/lib']@" lib_pypy/_sqlite3_build.py
   '';
 
   buildPhase = ''
@@ -152,7 +144,7 @@ in with passthru; stdenv.mkDerivation rec {
     ln -s $out/${executable}-c/include $out/include/${libPrefix}
     ln -s $out/${executable}-c/lib-python/${if isPy3k then "3" else pythonVersion} $out/lib/${libPrefix}
 
-    ${lib.optionalString stdenv.isDarwin ''
+    ${stdenv.lib.optionalString stdenv.isDarwin ''
       install_name_tool -change @rpath/libpypy${optionalString isPy3k "3"}-c.dylib $out/lib/libpypy${optionalString isPy3k "3"}-c.dylib $out/bin/${executable}
     ''}
 
@@ -166,7 +158,7 @@ in with passthru; stdenv.mkDerivation rec {
   inherit passthru;
   enableParallelBuilding = true;  # almost no parallelization without STM
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://pypy.org/";
     description = "Fast, compliant alternative implementation of the Python language (${pythonVersion})";
     license = licenses.mit;

@@ -1,55 +1,28 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, pkg-config
-, SDL2
-, SDL2_image
-, SDL2_ttf
-, alsa-lib
-, freetype
-, glew
-, libGL
-, libogg
-, libpng
-, libtheora
-, libvorbis
+{ stdenv, fetchFromGitHub, pkgconfig
 , python
-, tcl
-, zlib
+, alsaLib, glew, libGL, libpng
+, libogg, libtheora, libvorbis
+, SDL2, SDL2_image, SDL2_ttf
+, freetype, tcl, zlib
 }:
 
 stdenv.mkDerivation rec {
   pname = "openmsx";
-  version = "17.0";
+  version = "16.0";
 
   src = fetchFromGitHub {
     owner = "openMSX";
     repo = "openMSX";
     rev = "RELEASE_${builtins.replaceStrings ["."] ["_"] version}";
-    sha256 = "sha256-9PdUNahJZ2O6ASkzLW/uudP3hiIzTDpxzFy6Pjb8JiU=";
+    sha256 = "04sphn9ph378r0qv881riv90cgz58650jcqcwmi1mv6gbcb3img5";
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [
-    pkg-config
-    python
-  ];
+  nativeBuildInputs = [ pkgconfig python ];
 
-  buildInputs = [
-    SDL2
-    SDL2_image
-    SDL2_ttf
-    alsa-lib
-    freetype
-    glew
-    libGL
-    libogg
-    libpng
-    libtheora
-    libvorbis
-    tcl
-    zlib
-  ];
+  buildInputs = [ alsaLib glew libGL libpng
+    libogg libtheora libvorbis freetype
+    SDL2 SDL2_image SDL2_ttf tcl zlib ];
 
   postPatch = ''
     cp ${./custom-nix.mk} build/custom.mk
@@ -57,19 +30,19 @@ stdenv.mkDerivation rec {
 
   dontAddPrefix = true;
 
-  # Many thanks @mthuurne from OpenMSX project for providing support to
-  # Nixpkgs! :)
+  # Many thanks @mthuurne from OpenMSX project
+  # for providing support to Nixpkgs :)
   TCL_CONFIG="${tcl}/lib/";
 
-  meta = with lib; {
-    homepage = "https://openmsx.org";
+  meta = with stdenv.lib;{
     description = "The MSX emulator that aims for perfection";
     longDescription = ''
       OpenMSX is an emulator for the MSX home computer system. Its goal is
       to emulate all aspects of the MSX with 100% accuracy.
     '';
-    license = with licenses; [ bsd2 boost gpl2Plus ];
+    homepage = "https://openmsx.org";
     maintainers = with maintainers; [ AndersonTorres ];
     platforms = platforms.unix;
+    license = with licenses; [ bsd2 boost gpl2 ];
   };
 }

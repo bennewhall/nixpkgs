@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config
+{ stdenv, fetchurl, pkgconfig
 , libsndfile, libpulseaudio
 }:
 
@@ -8,7 +8,7 @@ in stdenv.mkDerivation rec {
   pname = "ekho";
   inherit version;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Chinese text-to-speech software";
     homepage    = "http://www.eguidedog.net/ekho.php";
     longDescription = ''
@@ -28,12 +28,12 @@ in stdenv.mkDerivation rec {
     sha256 = "0ym6lpcpsvwvsiwlzkl1509a2hljwcw7synngrmqjq1n49ww00nj";
   };
 
-  preConfigure = with lib; ''
+  preConfigure = with stdenv.lib; ''
     NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE ${optionalString stdenv.is64bit "-D_x86_64"}"
     NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -DEKHO_DATA_PATH=\"$out/share/ekho-data\""
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ libsndfile libpulseaudio ];
 }

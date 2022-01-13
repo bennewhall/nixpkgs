@@ -1,9 +1,6 @@
-{ lib, mkChromiumDerivation
-, channel, chromiumVersionAtLeast
-, enableWideVine, ungoogled
-}:
+{ stdenv, mkChromiumDerivation, channel, enableWideVine }:
 
-with lib;
+with stdenv.lib;
 
 mkChromiumDerivation (base: rec {
   name = "chromium-browser";
@@ -17,11 +14,8 @@ mkChromiumDerivation (base: rec {
   installPhase = ''
     mkdir -p "$libExecPath"
     cp -v "$buildPath/"*.so "$buildPath/"*.pak "$buildPath/"*.bin "$libExecPath/"
-    cp -v "$buildPath/libvulkan.so.1" "$libExecPath/"
-    cp -v "$buildPath/vk_swiftshader_icd.json" "$libExecPath/"
     cp -v "$buildPath/icudtl.dat" "$libExecPath/"
     cp -vLR "$buildPath/locales" "$buildPath/resources" "$libExecPath/"
-    cp -v "$buildPath/chrome_crashpad_handler" "$libExecPath/"
     cp -v "$buildPath/chrome" "$libExecPath/$packageName"
 
     # Swiftshader
@@ -75,26 +69,18 @@ mkChromiumDerivation (base: rec {
   requiredSystemFeatures = [ "big-parallel" ];
 
   meta = {
-    description = "An open source web browser from Google"
-      + optionalString ungoogled ", with dependencies on Google web services removed";
+    description = "An open source web browser from Google";
     longDescription = ''
       Chromium is an open source web browser from Google that aims to build a
       safer, faster, and more stable way for all Internet users to experience
       the web. It has a minimalist user interface and provides the vast majority
       of source code for Google Chrome (which has some additional features).
     '';
-    homepage = if ungoogled
-      then "https://github.com/Eloston/ungoogled-chromium"
-      else "https://www.chromium.org/";
-    maintainers = with maintainers; if ungoogled
-      then [ squalus primeos ]
-      else [ primeos thefloweringash ];
+    homepage = "https://www.chromium.org/";
+    maintainers = with maintainers; [ primeos thefloweringash bendlas ]; # See README.md
     license = if enableWideVine then licenses.unfree else licenses.bsd3;
     platforms = platforms.linux;
-    mainProgram = "chromium";
-    hydraPlatforms = if (channel == "stable" || channel == "ungoogled-chromium")
-      then ["aarch64-linux" "x86_64-linux"]
-      else [];
+    hydraPlatforms = if channel == "stable" then ["aarch64-linux" "x86_64-linux"] else [];
     timeout = 172800; # 48 hours (increased from the Hydra default of 10h)
   };
 })

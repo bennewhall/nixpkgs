@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, meson, ninja, pkg-config, gtk, zathura_core, girara, djvulibre, gettext }:
+{ stdenv, fetchurl, meson, ninja, pkgconfig, gtk, zathura_core, girara, djvulibre, gettext }:
 
 stdenv.mkDerivation rec {
   pname = "zathura-djvu";
@@ -9,12 +9,12 @@ stdenv.mkDerivation rec {
     sha256 = "0062n236414db7q7pnn3ccg5111ghxj3407pn9ri08skxskgirln";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
   buildInputs = [ djvulibre gettext zathura_core gtk girara ];
 
   PKG_CONFIG_ZATHURA_PLUGINDIR = "lib/zathura";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pwmt.org/projects/zathura-djvu/";
     description = "A zathura DJVU plugin";
     longDescription = ''

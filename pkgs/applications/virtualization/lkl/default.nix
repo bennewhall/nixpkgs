@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, bc, python3, bison, flex, fuse, libarchive
+{ stdenv, fetchFromGitHub, bc, python, bison, flex, fuse, libarchive
 , buildPackages }:
 
 stdenv.mkDerivation rec {
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "dev" "lib" "out" ];
 
-  nativeBuildInputs = [ bc bison flex python3 ];
+  nativeBuildInputs = [ bc bison flex python ];
 
   buildInputs = [ fuse libarchive ];
 
@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The Linux kernel as a library";
     longDescription = ''
       LKL (Linux Kernel Library) aims to allow reusing the Linux kernel code as

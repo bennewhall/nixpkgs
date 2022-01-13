@@ -1,37 +1,28 @@
 { lib
-, stdenv
 , mkDerivation
 , fetchFromGitHub
 , cmake
-, pkg-config
+, pkgconfig
 , pcre
 , qtbase
 , glib
-, perl
 , lxqtUpdateScript
 }:
 
 mkDerivation rec {
   pname = "lxqt-build-tools";
-  version = "0.10.0";
+  version = "0.7.0";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "1hb04zgpalxv6da3myf1dxsbjix15dczzfq8a24g5dg2zfhwpx21";
+    sha256 = "18l1w9lyf3nyj05wjhaj4lclak6qydlhw9bqi6kxgr1bv8k709lf";
   };
-
-  # Nix clang on darwin identifies as 'Clang', not 'AppleClang'
-  # Without this, dependants fail to link.
-  postPatch = ''
-    substituteInPlace cmake/modules/LXQtCompilerSettings.cmake \
-      --replace AppleClang Clang
-  '';
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
     setupHook
   ];
 
@@ -39,10 +30,6 @@ mkDerivation rec {
     qtbase
     glib
     pcre
-  ];
-
-  propagatedBuildInputs = [
-    perl # needed by LXQtTranslateDesktop.cmake
   ];
 
   setupHook = ./setup-hook.sh;
@@ -57,9 +44,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/lxqt-build-tools";
     description = "Various packaging tools and scripts for LXQt applications";
-    license = licenses.lgpl21Plus;
+    homepage = "https://github.com/lxqt/lxqt-build-tools";
+    license = licenses.lgpl21;
     platforms = with platforms; unix;
     maintainers = with maintainers; [ romildo ];
   };

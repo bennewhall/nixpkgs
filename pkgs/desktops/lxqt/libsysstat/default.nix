@@ -9,13 +9,13 @@
 
 mkDerivation rec {
   pname = "libsysstat";
-  version = "0.4.6";
+  version = "0.4.3";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "0z2r8041vqssm59lkb3ka7qis9br4wvavxzd45m3pnqlp7wwhkbn";
+    sha256 = "1dlshyv7pd7gwl55rd3msppjdpz2pwp5f4da9a9wapg7kiskqahf";
   };
 
   nativeBuildInputs = [

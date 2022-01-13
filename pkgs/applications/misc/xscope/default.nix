@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, libXt }:
+{ stdenv, fetchurl, pkgconfig, libXt }:
 
 stdenv.mkDerivation rec {
   pname = "xscope";
@@ -9,10 +9,10 @@ stdenv.mkDerivation rec {
     sha256 = "08zl3zghvbcqy0r5dn54dim84lp52s0ygrr87jr3a942a6ypz01k";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libXt ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "program to monitor X11/Client conversations";
     homepage = "https://cgit.freedesktop.org/xorg/app/xscope/";
     license = with licenses; [ mit ];

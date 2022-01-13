@@ -1,7 +1,7 @@
 { lib, python3Packages, fetchurl, git }:
 
 python3Packages.buildPythonApplication rec {
-  pname = "nox";
+  name = "nox-${version}";
   version = "0.0.6";
   namePrefix = "";
 
@@ -15,7 +15,7 @@ python3Packages.buildPythonApplication rec {
   buildInputs = [ python3Packages.pbr git ];
 
   propagatedBuildInputs = with python3Packages; [
-      dogpile-cache
+      dogpile_cache
       click
       requests
       characteristic

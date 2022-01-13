@@ -5,21 +5,16 @@
 
 mkDerivation rec {
   pname = "vmpk";
-  version = "0.8.5";
+  version = "0.7.2";
 
   src = fetchurl {
     url = "mirror://sourceforge/${pname}/${version}/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-SPome4UKGOWQLT9RMoGZ0wUdwodG8mSIaGFCg0i5CmY=";
+    sha256 = "5oLrjQADg59Mxpb0CNLQAE574IOSYLDLJNaQ/9q2cMQ=";
   };
 
   nativeBuildInputs = [ cmake pkg-config qttools docbook-xsl-nons ];
 
-  buildInputs = [ drumstick qtx11extras ];
-
-  postInstall = ''
-    # vmpk drumstickLocales looks here:
-    ln -s ${drumstick}/share/drumstick $out/share/
-  '';
+  buildInputs = [ qtx11extras drumstick ];
 
   meta = with lib; {
     description = "Virtual MIDI Piano Keyboard";

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, pure, octave }:
+{ stdenv, fetchurl, pkgconfig, pure, octave }:
 
 stdenv.mkDerivation rec {
   baseName = "octave";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "0l1mvmi3rpabzjcrk6p04rdn922mvdm9x67zby3dha5iiccc47q0";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ pure octave ];
   makeFlags = [ "libdir=$(out)/lib" "prefix=$(out)/" ];
   setupHook = ../generic-setup-hook.sh;
@@ -18,10 +18,10 @@ stdenv.mkDerivation rec {
   meta = {
     description = "An Octave module for the Pure programming language";
     homepage = "http://puredocs.bitbucket.org/pure-octave.html";
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
     # This is set to none for now because it does not work with the
     # current stable version of Octave.
-    platforms = lib.platforms.none;
-    maintainers = with lib.maintainers; [ asppsa ];
+    platforms = stdenv.lib.platforms.none;
+    maintainers = with stdenv.lib.maintainers; [ asppsa ];
   };
 }

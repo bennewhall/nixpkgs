@@ -1,6 +1,4 @@
-{ stdenv, buildGoModule, fetchFromGitHub, lib
-, enableStatic ? stdenv.hostPlatform.isStatic
-}:
+{ buildGoModule, fetchFromGitHub, lib, enableStatic ? false }:
 
 buildGoModule rec {
   pname = "gobetween";

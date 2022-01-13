@@ -4,12 +4,17 @@
 
 buildPythonPackage rec {
   pname = "deform";
-  version = "2.0.15";
+  version = "2.0.14";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1e912937650c1dbb830079dd9c039950762a230223a567740fbf1b23f1090367";
+    sha256 = "35d9acf144245772a70d05bd24b8263e8cd284f0d564011e8bf331d6150acfc7";
   };
+
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace "iso8601<=0.1.11" iso8601
+  '';
 
   propagatedBuildInputs = [
     chameleon

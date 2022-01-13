@@ -1,9 +1,9 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , python
 , six
-, python-dateutil
+, dateutil
 , ipaddress
 , mock
 }:
@@ -17,7 +17,7 @@ buildPythonPackage rec {
     sha256 = "f5bd18deb22ad8cb4402513c025877bc6b50de58902d686b6b21ba8981dce260";
   };
 
-  propagatedBuildInputs = [ six python-dateutil ipaddress mock ];
+  propagatedBuildInputs = [ six dateutil ipaddress mock ];
 
   # fake-factory is depreciated and single test will always fail
   doCheck = false;
@@ -26,7 +26,7 @@ buildPythonPackage rec {
     ${python.interpreter} -m unittest faker.tests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Python package that generates fake data for you";
     homepage    = "https://pypi.python.org/pypi/fake-factory";
     license     = licenses.mit;

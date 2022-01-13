@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchurl, perl, pkg-config, wrapGAppsHook
+{ lib, stdenv, fetchurl, perl, pkgconfig, wrapGAppsHook
 , SDL, bzip2, glib, gtk3, libgcrypt, libpng, libspectrum, libxml2, zlib
 }:
 
 stdenv.mkDerivation rec {
   pname = "fuse-emulator";
-  version = "1.6.0";
+  version = "1.5.7";
 
   src = fetchurl {
     url = "mirror://sourceforge/${pname}/fuse-${version}.tar.gz";
-    sha256 = "sha256-Oo/t8v/pR8VxVhusVaWa2tTFkzj3TkSbfnpn2coEcJY=";
+    sha256 = "0kaynjr28w42n3iha60mgr7nxm49w8j0v49plyrc7ka24qzmiqph";
   };
 
-  nativeBuildInputs = [ perl pkg-config wrapGAppsHook ];
+  nativeBuildInputs = [ perl pkgconfig wrapGAppsHook ];
 
   buildInputs = [ SDL bzip2 glib gtk3 libgcrypt libpng libspectrum libxml2 zlib ];
 

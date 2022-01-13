@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl }:
+{ stdenv, fetchFromGitHub, perl }:
 
 stdenv.mkDerivation {
   pname = "colormake";
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
     cp -fa colormake.pl colormake colormake-short clmake clmake-short $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple wrapper around make to colorize the output";
     homepage = "https://bre.klaki.net/programs/colormake/";
     license = licenses.gpl2;

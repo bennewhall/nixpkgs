@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, flex, bison, qt4, libX11, cmake, gperf, adms }:
+{stdenv, fetchFromGitHub, flex, bison, qt4, libX11, cmake, gperf, adms }:
 
 stdenv.mkDerivation rec {
   version = "0.0.19";
@@ -17,14 +17,13 @@ stdenv.mkDerivation rec {
     ./cmakelists.patch
   ];
 
-  nativeBuildInputs = [ cmake flex bison ];
-  buildInputs = [ qt4 libX11 gperf adms ];
+  buildInputs = [ flex bison qt4 libX11 cmake gperf adms ];
 
   meta = {
     description = "Integrated circuit simulator";
     homepage = "http://qucs.sourceforge.net";
-    license = lib.licenses.gpl2Plus;
-    maintainers = with lib.maintainers; [viric];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.gpl2Plus;
+    maintainers = with stdenv.lib.maintainers; [viric];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

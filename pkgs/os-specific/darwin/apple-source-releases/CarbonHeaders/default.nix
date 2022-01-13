@@ -1,6 +1,6 @@
-{ lib, appleDerivation', stdenvNoCC }:
+{ stdenv, appleDerivation }:
 
-appleDerivation' stdenvNoCC {
+appleDerivation {
   dontBuild = true;
 
   installPhase = ''
@@ -12,7 +12,7 @@ appleDerivation' stdenvNoCC {
       --replace "CarbonCore/" ""
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ copumpkin ];
     platforms   = platforms.darwin;
     license     = licenses.apsl20;

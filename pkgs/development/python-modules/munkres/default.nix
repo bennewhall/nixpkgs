@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , fetchpatch
@@ -28,7 +28,7 @@ buildPythonPackage rec {
 
   checkInputs = [ pytestCheckHook ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://bmc.github.com/munkres/";
     description = "Munkres algorithm for the Assignment Problem";
     license = licenses.bsd3;

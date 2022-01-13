@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ncurses, autoreconfHook }:
+{ stdenv, fetchurl, ncurses, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   version    = "0.9";
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     patchShebangs $out/etc/urlview
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extract URLs from text";
     homepage = "https://packages.qa.debian.org/u/urlview.html";
     license = licenses.gpl2;

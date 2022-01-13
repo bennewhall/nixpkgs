@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , xorg
@@ -8,12 +8,12 @@
 }:
 
 buildPythonPackage rec {
-  version = "0.11.1";
+  version = "0.11.0";
   pname = "xcffib";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "12949cfe2e68c806efd57596bb9bf3c151f399d4b53e15d1101b2e9baaa66f5a";
+    sha256 = "a751081d816a63d02a4c63f91fd9c0112c1e0061af7ccf79c4e7c18517a75406";
   };
 
   patchPhase = ''
@@ -23,13 +23,11 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ cffi six ];
 
-  propagatedNativeBuildInputs = [ cffi ];
-
   checkInputs = [ nose ];
 
   pythonImportsCheck = [ "xcffib" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A drop in replacement for xpyb, an XCB python binding";
     homepage = "https://github.com/tych0/xcffib";
     license = licenses.asl20;

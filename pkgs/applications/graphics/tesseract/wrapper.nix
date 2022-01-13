@@ -1,4 +1,4 @@
-{ lib, makeWrapper, tesseractBase, languages
+{ stdenv, makeWrapper, tesseractBase, languages
 
 # A list of languages like [ "eng" "spa" … ] or `null` for all available languages
 , enableLanguages ? null
@@ -17,7 +17,7 @@ let
   tesseractWithData = tesseractBase.overrideAttrs (_: {
     inherit tesseractBase tessdata;
 
-    nativeBuildInputs = [ makeWrapper ];
+    buildInputs = [ makeWrapper ];
 
     buildCommand = ''
       makeWrapper {$tesseractBase,$out}/bin/tesseract --set-default TESSDATA_PREFIX $out/share/tessdata
@@ -54,5 +54,5 @@ in
   if enableLanguagesHash == null then
     tesseract
   else
-    lib.warn "Argument `enableLanguagesHash` is obsolete and can be removed."
+    stdenv.lib.warn "Argument `enableLanguagesHash` is obsolete and can be removed."
     tesseract

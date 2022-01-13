@@ -1,52 +1,33 @@
-{ lib
-, stdenv
-, async-timeout
-, attrs
-, buildPythonPackage
-, cryptography
-, fetchFromGitHub
-, pytest-aiohttp
-, pytestCheckHook
+{ lib, stdenv, buildPythonPackage, python, fetchFromGitHub
+, attrs, cryptography, async-timeout, pytest-aiohttp, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "snitun";
-  version = "0.30.0";
+  version = "0.20";
 
   src = fetchFromGitHub {
     owner = "NabuCasa";
     repo = pname;
     rev = version;
-    sha256 = "sha256-IjdgxX6ed9IWMFaMXIXQWZWoODrZBzXtMAcMOIhPFVQ=";
+    sha256 = "1nscfwycclfbll709w1q46w6rl0r5c3b85rsc7zwc3ixd1k8aajp";
   };
 
-  propagatedBuildInputs = [
-    async-timeout
-    attrs
-    cryptography
-  ];
+  propagatedBuildInputs = [ attrs cryptography async-timeout ];
 
-  checkInputs = [
-    pytest-aiohttp
-    pytestCheckHook
-  ];
+  checkInputs = [ pytestCheckHook pytest-aiohttp ];
 
   disabledTests = lib.optionals stdenv.isDarwin [
     "test_multiplexer_data_channel_abort_full" # https://github.com/NabuCasa/snitun/issues/61
     # port binding conflicts
     "test_snitun_single_runner_timeout"
     "test_snitun_single_runner_throttling"
-    # ConnectionResetError: [Errno 54] Connection reset by peer
-    "test_peer_listener_timeout"
   ];
-
-  pythonImportsCheck = [ "snitun" ];
 
   meta = with lib; {
     homepage = "https://github.com/nabucasa/snitun";
     description = "SNI proxy with TCP multiplexer";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ Scriptkiddi ];
-    platforms = platforms.linux;
   };
 }

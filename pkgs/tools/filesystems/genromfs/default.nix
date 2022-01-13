@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   version = "0.5.2";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
       --replace "gcc" "cc"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://romfs.sourceforge.net/";
     description = "Tool for creating romfs file system images";
     license = licenses.gpl2;

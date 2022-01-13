@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cxxtools, zlib, openssl, zip }:
+{ stdenv, fetchurl, cxxtools, zlib, openssl, zip }:
 
 stdenv.mkDerivation rec {
   pname = "tntnet";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.tntnet.org/tntnet.html";
     description = "Web server which allows users to develop web applications using C++";
     platforms = platforms.linux ;

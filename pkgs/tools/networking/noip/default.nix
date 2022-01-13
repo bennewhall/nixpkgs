@@ -1,8 +1,7 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation {
-  pname = "noip";
-  version = "2.1.9-1";
+  name = "noip-2.1.9-1";
 
   src = fetchurl {
     url = "https://www.noip.com/client/linux/noip-duc-linux.tar.gz";
@@ -18,11 +17,11 @@ stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Dynamic DNS daemon for no-ip accounts";
     homepage = "http://noip.com/download?page=linux";
-    license = lib.licenses.gpl2;
-    maintainers = [ lib.maintainers.iand675 ];
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = [ stdenv.lib.maintainers.iand675 ];
     platforms = platforms.linux;
   };
 }

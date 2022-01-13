@@ -1,32 +1,29 @@
-{ stdenv, lib, fetchFromGitHub, meson, ninja, pkg-config
+{ stdenv, lib, fetchurl, meson, ninja, pkgconfig
 , dpdk, libbsd, libpcap, lua5_3, numactl, util-linux
 , gtk2, which, withGtk ? false
 }:
 
 stdenv.mkDerivation rec {
   pname = "pktgen";
-  version = "21.11.0";
+  version = "19.12.0";
 
-  src = fetchFromGitHub {
-    owner = "pktgen";
-    repo = "Pktgen-DPDK";
-    rev = "pktgen-${version}";
-    sha256 = "sha256-3z5DSkggHTwjzsRzRG5zzZTcNsn/5YankJT8CKSN8b4=";
+  src = fetchurl {
+    url = "http://dpdk.org/browse/apps/pktgen-dpdk/snapshot/${pname}-${version}.tar.xz";
+    sha256 = "1clfviz1qa4hysslcg6i29vsxwl9f6j1y7zf9wwx9br3yq08x956";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
 
-  buildInputs = [
-    dpdk libbsd libpcap lua5_3 numactl which
-  ] ++ lib.optionals withGtk [
-    gtk2
-  ];
+  buildInputs =
+    [ dpdk libbsd libpcap lua5_3 numactl which ]
+    ++ stdenv.lib.optionals withGtk [gtk2];
 
   RTE_SDK = dpdk;
-  GUI = lib.optionalString withGtk "true";
+  GUI = stdenv.lib.optionalString withGtk "true";
 
-  # requires symbols from this file
-  NIX_LDFLAGS = "-lrte_net_bond";
+  NIX_CFLAGS_COMPILE = "-msse3";
+
+  patches = [ ./configure.patch ];
 
   postPatch = ''
     substituteInPlace lib/common/lscpu.h --replace /usr/bin/lscpu ${util-linux}/bin/lscpu
@@ -38,11 +35,11 @@ stdenv.mkDerivation rec {
     rm -rf $out/include $out/lib
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Traffic generator powered by DPDK";
     homepage = "http://dpdk.org/";
     license = licenses.bsdOriginal;
-    platforms =  platforms.linux;
+    platforms =  [ "x86_64-linux" ];
     maintainers = [ maintainers.abuibrahim ];
   };
 }

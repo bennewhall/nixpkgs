@@ -1,29 +1,24 @@
-{ stdenv, lib, fetchurl, fetchpatch, pkg-config, libtool
-, gtk2-x11, gtk3-x11 , gtkSupport ? null
+{ stdenv, lib, fetchurl, fetchpatch, pkgconfig, libtool
+, gtk ? null
 , libpulseaudio, gst_all_1, libvorbis, libcap
-, Carbon, CoreServices
-, withAlsa ? stdenv.isLinux, alsa-lib }:
+, CoreServices
+, withAlsa ? stdenv.isLinux, alsaLib }:
 
 stdenv.mkDerivation rec {
-  pname = "libcanberra";
-  version = "0.30";
+  name = "libcanberra-0.30";
 
   src = fetchurl {
-    url = "http://0pointer.de/lennart/projects/libcanberra/${pname}-${version}.tar.xz";
+    url = "http://0pointer.de/lennart/projects/libcanberra/${name}.tar.xz";
     sha256 = "0wps39h8rx2b00vyvkia5j40fkak3dpipp1kzilqla0cgvk73dn2";
   };
 
-  strictDeps = true;
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig libtool ];
   buildInputs = [
-    libpulseaudio libvorbis
-    libtool # in buildInputs rather than nativeBuildInputs since libltdl is used (not libtool itself)
+    libpulseaudio libvorbis gtk
   ] ++ (with gst_all_1; [ gstreamer gst-plugins-base ])
-    ++ lib.optional (gtkSupport == "gtk2") gtk2-x11
-    ++ lib.optional (gtkSupport == "gtk3") gtk3-x11
-    ++ lib.optionals stdenv.isDarwin [Carbon CoreServices]
+    ++ lib.optional stdenv.isDarwin CoreServices
     ++ lib.optional stdenv.isLinux libcap
-    ++ lib.optional withAlsa alsa-lib;
+    ++ lib.optional withAlsa alsaLib;
 
   configureFlags = [ "--disable-oss" ];
 
@@ -35,7 +30,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
+  postPatch = (stdenv.lib.optional stdenv.isDarwin) ''
     patch -p0 < ${fetchpatch {
       url = "https://raw.githubusercontent.com/macports/macports-ports/master/audio/libcanberra/files/patch-configure.diff";
       sha256 = "1f7h7ifpqvbfhqygn1b7klvwi80zmpv3538vbmq7ql7bkf1q8h31";
@@ -48,12 +43,13 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  passthru = lib.optionalAttrs (gtkSupport != null) {
-    gtkModule = if gtkSupport == "gtk2" then "/lib/gtk-2.0" else "/lib/gtk-3.0/";
+  passthru = {
+    gtkModule = "/lib/gtk-2.0/";
   };
 
-  meta = with lib; {
+  meta = {
     description = "An implementation of the XDG Sound Theme and Name Specifications";
+
     longDescription = ''
       libcanberra is an implementation of the XDG Sound Theme and Name
       Specifications, for generating event sounds on free desktops
@@ -61,9 +57,12 @@ stdenv.mkDerivation rec {
       PulseAudio, OSS, GStreamer, null) and is designed to be
       portable.
     '';
+
     homepage = "http://0pointer.de/lennart/projects/libcanberra/";
-    license = licenses.lgpl2Plus;
+
+    license = stdenv.lib.licenses.lgpl2Plus;
+
     maintainers = [ ];
-    platforms = platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

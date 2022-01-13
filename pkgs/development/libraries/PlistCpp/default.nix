@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, cmake, boost, NSPlist, pugixml }:
+{ stdenv, fetchFromGitHub, cmake, boost, NSPlist, pugixml }:
 
 stdenv.mkDerivation {
-  pname = "PlistCpp";
-  version = "unstable-11615d";
+  name = "PlistCpp-11615d";
 
   src = fetchFromGitHub {
     owner = "matthewbauer";
@@ -11,10 +10,10 @@ stdenv.mkDerivation {
     sha256 = "10jn6bvm9vn6492zix2pd724v5h4lccmkqg3lxfw8r0qg3av0yzv";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ boost NSPlist pugixml ];
+  buildInputs = [ cmake boost NSPlist pugixml ];
 
-  meta = with lib; {
+
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ matthewbauer ];
     description = "CPP bindings for Plist";
     license = licenses.mit;

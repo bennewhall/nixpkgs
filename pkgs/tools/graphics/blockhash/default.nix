@@ -1,23 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, python3, pkg-config, imagemagick, wafHook }:
+{ stdenv, fetchFromGitHub, python, pkgconfig, imagemagick, wafHook }:
 
 stdenv.mkDerivation rec {
   pname = "blockhash";
-  version = "0.3.2";
+  version = "0.3.1";
 
   src = fetchFromGitHub {
     owner = "commonsmachinery";
     repo = "blockhash";
     rev = "v${version}";
-    sha256 = "0x3lvhnkb4c3pyq6p81qnnqimz35wpippiac506dgjx3b1848v35";
+    sha256 = "0m7ikppl42iicgmwsb7baajmag7v0p1ab06xckifvrr0zm21bq9p";
   };
 
-  nativeBuildInputs = [ python3 pkg-config wafHook ];
+  nativeBuildInputs = [ python pkgconfig wafHook ];
   buildInputs = [ imagemagick ];
 
-  strictDeps = true;
-
-  meta = with lib; {
-    homepage = "https://github.com/commonsmachinery/blockhash";
+  meta = with stdenv.lib; {
+    homepage = "http://blockhash.io/";
     description = ''
       This is a perceptual image hash calculation tool based on algorithm
       descibed in Block Mean Value Based Image Perceptual Hashing by Bian Yang,

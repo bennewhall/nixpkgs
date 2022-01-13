@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip, which, makeWrapper, jdk }:
+{ stdenv, fetchurl, unzip, which, makeWrapper, jdk }:
 
 # at runtime, need jdk
 
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1xdpjqx7qaq0syw448b32q36g12pgh1hn6knyqi3k5isp0f09qmr";
   };
 
-  nativeBuildInputs = [ makeWrapper unzip ];
+  buildInputs = [ unzip makeWrapper ];
 
   installPhase = ''
     mkdir -p $out
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An agile dynamic language for the Java Platform";
     homepage = "http://groovy-lang.org/";
     license = licenses.asl20;

@@ -1,7 +1,7 @@
 { qtModule, qtbase, qtdeclarative }:
 
 qtModule {
-  pname = "qtscxml";
+  name = "qtscxml";
   qtInputs = [ qtbase qtdeclarative ];
   outputs = [ "out" "dev" "bin" ];
 }

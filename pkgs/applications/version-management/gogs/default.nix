@@ -1,10 +1,10 @@
-{ lib, buildGoModule, fetchFromGitHub, makeWrapper
+{ stdenv, buildGoModule, fetchFromGitHub, makeWrapper
 , git, bash, gzip, openssh, pam
 , sqliteSupport ? true
 , pamSupport ? true
 }:
 
-with lib;
+with stdenv.lib;
 
 buildGoModule rec {
   pname = "gogs";
@@ -29,7 +29,9 @@ buildGoModule rec {
 
   buildInputs = optional pamSupport pam;
 
-  tags =
+  buildFlags = [ "-tags" ];
+
+  buildFlagsArray =
     (  optional sqliteSupport "sqlite"
     ++ optional pamSupport "pam");
 

@@ -1,30 +1,38 @@
-{lib, stdenv, fetchurl, libX11, imake, gccmakedep}:
+{stdenv, fetchurl, libX11, imake, gccmakedep}:
 
-stdenv.mkDerivation rec {
-  pname = "xskat";
-  version = "4.0";
 
-  nativeBuildInputs = [ gccmakedep ];
-  buildInputs = [ libX11 imake ];
+let
+  s = # Generated upstream information
+  rec {
+    baseName="xskat";
+    version="4.0";
+    name="${baseName}-${version}";
 
-  src = fetchurl {
-    url = "http://www.xskat.de/xskat-${version }.tar.gz";
-    sha256 = "8ba52797ccbd131dce69b96288f525b0d55dee5de4008733f7a5a51deb831c10";
+    url="http://www.xskat.de/xskat-4.0.tar.gz";
+    hash="8ba52797ccbd131dce69b96288f525b0d55dee5de4008733f7a5a51deb831c10";
+    sha256="8ba52797ccbd131dce69b96288f525b0d55dee5de4008733f7a5a51deb831c10";
   };
+   buildInputs = [ libX11 imake gccmakedep ];
+in
 
+stdenv.mkDerivation {
+  inherit (s) name version;
+  inherit buildInputs;
+  src = fetchurl {
+    inherit (s) url sha256;
+  };
   preInstall = ''
     sed -i Makefile \
       -e "s|.* BINDIR .*|   BINDIR = $out/bin|" \
       -e "s|.* MANPATH .*|  MANPATH = $out/man|"
   '';
-
   installTargets = [ "install" "install.man" ];
-
-  meta = with lib; {
-    description = "Famous german card game";
-    platforms = platforms.unix;
-    license = licenses.free;
-    longDescription = "Play the german card game Skat against the AI or over IRC.";
+  meta = {
+    inherit (s) version;
+    description = ''Famous german card game'';
+    platforms = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.free;
+    longDescription = ''Play the german card game Skat against the AI or over IRC.'';
     homepage = "http://www.xskat.de/";
   };
 }

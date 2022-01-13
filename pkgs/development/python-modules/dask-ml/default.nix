@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pythonOlder
@@ -6,29 +6,28 @@
 , numpy, toolz # dask[array]
 , numba
 , pandas
-, scikit-learn
+, scikitlearn
 , scipy
 , dask-glm
 , six
 , multipledispatch
 , packaging
+, pytest
+, xgboost
+, tensorflow
+, joblib
 , distributed
-, setuptools-scm
 }:
 
 buildPythonPackage rec {
-  version = "2021.11.30";
+  version = "1.7.0";
   pname = "dask-ml";
   disabled = pythonOlder "3.6"; # >= 3.6
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "4f73306b5ee56e9b41b133697062d0028d30b1ece883ac6b56532fea5bd3e94a";
+    sha256 = "5f93e8560217ebbc5a2254eaf705e9cad8e1c82012567c658e26464a74fbab76";
   };
-
-  nativeBuildInputs = [
-    setuptools-scm
-  ];
 
   propagatedBuildInputs = [
     dask
@@ -39,7 +38,7 @@ buildPythonPackage rec {
     numpy
     packaging
     pandas
-    scikit-learn
+    scikitlearn
     scipy
     six
     toolz
@@ -56,7 +55,7 @@ buildPythonPackage rec {
     "dask_ml.utils"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/dask/dask-ml";
     description = "Scalable Machine Learn with Dask";
     license = licenses.bsd3;

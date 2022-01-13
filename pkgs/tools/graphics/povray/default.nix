@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, boost
+{ stdenv, fetchFromGitHub, autoconf, automake, boost
 , zlib, libpng, libjpeg, libtiff, xlibsWrapper, SDL
 }:
 
@@ -40,7 +40,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.povray.org/";
     description = "Persistence of Vision Raytracer";
     license = licenses.free;

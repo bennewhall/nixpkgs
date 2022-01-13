@@ -1,33 +1,30 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , requests
 }:
 
 buildPythonPackage rec {
-  version = "1.0.1";
+  version = "0.1.2";
   pname = "vultr";
 
   src = fetchFromGitHub {
-    owner = "spry-group";
-    repo = "python-vultr";
-    rev = "v${version}";
-    sha256 = "00lc5hdhchvm0472p03019bp9541d8y2773xkjy8vblq9qhys8q7";
+      owner = "spry-group";
+      repo = "python-vultr";
+      rev = version;
+      sha256 = "1qjvvr2v9gfnwskdl0ayazpcmiyw9zlgnijnhgq9mcri5gq9jw5h";
   };
 
-  propagatedBuildInputs = [
-    requests
-  ];
+  propagatedBuildInputs = [ requests ];
 
   # Tests disabled. They fail because they try to access the network
   doCheck = false;
 
-  pythonImportsCheck = [ "vultr" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Vultr.com API Client";
     homepage = "https://github.com/spry-group/python-vultr";
     license = licenses.mit;
     maintainers = with maintainers; [ lihop ];
   };
+
 }

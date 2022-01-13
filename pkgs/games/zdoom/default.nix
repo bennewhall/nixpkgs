@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, p7zip, cmake
+{ stdenv, fetchurl, p7zip, cmake
 , SDL2, openal, fluidsynth, soundfont-fluid, bzip2, zlib, libjpeg, game-music-emu
 , libsndfile, mpg123 }:
 
@@ -25,6 +25,8 @@ stdenv.mkDerivation rec {
 
   sourceRoot = ".";
 
+  enableParallelBuilding = true;
+
   NIX_CFLAGS_LINK = [ "-lopenal" "-lfluidsynth" ];
 
   preConfigure = ''
@@ -43,7 +45,7 @@ stdenv.mkDerivation rec {
     ln -s $out/lib/zdoom/zdoom $out/bin/zdoom
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://zdoom.org/";
     description = "Enhanced port of the official DOOM source code";
     # Doom source license, MAME license

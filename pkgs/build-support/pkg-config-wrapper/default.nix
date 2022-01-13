@@ -2,7 +2,6 @@
 # PKG_CONFIG_PATH_FOR_BUILD work properly.
 
 { stdenvNoCC
-, lib
 , buildPackages
 , pkg-config
 , baseBinName ? "pkg-config"
@@ -10,7 +9,7 @@
 , extraPackages ? [], extraBuildCommands ? ""
 }:
 
-with lib;
+with stdenvNoCC.lib;
 
 let
   stdenv = stdenvNoCC;
@@ -20,7 +19,7 @@ let
   #
   # TODO(@Ericson2314) Make unconditional, or optional but always true by
   # default.
-  targetPrefix = lib.optionalString (targetPlatform != hostPlatform)
+  targetPrefix = stdenv.lib.optionalString (targetPlatform != hostPlatform)
                                         (targetPlatform.config + "-");
 
   # See description in cc-wrapper.
@@ -46,9 +45,6 @@ stdenv.mkDerivation {
 
   dontBuild = true;
   dontConfigure = true;
-
-  # Additional flags passed to pkg-config.
-  addFlags = lib.optional stdenv.targetPlatform.isStatic "--static";
 
   unpackPhase = ''
     src=$PWD
@@ -123,7 +119,7 @@ stdenv.mkDerivation {
     let pkg-config_ = if pkg-config != null then pkg-config else {}; in
     (if pkg-config_ ? meta then removeAttrs pkg-config.meta ["priority"] else {}) //
     { description =
-        lib.attrByPath ["meta" "description"] "pkg-config" pkg-config_
+        stdenv.lib.attrByPath ["meta" "description"] "pkg-config" pkg-config_
         + " (wrapper script)";
       priority = 10;
   };

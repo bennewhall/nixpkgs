@@ -1,4 +1,4 @@
-{ lib, fetchurl, perlPackages }:
+{ stdenv, fetchurl, perlPackages }:
 
 perlPackages.buildPerlPackage rec {
   pname = "egypt";
@@ -15,7 +15,7 @@ perlPackages.buildPerlPackage rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for making call graphs of C programmes";
     longDescription = ''
       Egypt is a simple tool for creating call graphs of C programs. It neither

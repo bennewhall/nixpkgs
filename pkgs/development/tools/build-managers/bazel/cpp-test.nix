@@ -44,8 +44,6 @@ let
       ${bazel}/bin/bazel \
         build --verbose_failures \
         --distdir=${distDir} \
-        --curses=no \
-        --sandbox_debug \
           //...
     '';
   };

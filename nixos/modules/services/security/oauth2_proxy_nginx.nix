@@ -8,7 +8,6 @@ in
     proxy = mkOption {
       type = types.str;
       default = config.services.oauth2_proxy.httpAddress;
-      defaultText = literalExpression "config.services.oauth2_proxy.httpAddress";
       description = ''
         The address of the reverse proxy endpoint for oauth2_proxy
       '';
@@ -24,8 +23,7 @@ in
   config.services.oauth2_proxy = mkIf (cfg.virtualHosts != [] && (hasPrefix "127.0.0.1:" cfg.proxy)) {
     enable = true;
   };
-  config.services.nginx = mkIf config.services.oauth2_proxy.enable (mkMerge
-  ((optional (cfg.virtualHosts != []) {
+  config.services.nginx = mkMerge ((optional (cfg.virtualHosts != []) {
     recommendedProxySettings = true; # needed because duplicate headers
   }) ++ (map (vhost: {
     virtualHosts.${vhost} = {
@@ -33,7 +31,7 @@ in
         proxyPass = cfg.proxy;
         extraConfig = ''
           proxy_set_header X-Scheme                $scheme;
-          proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
+          proxy_set_header X-Auth-Request-Redirect $request_uri;
         '';
       };
       locations."/oauth2/auth" = {
@@ -62,5 +60,5 @@ in
       '';
 
     };
-  }) cfg.virtualHosts)));
+  }) cfg.virtualHosts));
 }

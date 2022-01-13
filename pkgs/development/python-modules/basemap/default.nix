@@ -1,7 +1,6 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
-, pythonAtLeast
 , numpy
 , matplotlib
 , pillow
@@ -35,7 +34,7 @@ buildPythonPackage rec {
   # TODO : do the post install checks (`cd examples && ${python.interpreter} run_all.py`)
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://matplotlib.org/basemap/";
     description = "Plot data on map projections with matplotlib";
     longDescription = ''
@@ -44,7 +43,6 @@ buildPythonPackage rec {
       http://matplotlib.github.com/basemap/users/examples.html for examples of what it can do.
     '';
     license = with licenses; [ mit gpl2 ];
-    broken = pythonAtLeast "3.9";
   };
 
 }

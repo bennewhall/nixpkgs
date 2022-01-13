@@ -1,8 +1,8 @@
-{ gcc6Stdenv, gccStdenv, llvmPackages
+{ gcc6Stdenv, stdenv, gccStdenv, llvmPackages
 , lib, fetchurl, fetchpatch, fetchFromGitHub
 
 , cmake, ninja, which, findutils, m4, gawk
-, python2, python3, openjdk, mono, libressl, boost
+, python, python3, openjdk, mono, libressl, boost
 }@args:
 
 let
@@ -69,7 +69,6 @@ in with builtins; {
 
     patches = [
       ./patches/ldflags-6.0.patch
-      ./patches/include-fixes-6.0.patch
     ];
   };
 
@@ -77,14 +76,13 @@ in with builtins; {
   # ------------------------------------------------------
 
   foundationdb61 = cmakeBuild {
-    version = "6.1.13";
+    version = "6.1.12";
     branch  = "release-6.1";
-    sha256  = "10vd694dcnh2pp91mri1m80kfbwjanhiy50c53c5ncqfa6pwvk00";
+    sha256  = "1yh5hx6rim41m0dwhnb2pcwz67wlnk0zwvyw845d36b29gwy58ab";
 
     patches = [
       ./patches/clang-libcxx.patch
       ./patches/suppress-clang-warnings.patch
-      ./patches/stdexcept-6.1.patch
       glibc230-fix
     ];
   };

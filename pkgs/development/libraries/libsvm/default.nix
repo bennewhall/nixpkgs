@@ -1,12 +1,12 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation rec {
   pname = "libsvm";
-  version = "3.25";
+  version = "3.24";
 
   src = fetchurl {
     url = "https://www.csie.ntu.edu.tw/~cjlin/libsvm/libsvm-${version}.tar.gz";
-    sha256 = "sha256-UjUOiqdAsXbh13Pp3AjxNAIYw34BvsN6uQ2wEn5LteU=";
+    sha256 = "15l69y23fxslrap415dvqb383x5fxvbffp9giszjfqjf38h1m26m";
   };
 
   buildPhase = ''
@@ -25,11 +25,11 @@ stdenv.mkDerivation rec {
     ln -s $out/include/svm.h $out/include/libsvm/svm.h
   '';
 
-  postFixup = lib.optionalString stdenv.isDarwin ''
+  postFixup = stdenv.lib.optionalString stdenv.isDarwin ''
     install_name_tool -id libsvm.2.dylib $out/lib/libsvm.2.dylib;
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for support vector machines";
     homepage = "https://www.csie.ntu.edu.tw/~cjlin/libsvm/";
     license = licenses.bsd3;

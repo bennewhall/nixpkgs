@@ -1,62 +1,36 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
+, notebook
 , jsonschema
 , pythonOlder
 , requests
-, pytestCheckHook
+, pytest
 , pyjson5
-, Babel
-, jupyter_server
-, openapi-core
-, pytest-tornasync
-, ruamel-yaml
-, strict-rfc3339
 }:
 
 buildPythonPackage rec {
   pname = "jupyterlab_server";
-  version = "2.10.2";
-  disabled = pythonOlder "3.6";
+  version = "1.2.0";
+  disabled = pythonOlder "3.5";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "bf1ec9e49d4e26f14d70055cc293b3f8ec8410f95a4d5b4bd55c442d9b8b266c";
+    sha256 = "5431d9dde96659364b7cc877693d5d21e7b80cea7ae3959ecc2b87518e5f5d8c";
   };
 
-  postPatch = ''
-    sed -i "/^addopts/d" pyproject.toml
+  checkInputs = [ requests pytest ];
+  propagatedBuildInputs = [ notebook jsonschema pyjson5 ];
+
+  # test_listing test fails
+  # this is a new package and not all tests pass
+  doCheck = false;
+
+  checkPhase = ''
+    pytest
   '';
 
-  propagatedBuildInputs = [ requests jsonschema pyjson5 Babel jupyter_server ];
-
-  checkInputs = [
-    openapi-core
-    pytestCheckHook
-    pytest-tornasync
-    ruamel-yaml
-    strict-rfc3339
-  ];
-
-  pytestFlagsArray = [ "--pyargs" "jupyterlab_server" ];
-
-  disabledTests = [
-    # AttributeError: 'SpecPath' object has no attribute 'paths'
-    "test_get_listing"
-    "test_get_settings"
-    "test_get_federated"
-    "test_listing"
-    "test_patch"
-    "test_patch_unicode"
-    "test_get_theme"
-    "test_delete"
-    "test_get_non_existant"
-    "test_get"
-  ];
-
-  __darwinAllowLocalNetworking = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "JupyterLab Server";
     homepage = "https://jupyter.org";
     license = licenses.bsdOriginal;

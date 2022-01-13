@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, gnum4, pkg-config, python3
+{ stdenv, fetchFromGitHub, autoreconfHook, gnum4, pkg-config, python3
 , intel-gpu-tools, libdrm, libva, libX11, libGL, wayland, libXext
 , enableHybridCodec ? false, vaapi-intel-hybrid
 }:
@@ -17,23 +17,23 @@ stdenv.mkDerivation rec {
   # Set the correct install path:
   LIBVA_DRIVERS_PATH = "${placeholder "out"}/lib/dri";
 
-  postInstall = lib.optionalString enableHybridCodec ''
+  postInstall = stdenv.lib.optionalString enableHybridCodec ''
     ln -s ${vaapi-intel-hybrid}/lib/dri/* $out/lib/dri/
   '';
 
   configureFlags = [
     "--enable-x11"
     "--enable-wayland"
-  ] ++ lib.optional enableHybridCodec "--enable-hybrid-codec";
+  ] ++ stdenv.lib.optional enableHybridCodec "--enable-hybrid-codec";
 
   nativeBuildInputs = [ autoreconfHook gnum4 pkg-config python3 ];
 
   buildInputs = [ intel-gpu-tools libdrm libva libX11 libXext libGL wayland ]
-    ++ lib.optional enableHybridCodec vaapi-intel-hybrid;
+    ++ stdenv.lib.optional enableHybridCodec vaapi-intel-hybrid;
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://01.org/linuxmedia";
     license = licenses.mit;
     description = "VA-API user mode driver for Intel GEN Graphics family";

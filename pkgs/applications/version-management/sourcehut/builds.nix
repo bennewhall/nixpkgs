@@ -1,40 +1,26 @@
-{ lib
-, fetchFromSourcehut
-, buildPythonPackage
-, buildGoModule
-, srht
-, redis
-, celery
-, pyyaml
-, markdown
-, ansi2html
+{ stdenv, fetchgit, buildPythonPackage
 , python
-}:
-let
-  version = "0.74.17";
+, buildGoModule
+, srht, redis, celery, pyyaml, markdown }:
 
-  src = fetchFromSourcehut {
-    owner = "~sircmpwn";
-    repo = "builds.sr.ht";
-    rev = version;
-    sha256 = "sha256-6Yc33lkhozpnx8e6yukUfo+/Qw5mwpJQQKuYbC7uqcU=";
-  };
+let
+  version = "0.63.4";
 
   buildWorker = src: buildGoModule {
     inherit src version;
     pname = "builds-sr-ht-worker";
 
-    vendorSha256 = "sha256-Pf1M9a43eK4jr6QMi6kRHA8DodXQU0pqq9ua5VC3ER0=";
+    vendorSha256 = "1sbcjp93gb0c4p7dd1gjhmhwr1pygxvrrzp954j2fvxvi38w6571";
   };
-in
-buildPythonPackage rec {
-  inherit src version;
+in buildPythonPackage rec {
+  inherit version;
   pname = "buildsrht";
 
-  patches = [
-    # Revert change breaking Unix socket support for Redis
-    patches/redis-socket/build/0001-Revert-Add-build-submission-and-queue-monitoring.patch
-  ];
+  src = fetchgit {
+    url = "https://git.sr.ht/~sircmpwn/builds.sr.ht";
+    rev = version;
+    sha256 = "1w3rb685nqg2h0k3ag681svc400si9r1gy0sdim3wa2qh8glbqni";
+  };
 
   nativeBuildInputs = srht.nativeBuildInputs;
 
@@ -44,12 +30,10 @@ buildPythonPackage rec {
     celery
     pyyaml
     markdown
-    ansi2html
   ];
 
   preBuild = ''
     export PKGVER=${version}
-    export SRHT_PATH=${srht}/${python.sitePackages}/srht
   '';
 
   postInstall = ''
@@ -61,12 +45,10 @@ buildPythonPackage rec {
     cp ${buildWorker "${src}/worker"}/bin/worker $out/bin/builds.sr.ht-worker
   '';
 
-  pythonImportsCheck = [ "buildsrht" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://git.sr.ht/~sircmpwn/builds.sr.ht";
     description = "Continuous integration service for the sr.ht network";
-    license = licenses.agpl3Only;
+    license = licenses.agpl3;
     maintainers = with maintainers; [ eadwu ];
   };
 }

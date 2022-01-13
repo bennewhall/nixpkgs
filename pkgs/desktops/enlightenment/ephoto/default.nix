@@ -1,36 +1,30 @@
-{ lib
-, stdenv
-, fetchurl
-, meson
-, ninja
-, pkg-config
-, efl
-}:
+{ stdenv, fetchurl, pkgconfig, efl, pcre, mesa, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "ephoto";
-  version = "1.6.0";
+  version = "1.5";
 
   src = fetchurl {
-    url = "http://download.enlightenment.org/rel/apps/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "1lvhcs4ba8h3z78nyycbww8mj4cscb8k200dcc3cdy8vrvrp7g1n";
+    url = "http://www.smhouston.us/stuff/${pname}-${version}.tar.gz";
+    sha256 = "09kraa5zz45728h2dw1ssh23b87j01bkfzf977m48y1r507sy3vb";
   };
 
   nativeBuildInputs = [
-    meson
-    ninja
-    pkg-config
+    pkgconfig
+    mesa.dev # otherwise pkg-config does not find gbm
+    makeWrapper
   ];
 
   buildInputs = [
     efl
+    pcre
   ];
 
-  meta = with lib; {
+  meta = {
     description = "Image viewer and editor written using the Enlightenment Foundation Libraries";
-    homepage = "https://www.smhouston.us/ephoto/";
-    license = licenses.bsd2;
-    platforms = platforms.linux;
-    maintainers = with maintainers; [ romildo ];
+    homepage = "https://smhouston.us/projects/ephoto/";
+    license = stdenv.lib.licenses.bsd2;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.romildo ];
   };
 }

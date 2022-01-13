@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "iops";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     cp iops $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Measure I/O operations per second of a storage device";
     longDescription = ''
       Iops lets you measure how many I/O operations per second a storage device can perform.

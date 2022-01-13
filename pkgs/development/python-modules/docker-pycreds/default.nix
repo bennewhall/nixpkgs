@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, six }:
+{ stdenv, buildPythonPackage, fetchPypi, six }:
 
 buildPythonPackage rec {
   pname = "docker-pycreds";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ six ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python bindings for the docker credentials store API.";
     homepage = "https://github.com/shin-/dockerpy-creds";
     license = licenses.asl20;

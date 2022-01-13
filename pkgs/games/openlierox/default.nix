@@ -1,9 +1,8 @@
-{ lib, stdenv, fetchurl, libX11, xorgproto, gd, SDL, SDL_image, SDL_mixer, zlib
-, libxml2, pkg-config, curl, cmake, libzip }:
+{ stdenv, fetchurl, libX11, xorgproto, gd, SDL, SDL_image, SDL_mixer, zlib
+, libxml2, pkgconfig, curl, cmake, libzip }:
 
-stdenv.mkDerivation rec {
-  pname = "openlierox";
-  version = "0.58rc3";
+stdenv.mkDerivation {
+  name = "openlierox-0.58rc3";
 
   src = fetchurl {
     url = "mirror://sourceforge/openlierox/OpenLieroX_0.58_rc3.src.tar.bz2";
@@ -29,14 +28,13 @@ stdenv.mkDerivation rec {
     cp -R ../share/gamedir/* $out/share/OpenLieroX
   '';
 
-  nativeBuildInputs = [ cmake pkg-config curl ];
   buildInputs = [ libX11 xorgproto gd SDL SDL_image SDL_mixer zlib libxml2
-    libzip ];
+    pkgconfig curl cmake libzip ];
 
   meta = {
     homepage = "http://openlierox.net";
     description = "Real-time game with Worms-like shooting";
-    license = lib.licenses.lgpl2Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.lgpl2Plus;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

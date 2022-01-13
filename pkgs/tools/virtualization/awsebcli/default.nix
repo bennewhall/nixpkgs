@@ -1,4 +1,4 @@
-{ lib, python3, glibcLocales }:
+{ stdenv, python3, glibcLocales }:
 let
 
   localPython = python3.override {
@@ -79,7 +79,7 @@ in with localPython.pkgs; buildPythonApplication rec {
     # Otherwise, awsebcli will try to install it using pip when using some
     # commands (like "eb local run").
     blessed botocore cement colorama dockerpty docopt pathspec pyyaml
-    requests semantic-version setuptools tabulate termcolor websocket-client
+    requests semantic-version setuptools tabulate termcolor websocket_client
   ];
 
   postInstall = ''
@@ -87,11 +87,10 @@ in with localPython.pkgs; buildPythonApplication rec {
     mv $out/bin/eb_completion.bash $out/share/bash-completion/completions/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://aws.amazon.com/elasticbeanstalk/";
     description = "A command line interface for Elastic Beanstalk";
     maintainers = with maintainers; [ eqyiel ];
     license = licenses.asl20;
-    broken = true;
   };
 }

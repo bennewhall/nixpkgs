@@ -1,4 +1,4 @@
-{ lib, stdenv, autoconf, automake, intltool, libtool, fetchFromGitHub, readline }:
+{ stdenv, autoconf, automake, intltool, libtool, fetchFromGitHub, readline }:
 
 stdenv.mkDerivation rec {
   version = "0.17";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   preConfigure = ''
     ./autogen.sh
   '';
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/scanmem/scanmem";
     description = "Memory scanner for finding and poking addresses in executing processes";
     maintainers = [ maintainers.chattered ];

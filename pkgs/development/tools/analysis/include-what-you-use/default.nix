@@ -1,26 +1,28 @@
-{ lib, stdenv, fetchurl, cmake, llvmPackages, python3 }:
+{ stdenv, fetchurl, cmake, llvmPackages, python2 }:
 
 stdenv.mkDerivation rec {
   pname = "include-what-you-use";
   # Also bump llvmPackages in all-packages.nix to the supported version!
-  version = "0.17";
+  version = "0.14";
 
   src = fetchurl {
-    sha256 = "sha256-7KfAT4tBa2OF7QDjNmmn+kaTzSbLcrUizeVYgo6wxmU=";
+    sha256 = "1vq0c8jqspvlss8hbazml44fi0mbslgnp2i9wcr0qrjpvfbl6623";
     url = "${meta.homepage}/downloads/${pname}-${version}.src.tar.gz";
   };
 
-  nativeBuildInputs = with llvmPackages; [ cmake llvm.dev llvm python3];
-  buildInputs = with llvmPackages; [ libclang clang-unwrapped ];
+  buildInputs = with llvmPackages; [ clang-unwrapped llvm python2 ];
+  nativeBuildInputs = [ cmake ];
 
   cmakeFlags = [ "-DIWYU_LLVM_ROOT_PATH=${llvmPackages.clang-unwrapped}" ];
+
+  enableParallelBuilding = true;
 
   postInstall = ''
     substituteInPlace $out/bin/iwyu_tool.py \
       --replace "'include-what-you-use'" "'$out/bin/include-what-you-use'"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Analyze #includes in C/C++ source files with clang";
     longDescription = ''
       For every symbol (type, function variable, or macro) that you use in

@@ -1,7 +1,7 @@
 # Test whether mysqlBackup option works
 import ./../make-test-python.nix ({ pkgs, ... } : {
   name = "mysql-backup";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ rvl ];
   };
 
@@ -10,7 +10,7 @@ import ./../make-test-python.nix ({ pkgs, ... } : {
       services.mysql = {
         enable = true;
         initialDatabases = [ { name = "testdb"; schema = ./testdb.sql; } ];
-        package = pkgs.mariadb;
+        package = pkgs.mysql;
       };
 
       services.mysqlBackup = {

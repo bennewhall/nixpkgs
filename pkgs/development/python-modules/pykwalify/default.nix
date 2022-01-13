@@ -1,40 +1,32 @@
-{ lib
-, buildPythonPackage
-, python-dateutil
-, docopt
-, fetchPypi
-, pytestCheckHook
-, pyyaml
-, ruamel-yaml
-, testfixtures
+{ lib, buildPythonPackage, fetchPypi
+, dateutil, docopt, pyyaml
+, pytest, testfixtures
 }:
 
 buildPythonPackage rec {
-  version = "1.8.0";
+  version = "1.7.0";
   pname = "pykwalify";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-eWsq0+1MuZuIMItTP7L1WcMPpu+0+p/aETR/SD0kWIQ=";
+    sha256 = "1cnfzkg1b01f825ikpw2fhjclf9c8akxjfrbd1vc22x1lg2kk2vy";
   };
 
   propagatedBuildInputs = [
-    python-dateutil
+    dateutil
     docopt
     pyyaml
-    ruamel-yaml
   ];
 
   checkInputs = [
-    pytestCheckHook
+    pytest
     testfixtures
   ];
 
-  disabledTests = [
-    "test_multi_file_support"
-  ];
-
-  pythonImportsCheck = [ "pykwalify" ];
+  checkPhase = ''
+    pytest \
+      -k 'not test_multi_file_support'
+  '';
 
   meta = with lib; {
     homepage = "https://github.com/Grokzen/pykwalify";

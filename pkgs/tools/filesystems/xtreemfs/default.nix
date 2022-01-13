@@ -13,8 +13,7 @@ stdenv.mkDerivation {
   pname = "XtreemFS";
   version = "1.5.1.81";
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ which attr python ];
+  buildInputs = [ which attr makeWrapper python ];
 
   patches = [
     (fetchpatch {

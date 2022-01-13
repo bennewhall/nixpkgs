@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, git, lib, makeWrapper, nettools, perl, perlPackages }:
+{ stdenv, fetchFromGitHub, git, lib, makeWrapper, nettools, perl }:
 
 stdenv.mkDerivation rec {
   pname = "gitolite";
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
 
   postFixup = ''
     wrapProgram $out/bin/gitolite-shell \
-      --prefix PATH : ${lib.makeBinPath [ git (perl.withPackages (p: [ p.JSON ])) ]}
+      --prefix PATH : ${lib.makeBinPath [ git perl ]}
   '';
 
   installPhase = ''
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     echo ${version} > $out/bin/VERSION
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Finely-grained git repository hosting";
     homepage    = "https://gitolite.com/gitolite/index.html";
     license     = licenses.gpl2;

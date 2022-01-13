@@ -1,7 +1,8 @@
-{ lib
+{ stdenv
+, lib
 , fetchgit
 , rustPlatform
-, pkg-config
+, pkgconfig
 , openssl
 , dbus
 , sqlite
@@ -15,23 +16,23 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "meli";
-  version = "alpha-0.7.2";
+  version = "alpha-0.6.2";
 
   src = fetchgit {
     url = "https://git.meli.delivery/meli/meli.git";
     rev = version;
-    sha256 = "sha256-cbigEJhX6vL+gHa40cxplmPsDhsqujkzQxe0Dr6+SK0=";
+    sha256 = "0ycyksrrp4llwklzx3ipac8hmpfxa1pa7dqsm82wic0f6p5d1dp6";
   };
 
-  cargoSha256 = "sha256-ZE653OtXyZ9454bKPApmuL2kVko/hGBWEAya1L1KIoc=";
+  cargoSha256 = "sha256:0lxwhb2c16w5z7rqzch0ij8n8hxb5xcin31w9i28mzv1xm7sg8ks";
 
-  nativeBuildInputs = [ pkg-config gzip makeWrapper ];
+  cargoBuildFlags = lib.optional withNotmuch "--features=notmuch";
+
+  nativeBuildInputs = [ pkgconfig gzip makeWrapper ];
 
   buildInputs = [ openssl dbus sqlite ] ++ lib.optional withNotmuch notmuch;
 
   checkInputs = [ file ];
-
-  buildFeatures = lib.optional withNotmuch [ "notmuch" ];
 
   postInstall = ''
     mkdir -p $out/share/man/man1
@@ -48,7 +49,7 @@ rustPlatform.buildRustPackage rec {
     wrapProgram $out/bin/meli --set LD_LIBRARY_PATH ${notmuch}/lib
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Experimental terminal mail client aiming for configurability and extensibility with sane defaults";
     homepage = "https://meli.delivery";
     license = licenses.gpl3;

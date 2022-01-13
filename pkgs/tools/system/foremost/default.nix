@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "foremost";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/{bin,share/man/man8}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Recover files based on their contents";
     longDescription = ''
       Foremost is a console program to recover files based on their headers,

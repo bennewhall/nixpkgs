@@ -1,24 +1,23 @@
-{ lib, stdenv, fetchurl, jre, makeWrapper
-, mysqlSupport ? true, mysql_jdbc
-, postgresqlSupport ? true, postgresql_jdbc }:
+{ stdenv, fetchurl, jre, makeWrapper
+, mysqlSupport ? true, mysql_jdbc ? null }:
 
+assert mysqlSupport -> mysql_jdbc != null;
+
+with stdenv.lib;
 let
-  extraJars =
-    lib.optional mysqlSupport mysql_jdbc
-    ++ lib.optional postgresqlSupport postgresql_jdbc;
+  extraJars = optional mysqlSupport mysql_jdbc;
 in
 
 stdenv.mkDerivation rec {
   pname = "liquibase";
-  version = "4.4.3";
+  version = "4.2.1";
 
   src = fetchurl {
     url = "https://github.com/liquibase/liquibase/releases/download/v${version}/${pname}-${version}.tar.gz";
-    sha256 = "sha256-td+mBf/JhTw5vvlupyllpZ2e4So7y1kEC1OdR4LUv/k=";
+    sha256 = "1fv92f71p7pk3r4aj88kgaiblfii3z4fjbchyj1c9k6br0gwbw8b";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jre ];
+  buildInputs = [ jre makeWrapper ];
 
   unpackPhase = ''
     tar xfz ${src}
@@ -48,15 +47,15 @@ stdenv.mkDerivation rec {
       # taken from the executable script in the source
       CP="$out/liquibase.jar"
       ${addJars "$out/lib"}
-      ${lib.concatStringsSep "\n" (map (p: addJars "${p}/share/java") extraJars)}
+      ${concatStringsSep "\n" (map (p: addJars "${p}/share/java") extraJars)}
 
-      ${lib.getBin jre}/bin/java -cp "\$CP" \$JAVA_OPTS \
+      ${getBin jre}/bin/java -cp "\$CP" \$JAVA_OPTS \
         liquibase.integration.commandline.Main \''${1+"\$@"}
       EOF
       chmod +x $out/bin/liquibase
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Version Control for your database";
     homepage = "https://www.liquibase.org/";
     changelog = "https://raw.githubusercontent.com/liquibase/liquibase/v${version}/changelog.txt";

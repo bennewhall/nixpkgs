@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, cmake, zlib, ncurses}:
+{stdenv, fetchFromGitHub, cmake, zlib, ncurses}:
 
 stdenv.mkDerivation rec {
   pname = "somatic-sniper";
@@ -13,12 +13,11 @@ stdenv.mkDerivation rec {
 
   patches = [ ./somatic-sniper.patch ];
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ zlib ncurses ];
+  buildInputs = [ cmake zlib ncurses ];
 
   enableParallelBuilding = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Identify single nucleotide positions that are different between tumor and normal";
     license = licenses.mit;
     homepage = "https://github.com/genome/somatic-sniper";

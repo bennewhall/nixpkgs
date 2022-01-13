@@ -1,16 +1,16 @@
 {
   mkDerivation, lib, propagate,
   extra-cmake-modules,
-  qtbase,
-  wayland-scanner, kwayland,
-  plasma-wayland-protocols, wayland,
-  libXrandr, qtx11extras
+  kwayland, libXrandr, qtbase, qtx11extras
 }:
 
 mkDerivation {
   name = "libkscreen";
-  nativeBuildInputs = [ extra-cmake-modules wayland-scanner ];
-  buildInputs = [ kwayland plasma-wayland-protocols wayland libXrandr qtx11extras ];
+  meta = {
+    broken = builtins.compareVersions qtbase.version "5.12.0" < 0;
+  };
+  nativeBuildInputs = [ extra-cmake-modules ];
+  buildInputs = [ kwayland libXrandr qtx11extras ];
   outputs = [ "out" "dev" ];
   patches = [
     ./libkscreen-backends-path.patch

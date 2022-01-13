@@ -1,9 +1,10 @@
-{ lib, stdenv, dpkg, fetchurl, zip, nixosTests }:
+{ stdenv, dpkg, fetchurl }:
 
 let
-  generic = { version, sha256, suffix ? "", ... } @ args:
-  stdenv.mkDerivation (args // {
+  generic = { version, sha256, suffix ? "" }:
+  stdenv.mkDerivation {
     pname = "unifi-controller";
+    inherit version;
 
     src = fetchurl {
       url = "https://dl.ubnt.com/unifi/${version}${suffix}/unifi_sysvinit_all.deb";
@@ -28,39 +29,32 @@ let
       runHook postInstall
     '';
 
-    passthru.tests = {
-      unifi = nixosTests.unifi;
-    };
-
-    meta = with lib; {
+    meta = with stdenv.lib; {
       homepage = "http://www.ubnt.com/";
       description = "Controller for Ubiquiti UniFi access points";
       license = licenses.unfree;
       platforms = platforms.unix;
-      maintainers = with maintainers; [ erictapen globin patryk27 pennae ];
+      maintainers = with maintainers; [ erictapen globin patryk27 ];
     };
-  });
+  };
 
-in rec {
-  # see https://community.ui.com/releases / https://www.ui.com/download/unifi
+in {
+
+  # https://community.ui.com/releases / https://www.ui.com/download/unifi
+  # Outdated FAQ: https://help.ubnt.com/hc/en-us/articles/115000441548-UniFi-Current-Controller-Versions
 
   unifiLTS = generic {
     version = "5.6.42";
     sha256 = "0wxkv774pw43c15jk0sg534l5za4j067nr85r5fw58iar3w2l84x";
   };
 
-  unifi5 = generic {
+  unifiStable = generic {
     version = "5.14.23";
     sha256 = "1aar05yjm3z5a30x505w4kakbyz35i7mk7xyg0wm4ml6h94d84pv";
-
-    postInstall = ''
-      # Remove when log4j is updated to 2.12.2 or 2.16.0.
-      ${zip}/bin/zip -q -d $out/lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class
-    '';
   };
 
-  unifi6 = generic {
-    version = "6.5.55";
-    sha256 = "sha256-NUGRO+f6JzWvYPwiitZsgp+LQwnGSncnost03mgNVxA=";
+  unifiBeta = generic {
+    version = "6.0.36";
+    sha256 = "1sjf4jd8jkf6194ahwqjxd2ip0r70bdk15gci1qrdw88agab143j";
   };
 }

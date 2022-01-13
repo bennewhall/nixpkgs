@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , autoconf
 , automake
 , fetchFromGitHub
-, pkg-config
+, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -19,12 +19,12 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     autoconf
     automake
-    pkg-config
+    pkgconfig
   ];
 
   preConfigure = "./autogen.sh";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://mypaint.org/";
     description = "Brushes used by MyPaint and other software using libmypaint";
     license = licenses.cc0;

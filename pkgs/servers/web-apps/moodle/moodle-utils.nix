@@ -8,16 +8,15 @@ let
     configurePhase ? ":",
     buildPhase ? ":",
     buildInputs ? [ ],
-    nativeBuildInputs ? [ ],
     ...
   }:
   stdenv.mkDerivation (a // {
     name = name;
 
     inherit pluginType;
-    inherit configurePhase buildPhase buildInputs;
+    inherit configurePhase buildPhase;
 
-    nativeBuildInputs = [ unzip ] ++ nativeBuildInputs;
+    buildInputs = [ unzip ] ++ buildInputs;
 
     installPhase = ''
       runHook preInstall

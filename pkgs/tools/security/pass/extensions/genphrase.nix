@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "pass-genphrase";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
       --replace '$EXTENSIONS' "$out/lib/password-store/extensions/"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pass extension that generates memorable passwords";
     homepage = "https://github.com/congma/pass-genphrase";
     license = licenses.gpl3;

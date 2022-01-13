@@ -1,19 +1,16 @@
-{ lib, stdenv, fetchFromGitHub, pidgin} :
+{ stdenv, fetchurl, pidgin} :
 
-stdenv.mkDerivation rec {
-  pname = "pidgin-msn-pecan";
-  version = "0.1.4";
-  src = fetchFromGitHub {
-    owner = "felipec";
-    repo = "msn-pecan";
-    rev = "v${version}";
-    sha256 = "0133rpiy4ik6rx9qn8m38vp7w505hnycggr53g3a2hfpk5xj03zh";
+stdenv.mkDerivation {
+  name = "pidgin-msn-pecan-0.1.4";
+  src = fetchurl {
+    url = "http://msn-pecan.googlecode.com/files/msn-pecan-0.1.4.tar.bz2";
+    sha256 = "0d43z2ay9is1r2kkc9my8pz0fwdyzv7k19vdmbird18lg7rlbjd2";
   };
 
   meta = {
     description = "Alternative MSN protocol plug-in for Pidgin IM";
     homepage = "https://github.com/felipec/msn-pecan";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 
   makeFlags = [

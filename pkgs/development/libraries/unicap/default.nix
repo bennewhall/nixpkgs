@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libusb-compat-0_1, libraw1394, dcraw, intltool, perl, v4l-utils }:
+{ stdenv, fetchurl, libusb-compat-0_1, libraw1394, dcraw, intltool, perl, v4l-utils }:
 
 stdenv.mkDerivation rec {
   pname = "libunicap";
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     sed -e 's@/etc/udev@'"$out"'/&@' -i data/Makefile.*
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Universal video capture API";
     homepage = "http://www.unicap-imaging.org/";
     maintainers = [ maintainers.raskin ];

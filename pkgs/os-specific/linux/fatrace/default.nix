@@ -1,18 +1,12 @@
-{ lib, stdenv
-, fetchFromGitHub
-, python3
-, which
-}:
+{ stdenv, fetchurl, python3, which }:
 
 stdenv.mkDerivation rec {
   pname = "fatrace";
-  version = "0.16.3";
+  version = "0.13";
 
-  src = fetchFromGitHub {
-    owner = "martinpitt";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-w7leZPdmiTc+avihP203e6GLvbRzbCtNOJdF8MM2v68=";
+  src = fetchurl {
+    url = "https://launchpad.net/fatrace/trunk/${version}/+download/${pname}-${version}.tar.bz2";
+    sha256 = "0hrh45bpzncw0jkxw3x2smh748r65k2yxvfai466043bi5q0d2vx";
   };
 
   buildInputs = [ python3 which ];
@@ -20,13 +14,16 @@ stdenv.mkDerivation rec {
   postPatch = ''
     substituteInPlace power-usage-report \
       --replace "'which'" "'${which}/bin/which'"
+
+    # Avoid a glibc >= 2.25 deprecation warning that gets fatal via -Werror.
+    sed 1i'#include <sys/sysmacros.h>' -i fatrace.c
   '';
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Report system-wide file access events";
-    homepage = "https://github.com/martinpitt/fatrace";
+    homepage = "https://launchpad.net/fatrace/";
     license = licenses.gpl3Plus;
     longDescription = ''
       fatrace reports file access events from all running processes.

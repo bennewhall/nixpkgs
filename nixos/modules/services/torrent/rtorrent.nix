@@ -1,11 +1,10 @@
-{ config, options, pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 with lib;
 
 let
 
   cfg = config.services.rtorrent;
-  opt = options.services.rtorrent;
 
 in {
   options.services.rtorrent = {
@@ -22,7 +21,6 @@ in {
     downloadDir = mkOption {
       type = types.str;
       default = "${cfg.dataDir}/download";
-      defaultText = literalExpression ''"''${config.${opt.dataDir}}/download"'';
       description = ''
         Where to put downloaded files.
       '';
@@ -47,7 +45,7 @@ in {
     package = mkOption {
       type = types.package;
       default = pkgs.rtorrent;
-      defaultText = literalExpression "pkgs.rtorrent";
+      defaultText = "pkgs.rtorrent";
       description = ''
         The rtorrent package to use.
       '';

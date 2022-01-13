@@ -1,13 +1,14 @@
-{ stdenv
-, lib
+{ lib
+, python
 , buildPythonPackage
+, fetchpatch
 , fetchPypi
 , isPyPy
 , R
 , rWrapper
 , rPackages
 , pcre
-, xz
+, lzma
 , bzip2
 , zlib
 , icu
@@ -19,37 +20,30 @@
 , cffi
 , tzlocal
 , simplegeneric
-, pytestCheckHook
+, pytest
 , extraRPackages ? []
 }:
 
 buildPythonPackage rec {
-    version = "3.4.5";
+    version = "3.3.6";
     pname = "rpy2";
 
     disabled = isPyPy;
     src = fetchPypi {
       inherit version pname;
-      sha256 = "5d31a5ea43f5a59f6dec30faca87edb01fc9b8affa0beae96a99be923bd7dab3";
+      sha256 = "0xvfkxvh01r5ibd5mpisp8bz385hgpn27b988y8v65z7hqr3y1nf";
     };
 
-    patches = [
-      # R_LIBS_SITE is used by the nix r package to point to the installed R libraries.
-      # This patch sets R_LIBS_SITE when rpy2 is imported.
-      ./rpy2-3.x-r-libs-site.patch
-    ];
-
-    postPatch = ''
-      substituteInPlace 'rpy2/rinterface_lib/embedded.py' --replace '@NIX_R_LIBS_SITE@' "$R_LIBS_SITE"
-      substituteInPlace 'requirements.txt' --replace 'pytest' ""
-    '';
-
     buildInputs = [
+      R
       pcre
-      xz
+      lzma
       bzip2
       zlib
       icu
+
+      # is in the upstream `requires` although it shouldn't be -- this is easier than patching it away
+      pytest
     ] ++ (with rPackages; [
       # packages expected by the test framework
       ggplot2
@@ -64,9 +58,22 @@ buildPythonPackage rec {
       tidyr
     ]) ++ extraRPackages ++ rWrapper.recommendedPackages;
 
+    checkPhase = ''
+      pytest
+    '';
+
     nativeBuildInputs = [
       R # needed at setup time to detect R_HOME (alternatively set R_HOME explicitly)
     ];
+
+    patches = [
+      # R_LIBS_SITE is used by the nix r package to point to the installed R libraries.
+      # This patch sets R_LIBS_SITE when rpy2 is imported.
+      ./rpy2-3.x-r-libs-site.patch
+    ];
+    postPatch = ''
+      substituteInPlace 'rpy2/rinterface_lib/embedded.py' --replace '@NIX_R_LIBS_SITE@' "$R_LIBS_SITE"
+    '';
 
     propagatedBuildInputs = [
       ipython
@@ -79,10 +86,8 @@ buildPythonPackage rec {
       simplegeneric
     ];
 
-    doCheck = !stdenv.isDarwin;
-
     checkInputs = [
-      pytestCheckHook
+      pytest
     ];
 
     meta = {

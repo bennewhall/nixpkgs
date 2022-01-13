@@ -1,4 +1,4 @@
-{ lib, fetchgit, pkg-config, gettext, runCommand, makeWrapper
+{ fetchgit, pkgconfig, gettext, runCommand, makeWrapper
 , elfutils, kernel, gnumake, python2, python2Packages
 }:
 
@@ -6,17 +6,18 @@ let
   ## fetchgit info
   url = "git://sourceware.org/git/systemtap.git";
   rev = "release-${version}";
-  sha256 = "sha256-3LgqMBCnUG2UmsekaIvV43lBpSPEocEXmFV9WpE7wE0=";
-  version = "4.5";
+  sha256 = "0mmpiq7bsrwhp7z07a1pwka4q6d2fbmdx5wp83nxj31rvdxhqwnw";
+  version = "4.1";
 
   inherit (kernel) stdenv;
+  inherit (stdenv) lib;
 
   ## stap binaries
   stapBuild = stdenv.mkDerivation {
     pname = "systemtap";
     inherit version;
     src = fetchgit { inherit url rev sha256; };
-    nativeBuildInputs = [ pkg-config ];
+    nativeBuildInputs = [ pkgconfig ];
     buildInputs = [ elfutils gettext python2 python2Packages.setuptools ];
     enableParallelBuilding = true;
   };
@@ -37,7 +38,7 @@ let
 
 in runCommand "systemtap-${kernel.version}-${version}" {
   inherit stapBuild kernelBuildDir;
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
   meta = {
     homepage = "https://sourceware.org/systemtap/";
     repositories.git = url;

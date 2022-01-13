@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , meson
 , ninja
@@ -13,14 +13,14 @@
 
 stdenv.mkDerivation rec {
   pname = "marker";
-  version = "2020.04.04.2";
+  version = "2020.04.04";
 
   src = fetchFromGitHub {
     owner = "fabiocolacio";
     repo = "Marker";
     rev = version;
     fetchSubmodules = true;
-    sha256 = "sha256-wLR1FQqlLA02ed/JoAcxRHhIVua1FibAee1PC2zOPOM=";
+    sha256 = "1iy7izyprf050bix8am1krqivgyxnhx3jm775v8f80cgbqxy7m5r";
   };
 
   nativeBuildInputs = [
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     pandoc
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://fabiocolacio.github.io/Marker/";
     description = "Markdown editor for the Linux desktop";
     maintainers = with maintainers; [ trepetti ];

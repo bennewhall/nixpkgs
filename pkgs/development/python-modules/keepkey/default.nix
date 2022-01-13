@@ -1,26 +1,20 @@
-{ lib
-, fetchFromGitHub
-, buildPythonPackage
-, ecdsa
-, hidapi
-, libusb1
-, mnemonic
-, protobuf
-, pytest
-}:
+{ stdenv, fetchFromGitHub, buildPythonPackage, pytest
+, ecdsa , mnemonic, protobuf, hidapi, trezor }:
 
 buildPythonPackage rec {
   pname = "keepkey";
-  version = "7.2.1";
+  version = "6.0.3";
 
   src = fetchFromGitHub {
     owner = "keepkey";
     repo = "python-keepkey";
     rev = "v${version}";
-    sha256 = "00hqppdj3s9y25x4ad59y8axq94dd4chhw9zixq32sdrd9v8z55a";
+    sha256 = "0jnkh1nin1lwnx32ak6sv8gzmpnkvcy6vm23wzm1ymzfndxk6rnm";
   };
 
-  propagatedBuildInputs = [ ecdsa hidapi libusb1 mnemonic protobuf ];
+  propagatedBuildInputs = [ protobuf hidapi trezor ];
+
+  buildInputs = [ ecdsa mnemonic ];
 
   checkInputs = [ pytest ];
 
@@ -30,7 +24,7 @@ buildPythonPackage rec {
   # Remove impossible dependency constraint
   postPatch = "sed -i -e 's|hidapi==|hidapi>=|' setup.py";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "KeepKey Python client";
     homepage = "https://github.com/keepkey/python-keepkey";
     license = licenses.gpl3;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoreconfHook, unzip, m4, bison, flex, openssl, zlib }:
+{ stdenv, fetchurl, autoreconfHook, unzip, m4, bison, flex, openssl, zlib }:
 
 let
   majorVersion = "2.8";
@@ -24,7 +24,7 @@ in stdenv.mkDerivation rec {
       --replace 'AM_INIT_AUTOMAKE([foreign])' 'AM_INIT_AUTOMAKE([foreign subdir-objects])'
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C/C++ toolkit for SOAP web services and XML-based applications";
     homepage = "http://www.cs.fsu.edu/~engelen/soap.html";
     # gsoap is dual/triple licensed (see homepage for details):

@@ -1,24 +1,28 @@
-{ lib, stdenv
+{ stdenv
 , fetchgit
 , autoreconfHook
-, pkg-config
+, pkgconfig
 , dbus
 }:
 
 stdenv.mkDerivation rec {
   pname = "ell";
-  version = "0.46";
+  version = "0.35";
 
   outputs = [ "out" "dev" ];
 
   src = fetchgit {
-    url = "https://git.kernel.org/pub/scm/libs/ell/ell.git";
-    rev = version;
-    sha256 = "sha256-Am1PNFFfSzII4Iaeq0wgfuVHSeMDjiDzYkNQWlnEHJY=";
+     url = "https://git.kernel.org/pub/scm/libs/${pname}/${pname}.git";
+     rev = version;
+     sha256 = "16z7xwlrpx1bsr2y1rgxxxixzwc84cwn2g557iqxhwsxfzy6q3dk";
   };
 
+  patches = [
+    ./fix-dbus-tests.patch
+  ];
+
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     autoreconfHook
   ];
 
@@ -30,7 +34,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://01.org/ell";
     description = "Embedded Linux Library";
     longDescription = ''
@@ -38,6 +42,6 @@ stdenv.mkDerivation rec {
     '';
     license = licenses.lgpl21Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ mic92 dtzWill maxeaubrey ];
+    maintainers = with maintainers; [ mic92 dtzWill ];
   };
 }

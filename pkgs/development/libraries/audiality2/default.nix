@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 , pkg-config
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     jack2
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A realtime scripted modular audio engine for video games and musical applications";
     homepage = "http://audiality.org";
     license = licenses.zlib;

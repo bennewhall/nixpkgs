@@ -1,6 +1,6 @@
-{ lib, iproute2, fetchFromGitHub }:
+{ stdenv, iproute, fetchFromGitHub }:
 
-iproute2.overrideAttrs (oa: rec {
+iproute.overrideAttrs (oa: rec {
   pname = "iproute_mptcp";
   version = "0.95";
 
@@ -11,14 +11,13 @@ iproute2.overrideAttrs (oa: rec {
     sha256 = "07fihvwlaj0ng8s8sxqhd0a9h1narcnp4ibk88km9cpsd32xv4q3";
   };
 
-  preConfigure = oa.preConfigure + ''
+  preConfigure = ''
+    # Don't try to create /var/lib/arpd:
+    sed -e '/ARPDDIR/d' -i Makefile
     patchShebangs configure
   '';
 
-  # We override "patches" to never apply any iproute2 patches:
-  patches = [ ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/multipath-tcp/iproute-mptcp";
     description = "IP-Route extensions for MultiPath TCP";
     license = licenses.gpl2;

@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv, cmake, ninja }:
+{ fetchurl, stdenv, cmake, ninja }:
 
 stdenv.mkDerivation rec {
   name = "poppler-data-0.4.10";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ninja ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://poppler.freedesktop.org/";
     description = "Encoding files for Poppler, a PDF rendering library";
     platforms = platforms.all;

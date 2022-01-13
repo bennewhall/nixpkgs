@@ -1,14 +1,14 @@
-{ lib, stdenv, curl, fetchFromGitHub }:
+{ stdenv, curl, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "stdman";
-  version = "2021.12.21";
+  version = "2018.03.11";
 
   src = fetchFromGitHub {
     owner = "jeaye";
     repo = "stdman";
     rev = version;
-    sha256 = "sha256-wOMQzC5w8aDmxNxQ5HK8jMgoow1wXBfHGUwFBw2WiPA=";
+    sha256 = "1017vwhcwlwi5sa8h6pkhj048in826wxnhl6qarykmzksvidff3r";
   };
 
   outputDevdoc = "out";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ curl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Formatted C++17 stdlib man pages (cppreference)";
     longDescription = "stdman is a tool that parses archived HTML
       files from cppreference and generates groff-formatted manual

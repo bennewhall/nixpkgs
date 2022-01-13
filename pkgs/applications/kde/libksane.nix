@@ -6,10 +6,10 @@
 }:
 
 mkDerivation {
-  pname = "libksane";
+  name = "libksane";
   meta = with lib; {
     license = licenses.gpl2;
-    maintainers = with maintainers; [ polendri ];
+    maintainers = with maintainers; [ pshendry ];
   };
   nativeBuildInputs = [ extra-cmake-modules ];
   buildInputs = [ qtbase ki18n ktextwidgets kwallet kwidgetsaddons sane-backends ];

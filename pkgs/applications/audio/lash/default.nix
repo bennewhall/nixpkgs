@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, alsa-lib, gtk2, libjack2, libuuid, libxml2
-, makeWrapper, pkg-config, readline }:
+{ stdenv, fetchurl, alsaLib, gtk2, libjack2, libuuid, libxml2
+, makeWrapper, pkgconfig, readline }:
 
 assert libuuid != null;
 
@@ -15,8 +15,8 @@ stdenv.mkDerivation  rec {
   # http://permalink.gmane.org/gmane.linux.redhat.fedora.extras.cvs/822346
   patches = [ ./socket.patch ./gcc-47.patch ];
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
-  buildInputs = [ alsa-lib gtk2 libjack2 libxml2 readline ];
+  buildInputs = [ alsaLib gtk2 libjack2 libxml2 makeWrapper
+    pkgconfig readline ];
   propagatedBuildInputs = [ libuuid ];
   NIX_LDFLAGS = "-lm -lpthread -luuid";
 
@@ -26,7 +26,7 @@ stdenv.mkDerivation  rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Linux Audio Session Handler";
     longDescription = ''
       Session management system for GNU/Linux audio applications.

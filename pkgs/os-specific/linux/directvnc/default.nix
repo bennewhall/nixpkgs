@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, directfb, zlib, libjpeg, xorgproto }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, directfb, zlib, libjpeg, xorgproto }:
 
 stdenv.mkDerivation {
   pname = "directvnc";
@@ -11,11 +11,11 @@ stdenv.mkDerivation {
     sha256 = "16x7mr7x728qw7nbi6rqhrwsy73zsbpiz8pbgfzfl2aqhfdiz88b";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ directfb zlib libjpeg xorgproto ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "DirectFB VNC client";
     homepage = "http://drinkmilk.github.io/directvnc/";
     license = licenses.gpl2;

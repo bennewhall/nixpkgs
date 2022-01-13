@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fontforge, python3 }:
+{ stdenv, fetchFromGitHub, fontforge, python3 }:
 let
   inherit (python3.pkgs) fonttools;
 
@@ -27,7 +27,7 @@ let
           install -m444 -Dt $out/share/doc/${pname}-${version} README      || true
         '';
 
-        meta = with lib; {
+        meta = with stdenv.lib; {
           description = "Liberation Fonts, replacements for Times New Roman, Arial, and Courier New";
           longDescription = ''
             The Liberation Fonts are intended to be replacements for the three most

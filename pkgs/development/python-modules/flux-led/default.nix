@@ -1,50 +1,23 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, webcolors
-, pythonOlder
-, pytestCheckHook
-}:
+{ stdenv, buildPythonPackage, fetchFromGitHub
+, aiohttp, zigpy
+, pytest, isPy27 }:
 
 buildPythonPackage rec {
-  pname = "flux-led";
-  version = "0.27.32";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.7";
+  pname = "flux_led";
+  version = "0.22";
+  disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "Danielhiversen";
     repo = "flux_led";
     rev = version;
-    sha256 = "sha256-7EBZN4Nb3iVieTZvYlbN+CwgVxOwFatle0e6gFwcdwM=";
+    sha256 = "1zgajlkhclyrqhkmivna4ha2lyvfpk5929s042gy59p7mzpkvjx7";
   };
 
-  propagatedBuildInputs = [
-    webcolors
-  ];
-
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  postPatch = ''
-    substituteInPlace setup.py \
-      --replace '"pytest-runner>=5.2",' ""
-  '';
-
-  pytestFlagsArray = [
-    "tests.py"
-  ];
-
-  pythonImportsCheck = [
-    "flux_led"
-  ];
-
-  meta = with lib; {
-    description = "Python library to communicate with the flux_led smart bulbs";
+  meta = with stdenv.lib; {
+    description = "A Python library to communicate with the flux_led smart bulbs";
     homepage = "https://github.com/Danielhiversen/flux_led";
-    license = licenses.lgpl3Plus;
+    license = licenses.lgpl3;
     maintainers = with maintainers; [ colemickens ];
     platforms = platforms.linux;
   };

@@ -1,31 +1,25 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
-buildGoModule rec {
+buildGoPackage rec {
   pname = "k6";
-  version = "0.35.0";
+  version = "0.29.0";
+
+  goPackagePath = "github.com/loadimpact/k6";
 
   src = fetchFromGitHub {
-    owner = "grafana";
+    owner = "loadimpact";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-mSVU/0OdlEfGWxO6Gn/Ji7k2pMO5jWTfxFujN08bZjU=";
+    sha256 = "1zkw7jga8nsqycvrwnqxifbb5la2z4bmxg3l5638i4xlpn58g711";
   };
 
   subPackages = [ "./" ];
 
-  vendorSha256 = null;
-
-  doCheck = true;
-  doInstallCheck = true;
-  installCheckPhase = ''
-    $out/bin/k6 version | grep ${version} > /dev/null
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A modern load testing tool, using Go and JavaScript";
     homepage = "https://k6.io/";
-    changelog = "https://github.com/grafana/k6/releases/tag/v${version}";
+    changelog = "https://github.com/loadimpact/k6/releases/tag/v${version}";
     license = licenses.agpl3Plus;
-    maintainers = with maintainers; [ offline bryanasdev000 ];
+    maintainers = with maintainers; [ offline ];
   };
 }

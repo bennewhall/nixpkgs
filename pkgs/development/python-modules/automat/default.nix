@@ -1,5 +1,5 @@
-{ lib, buildPythonPackage, fetchPypi,
-  m2r, setuptools-scm, six, attrs }:
+{ stdenv, buildPythonPackage, fetchPypi,
+  m2r, setuptools_scm, six, attrs }:
 
 buildPythonPackage rec {
   version = "20.2.0";
@@ -10,14 +10,14 @@ buildPythonPackage rec {
     sha256 = "7979803c74610e11ef0c0d68a2942b152df52da55336e0c9d58daf1831cbdf33";
   };
 
-  buildInputs = [ m2r setuptools-scm ];
+  buildInputs = [ m2r setuptools_scm ];
   propagatedBuildInputs = [ six attrs ];
 
   # Some tests require twisetd, but twisted requires Automat to build.
   # this creates a circular dependency.
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/glyph/Automat";
     description = "Self-service finite-state machines for the programmer on the go";
     license = licenses.mit;

@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, qmake, qttools, qttranslations, qtlocation, wrapQtAppsHook, substituteAll }:
+{ stdenv, mkDerivation, fetchFromGitHub, qmake, qttools, qttranslations, substituteAll }:
 
-stdenv.mkDerivation rec {
+mkDerivation rec {
   pname = "gpxsee";
-  version = "10.0";
+  version = "7.37";
 
   src = fetchFromGitHub {
     owner = "tumic0";
     repo = "GPXSee";
     rev = version;
-    sha256 = "sha256-XACexj91TLd/i2GoFr0zZ3Yqcg+KjKoWWPfCGsEIR04=";
+    sha256 = "0fpb43smh0kwic5pdxs46c0hkqj8g084h72pa024x1my6w12y9b8";
   };
 
   patches = (substituteAll {
@@ -17,20 +17,19 @@ stdenv.mkDerivation rec {
     inherit qttranslations;
   });
 
-  buildInputs = [ qtlocation ];
-
-  nativeBuildInputs = [ qmake qttools wrapQtAppsHook ];
+  nativeBuildInputs = [ qmake qttools ];
 
   preConfigure = ''
     lrelease gpxsee.pro
   '';
 
-  postInstall = lib.optionalString stdenv.isDarwin ''
+  postInstall = with stdenv; lib.optionalString isDarwin ''
     mkdir -p $out/Applications
     mv GPXSee.app $out/Applications
+    wrapQtApp $out/Applications/GPXSee.app/Contents/MacOS/GPXSee
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GPS log file viewer and analyzer";
     longDescription = ''
       GPXSee is a Qt-based GPS log file viewer and analyzer that supports
@@ -38,8 +37,8 @@ stdenv.mkDerivation rec {
     '';
     homepage = "https://www.gpxsee.org/";
     changelog = "https://build.opensuse.org/package/view_file/home:tumic:GPXSee/gpxsee/gpxsee.changes";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ womfoo sikmir ];
-    platforms = platforms.unix;
+    platforms = with platforms; linux ++ darwin;
   };
 }

@@ -53,7 +53,7 @@ if (json.type !== 'success') {
 
 // Check for missing hashes in the yarn.lock and patch if necessary
 
-let pkgs = R.pipe(
+const pkgs = R.pipe(
   mapObjIndexedReturnArray((value, key) => ({
     ...value,
     nameWithVersion: key,
@@ -61,10 +61,10 @@ let pkgs = R.pipe(
   R.uniqBy(R.prop('resolved')),
 )(json.object)
 
+const fixedPkgsPromises = R.map(fixPkgAddMissingSha1, pkgs)
+
 ;(async () => {
-  if (!options['--no-patch']) {
-    pkgs = await Promise.all(R.map(fixPkgAddMissingSha1, pkgs))
-  }
+  const fixedPkgs = await Promise.all(fixedPkgsPromises)
 
   const origJson = lockfile.parse(data)
 
@@ -81,7 +81,7 @@ let pkgs = R.pipe(
 
   if (!options['--no-nix']) {
     // print to stdout
-    console.log(generateNix(pkgs, options['--builtin-fetchgit']))
+    console.log(generateNix(fixedPkgs, options['--builtin-fetchgit']))
   }
 })().catch(error => {
   console.error(error)

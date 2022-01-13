@@ -1,21 +1,19 @@
 { mkDerivation, qtbase
-, lib, extra-cmake-modules, gettext, python3
+, lib, extra-cmake-modules, gettext, python
 , drumstick, fluidsynth
 , kcoreaddons, kcrash, kdoctools
 , qtquickcontrols2, qtsvg, qttools, qtdeclarative
 }:
 
 mkDerivation {
-  pname = "minuet";
+  name = "minuet";
   meta = with lib; {
-    homepage = "https://apps.kde.org/minuet/";
-    description = "Music Education Software";
     license = with licenses; [ lgpl21 gpl3 ];
     maintainers = with maintainers; [ peterhoeg HaoZeke ];
     broken = lib.versionOlder qtbase.version "5.14";
   };
 
-  nativeBuildInputs = [ extra-cmake-modules gettext kdoctools python3 qtdeclarative ];
+  nativeBuildInputs = [ extra-cmake-modules gettext kdoctools python qtdeclarative ];
 
   propagatedBuildInputs = [
     drumstick fluidsynth

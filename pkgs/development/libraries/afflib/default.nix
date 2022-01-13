@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, zlib, curl, expat, fuse, openssl
-, autoreconfHook, python3, libiconv
+{ stdenv, fetchFromGitHub, zlib, curl, expat, fuse, openssl
+, autoreconfHook, python3
 }:
 
 stdenv.mkDerivation rec {
@@ -15,15 +15,15 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [ zlib curl expat openssl python3 ]
-    ++ lib.optionals (with stdenv; isLinux || isDarwin) [ fuse ]
-    ++ lib.optionals stdenv.isDarwin [ libiconv ];
+    ++ stdenv.lib.optionals stdenv.isLinux [ fuse ];
 
   meta = {
     homepage = "http://afflib.sourceforge.net/";
     description = "Advanced forensic format library";
-    platforms = lib.platforms.unix;
-    license = lib.licenses.bsdOriginal;
-    maintainers = [ lib.maintainers.raskin ];
+    platforms = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.bsdOriginal;
+    maintainers = [ stdenv.lib.maintainers.raskin ];
+    inherit version;
     downloadPage = "https://github.com/sshock/AFFLIBv3/tags";
   };
 }

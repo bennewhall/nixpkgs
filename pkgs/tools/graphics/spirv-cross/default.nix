@@ -1,23 +1,22 @@
-{ lib, stdenv, fetchFromGitHub, cmake, python3 }:
+{ stdenv, fetchFromGitHub, cmake, python3 }:
 
 stdenv.mkDerivation rec {
   pname = "spirv-cross";
-  version = "MoltenVK-1.1.5";
+  version = "2020-06-29";
 
   src = fetchFromGitHub {
     owner = "KhronosGroup";
     repo = "SPIRV-Cross";
     rev = version;
-    sha256 = "/t6hAlGY3+bddWg5ERFbqeU4/MAjq+/AEVv1Jy2C0HA=";
+    sha256 = "0mnccmhlqmpdx92v495z39i07hbvjwdr5n4zbarlrr1d7rm99lx4";
   };
 
   nativeBuildInputs = [ cmake python3 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool designed for parsing and converting SPIR-V to other shader languages";
     homepage = "https://github.com/KhronosGroup/SPIRV-Cross";
-    changelog = "https://github.com/KhronosGroup/SPIRV-Cross/releases/tag/${version}";
-    platforms = platforms.all;
+    platforms = platforms.linux;
     license = licenses.asl20;
     maintainers = with maintainers; [ Flakebi ];
   };

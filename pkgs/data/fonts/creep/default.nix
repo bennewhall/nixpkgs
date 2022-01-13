@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libfaketime
+{ stdenv, fetchFromGitHub, libfaketime
 , fonttosfnt, mkfontscale
 }:
 
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     mkfontdir "$out/share/fonts/misc"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A pretty sweet 4px wide pixel font";
     homepage = "https://github.com/romeovs/creep";
     license = licenses.mit;

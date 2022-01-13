@@ -1,13 +1,13 @@
-{ lib, stdenv, fetchurl, curl, fftw, gmp, gnuplot, gtk3, gtksourceview3, json-glib
+{ stdenv, fetchurl, curl, fftw, gmp, gnuplot, gtk3, gtksourceview3, json-glib
 , lapack, libxml2, mpfr, openblas, pkg-config, readline }:
 
 stdenv.mkDerivation rec {
   pname = "gretl";
-  version = "2021d";
+  version = "2020e";
 
   src = fetchurl {
     url = "mirror://sourceforge/gretl/${pname}-${version}.tar.xz";
-    sha256 = "sha256-zij337P/MemCwvMah2bUE3odv0Kf/KW6fUl2OgMzjuI=";
+    sha256 = "105y5hkzgyvad6wc3y7nn327bvrsch6jp03ckkn0w0hpnhiywzx7";
   };
 
   buildInputs = [
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A software package for econometric analysis";
     longDescription = ''
       gretl is a cross-platform software package for econometric analysis,

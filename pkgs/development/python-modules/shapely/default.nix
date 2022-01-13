@@ -1,64 +1,48 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, fetchPypi
-, substituteAll
-, pythonOlder
-, geos
-, pytestCheckHook
-, cython
+{ stdenv, buildPythonPackage, fetchPypi, substituteAll, pythonOlder
+, geos, pytest, cython
 , numpy
 }:
 
 buildPythonPackage rec {
   pname = "Shapely";
-  version = "1.8.0";
-  disabled = pythonOlder "3.6";
+  version = "1.7.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "177g8wxsgnphhhn4634n6ca1qrk462ijqlznpj5ry6d49ghpwc7m";
+    sha256 = "0adiz4jwmwxk7k1awqifb1a9bj5x4nx4gglb5dz9liam21674h8n";
   };
+  disabled = pythonOlder "3.5";
 
   nativeBuildInputs = [
     geos # for geos-config
     cython
   ];
 
-  propagatedBuildInputs = [
-    numpy
-  ];
+  checkInputs = [ pytest ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  propagatedBuildInputs = [ numpy ];
 
-  # Environment variable used in shapely/_buildcfg.py
+  # environment variable used in shapely/_buildcfg.py
   GEOS_LIBRARY_PATH = "${geos}/lib/libgeos_c${stdenv.hostPlatform.extensions.sharedLibrary}";
 
   patches = [
-    # Patch to search form GOES .so/.dylib files in a Nix-aware way
     (substituteAll {
       src = ./library-paths.patch;
       libgeos_c = GEOS_LIBRARY_PATH;
-      libc = lib.optionalString (!stdenv.isDarwin) "${stdenv.cc.libc}/lib/libc${stdenv.hostPlatform.extensions.sharedLibrary}.6";
+      libc = "${stdenv.cc.libc}/lib/libc${stdenv.hostPlatform.extensions.sharedLibrary}"
+               + stdenv.lib.optionalString (!stdenv.isDarwin) ".6";
     })
- ];
-
-  preCheck = ''
-    rm -r shapely # prevent import of local shapely
-  '';
-
-  disabledTests = [
-    "test_collection"
   ];
 
-  pythonImportsCheck = [ "shapely" ];
+  # Disable the tests that improperly try to use the built extensions
+  checkPhase = ''
+    rm -r shapely # prevent import of local shapely
+    py.test tests
+  '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Geometric objects, predicates, and operations";
-    homepage = "https://pypi.python.org/pypi/Shapely/";
-    license = with licenses; [ bsd3 ];
     maintainers = with maintainers; [ knedlsepp ];
+    homepage = "https://pypi.python.org/pypi/Shapely/";
   };
 }

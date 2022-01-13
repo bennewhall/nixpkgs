@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, botan2, libobjc, Security }:
+{ stdenv, fetchurl, botan2, libobjc, Security }:
 
 stdenv.mkDerivation rec {
 
@@ -18,13 +18,13 @@ stdenv.mkDerivation rec {
     ];
 
   propagatedBuildInputs =
-    lib.optionals stdenv.isDarwin [ libobjc Security ];
+    stdenv.lib.optionals stdenv.isDarwin [ libobjc Security ];
 
   buildInputs = [ botan2 ];
 
   postInstall = "rm -rf $out/var";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.opendnssec.org/softhsm";
     description = "Cryptographic store accessible through a PKCS #11 interface";
     longDescription = "

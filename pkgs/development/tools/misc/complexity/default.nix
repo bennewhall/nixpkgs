@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv, autogen }:
+{ fetchurl, stdenv, autogen }:
 
 stdenv.mkDerivation rec {
   pname = "complexity";
@@ -22,11 +22,11 @@ stdenv.mkDerivation rec {
          addresses several issues not considered in that scoring scheme.
       '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
     homepage = "https://www.gnu.org/software/complexity/";
 
-    platforms = lib.platforms.gnu ++ lib.platforms.linux;
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;
     maintainers = [ ];
   };
 }

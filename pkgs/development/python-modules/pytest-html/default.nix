@@ -1,21 +1,20 @@
-{ lib, buildPythonPackage, fetchPypi, pythonOlder
-, pytest, pytest-metadata, setuptools-scm }:
+{ stdenv, buildPythonPackage, fetchPypi, pythonOlder
+, pytest, pytest-metadata, setuptools_scm }:
 
 buildPythonPackage rec {
   pname = "pytest-html";
-  version = "3.1.1";
+  version = "3.1.0";
   disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "3ee1cf319c913d19fe53aeb0bc400e7b0bc2dbeb477553733db1dad12eb75ee3";
+    sha256 = "8a7979e2411aac445870d8cad9a251ab3823bc14f77d065e9ce9a5dff86f697d";
   };
 
-  nativeBuildInputs = [ setuptools-scm ];
-  buildInputs = [ pytest ];
-  propagatedBuildInputs = [ pytest-metadata ];
+  nativeBuildInputs = [ setuptools_scm ];
+  propagatedBuildInputs = [ pytest pytest-metadata ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Plugin for generating HTML reports";
     homepage = "https://github.com/pytest-dev/pytest-html";
     license = licenses.mpl20;

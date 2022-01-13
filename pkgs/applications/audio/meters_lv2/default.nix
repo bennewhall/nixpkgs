@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config
+{ stdenv, fetchurl, pkgconfig
 , lv2, libGLU, libGL, gtk2, cairo, pango, fftwFloat, libjack2 }:
 
 let
@@ -25,7 +25,7 @@ in
 stdenv.mkDerivation {
   inherit name;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ lv2 libGLU libGL gtk2 cairo pango fftwFloat libjack2 ];
 
   srcs = [ src robtkSrc ];
@@ -36,7 +36,7 @@ stdenv.mkDerivation {
   preConfigure = "makeFlagsArray=( PREFIX=$out )";
   meter_VERSION = version;
 
-  meta = with lib;
+  meta = with stdenv.lib;
     { description = "Collection of audio level meters with GUI in LV2 plugin format";
       homepage = "http://x42.github.io/meters.lv2/";
       maintainers = with maintainers; [ ehmry ];

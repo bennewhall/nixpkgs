@@ -1,8 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , ninja
 , gettext
@@ -13,9 +13,9 @@
 , gtk3
 , glib
 , libgee
-, libhandy
 , granite
 , libnotify
+, libunity
 , pango
 , elementary-dock
 , bamf
@@ -27,20 +27,27 @@
 , libcloudproviders
 , libgit2-glib
 , wrapGAppsHook
-, systemd
 }:
 
 stdenv.mkDerivation rec {
   pname = "elementary-files";
-  version = "6.1.1";
+  version = "4.5.0";
+
+  repoName = "files";
 
   outputs = [ "out" "dev" ];
 
   src = fetchFromGitHub {
     owner = "elementary";
-    repo = "files";
+    repo = repoName;
     rev = version;
-    sha256 = "sha256-5TSzV8MQG81aCCR8yiCPhKJaLrp/fwf4mjP32KkcbbY=";
+    sha256 = "sha256-wtQW1poX791DAlSFdVV9psnCfBDeVXI2fDZ2GcvvNn8=";
+  };
+
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = "pantheon.${pname}";
+    };
   };
 
   nativeBuildInputs = [
@@ -49,7 +56,7 @@ stdenv.mkDerivation rec {
     glib-networking
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
     wrapGAppsHook
@@ -59,7 +66,6 @@ stdenv.mkDerivation rec {
     bamf
     elementary-dock
     elementary-icon-theme
-    glib
     granite
     gtk3
     libcanberra
@@ -67,31 +73,30 @@ stdenv.mkDerivation rec {
     libdbusmenu-gtk3
     libgee
     libgit2-glib
-    libhandy
     libnotify
+    libunity
     pango
     sqlite
-    systemd
     zeitgeist
+  ];
+
+  patches = [
+    ./0001-filechooser-module-hardcode-gsettings-for-nixos.patch
   ];
 
   postPatch = ''
     chmod +x meson/post_install.py
     patchShebangs meson/post_install.py
+
+    substituteInPlace filechooser-module/FileChooserDialog.vala \
+      --subst-var-by ELEMENTARY_FILES_GSETTINGS_PATH ${glib.makeSchemaPath "$out" "${pname}-${version}"}
   '';
 
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = "pantheon.${pname}";
-    };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "File browser designed for elementary OS";
     homepage = "https://github.com/elementary/files";
-    license = licenses.gpl3Plus;
+    license = licenses.lgpl3;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
-    mainProgram = "io.elementary.files";
+    maintainers = pantheon.maintainers;
   };
 }

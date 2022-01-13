@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, pkg-config, libnl }:
+{ stdenv, fetchurl, pkg-config, libnl }:
 
 stdenv.mkDerivation rec {
   pname = "iw";
-  version = "5.16";
+  version = "5.9";
 
   src = fetchurl {
     url = "https://www.kernel.org/pub/software/network/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "sha256-TETkJ2L5A/kJS6WlmJmMgAqXpir9b9MeweCnmeMIZZw=";
+    sha256 = "1wp1ky1v353qqy5fnrk67apgzsap53jkr7pmghk3czpbk880ffi9";
   };
 
   nativeBuildInputs = [ pkg-config ];
@@ -23,8 +23,8 @@ stdenv.mkDerivation rec {
       deprecated and it's strongly recommended to switch to iw and nl80211.
     '';
     homepage = "https://wireless.wiki.kernel.org/en/users/Documentation/iw";
-    license = lib.licenses.isc;
-    maintainers = with lib.maintainers; [ viric primeos ];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.isc;
+    maintainers = with stdenv.lib.maintainers; [ viric primeos ];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

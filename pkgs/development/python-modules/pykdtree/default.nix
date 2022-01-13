@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, numpy, nose, openmp }:
+{ stdenv, buildPythonPackage, fetchPypi, numpy, nose, openmp }:
 
 buildPythonPackage rec {
   pname = "pykdtree";
@@ -15,7 +15,7 @@ buildPythonPackage rec {
 
   checkInputs = [ nose ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "kd-tree implementation for fast nearest neighbour search in Python";
     homepage = "https://github.com/storpipfugl/pykdtree";
     license = licenses.lgpl3;

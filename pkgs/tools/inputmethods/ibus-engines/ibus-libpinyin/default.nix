@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , autoreconfHook
 , gettext
-, pkg-config
+, pkgconfig
 , wrapGAppsHook
 , sqlite
 , libpinyin
@@ -15,19 +15,19 @@
 
 stdenv.mkDerivation rec {
   pname = "ibus-libpinyin";
-  version = "1.12.1";
+  version = "1.11.1";
 
   src = fetchFromGitHub {
     owner = "libpinyin";
     repo = "ibus-libpinyin";
     rev = version;
-    sha256 = "sha256-tSbH4twU+paCZdmzVQMSSg3AzBNkK4nnmOfbvUzvZTk=";
+    sha256 = "0b8rilk9zil9gvfhlk3rphcby6ph11dw66j175wp0na6h6hjlaf2";
   };
 
   nativeBuildInputs = [
     autoreconfHook
     gettext
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -44,10 +44,10 @@ stdenv.mkDerivation rec {
     db
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     isIbusEngine = true;
     description = "IBus interface to the libpinyin input method";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ ericsagnes ];
     platforms = platforms.linux;
   };

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   version = "unstable-2018-10-18";
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
     make PREFIX=$out install
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Desktop clients to interact with ps2link and ps2netfs";
     homepage = "https://github.com/ps2dev/ps2client";
     license = licenses.bsd3;

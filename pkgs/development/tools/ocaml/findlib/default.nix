@@ -1,31 +1,33 @@
-{ lib, stdenv, fetchurl, fetchpatch, m4, ncurses, ocaml, writeText }:
+{ stdenv, fetchurl, fetchpatch, m4, ncurses, ocaml, writeText }:
 
 stdenv.mkDerivation rec {
   pname = "ocaml-findlib";
-  version = "1.9.1";
+  version = "1.8.1";
 
   src = fetchurl {
     url = "http://download.camlcity.org/download/findlib-${version}.tar.gz";
-    sha256 = "sha256-K0K4vVRIjWTEvzy3BUtLN70wwdwSvUMeoeTXrYqYD+I=";
+    sha256 = "00s3sfb02pnjmkax25pcnljcnhcggiliccfz69a72ic7gsjwz1cf";
   };
 
-  nativeBuildInputs = [m4 ocaml];
-  buildInputs = [ ncurses ];
+  buildInputs = [m4 ncurses ocaml];
 
   patches = [ ./ldconf.patch ./install_topfind.patch ];
 
   dontAddPrefix=true;
-  dontAddStaticConfigureFlags = true;
-  configurePlatforms = [];
 
-  configureFlags = [
-      "-bindir" "${placeholder "out"}/bin"
-      "-mandir" "${placeholder "out"}/share/man"
-      "-sitelib" "${placeholder "out"}/lib/ocaml/${ocaml.version}/site-lib"
-      "-config" "${placeholder "out"}/etc/findlib.conf"
-  ];
+  preConfigure=''
+    configureFlagsArray=(
+      -bindir $out/bin
+      -mandir $out/share/man
+      -sitelib $out/lib/ocaml/${ocaml.version}/site-lib
+      -config $out/etc/findlib.conf
+    )
+  '';
 
-  buildFlags = [ "all" "opt" ];
+  buildPhase = ''
+    make all
+    make opt
+  '';
 
   setupHook = writeText "setupHook.sh" ''
     addOCamlPath () {
@@ -35,8 +37,6 @@ stdenv.mkDerivation rec {
         if test -d "''$1/lib/ocaml/${ocaml.version}/site-lib/stublibs"; then
             export CAML_LD_LIBRARY_PATH="''${CAML_LD_LIBRARY_PATH-}''${CAML_LD_LIBRARY_PATH:+:}''$1/lib/ocaml/${ocaml.version}/site-lib/stublibs"
         fi
-    }
-    createOcamlDestDir () {
         export OCAMLFIND_DESTDIR="''$out/lib/ocaml/${ocaml.version}/site-lib/"
         if test -n "''${createFindlibDestdir-}"; then
           mkdir -p $OCAMLFIND_DESTDIR
@@ -44,17 +44,16 @@ stdenv.mkDerivation rec {
     }
 
     addEnvHooks "$targetOffset" addOCamlPath
-    preConfigureHooks+=(createOcamlDestDir)
   '';
 
   meta = {
     homepage = "http://projects.camlcity.org/projects/findlib.html";
     description = "O'Caml library manager";
-    license = lib.licenses.mit;
+    license = stdenv.lib.licenses.mit;
     platforms = ocaml.meta.platforms or [];
     maintainers = [
-      lib.maintainers.maggesi
-      lib.maintainers.vbmithr
+      stdenv.lib.maintainers.maggesi
+      stdenv.lib.maintainers.vbmithr
     ];
   };
 }

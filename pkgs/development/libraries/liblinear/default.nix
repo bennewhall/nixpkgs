@@ -1,27 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, fixDarwinDylibNames }:
+{ stdenv, fetchFromGitHub, fixDarwinDylibNames }:
 
 let
   soVersion = "4";
 in stdenv.mkDerivation rec {
   pname = "liblinear";
-  version = "2.43";
+  version = "2.42";
 
   src = fetchFromGitHub {
     owner = "cjlin1";
     repo = "liblinear";
     rev = "v${builtins.replaceStrings ["."] [""] version}";
-    sha256 = "sha256-qcSMuWHJgsapWs1xgxv3fKSXcx18q8cwyIn3E4RCGKA=";
+    sha256 = "0p0hpjajfkskhd7jiv5zwhfa8hi49q3mgifjlkqvy99xspv98ijj";
   };
-
-  postPatch = ''
-    substituteInPlace blas/Makefile \
-      --replace "ar rcv" "${stdenv.cc.targetPrefix}ar rcv" \
-      --replace "ranlib" "${stdenv.cc.targetPrefix}ranlib"
-  '';
 
   outputs = [ "bin" "dev" "out" ];
 
-  nativeBuildInputs = lib.optionals stdenv.isDarwin [ fixDarwinDylibNames ];
+  nativeBuildInputs = stdenv.lib.optionals stdenv.isDarwin [ fixDarwinDylibNames ];
 
   buildFlags = [ "lib" "predict" "train" ];
 
@@ -38,11 +32,11 @@ in stdenv.mkDerivation rec {
     install -Dm444 -t $dev/include linear.h
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for large linear classification";
     homepage = "https://www.csie.ntu.edu.tw/~cjlin/liblinear/";
     license = licenses.bsd3;
-    maintainers = [ ];
+    maintainers = [ maintainers.danieldk ];
     platforms = platforms.unix;
   };
 }

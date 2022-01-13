@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , fetchFromGitLab
 , fetchpatch
 , python3
@@ -73,7 +73,7 @@ python3.pkgs.buildPythonApplication rec {
   # bunch of linting
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GTK/GNOME application to use GnuPG for signing other peoples’ keys";
     homepage = "https://wiki.gnome.org/Apps/Keysign";
     license = licenses.gpl3Plus;

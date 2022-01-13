@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ruby, cdparanoia, makeWrapper }:
+{ stdenv, fetchurl, ruby, cdparanoia, makeWrapper }:
 stdenv.mkDerivation rec {
   version = "0.6.2";
   pname = "rubyripper";
@@ -10,15 +10,14 @@ stdenv.mkDerivation rec {
   preConfigure = "patchShebangs .";
 
   configureFlags = [ "--enable-cli" ];
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ ruby cdparanoia ];
+  buildInputs = [ ruby cdparanoia makeWrapper ];
   postInstall = ''
     wrapProgram "$out/bin/rrip_cli" \
       --prefix PATH : "${ruby}/bin" \
       --prefix PATH : "${cdparanoia}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "High quality CD audio ripper";
     platforms = platforms.linux;
     license = licenses.gpl3;

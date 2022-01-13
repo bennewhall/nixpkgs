@@ -6,7 +6,7 @@ import ./make-test-python.nix ({ pkgs, ...} :
 
 {
   name = "gocd-server";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ swarren83 ];
   };
 

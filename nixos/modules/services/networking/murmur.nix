@@ -98,7 +98,7 @@ in
       };
 
       port = mkOption {
-        type = types.port;
+        type = types.int;
         default = 64738;
         description = "Ports to bind to (UDP and TCP).";
       };
@@ -107,13 +107,6 @@ in
         type = types.str;
         default = "";
         description = "Host to bind to. Defaults binding on all addresses.";
-      };
-
-      package = mkOption {
-        type = types.package;
-        default = pkgs.murmur;
-        defaultText = literalExpression "pkgs.murmur";
-        description = "Overridable attribute of the murmur package to use.";
       };
 
       password = mkOption {
@@ -306,7 +299,7 @@ in
         Type = if forking then "forking" else "simple";
         PIDFile = mkIf forking "/run/murmur/murmurd.pid";
         EnvironmentFile = mkIf (cfg.environmentFile != null) cfg.environmentFile;
-        ExecStart = "${cfg.package}/bin/murmurd -ini /run/murmur/murmurd.ini";
+        ExecStart = "${pkgs.murmur}/bin/murmurd -ini /run/murmur/murmurd.ini";
         Restart = "always";
         RuntimeDirectory = "murmur";
         RuntimeDirectoryMode = "0700";

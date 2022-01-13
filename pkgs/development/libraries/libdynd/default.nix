@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
-stdenv.mkDerivation rec {
+let version = "0.7.2"; in
+stdenv.mkDerivation {
   pname = "libdynd";
-  version = "0.7.2";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "libdynd";
@@ -25,12 +26,12 @@ stdenv.mkDerivation rec {
     "-Wno-error=deprecated-copy"
   ];
 
-  nativeBuildInputs = [ cmake ];
+  buildInputs = [ cmake ];
 
   outputs = [ "out" "dev" ];
   outputDoc = "dev";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ dynamic ndarray library, with Python exposure";
     homepage = "http://libdynd.org";
     license = licenses.bsd2;

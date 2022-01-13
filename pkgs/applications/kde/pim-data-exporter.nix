@@ -8,10 +8,8 @@
 }:
 
 mkDerivation {
-  pname = "pim-data-exporter";
+  name = "pim-data-exporter";
   meta = {
-    homepage = "https://apps.kde.org/pimdataexporter/";
-    description = "Saves and restores all data from PIM apps";
     license = with lib.licenses; [ gpl2 lgpl21 fdl12 ];
     maintainers = kdepimTeam;
   };

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , pkg-config
 , intltool
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ gtk3 libxml2 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Addicting game based on The Settlers of Catan";
     homepage = "http://pio.sourceforge.net/";  # https does not work
     license = licenses.gpl2Plus;

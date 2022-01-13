@@ -1,5 +1,5 @@
 {
-  lib
+  stdenv
 , buildPythonPackage
 , fetchPypi
 , pytest
@@ -25,7 +25,7 @@ buildPythonPackage rec {
     py.test tests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/RazerM/ratelimiter";
     license = licenses.asl20;
     description = "Simple python rate limiting object";

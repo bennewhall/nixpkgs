@@ -1,5 +1,6 @@
-{ lowPrio, newScope, pkgs, lib, stdenv, cmake, gccForLibs
+{ lowPrio, newScope, pkgs, stdenv, cmake, gccForLibs
 , libxml2, python3, isl, fetchurl, overrideCC, wrapCCWith
+, buildPackages
 , buildLlvmTools # tools, but from the previous stage, for cross
 , targetLlvmLibraries # libraries, but from the next stage, for cross
 }:
@@ -16,54 +17,36 @@ let
 
   clang-tools-extra_src = fetch "clang-tools-extra" "018b3fiwah8f8br5i26qmzh6sjvzchpn358sn8v079m49f2jldm3";
 
-  llvm_meta = {
-    license     = lib.licenses.ncsa;
-    maintainers = with lib.maintainers; [ lovek323 raskin dtzWill primeos ];
-    platforms   = lib.platforms.all;
-  };
-
-  tools = lib.makeExtensible (tools: let
-    callPackage = newScope (tools // { inherit stdenv cmake libxml2 python3 isl release_version version fetch buildLlvmTools; });
+  tools = stdenv.lib.makeExtensible (tools: let
+    callPackage = newScope (tools // { inherit stdenv cmake libxml2 python3 isl release_version version fetch; });
     mkExtraBuildCommands = cc: ''
       rsrc="$out/resource-root"
       mkdir "$rsrc"
-      ln -s "${cc.lib}/lib/clang/${release_version}/include" "$rsrc"
-      echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
+      ln -s "${cc}/lib/clang/${release_version}/include" "$rsrc"
       ln -s "${targetLlvmLibraries.compiler-rt.out}/lib" "$rsrc/lib"
+      echo "-resource-dir=$rsrc" >> $out/nix-support/cc-cflags
+    '' + stdenv.lib.optionalString (stdenv.targetPlatform.isLinux && !(stdenv.targetPlatform.useLLVM or false)) ''
+      echo "--gcc-toolchain=${gccForLibs}" >> $out/nix-support/cc-cflags
     '';
-
   in {
 
-    libllvm = callPackage ./llvm {
-      inherit llvm_meta;
+    llvm = callPackage ./llvm.nix { };
+
+    clang-unwrapped = callPackage ./clang {
+      inherit clang-tools-extra_src;
     };
 
-    # `llvm` historically had the binaries.  When choosing an output explicitly,
-    # we need to reintroduce `outputSpecified` to get the expected behavior e.g. of lib.get*
-    llvm = tools.libllvm.out // { outputSpecified = false; };
-
-    libllvm-polly = callPackage ./llvm {
-      inherit llvm_meta;
-      enablePolly = true;
-    };
-
-    llvm-polly = tools.libllvm-polly.lib // { outputSpecified = false; };
-
-    libclang = callPackage ./clang {
-      inherit clang-tools-extra_src llvm_meta;
-    };
-
-    clang-unwrapped = tools.libclang.out // { outputSpecified = false; };
-
-    llvm-manpages = lowPrio (tools.libllvm.override {
+    llvm-manpages = lowPrio (tools.llvm.override {
       enableManpages = true;
       python3 = pkgs.python3;  # don't use python-boot
     });
 
-    clang-manpages = lowPrio (tools.libclang.override {
+    clang-manpages = lowPrio (tools.clang-unwrapped.override {
       enableManpages = true;
       python3 = pkgs.python3;  # don't use python-boot
     });
+
+    libclang = tools.clang-unwrapped.lib;
 
     clang = if stdenv.cc.isGNU then tools.libstdcxxClang else tools.libcxxClang;
 
@@ -87,38 +70,26 @@ let
       extraBuildCommands = mkExtraBuildCommands cc;
     };
 
-    lld = callPackage ./lld {
-      inherit llvm_meta;
-    };
+    lld = callPackage ./lld.nix {};
 
-    lldb = callPackage ./lldb {
-      inherit llvm_meta;
-    };
+    lldb = callPackage ./lldb.nix {};
   });
 
-  libraries = lib.makeExtensible (libraries: let
+  libraries = stdenv.lib.makeExtensible (libraries: let
     callPackage = newScope (libraries // buildLlvmTools // { inherit stdenv cmake libxml2 python3 isl release_version version fetch; });
   in {
 
-    compiler-rt = callPackage ./compiler-rt {
-      inherit llvm_meta;
-    };
+    compiler-rt = callPackage ./compiler-rt.nix {};
 
     stdenv = overrideCC stdenv buildLlvmTools.clang;
 
     libcxxStdenv = overrideCC stdenv buildLlvmTools.libcxxClang;
 
-    libcxx = callPackage ./libcxx {
-      inherit llvm_meta;
-    };
+    libcxx = callPackage ./libc++ {};
 
-    libcxxabi = callPackage ./libcxxabi {
-      inherit llvm_meta;
-    };
+    libcxxabi = callPackage ./libc++abi.nix {};
 
-    openmp = callPackage ./openmp {
-      inherit llvm_meta;
-    };
+    openmp = callPackage ./openmp.nix {};
   });
 
-in { inherit tools libraries release_version; } // libraries // tools
+in { inherit tools libraries; } // libraries // tools

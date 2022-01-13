@@ -1,10 +1,9 @@
-{ lib, stdenv, fetchurl, xorgproto, libX11, libXrender
+{ stdenv, fetchurl, xorgproto, libX11, libXrender
 , gmp, libjpeg, libpng
 , expat, gettext, perl, guile
 , SDL, SDL_image, SDL_mixer, SDL_ttf
 , curl, sqlite, libtool, readline
-, libogg, libvorbis, libcaca, csound, cunit
-, pkg-config }:
+, libogg, libvorbis, libcaca, csound, cunit } :
 
 stdenv.mkDerivation rec {
   pname = "liquidwar6";
@@ -26,8 +25,6 @@ stdenv.mkDerivation rec {
     libtool readline
   ];
 
-  nativeBuildInputs = [ pkg-config ];
-
   hardeningDisable = [ "format" ];
 
   NIX_CFLAGS_COMPILE =
@@ -39,7 +36,7 @@ stdenv.mkDerivation rec {
   # To avoid problems finding SDL_types.h.
   configureFlags = [ "CFLAGS=-I${SDL.dev}/include/SDL" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Quick tactics game";
     homepage = "https://www.gnu.org/software/liquidwar6/";
     maintainers = [ maintainers.raskin ];

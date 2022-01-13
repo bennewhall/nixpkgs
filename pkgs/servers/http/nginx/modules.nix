@@ -22,17 +22,6 @@ in
   fastcgi-cache-purge = throw "fastcgi-cache-purge was renamed to cache-purge";
   ngx_aws_auth = throw "ngx_aws_auth was renamed to aws-auth";
 
-  akamai-token-validate = {
-    src = fetchFromGitHub {
-      name = "akamai-token-validate";
-      owner = "kaltura";
-      repo = "nginx-akamai-token-validate-module";
-      rev = "34fd0c94d2c43c642f323491c4f4a226cd83b962";
-      sha256 = "0yf34s11vgkcl03wbl6gjngm3p9hs8vvm7hkjkwhjh39vkk2a7cy";
-    };
-    inputs = [ pkgs.openssl ];
-  };
-
   aws-auth = {
     src = fetchFromGitHub {
       name = "aws-auth";
@@ -50,7 +39,7 @@ in
       repo = "ngx_brotli";
       rev = "25f86f0bac1101b6512135eac5f93c49c63609e3";
       sha256 = "02hfvfa6milj40qc2ikpb9f95sxqvxk4hly3x74kqhysbdi06hhv";
-    }; in pkgs.runCommand "ngx_brotli-src" {} ''
+    }; in pkgs.runCommandNoCC "ngx_brotli-src" {} ''
       cp -a ${gitsrc} $out
       substituteInPlace $out/filter/config \
         --replace '$ngx_addon_dir/deps/brotli/c' ${lib.getDev pkgs.brotli}
@@ -114,11 +103,8 @@ in
       name = "fancyindex";
       owner = "aperezdc";
       repo = "ngx-fancyindex";
-      rev = "v0.5.2";
-      sha256 = "0nar45lp3jays3p6b01a78a6gwh6v0snpzcncgiphcqmj5kw8ipg";
-    };
-    meta = {
-      maintainers = with lib.maintainers; [ aneeshusa ];
+      rev = "v0.4.4";
+      sha256 = "14xmzcl608pr7hb7wng6hpz7by51cfnxlszbka3zhp3kk86ljsi6";
     };
   };
 
@@ -279,7 +265,7 @@ in
           meta = {
             description = "PageSpeed module for Nginx";
             homepage    = "https://developers.google.com/speed/pagespeed/module/";
-            license     = pkgs.lib.licenses.asl20;
+            license     = pkgs.stdenv.lib.licenses.asl20;
           };
         }
         ''
@@ -296,10 +282,10 @@ in
   pam = {
     src = fetchFromGitHub {
       name = "pam";
-      owner = "sto";
+      owner = "stogh";
       repo = "ngx_http_auth_pam_module";
-      rev = "v1.5.3";
-      sha256 = "sha256:09lnljdhjg65643bc4535z378lsn4llbq67zcxlln0pizk9y921a";
+      rev = "v1.5.2";
+      sha256 = "06nydxk82rc9yrw4408nakb197flxh4z1yv935crg65fn9706rl7";
     };
     inputs = [ pkgs.pam ];
   };
@@ -324,25 +310,14 @@ in
     };
   };
 
-  rtmp = {
+  rtmp ={
     src = fetchFromGitHub {
       name = "rtmp";
       owner = "arut";
       repo = "nginx-rtmp-module";
-      rev = "v1.2.2";
-      sha256 = "0y45bswk213yhkc2v1xca2rnsxrhx8v6azxz9pvi71vvxcggqv6h";
+      rev = "v1.2.1";
+      sha256 = "0na1aam176irz6w148hnvamqy1ilbn4abhdzkva0yrm35a3ksbzn";
     };
-  };
-
-  secure-token = {
-    src = fetchFromGitHub {
-      name = "secure-token";
-      owner = "kaltura";
-      repo = "nginx-secure-token-module";
-      rev = "95bdc0d1aca06ea7fe42555f71e65910bd74914d";
-      sha256 = "19wzck1xzq4kz7nyabcwzlank1k7wi7w2wn2c1mwz374c79g8ggp";
-    };
-    inputs = [ pkgs.openssl ];
   };
 
   set-misc = {
@@ -392,16 +367,6 @@ in
       repo = "nginx-sorted-querystring-module";
       rev = "0.3";
       sha256 = "0p6b0hcws39n27fx4xp9k4hb3pcv7b6kah4qqaj0pzjy3nbp4gj7";
-    };
-  };
-
-  spnego-http-auth = {
-    src = fetchFromGitHub {
-      name = "spnego-http-auth";
-      owner = "stnoonan";
-      repo = "spnego-http-auth-nginx-module";
-      rev = "72c8ee04c81f929ec84d5a6d126f789b77781a8c";
-      sha256 = "05rw3a7cv651951li995r5l1yzz6kwkm2xpbd59jsfzd74bw941i";
     };
   };
 
@@ -455,16 +420,6 @@ in
     };
   };
 
-  upload = {
-    src = fetchFromGitHub {
-      name = "upload";
-      owner = "fdintino";
-      repo = "nginx-upload-module";
-      rev = "2.3.0";
-      sha256 = "8veZP516oC7TESO368ZsZreetbDt+1eTcamk7P1kWjU=";
-    };
-  };
-
   upstream-check = {
     src = fetchFromGitHub {
       name = "upstream-check";
@@ -501,21 +456,10 @@ in
       name = "video-thumbextractor";
       owner = "wandenberg";
       repo = "nginx-video-thumbextractor-module";
-      rev = "92b80642538eec4cfc98114dec5917b8d820e912";
-      sha256 = "0a8d9ifryhhnll7k7jcsf9frshk5yhpsgz7zgxdmw81wbz5hxklc";
+      rev = "0.9.0";
+      sha256 = "1b0v471mzbcys73pzr7gpvzzhff0cva0l5ff32cv7z1v9c0ypji7";
     };
-    inputs = [ pkgs.ffmpeg ];
-  };
-
-  vod = {
-    src = fetchFromGitHub {
-      name = "vod";
-      owner = "kaltura";
-      repo = "nginx-vod-module";
-      rev = "1.29";
-      sha256 = "1z0ka0cwqbgh3fv2d5yva395sf90626rdzx7lyfrgs89gy4h9nrr";
-    };
-    inputs = with pkgs; [ ffmpeg fdk_aac openssl libxml2 libiconv ];
+    inputs = [ pkgs.ffmpeg_3 ];
   };
 
   vts = {

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "ssdeep";
@@ -19,8 +19,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A program for calculating fuzzy hashes";
     homepage    = "http://www.ssdeep.sf.net";
-    license     = lib.licenses.gpl2;
-    platforms   = lib.platforms.unix;
-    maintainers = [ lib.maintainers.thoughtpolice ];
+    license     = stdenv.lib.licenses.gpl2;
+    platforms   = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
   };
 }

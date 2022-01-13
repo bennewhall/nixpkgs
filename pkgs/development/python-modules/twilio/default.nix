@@ -1,47 +1,25 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, mock
-, nose
-, pyjwt
-, pythonOlder
-, pytz
-, requests
-}:
+{ stdenv, buildPythonPackage, fetchFromGitHub
+, pyjwt, pysocks, pytz, requests, six, nose, mock }:
 
 buildPythonPackage rec {
   pname = "twilio";
-  version = "7.4.0";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
-
+  version = "6.43.0";
+  # tests not included in PyPi, so fetch from github instead
   src = fetchFromGitHub {
     owner = "twilio";
     repo = "twilio-python";
     rev = version;
-    sha256 = "sha256-gN9cVBhiO34uj2ZGqXrnlvOlSaGxry0tMxaTK4SYhjM=";
+    sha256 = "0p2chrzakqx5694g305j0klh9lxlclm5qp0qjm6wqicivyybggzg";
   };
 
-  propagatedBuildInputs = [
-    pyjwt
-    pytz
-    requests
-  ];
+  buildInputs = [ nose mock ];
 
-  checkInputs = [
-    mock
-    nose
-  ];
+  propagatedBuildInputs = [ pyjwt pysocks pytz six requests ];
 
-  pythonImportsCheck = [
-    "twilio"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Twilio API client and TwiML generator";
     homepage = "https://github.com/twilio/twilio-python/";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ flokli ];
   };
 }

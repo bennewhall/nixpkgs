@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchFromGitHub }:
-
-stdenv.mkDerivation rec {
+{ stdenv, fetchFromGitHub }:
+let version = "0.6";
+in
+stdenv.mkDerivation {
   pname = "cp437";
-  version = "0.6";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "keaston";
@@ -15,7 +16,7 @@ stdenv.mkDerivation rec {
     install -Dm755 cp437 -t $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       Emulates an old-style "code page 437" / "IBM-PC" character
       set terminal on a modern UTF-8 terminal emulator

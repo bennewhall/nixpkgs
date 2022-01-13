@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, glib, libsndfile }:
+{ stdenv, fetchFromGitHub, cmake, pkg-config, glib, libsndfile }:
 
 stdenv.mkDerivation rec {
   pname = "libinstpatch";
-  version = "1.1.6";
+  version = "1.1.5";
 
   src = fetchFromGitHub {
     owner = "swami";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-OU6/slrPDgzn9tvXZJKSWbcFbpS/EAsOi52FtjeYdvA=";
+    sha256 = "0psx4hc5yksfd3k2xqsc7c8lbz2d4yybikyddyd9hlkhq979cmjb";
   };
 
   nativeBuildInputs = [ cmake pkg-config ];
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     "-DLIB_SUFFIX=" # Install in $out/lib.
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.swamiproject.org/";
     description = "MIDI instrument patch files support library";
     license = licenses.lgpl21;

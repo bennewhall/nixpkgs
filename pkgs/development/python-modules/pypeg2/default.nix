@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy3k
@@ -21,7 +21,7 @@ buildPythonPackage rec {
   #https://bitbucket.org/fdik/pypeg/issues/36/test-failures-on-py35
   doCheck = !isPy3k;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PEG parser interpreter in Python";
     homepage = "http://fdik.org/pyPEG";
     license = licenses.gpl2;

@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, curl, tzdata, autoPatchelfHook, fixDarwinDylibNames, libxml2
+{ stdenv, fetchurl, curl, tzdata, autoPatchelfHook, fixDarwinDylibNames, libxml2
 , version, hashes }:
-
+with stdenv;
 let
-  inherit (stdenv) hostPlatform;
   OS = if hostPlatform.isDarwin then "osx" else hostPlatform.parsed.kernel.name;
-  ARCH = if hostPlatform.isDarwin && hostPlatform.isAarch64 then "arm64" else hostPlatform.parsed.cpu.name;
-in stdenv.mkDerivation {
+  ARCH = toString hostPlatform.parsed.cpu.name;
+in mkDerivation {
   pname = "ldc-bootstrap";
   inherit version;
 
@@ -32,11 +31,12 @@ in stdenv.mkDerivation {
   '';
 
   meta = with lib; {
+    inherit version;
     description = "The LLVM-based D Compiler";
     homepage = "https://github.com/ldc-developers/ldc";
     # from https://github.com/ldc-developers/ldc/blob/master/LICENSE
     license = with licenses; [ bsd3 boost mit ncsa gpl2Plus ];
     maintainers = with maintainers; [ ThomasMader lionello ];
-    platforms = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+    platforms = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" ];
   };
 }

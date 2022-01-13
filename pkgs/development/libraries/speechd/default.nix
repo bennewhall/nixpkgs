@@ -1,8 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , substituteAll
-, pkg-config
+, pkgconfig
 , fetchurl
-, fetchpatch
 , python3Packages
 , gettext
 , itstool
@@ -15,7 +14,7 @@
 , libsndfile
 , withLibao ? true, libao
 , withPulse ? false, libpulseaudio
-, withAlsa ? false, alsa-lib
+, withAlsa ? false, alsaLib
 , withOss ? false
 , withFlite ? true, flite
 # , withFestival ? false, festival-freebsoft-utils
@@ -25,7 +24,7 @@
 }:
 
 let
-  inherit (lib) optional optionals;
+  inherit (stdenv.lib) optional optionals;
   inherit (python3Packages) python pyxdg wrapPython;
 
   # speechd hard-codes espeak, even when built without support for it.
@@ -40,11 +39,11 @@ let
       throw "You need to enable at least one output module.";
 in stdenv.mkDerivation rec {
   pname = "speech-dispatcher";
-  version = "0.10.2";
+  version = "0.10.1";
 
   src = fetchurl {
     url = "https://github.com/brailcom/speechd/releases/download/${version}/${pname}-${version}.tar.gz";
-    sha256 = "sha256-sGMZ8gHhXlbGKWZTr1vPwwDLNI6XLVF9+LBurHfq4tw=";
+    sha256 = "0j2lfzkmbsxrrgjw6arzvnfd4jn5pxab28xsk2djssr2ydb9x309";
   };
 
   patches = [
@@ -52,17 +51,10 @@ in stdenv.mkDerivation rec {
       src = ./fix-paths.patch;
       utillinux = util-linux;
     })
-
-    # Fix build with Glib 2.68
-    # https://github.com/brailcom/speechd/pull/462
-    (fetchpatch {
-      url = "https://github.com/brailcom/speechd/commit/a2faab416e42cbdf3d73f98578a89eb7a235e25a.patch";
-      sha256 = "8Q7tUdKKBBtgXZZnj59OcJOkrCNeBR9gkBjhKlpW0hQ=";
-    })
   ];
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     autoreconfHook
     gettext
     libtool
@@ -77,7 +69,7 @@ in stdenv.mkDerivation rec {
     libsndfile
     libao
     libpulseaudio
-    alsa-lib
+    alsaLib
     python
   ] ++ optionals withEspeak [
     espeak
@@ -96,7 +88,7 @@ in stdenv.mkDerivation rec {
   configureFlags = [
     # Audio method falls back from left to right.
     "--with-default-audio-method=\"libao,pulse,alsa,oss\""
-    "--with-systemdsystemunitdir=${placeholder "out"}/lib/systemd/system"
+    "--with-systemdsystemunitdir=${placeholder ''out''}/lib/systemd/system"
   ] ++ optional withPulse "--with-pulse"
     ++ optional withAlsa "--with-alsa"
     ++ optional withLibao "--with-libao"
@@ -118,7 +110,7 @@ in stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Common interface to speech synthesis";
     homepage = "https://devel.freebsoft.org/speechd";
     license = licenses.gpl2Plus;

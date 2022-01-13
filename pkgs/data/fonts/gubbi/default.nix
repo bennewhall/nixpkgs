@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fontforge }:
+{ stdenv, fetchFromGitHub, fontforge }:
 
 stdenv.mkDerivation rec {
   pname = "gubbi-font";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   installPhase = "install -Dm444 -t $out/share/fonts/truetype/ Gubbi.ttf";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "A Kannada font";
     license = licenses.gpl3Plus;

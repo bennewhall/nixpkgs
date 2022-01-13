@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libfaketime
+{ stdenv, fetchurl, libfaketime
 , fonttosfnt, mkfontscale
 }:
 
@@ -29,7 +29,7 @@ stdenv.mkDerivation {
     mkfontdir "$out/share/fonts/misc"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       Readable bitmap font inspired by Envy Code R
     '';

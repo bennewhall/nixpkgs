@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook
+{ stdenv, fetchFromGitHub, autoreconfHook
 , readline
 }:
 
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   preAutoreconf = "cd sources/";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Jalali calendar is a small and portable free software library to manipulate date and time in Jalali calendar system";
     homepage =  "http://nongnu.org/jcal/";
     license = licenses.gpl3;

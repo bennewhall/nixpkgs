@@ -1,5 +1,5 @@
 { fetchurl
-, lib
+, stdenv
 , pythonPackages
 }:
 
@@ -8,7 +8,7 @@ let
 
   xe = buildPythonPackage rec {
     url = "http://www.blarg.net/%7Esteveha/xe-0.7.4.tar.gz";
-    name = lib.nameFromURL url ".tar";
+    name = stdenv.lib.nameFromURL url ".tar";
     src = fetchurl {
       inherit url;
       sha256 = "0v9878cl0y9cczdsr6xjy8v9l139lc23h4m5f86p4kpf2wlnpi42";
@@ -28,7 +28,7 @@ in {
   pyfeed = (buildPythonPackage rec {
     url = "http://www.blarg.net/%7Esteveha/pyfeed-0.7.4.tar.gz";
 
-    name = lib.nameFromURL url ".tar";
+    name = stdenv.lib.nameFromURL url ".tar";
 
     src = fetchurl {
       inherit url;
@@ -40,7 +40,7 @@ in {
     # error: invalid command 'test'
     doCheck = false;
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       homepage = "http://home.blarg.net/~steveha/pyfeed.html";
       description = "Tools for syndication feeds";
     };
@@ -49,15 +49,15 @@ in {
 
   wokkel = buildPythonPackage (rec {
     url = "http://wokkel.ik.nu/releases/0.7.0/wokkel-0.7.0.tar.gz";
-    name = lib.nameFromURL url ".tar";
+    name = stdenv.lib.nameFromURL url ".tar";
     src = fetchurl {
       inherit url;
       sha256 = "0rnshrzw8605x05mpd8ndrx3ri8h6cx713mp8sl4f04f4gcrz8ml";
     };
 
-    propagatedBuildInputs = with pythonPackages; [twisted python-dateutil];
+    propagatedBuildInputs = with pythonPackages; [twisted dateutil];
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Some (mainly XMPP-related) additions to twisted";
       homepage = "http://wokkel.ik.nu/";
       license = licenses.mit;

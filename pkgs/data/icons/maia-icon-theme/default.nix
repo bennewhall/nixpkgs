@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , cmake
 , extra-cmake-modules
@@ -35,15 +35,13 @@ stdenv.mkDerivation {
 
   dontDropIconThemeCache = true;
 
-  dontWrapQtApps = true;
-
   postInstall = ''
     for theme in $out/share/icons/*; do
       gtk-update-icon-cache $theme
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Icons based on Breeze and Super Flat Remix";
     homepage = "https://gitlab.manjaro.org/artwork/themes/maia";
     license = licenses.lgpl3;

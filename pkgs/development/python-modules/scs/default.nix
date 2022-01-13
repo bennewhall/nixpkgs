@@ -5,21 +5,25 @@
 , lapack
 , numpy
 , scipy
+, scs
   # check inputs
-, pytestCheckHook
+, nose
 }:
 
 buildPythonPackage rec {
-  pname = "scs";
-  version = "3.0.0";
+  inherit (scs) pname version;
 
   src = fetchFromGitHub {
     owner = "bodono";
     repo = "scs-python";
-    rev = version;
-    sha256 = "sha256-7OgqCo21S0FDev8xv6/8iGFXg8naVi93zd8v1f9iaWw=";
-    fetchSubmodules = true;
+    rev = "f02abdc0e2e0a5851464e30f6766ccdbb19d73f0"; # need to choose commit manually, untagged
+    sha256 = "174b5s7cwgrn1m55jlrszdl403zhpzc4yl9acs6kjv9slmg1mmjr";
   };
+
+  preConfigure = ''
+    rm -r scs
+    ln -s ${scs.src} scs
+  '';
 
   buildInputs = [
     lapack
@@ -31,7 +35,10 @@ buildPythonPackage rec {
     scipy
   ];
 
-  checkInputs = [ pytestCheckHook ];
+  checkInputs = [ nose ];
+  checkPhase = ''
+    nosetests
+  '';
   pythonImportsCheck = [ "scs" ];
 
   meta = with lib; {
@@ -43,7 +50,7 @@ buildPythonPackage rec {
     '';
     homepage = "https://github.com/cvxgrp/scs"; # upstream C package
     downloadPage = "https://github.com/bodono/scs-python";
-    license = licenses.mit;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ drewrisinger ];
   };
 }

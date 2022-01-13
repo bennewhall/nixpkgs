@@ -1,50 +1,28 @@
-{ lib
-, stdenv
-, fetchurl
-, ncurses
-, xmlto
-, docbook_xml_dtd_44
-, docbook_xsl
-, installShellFiles
-}:
+{ stdenv, fetchurl, ncurses, xmlto }:
 
+with stdenv.lib;
 stdenv.mkDerivation rec {
+
   pname = "vms-empire";
-  version = "1.16";
+  version = "1.15";
 
   src = fetchurl{
-    url = "http://www.catb.org/~esr/${pname}/${pname}-${version}.tar.gz";
-    hash = "sha256-XETIbt/qVU+TpamPc2WQynqqUuZqkTUnItBprjg+gPk=";
+    url = "http://www.catb.org/~esr/vms-empire/${pname}-${version}.tar.gz";
+    sha256 = "1vcpglkimcljb8s1dp6lzr5a0vbfxmh6xf37cmb8rf9wc3pghgn3";
   };
 
-  nativeBuildInputs = [ installShellFiles ];
-  buildInputs = [
-    ncurses
-    xmlto
-    docbook_xml_dtd_44
-    docbook_xsl
-  ];
+  buildInputs =
+  [ ncurses xmlto ];
 
-  postBuild = ''
-    xmlto man vms-empire.xml
-    xmlto html-nochunks vms-empire.xml
-  '';
-
-  installPhase = ''
-    runHook preInstall
-    install -D vms-empire -t ${placeholder "out"}/bin/
-    install -D vms-empire.html -t ${placeholder "out"}/share/doc/${pname}/
-    install -D vms-empire.desktop -t ${placeholder "out"}/share/applications/
-    install -D vms-empire.png -t ${placeholder "out"}/share/icons/hicolor/48x48/apps/
-    install -D vms-empire.xml -t ${placeholder "out"}/share/appdata/
-    installManPage empire.6
-    runHook postInstall
+  patchPhase = ''
+    sed -i -e 's|^install: empire\.6 uninstall|install: empire.6|' -e 's|usr/||g' Makefile
   '';
 
   hardeningDisable = [ "format" ];
 
-  meta = with lib; {
-    homepage = "http://catb.org/~esr/vms-empire/";
+  makeFlags = [ "DESTDIR=$(out)" ];
+
+  meta = {
     description = "The ancestor of all expand/explore/exploit/exterminate games";
     longDescription = ''
       Empire is a simulation of a full-scale war between two emperors, the
@@ -54,8 +32,11 @@ stdenv.mkDerivation rec {
       expand/explore/exploit/exterminate games, including Civilization and
       Master of Orion.
     '';
-    license = licenses.gpl2Only;
+    homepage = "http://catb.org/~esr/vms-empire/";
+    license = licenses.gpl2;
     maintainers = [ maintainers.AndersonTorres ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }
+
+

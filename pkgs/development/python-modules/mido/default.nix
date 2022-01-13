@@ -1,22 +1,15 @@
-{ stdenv
-, lib
-, buildPythonPackage
-, fetchPypi
-, substituteAll
-, portmidi
-, pygame
-, python-rtmidi
-, rtmidi-python
-, pytestCheckHook
+{ stdenv, lib, buildPythonPackage, fetchPypi, substituteAll
+, portmidi, pygame, python-rtmidi, rtmidi-python
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "mido";
-  version = "1.2.10";
+  version = "1.2.9";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "17b38a8e4594497b850ec6e78b848eac3661706bfc49d484a36d91335a373499";
+    sha256 = "1k3sgkxc7j49bapib3b5jnircb1yhyyd8mi0mbfd78zgix9db9y4";
   };
 
   patches = [
@@ -32,18 +25,15 @@ buildPythonPackage rec {
     rtmidi-python
   ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  pythonImportsCheck = [
-    "mido"
-  ];
+  checkInputs = [ pytest ];
+  checkPhase = ''
+    py.test . -rs -q
+  '';
 
   meta = with lib; {
     description = "MIDI Objects for Python";
     homepage = "https://mido.readthedocs.io";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ hexa ];
   };
 }

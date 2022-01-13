@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gettext, pkg-config, glib, libnotify, gtk3, libgee
+{ stdenv, fetchurl, gettext, pkgconfig, glib, libnotify, gtk3, libgee
 , keybinder3, json-glib, zeitgeist, vala, gobject-introspection
 }:
 
@@ -14,7 +14,7 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config gettext vala
+    pkgconfig gettext vala
     # For setup hook
     gobject-introspection
   ];
@@ -22,7 +22,7 @@ in stdenv.mkDerivation rec {
     glib libnotify gtk3 libgee keybinder3 json-glib zeitgeist
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     longDescription = ''
       Semantic launcher written in Vala that you can use to start applications
       as well as find and access relevant documents and files by making use of

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, isPy3k, fetchFromGitHub, future, pyusb }:
+{ stdenv, buildPythonPackage, isPy3k, fetchFromGitHub, future, pyusb }:
 
 buildPythonPackage {
   pname = "pygreat";
@@ -22,7 +22,7 @@ buildPythonPackage {
     echo "$version" > ../VERSION
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python library for talking with libGreat devices";
     homepage = "https://greatscottgadgets.com/greatfet/";
     license = with licenses; [ bsd3 ];

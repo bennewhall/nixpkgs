@@ -1,4 +1,4 @@
-{ lib, perl, buildEnv, makeWrapper
+{ stdenv, perl, buildEnv, makeWrapper
 , extraLibs ? []
 , extraOutputsToInstall ? []
 , postBuild ? ""
@@ -17,17 +17,18 @@ let
     inherit ignoreCollisions;
     extraOutputsToInstall = [ "out" ] ++ extraOutputsToInstall;
 
-    nativeBuildInputs = [ makeWrapper ];
-
     # we create wrapper for the binaries in the different packages
     postBuild = ''
+
+      . "${makeWrapper}/nix-support/setup-hook"
+
       if [ -L "$out/bin" ]; then
           unlink "$out/bin"
       fi
       mkdir -p "$out/bin"
 
       # take every binary from perl packages and put them into the env
-      for path in ${lib.concatStringsSep " " paths}; do
+      for path in ${stdenv.lib.concatStringsSep " " paths}; do
         if [ -d "$path/bin" ]; then
           cd "$path/bin"
           for prg in *; do

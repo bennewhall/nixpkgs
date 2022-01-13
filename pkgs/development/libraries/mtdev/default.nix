@@ -1,15 +1,14 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "mtdev";
-  version = "1.1.6";
+  name = "mtdev-1.1.6";
 
   src = fetchurl {
-    url = "https://bitmath.org/code/mtdev/${pname}-${version}.tar.bz2";
+    url = "http://bitmath.org/code/mtdev/${name}.tar.bz2";
     sha256 = "1q700h9dqcm3zl6c3gj0qxxjcx6ibw2c51wjijydhwdcm26v5mqm";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://bitmath.org/code/mtdev/";
     description = "Multitouch Protocol Translation Library";
     longDescription = ''

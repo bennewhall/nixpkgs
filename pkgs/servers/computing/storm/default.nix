@@ -7,15 +7,15 @@
 
 stdenv.mkDerivation rec {
   pname = "apache-storm";
-  version = "2.3.0";
+  version = "2.2.0";
   name = "${pname}-${version}";
 
   src = fetchurl {
     url = "mirror://apache/storm/${name}/${name}.tar.gz";
-    sha256 = "sha256-ScIlWyZjPG/ZY5nFIDOeRZ/NopoOfm0Mh3XO/P9sNjY=";
+    sha256 = "0xc6lfilfkkjyds59b6c770gj21v9srzpln31c9qb3ls6hzic8gn";
   };
 
-  nativeBuildInputs = [ zip unzip ];
+  buildInputs = [ zip unzip ];
 
   installPhase = ''
     mkdir -p $out/share/${name}
@@ -49,7 +49,7 @@ stdenv.mkDerivation rec {
        -e 's|java.library.path: .*|java.library.path: "${lib.concatStringsSep ":" extraLibraryPaths}"|' \
        -e 's|storm.log4j2.conf.dir: .*|storm.log4j2.conf.dir: "conf/log4j2"|' \
       defaults.yaml
-    ${if confFile != "" then "cat ${confFile} >> defaults.yaml" else ""}
+    ${if confFile != "" then ''cat ${confFile} >> defaults.yaml'' else ""}
     mv defaults.yaml $out/conf;
 
     # Link to extra jars
@@ -59,8 +59,8 @@ stdenv.mkDerivation rec {
 
   dontStrip = true;
 
-  meta = with lib; {
-    homepage = "https://storm.apache.org/";
+  meta = with stdenv.lib; {
+    homepage = "http://storm.apache.org";
     description = "Distributed realtime computation system";
     license = licenses.asl20;
     maintainers = with maintainers; [ edwtjo vizanto ];

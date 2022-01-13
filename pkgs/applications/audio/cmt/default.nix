@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , ladspaH
 }:
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/lib/ladspa
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Computer Music Toolkit";
     homepage = "https://www.ladspa.org/cmt";
     license = licenses.gpl2;

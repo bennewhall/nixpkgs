@@ -1,14 +1,14 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pytest, which, lrzsz }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, pytest, which, lrzsz }:
 
 buildPythonPackage rec {
   pname = "xmodem";
-  version = "0.4.6";
+  version = "0.4.5";
 
   src = fetchFromGitHub {
     owner = "tehmaze";
     repo = "xmodem";
     rev = version;
-    sha256 = "1xx7wd8bnswxa1fv3bfim2gcamii79k7qmwg7dbxbjvrhbcjjc0l";
+    sha256 = "0nz2gxwaq3ys1knpw6zlz3xrc3ziambcirg3fmp3nvzjdq8ma3h0";
   };
 
   checkInputs = [ pytest which lrzsz ];
@@ -17,7 +17,7 @@ buildPythonPackage rec {
     pytest
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pure python implementation of the XMODEM protocol";
     maintainers = with maintainers; [ emantor ];
     homepage = "https://github.com/tehmaze/xmodem";

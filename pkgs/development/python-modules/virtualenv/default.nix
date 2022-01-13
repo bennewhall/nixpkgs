@@ -1,46 +1,41 @@
-{ stdenv
+{ buildPythonPackage
+, fetchPypi
 , lib
-, buildPythonPackage
+, stdenv
 , pythonOlder
 , isPy27
-, backports-entry-points-selectable
-, cython
+, appdirs
+, contextlib2
 , distlib
-, fetchPypi
 , filelock
-, flaky
 , importlib-metadata
 , importlib-resources
 , pathlib2
-, platformdirs
-, pytest-freezegun
-, pytest-mock
-, pytest-timeout
-, pytestCheckHook
-, setuptools-scm
+, setuptools_scm
 , six
 }:
 
 buildPythonPackage rec {
   pname = "virtualenv";
-  version = "20.10.0";
+  version = "20.2.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "576d05b46eace16a9c348085f7d0dc8ef28713a2cabaa1cf0aea41e8f12c9218";
+    sha256 = "e0aac7525e880a429764cefd3aaaff54afb5d9f25c82627563603f5d7de5a6e5";
   };
 
   nativeBuildInputs = [
-    setuptools-scm
+    setuptools_scm
   ];
 
   propagatedBuildInputs = [
-    backports-entry-points-selectable
+    appdirs
     distlib
     filelock
-    platformdirs
     six
-  ] ++ lib.optionals (pythonOlder "3.4" && !stdenv.hostPlatform.isWindows) [
+  ] ++ lib.optionals isPy27 [
+    contextlib2
+  ] ++ lib.optionals (isPy27 && !stdenv.hostPlatform.isWindows) [
     pathlib2
   ] ++ lib.optionals (pythonOlder "3.7") [
     importlib-resources
@@ -52,39 +47,10 @@ buildPythonPackage rec {
     ./0001-Check-base_prefix-and-base_exec_prefix-for-Python-2.patch
   ];
 
-  checkInputs = [
-    cython
-    flaky
-    pytest-freezegun
-    pytest-mock
-    pytest-timeout
-    pytestCheckHook
-  ];
-
-  preCheck = ''
-    export HOME=$(mktemp -d)
-  '';
-
-  # Ignore tests which require network access
-  disabledTestPaths = [
-    "tests/unit/create/test_creator.py"
-    "tests/unit/seed/embed/test_bootstrap_link_via_app_data.py"
-  ];
-
-  disabledTests = [
-    # Permission Error
-    "test_bad_exe_py_info_no_raise"
-  ] ++ lib.optionals isPy27 [
-    "test_python_via_env_var"
-    "test_python_multi_value_prefer_newline_via_env_var"
-  ];
-
-  pythonImportsCheck = [ "virtualenv" ];
-
-  meta = with lib; {
+  meta = {
     description = "A tool to create isolated Python environments";
     homepage = "http://www.virtualenv.org";
-    license = licenses.mit;
-    maintainers = with maintainers; [ goibhniu ];
+    license = lib.licenses.mit;
+    maintainers = with lib.maintainers; [ goibhniu ];
   };
 }

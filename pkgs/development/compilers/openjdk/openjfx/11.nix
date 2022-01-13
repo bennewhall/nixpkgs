@@ -1,5 +1,5 @@
-{ stdenv, lib, fetchurl, writeText, gradle_4, pkg-config, perl, cmake
-, gperf, gtk2, gtk3, libXtst, libXxf86vm, glib, alsa-lib, ffmpeg, python2, ruby
+{ stdenv, lib, fetchurl, writeText, gradleGen, pkgconfig, perl, cmake
+, gperf, gtk2, gtk3, libXtst, libXxf86vm, glib, alsaLib, ffmpeg_3, python, ruby
 , openjdk11-bootstrap }:
 
 let
@@ -7,9 +7,9 @@ let
   update = ".0.3";
   build = "1";
   repover = "${major}${update}+${build}";
-  gradle_ = (gradle_4.override {
+  gradle_ = (gradleGen.override {
     java = openjdk11-bootstrap;
-  });
+  }).gradle_4_10;
 
   makePackage = args: stdenv.mkDerivation ({
     version = "${major}${update}-${build}";
@@ -19,15 +19,10 @@ let
       sha256 = "1h7qsylr7rnwnbimqjyn3whszp9kv4h3gpicsrb3mradxc9yv194";
     };
 
-    buildInputs = [ gtk2 gtk3 libXtst libXxf86vm glib alsa-lib ffmpeg ];
-    nativeBuildInputs = [ gradle_ perl pkg-config cmake gperf python2 ruby ];
+    buildInputs = [ gtk2 gtk3 libXtst libXxf86vm glib alsaLib ffmpeg_3 ];
+    nativeBuildInputs = [ gradle_ perl pkgconfig cmake gperf python ruby ];
 
     dontUseCmakeConfigure = true;
-
-    postPatch = ''
-      substituteInPlace buildSrc/linux.gradle \
-        --replace ', "-Werror=implicit-function-declaration"' ""
-    '';
 
     config = writeText "gradle.properties" (''
       CONF = Release
@@ -108,10 +103,7 @@ in makePackage {
 
   passthru.deps = deps;
 
-  # Uses a lot of RAM, OOMs otherwise
-  requiredSystemFeatures = [ "big-parallel" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://openjdk.java.net/projects/openjfx/";
     license = licenses.gpl2;
     description = "The next-generation Java client toolkit";

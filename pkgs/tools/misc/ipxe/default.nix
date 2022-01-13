@@ -1,5 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, perl, cdrkit, xz, openssl, gnu-efi, mtools
-, syslinux ? null
+{ stdenv, lib, fetchFromGitHub, perl, cdrkit, syslinux, xz, openssl, gnu-efi, mtools
 , embedScript ? null
 , additionalTargets ? {}
 }:
@@ -9,34 +8,26 @@ let
     "bin-x86_64-efi/ipxe.efi" = null;
     "bin-x86_64-efi/ipxe.efirom" = null;
     "bin-x86_64-efi/ipxe.usb" = "ipxe-efi.usb";
-  } // lib.optionalAttrs stdenv.hostPlatform.isx86 {
+  } // {
     "bin/ipxe.dsk" = null;
     "bin/ipxe.usb" = null;
     "bin/ipxe.iso" = null;
     "bin/ipxe.lkrn" = null;
     "bin/undionly.kpxe" = null;
-  } // lib.optionalAttrs stdenv.isAarch32 {
-    "bin-arm32-efi/ipxe.efi" = null;
-    "bin-arm32-efi/ipxe.efirom" = null;
-    "bin-arm32-efi/ipxe.usb" = "ipxe-efi.usb";
-  } // lib.optionalAttrs stdenv.isAarch64 {
-    "bin-arm64-efi/ipxe.efi" = null;
-    "bin-arm64-efi/ipxe.efirom" = null;
-    "bin-arm64-efi/ipxe.usb" = "ipxe-efi.usb";
   };
 in
 
 stdenv.mkDerivation rec {
   pname = "ipxe";
-  version = "1.21.1";
+  version = "1.20.1";
 
-  nativeBuildInputs = [ perl cdrkit xz openssl gnu-efi mtools ] ++ lib.optional stdenv.hostPlatform.isx86 syslinux;
+  nativeBuildInputs = [ perl cdrkit syslinux xz openssl gnu-efi mtools ];
 
   src = fetchFromGitHub {
     owner = "ipxe";
     repo = "ipxe";
     rev = "v${version}";
-    sha256 = "1pkf1n1c0rdlzfls8fvjvi1sd9xjd9ijqlyz3wigr70ijcv6x8i9";
+    sha256 = "0w7h7y97gj9nqvbmsg1zp6zj5mpbbpckqbbx7bpp6k3ahy5fk8zp";
   };
 
   # not possible due to assembler code
@@ -46,7 +37,6 @@ stdenv.mkDerivation rec {
 
   makeFlags =
     [ "ECHO_E_BIN_ECHO=echo" "ECHO_E_BIN_ECHO_E=echo" # No /bin/echo here.
-    ] ++ lib.optionals stdenv.hostPlatform.isx86 [
       "ISOLINUX_BIN_LIST=${syslinux}/share/syslinux/isolinux.bin"
       "LDLINUX_C32=${syslinux}/share/syslinux/ldlinux.c32"
     ] ++ lib.optional (embedScript != null) "EMBED=${embedScript}";
@@ -61,7 +51,7 @@ stdenv.mkDerivation rec {
 
   configurePhase = ''
     runHook preConfigure
-    for opt in ${lib.escapeShellArgs enabledOptions}; do echo "#define $opt" >> src/config/general.h; done
+    for opt in $enabledOptions; do echo "#define $opt" >> src/config/general.h; done
     sed -i '/cp \''${ISOLINUX_BIN}/s/$/ --no-preserve=mode/' src/util/geniso
     substituteInPlace src/Makefile.housekeeping --replace '/bin/echo' echo
     runHook postConfigure
@@ -72,8 +62,6 @@ stdenv.mkDerivation rec {
   buildFlags = lib.attrNames targets;
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out
     ${lib.concatStringsSep "\n" (lib.mapAttrsToList (from: to:
       if to == null
@@ -83,17 +71,15 @@ stdenv.mkDerivation rec {
     # Some PXE constellations especially with dnsmasq are looking for the file with .0 ending
     # let's provide it as a symlink to be compatible in this case.
     ln -s undionly.kpxe $out/undionly.kpxe.0
-
-    runHook postInstall
   '';
 
   enableParallelBuilding = true;
 
-  meta = with lib;
+  meta = with stdenv.lib;
     { description = "Network boot firmware";
       homepage = "https://ipxe.org/";
-      license = licenses.gpl2Only;
+      license = licenses.gpl2;
       maintainers = with maintainers; [ ehmry ];
-      platforms = platforms.linux;
+      platforms = [ "x86_64-linux" "i686-linux" ];
     };
 }

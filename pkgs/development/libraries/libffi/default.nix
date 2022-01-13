@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch
+{ stdenv, fetchurl, fetchpatch
 , autoreconfHook
 
 }:
@@ -9,12 +9,11 @@
 # files.
 
 stdenv.mkDerivation rec {
-  pname = "libffi";
-  version = "3.4.2";
+  name = "libffi-3.3";
 
   src = fetchurl {
-    url = "https://github.com/libffi/libffi/releases/download/v${version}/${pname}-${version}.tar.gz";
-    sha256 = "081nx7wpzds168jbr59m34n6s3lyiq6r8zggvqxvlslsc4hvf3sl";
+    url = "https://sourceware.org/pub/libffi/${name}.tar.gz";
+    sha256 = "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj";
   };
 
   patches = [];
@@ -24,12 +23,6 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--with-gcc-arch=generic" # no detection of -march= or -mtune=
     "--enable-pax_emutramp"
-
-    # Causes issues in downstream packages which misuse ffi_closure_alloc
-    # Reenable once these issues are fixed and merged:
-    # https://gitlab.haskell.org/ghc/ghc/-/merge_requests/6155
-    # https://gitlab.gnome.org/GNOME/gobject-introspection/-/merge_requests/283
-    "--disable-exec-static-tramp"
   ];
 
   preCheck = ''
@@ -39,7 +32,7 @@ stdenv.mkDerivation rec {
 
   dontStrip = stdenv.hostPlatform != stdenv.buildPlatform; # Don't run the native `strip' when cross-compiling.
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A foreign function call interface library";
     longDescription = ''
       The libffi library provides a portable, high level programming

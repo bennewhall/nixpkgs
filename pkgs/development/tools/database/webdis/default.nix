@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, hiredis, http-parser, jansson, libevent, fetchpatch }:
+{ stdenv, fetchFromGitHub, hiredis, http-parser, jansson, libevent, fetchpatch }:
 
 stdenv.mkDerivation rec {
   pname = "webdis";
-  version = "0.1.16";
+  version = "0.1.11";
 
   src = fetchFromGitHub {
     owner = "nicolasff";
     repo = pname;
     rev = version;
-    sha256 = "sha256-I+Nq3kjXoQlwfj8r7oNu6KFE6hnB076M9aJMdwCas3k=";
+    sha256 = "162xbx4dhfx4a6sksm7x60gr7ylyila4vidmdf0bn7xlvglggazf";
   };
 
   buildInputs = [ hiredis http-parser jansson libevent ];
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     "CONFDIR=${placeholder "out"}/share/webdis"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Redis HTTP interface with JSON output";
     homepage = "https://webd.is/";
     license = licenses.bsd2;

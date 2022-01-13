@@ -1,18 +1,16 @@
-{ lib, stdenv, fetchurl, cmake, neon, libdiscid }:
+{ stdenv, fetchurl, cmake, neon, libdiscid }:
 
 stdenv.mkDerivation rec {
-  pname = "libmusicbrainz";
-  version = "3.0.3";
+  name = "libmusicbrainz-3.0.3";
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ neon libdiscid ];
+  buildInputs = [ cmake neon libdiscid ];
 
   src = fetchurl {
-    url = "ftp://ftp.musicbrainz.org/pub/musicbrainz/${pname}-${version}.tar.gz";
+    url = "ftp://ftp.musicbrainz.org/pub/musicbrainz/${name}.tar.gz";
     sha256 = "1i9qly13bwwmgj68vma766hgvsd1m75236haqsp9zgh5znlmkm3z";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://musicbrainz.org/doc/libmusicbrainz";
     description = "MusicBrainz Client Library (3.x version)";
     longDescription = ''

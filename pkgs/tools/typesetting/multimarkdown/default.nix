@@ -1,34 +1,25 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
-, perl
-, pkg-config
-}:
+{ stdenv, fetchgit, perl }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "multimarkdown";
-  version = "6.6.0";
+  version = "4.7.1";
 
-  src = fetchFromGitHub {
-    owner = "fletcher";
-    repo = "MultiMarkdown-6";
-    rev = version;
-    hash = "sha256-emJbY0wucoc/GdjlILoeqjwuwuPpTjXTqZN0gUKOyLg=";
+  src = fetchgit {
+    url = "https://github.com/fletcher/MultiMarkdown-4.git";
+    fetchSubmodules = true;
+    rev = "dd060247518715ef2b52be22b8f49d0e6d2c3a8b";
+    sha256 = "11f246r30q2fx4xw7valhqjj4mc4ydj5fv5f2kbl5h93y69q0bw7";
   };
 
-  postPatch = ''
-    patchShebangs tools/enumsToPerl.pl
+  preBuild = ''
+    substituteInPlace enumsToPerl.pl --replace "/usr/bin/perl" "${perl}/bin/perl"
   '';
 
-  nativeBuildInputs = [
-    cmake
-    perl
-    pkg-config
-  ];
+  buildInputs = [ stdenv ];
+  checkPhase = "make test-all";
+  installPhase = "make pkg-install prefix='' DESTDIR=$out; make pkg-install-scripts prefix='' DESTDIR=$out";
 
-  meta = with lib; {
-    homepage = "https://fletcher.github.io/MultiMarkdown-6/introduction.html";
+  meta = with stdenv.lib; {
     description = "A derivative of Markdown that adds new syntax features";
     longDescription = ''
       MultiMarkdown is a lightweight markup language created by
@@ -39,20 +30,23 @@ stdenv.mkDerivation rec {
 
       It adds the following features to Markdown:
 
-      - footnotes
-      - tables
-      - citations and bibliography (works best in LaTeX using BibTeX)
-      - math support
-      - automatic cross-referencing ability
-      - smart typography, with support for multiple languages
-      - image attributes
-      - table and image captions
-      - definition lists
-      - glossary entries (LaTeX only)
-      - document metadata (e.g. title, author, date, etc.)
+      footnotes
+      tables
+      citations and bibliography (works best in LaTeX using BibTeX)
+      math support
+      automatic cross-referencing ability
+      smart typography, with support for multiple languages
+      image attributes
+      table and image captions
+      definition lists
+      glossary entries (LaTeX only)
+      document metadata (e.g. title, author, date, etc.)
     '';
-    license = with licenses; [ mit ];
+    homepage = "https://fletcherpenney.net/multimarkdown/";
+    # licensed under GPLv2+ or MIT:
+    # https://raw.githubusercontent.com/fletcher/MultiMarkdown-4/master/LICENSE
+    license = with stdenv.lib.licenses; [ gpl2Plus mit ];
     platforms = platforms.all;
-    maintainers = with maintainers; [ AndersonTorres ];
+    maintainers = with stdenv.lib.maintainers; [ lowfatcomputing ];
   };
 }

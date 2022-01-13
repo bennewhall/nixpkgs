@@ -41,10 +41,6 @@ let
           Warning: If you are using <literal>NixOps</literal> then don't use this
           option since it will replace the key required for deployment via ssh.
         '';
-        example = [
-          "ssh-rsa AAAAB3NzaC1yc2etc/etc/etcjwrsh8e596z6J0l7 example@host"
-          "ssh-ed25519 AAAAC3NzaCetcetera/etceteraJZMfk3QPfQ foo@bar"
-        ];
       };
 
       keyFiles = mkOption {
@@ -123,15 +119,6 @@ in
           Whether to enable the SFTP subsystem in the SSH daemon.  This
           enables the use of commands such as <command>sftp</command> and
           <command>sshfs</command>.
-        '';
-      };
-
-      sftpServerExecutable = mkOption {
-        type = types.str;
-        example = "internal-sftp";
-        description = ''
-          The sftp server executable.  Can be a path or "internal-sftp" to use
-          the sftp server built into the sshd binary.
         '';
       };
 
@@ -256,17 +243,7 @@ in
       authorizedKeysFiles = mkOption {
         type = types.listOf types.str;
         default = [];
-        description = ''
-          Specify the rules for which files to read on the host.
-
-          This is an advanced option. If you're looking to configure user
-          keys, you can generally use <xref linkend="opt-users.users._name_.openssh.authorizedKeys.keys"/>
-          or <xref linkend="opt-users.users._name_.openssh.authorizedKeys.keyFiles"/>.
-
-          These are paths relative to the host root file system or home
-          directories and they are subject to certain token expansion rules.
-          See AuthorizedKeysFile in man sshd_config for details.
-        '';
+        description = "Files from which authorized keys are read.";
       };
 
       authorizedKeysCommand = mkOption {
@@ -351,12 +328,15 @@ in
 
       logLevel = mkOption {
         type = types.enum [ "QUIET" "FATAL" "ERROR" "INFO" "VERBOSE" "DEBUG" "DEBUG1" "DEBUG2" "DEBUG3" ];
-        default = "INFO"; # upstream default
+        default = "VERBOSE";
         description = ''
           Gives the verbosity level that is used when logging messages from sshd(8). The possible values are:
-          QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3. The default is INFO. DEBUG and DEBUG1
+          QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3. The default is VERBOSE. DEBUG and DEBUG1
           are equivalent. DEBUG2 and DEBUG3 each specify higher levels of debugging output. Logging with a DEBUG level
           violates the privacy of users and is not recommended.
+
+          LogLevel VERBOSE logs user's key fingerprint on login.
+          Needed to have a clear audit track of which key was used to log in.
         '';
       };
 
@@ -401,15 +381,11 @@ in
   config = mkIf cfg.enable {
 
     users.users.sshd =
-      {
-        isSystemUser = true;
-        group = "sshd";
+      { isSystemUser = true;
         description = "SSH privilege separation user";
       };
-    users.groups.sshd = {};
 
     services.openssh.moduliFile = mkDefault "${cfgc.package}/etc/ssh/moduli";
-    services.openssh.sftpServerExecutable = mkDefault "${cfgc.package}/libexec/sftp-server";
 
     environment.etc = authKeysFiles //
       { "ssh/moduli".source = cfg.moduliFile;
@@ -439,7 +415,7 @@ in
                 mkdir -m 0755 -p /etc/ssh
 
                 ${flip concatMapStrings cfg.hostKeys (k: ''
-                  if ! [ -s "${k.path}" ]; then
+                  if ! [ -f "${k.path}" ]; then
                       ssh-keygen \
                         -t "${k.type}" \
                         ${if k ? bits then "-b ${toString k.bits}" else ""} \
@@ -456,7 +432,6 @@ in
               { ExecStart =
                   (optionalString cfg.startWhenNeeded "-") +
                   "${cfgc.package}/bin/sshd " + (optionalString cfg.startWhenNeeded "-i ") +
-                  "-D " +  # don't detach into a daemon process
                   "-f /etc/ssh/sshd_config";
                 KillMode = "process";
               } // (if cfg.startWhenNeeded then {
@@ -523,10 +498,14 @@ in
             XAuthLocation ${pkgs.xorg.xauth}/bin/xauth
         ''}
 
-        X11Forwarding ${if cfg.forwardX11 then "yes" else "no"}
+        ${if cfg.forwardX11 then ''
+          X11Forwarding yes
+        '' else ''
+          X11Forwarding no
+        ''}
 
         ${optionalString cfg.allowSFTP ''
-          Subsystem sftp ${cfg.sftpServerExecutable} ${concatStringsSep " " cfg.sftpFlags}
+          Subsystem sftp ${cfgc.package}/libexec/sftp-server ${concatStringsSep " " cfg.sftpFlags}
         ''}
 
         PermitRootLogin ${cfg.permitRootLogin}
@@ -552,7 +531,11 @@ in
 
         LogLevel ${cfg.logLevel}
 
-        UseDNS ${if cfg.useDns then "yes" else "no"}
+        ${if cfg.useDns then ''
+          UseDNS yes
+        '' else ''
+          UseDNS no
+        ''}
 
       '';
 

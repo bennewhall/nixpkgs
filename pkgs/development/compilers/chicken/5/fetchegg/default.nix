@@ -1,7 +1,7 @@
 # Fetches a chicken egg from henrietta using `chicken-install -r'
 # See: http://wiki.call-cc.org/chicken-projects/egg-index-5.html
 
-{ lib, stdenvNoCC, chicken }:
+{ stdenvNoCC, chicken }:
 { name, version, md5 ? "", sha256 ? "" }:
 
 if md5 != "" then
@@ -20,6 +20,6 @@ stdenvNoCC.mkDerivation {
 
   eggName = name;
 
-  impureEnvVars = lib.fetchers.proxyImpureEnvVars;
+  impureEnvVars = stdenvNoCC.lib.fetchers.proxyImpureEnvVars;
 }
 

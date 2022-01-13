@@ -1,14 +1,14 @@
 { lib, fetchFromGitHub, ocamlPackages, rsync }:
 
-ocamlPackages.buildDunePackage rec {
+ocamlPackages.buildDunePackage {
   pname = "beluga";
-  version = "1.0";
+  version = "unstable-2020-03-11";
 
   src = fetchFromGitHub {
     owner  = "Beluga-lang";
     repo   = "Beluga";
-    rev    = "v${version}";
-    sha256 = "1ziqjfv8jwidl8lj2mid2shhgqhv31dfh5wad2zxjpvf6038ahsw";
+    rev    = "6133b2f572219333f304bb4f77c177592324c55b";
+    sha256 = "0sy6mi50z3mvs5z7dx38piydapk89all81rh038x3559b5fsk68q";
   };
 
   useDune2 = true;

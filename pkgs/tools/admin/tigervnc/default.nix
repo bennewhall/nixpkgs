@@ -1,42 +1,44 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , xorg, xkeyboard_config, zlib
 , libjpeg_turbo, pixman, fltk
+, fontDirectories
 , cmake, gettext, libtool
 , libGLU
 , gnutls, pam, nettle
 , xterm, openssh, perl
-, makeWrapper
-, nixosTests
-}:
+, makeWrapper}:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
-  version = "1.12.0";
+  version = "1.10.1";
   pname = "tigervnc";
 
   src = fetchFromGitHub {
     owner = "TigerVNC";
     repo = "tigervnc";
-    rev = "v${version}";
-    sha256 = "sha256-77X+AvHFWfYYIio3c+EYf11jg/1IbYhNUweRIDHMOZw=";
+    rev = "v1.10.1";
+    sha256 = "001n189d2f3psn7nxgl8188ml6f7jbk26cxn2835y3mnlk5lmhgr";
   };
 
+  inherit fontDirectories;
+
+  patches = [ ./u_xorg-server-1.20.7-ddxInputThreadInit.patch ];
 
   postPatch = ''
-    sed -i -e '/^\$cmd \.= " -pn";/a$cmd .= " -xkbdir ${xkeyboard_config}/etc/X11/xkb";' unix/vncserver/vncserver.in
+    sed -i -e '/^\$cmd \.= " -pn";/a$cmd .= " -xkbdir ${xkeyboard_config}/etc/X11/xkb";' unix/vncserver
     fontPath=
+    for i in $fontDirectories; do
+      for j in $(find $i -name fonts.dir); do
+        addToSearchPathWithCustomDelimiter "," fontPath $(dirname $j)
+      done
+    done
+    sed -i -e '/^\$cmd \.= " -pn";/a$cmd .= " -fp '"$fontPath"'";' unix/vncserver
     substituteInPlace vncviewer/vncviewer.cxx \
        --replace '"/usr/bin/ssh' '"${openssh}/bin/ssh'
   '';
 
   dontUseCmakeBuildDir = true;
-
-  cmakeFlags = [
-    "-DCMAKE_INSTALL_PREFIX=${placeholder "out"}"
-    "-DCMAKE_INSTALL_SBINDIR=${placeholder "out"}/bin"
-    "-DCMAKE_INSTALL_LIBEXECDIR=${placeholder "out"}/bin"
-  ];
 
   postBuild = ''
     export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -Wno-error=int-to-pointer-cast -Wno-error=pointer-to-int-cast"
@@ -74,7 +76,7 @@ stdenv.mkDerivation rec {
     rm -f $out/lib/xorg/protocol.txt
 
     wrapProgram $out/bin/vncserver \
-      --prefix PATH : ${lib.makeBinPath (with xorg; [ xterm twm xsetroot xauth ]) }
+      --prefix PATH : ${stdenv.lib.makeBinPath (with xorg; [ xterm twm xsetroot xauth ]) }
   '';
 
   buildInputs = with xorg; [
@@ -91,14 +93,14 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = xorg.xorgserver.propagatedBuildInputs;
 
-  passthru.tests.tigervnc = nixosTests.vnc.testTigerVNC;
+  enableParallelBuilding = true;
 
   meta = {
     homepage = "https://tigervnc.org/";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     description = "Fork of tightVNC, made in cooperation with VirtualGL";
-    maintainers = with lib.maintainers; [viric];
-    platforms = with lib.platforms; linux;
+    maintainers = with stdenv.lib.maintainers; [viric];
+    platforms = with stdenv.lib.platforms; linux;
     # Prevent a store collision.
     priority = 4;
   };

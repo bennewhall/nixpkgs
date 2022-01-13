@@ -1,6 +1,6 @@
 {
   mkDerivation, lib,
-  extra-cmake-modules, isocodes,
+  extra-cmake-modules,
   kcoreaddons, kconfig, kcodecs, ki18n, qtbase,
 }:
 
@@ -9,9 +9,6 @@ mkDerivation {
   meta = {
     license = [ lib.licenses.lgpl21 ];
   };
-  propagatedBuildInputs = [
-    isocodes
-  ];
   nativeBuildInputs = [ extra-cmake-modules ];
   buildInputs = [ kcoreaddons kconfig kcodecs ki18n qtbase ];
   outputs = [ "out" "dev" ];

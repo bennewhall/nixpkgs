@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchgit, autoreconfHook, libdrm, libX11, libGL, mesa, pkg-config }:
+{ stdenv, fetchgit, autoreconfHook, libdrm, libX11, libGL, mesa, pkgconfig }:
 
 stdenv.mkDerivation {
-  pname = "kmscube";
-  version = "unstable-2018-06-17";
+  name = "kmscube-2018-06-17";
 
   src = fetchgit {
     url = "git://anongit.freedesktop.org/mesa/kmscube";
@@ -10,10 +9,10 @@ stdenv.mkDerivation {
     sha256 = "1q5b5yvyfj3127385mp1bfmcbnpnbdswdk8gspp7g4541xk4k933";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ libdrm libX11 libGL mesa ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Example OpenGL app using KMS/GBM";
     homepage = "https://gitlab.freedesktop.org/mesa/kmscube";
     license = licenses.mit;

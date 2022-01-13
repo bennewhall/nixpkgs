@@ -1,15 +1,17 @@
-{ lib, stdenv, fetchurl, perl, pkg-config, glib, ncurses
+{ stdenv, fetchurl, perl, pkgconfig, glib, ncurses
 , enablePlugin ? false }:
 
 # Enabling the plugin and using it with a recent irssi, segafults on join:
 # http://marc.info/?l=silc-devel&m=125610477802211
 
-stdenv.mkDerivation rec {
-  pname = "silc-client" + lib.optionalString enablePlugin "-irssi-plugin";
-  version = "1.1.11";
+let
+  basename = "silc-client-1.1.11";
+in
+stdenv.mkDerivation {
+  name = basename + stdenv.lib.optionalString enablePlugin "-irssi-plugin";
 
   src = fetchurl {
-    url = "mirror://sourceforge/silc/silc/client/sources/silc-client-${version}.tar.bz2";
+    url = "mirror://sourceforge/silc/silc/client/sources/${basename}.tar.bz2";
     sha256 = "13cp3fmdnj8scjak0d2xal3bfvs2k7ssrwdhp0zl6jar5rwc7prn";
   };
 
@@ -21,18 +23,18 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--with-ncurses=${ncurses.dev}" ];
 
-  preConfigure = lib.optionalString enablePlugin ''
+  preConfigure = stdenv.lib.optionalString enablePlugin ''
     configureFlags="$configureFlags --with-silc-plugin=$out/lib/irssi"
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ perl glib ncurses ];
 
   meta = {
     homepage = "http://silcnet.org/";
     description = "Secure Internet Live Conferencing server";
-    license = lib.licenses.gpl2;
-    maintainers = with lib.maintainers; [viric];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [viric];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

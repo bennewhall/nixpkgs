@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "mbelib";
@@ -13,15 +13,17 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
+  enableParallelBuilding = true;
+
   doCheck = true;
   preCheck = ''
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH''${LD_LIBRARY_PATH:+:}$PWD
     export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH''${DYLD_LIBRARY_PATH:+:}$PWD
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "P25 Phase 1 and ProVoice vocoder";
-    homepage = "https://github.com/szechyjs/mbelib";
+    homepage = https://github.com/szechyjs/mbelib;
     license = licenses.isc;
     platforms = platforms.unix;
     maintainers = with maintainers; [ andrew-d ];

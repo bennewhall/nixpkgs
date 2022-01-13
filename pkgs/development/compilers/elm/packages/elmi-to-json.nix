@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, binary, bytestring, containers
 , directory, fetchgit, filepath, ghc-prim, hpack
-, optparse-applicative, lib, text, unliftio
+, optparse-applicative, stdenv, text, unliftio
 , unordered-containers
 }:
 mkDerivation {
@@ -23,5 +23,5 @@ mkDerivation {
   testHaskellDepends = [ base ];
   prePatch = "hpack";
   homepage = "https://github.com/stoeffel/elmi-to-json#readme";
-  license = lib.licenses.bsd3;
+  license = stdenv.lib.licenses.bsd3;
 }

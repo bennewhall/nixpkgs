@@ -75,7 +75,7 @@ stdenv.mkDerivation rec {
     cp "$desktopItem"/share/applications/* "$out/share/applications/"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "G-code generator for 3D printers";
     longDescription = ''
       Slic3r is the tool you need to convert a digital 3D model into printing

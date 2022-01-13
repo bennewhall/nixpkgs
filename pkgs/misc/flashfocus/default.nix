@@ -1,27 +1,17 @@
-{ lib, python3 }:
+{ lib, buildPythonApplication, fetchPypi, xcffib, pyyaml, click, i3ipc, marshmallow, cffi, xpybutil, pytestrunner }:
 
-python3.pkgs.buildPythonApplication rec {
+
+buildPythonApplication rec {
   pname = "flashfocus";
-  version = "2.2.3";
+  version = "2.2.2";
 
-  src = python3.pkgs.fetchPypi {
+  src = fetchPypi {
     inherit pname version;
-    sha256 = "0cn44hryvz2wl7xklaslxsb3l2i3f8jkgmml0n9v2ks22j5l4r4h";
+    sha256 = "1z20d596rnc7cs0rrd221gjn14dmbr11djv94y9p4v7rr788sswv";
   };
 
-  nativeBuildInputs = with python3.pkgs; [
-    pytest-runner
-  ];
-
-  propagatedBuildInputs = with python3.pkgs; [
-    i3ipc
-    xcffib
-    click
-    cffi
-    xpybutil
-    marshmallow
-    pyyaml
-  ];
+  nativeBuildInputs = [ pytestrunner ];
+  propagatedBuildInputs = [ i3ipc xcffib click cffi xpybutil marshmallow pyyaml ];
 
   # Tests require access to a X session
   doCheck = false;

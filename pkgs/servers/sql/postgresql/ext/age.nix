@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, bison, flex, postgresql }:
+{ stdenv, fetchFromGitHub, bison, flex, postgresql }:
 
 stdenv.mkDerivation rec {
   pname = "age";
-  version = "0.6.0";
+  version = "0.2.0";
 
   src = fetchFromGitHub {
-    owner = "apache";
-    repo = "incubator-age";
+    owner = "bitnine-oss";
+    repo = "AgensGraph-Extension";
     rev = "v${version}";
-    sha256 = "1cl6p9qz2yhgm603ljlyjdn0msk3hzga1frjqsmqmpp3nw4dbkka";
+    sha256 = "0way59lj30727jlz2qz6rnw4fsxcd5028xcwgrwk7jxcaqi5fa17";
   };
 
   buildInputs = [ postgresql ];
@@ -53,11 +53,11 @@ stdenv.mkDerivation rec {
     '';
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A graph database extension for PostgreSQL";
-    homepage = "https://age.apache.org/";
-    changelog = "https://github.com/apache/incubator-age/releases/tag/v${version}";
-    maintainers = with maintainers; [ ];
+    homepage = "https://github.com/bitnine-oss/AgensGraph-Extension";
+    changelog = "https://github.com/bitnine-oss/AgensGraph-Extension/releases/tag/v${version}";
+    maintainers = with maintainers; [ danieldk ];
     platforms = postgresql.meta.platforms;
     license = licenses.asl20;
     broken = versionOlder postgresql.version "11.0";

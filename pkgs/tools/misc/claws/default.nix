@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "claws";
@@ -13,7 +13,7 @@ buildGoPackage rec {
     sha256 = "0nl7xvdivnabqr98mh3m1pwqznprsaqpagny6zcwwmz480x4pmfz";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/thehowl/claws";
     description = "Interactive command line client for testing websocket servers";
     license = licenses.mit;

@@ -1,51 +1,31 @@
-{ stdenv, lib, nodejs, nodePackages, remarshal
+{ stdenv, lib, pkgs, fetchFromGitHub, nodejs, nodePackages, remarshal
 , ttfautohint-nox
-  # Custom font set options.
-  # See https://typeof.net/Iosevka/customizer
-  # Can be a raw TOML string, or a Nix attrset.
 
-  # Ex:
-  # privateBuildPlan = ''
-  #   [buildPlans.iosevka-custom]
-  #   family = "Iosevka Custom"
-  #   spacing = "normal"
-  #   serifs = "sans"
-  #
-  #   [buildPlans.iosevka-custom.variants.design]
-  #   capital-j = "serifless"
-  #
-  #   [buildPlans.iosevka-custom.variants.italic]
-  #   i = "tailed"
-  # '';
-
-  # Or:
-  # privateBuildPlan = {
-  #   family = "Iosevka Custom";
-  #   spacing = "normal";
-  #   serifs = "sans";
-  #
-  #   variants = {
-  #     design.capital-j = "serifless";
-  #     italic.i = "tailed";
-  #   };
-  # }
+# Custom font set options.
+# See https://github.com/be5invis/Iosevka#build-your-own-style
+# Ex:
+# privateBuildPlan = {
+#   family = "Iosevka Expanded";
+#
+#   design = [
+#     "sans"
+#     "expanded"
+#   ];
+# };
 , privateBuildPlan ? null
   # Extra parameters. Can be used for ligature mapping.
-  # It must be a raw TOML string.
-
+  # It must be a raw toml string.
+  #
   # Ex:
-  # extraParameters = ''
-  #   [[iosevka.compLig]]
-  #   unicode = 57808 # 0xe1d0
-  #   featureTag = 'XHS0'
-  #   sequence = "+>"
-  # '';
+  # [[iosevka.compLig]]
+  # unicode = 57808 # 0xe1d0
+  # featureTag = 'XHS0'
+  # sequence = "+>"
 , extraParameters ? null
   # Custom font set name. Required if any custom settings above.
 , set ? null }:
 
 assert (privateBuildPlan != null) -> set != null;
-assert (extraParameters != null) -> set != null;
 
 let
   # We don't know the attribute name for the Iosevka package as it
@@ -74,21 +54,15 @@ stdenv.mkDerivation rec {
     ttfautohint-nox
   ];
 
-  buildPlan =
-    if builtins.isAttrs privateBuildPlan
-      then builtins.toJSON { buildPlans.${pname} = privateBuildPlan; }
-    else privateBuildPlan;
-
+  privateBuildPlanJSON =
+    builtins.toJSON { buildPlans.${pname} = privateBuildPlan; };
   inherit extraParameters;
-  passAsFile = [ "buildPlan" "extraParameters" ];
+  passAsFile = [ "privateBuildPlanJSON" "extraParameters" ];
 
   configurePhase = ''
     runHook preConfigure
-    ${lib.optionalString (builtins.isAttrs privateBuildPlan) ''
-      remarshal -i "$buildPlanPath" -o private-build-plans.toml -if json -of toml
-    ''}
-    ${lib.optionalString (builtins.isString privateBuildPlan) ''
-      cp "$buildPlanPath" private-build-plans.toml
+    ${lib.optionalString (privateBuildPlan != null) ''
+      remarshal -i "$privateBuildPlanJSONPath" -o private-build-plans.toml -if json -of toml
     ''}
     ${lib.optionalString (extraParameters != null) ''
       echo -e "\n" >> params/parameters.toml
@@ -118,7 +92,7 @@ stdenv.mkDerivation rec {
     updateScript = ./update-default.sh;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://be5invis.github.io/Iosevka";
     downloadPage = "https://github.com/be5invis/Iosevka/releases";
     description = ''

@@ -6,21 +6,21 @@
 , jbig2dec
 , libjpeg
 , mupdf
-, openjpeg
-, pkg-config
+, openjpeg_2
+, pkgconfig
 , zathura_core
 }:
 
 stdenv.mkDerivation rec {
-  version = "0.3.7";
+  version = "0.3.6";
   pname = "zathura-pdf-mupdf";
 
   src = fetchurl {
     url = "https://pwmt.org/projects/${pname}/download/${pname}-${version}.tar.xz";
-    sha256 = "07d2ds9yqfrl20z3yfgc55vwg10mwmcg2yvpr4j66jjd5mlal01g";
+    sha256 = "1r3v37k9fl2rxipvacgxr36llywvy7n20a25h3ajlyk70697sa66";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
 
   buildInputs = [
     cairo
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     jbig2dec
     libjpeg
     mupdf
-    openjpeg
+    openjpeg_2
     zathura_core
   ] ++ lib.optional stdenv.isDarwin gtk-mac-integration;
 

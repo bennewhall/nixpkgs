@@ -1,36 +1,34 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
-, pkg-config
+
 , lit
-, llvm_11
+, llvm_8
 }:
 
 stdenv.mkDerivation rec {
   pname = "SPIRV-LLVM-Translator";
-  version = "unstable-2021-06-13";
+  version = "8.0.1-2";
 
   src = fetchFromGitHub {
     owner = "KhronosGroup";
     repo = "SPIRV-LLVM-Translator";
-    rev = "c67e6f26a7285aa753598ef792593ac4a545adf9";
-    sha256 = "sha256-1s3lVNTQDl+pUvbzSMsp3cOUSm6I4DzqJxnLMeeE3F4=";
+    rev = "v${version}";
+    sha256 = "0hxalc3fkliqs61hpr97phbm3qsx4b8vgnlg30aimzr6aas403r5";
   };
 
-  nativeBuildInputs = [ pkg-config cmake llvm_11.dev ];
+  nativeBuildInputs = [ cmake ];
 
-  buildInputs = [ llvm_11 ];
+  buildInputs = [ llvm_8 ];
 
   checkInputs = [ lit ];
 
-  cmakeFlags = [
-    "-DLLVM_INCLUDE_TESTS=ON"
-  ];
+  cmakeFlags = [ "-DLLVM_INCLUDE_TESTS=ON" ];
 
   # FIXME: CMake tries to run "/llvm-lit" which of course doesn't exist
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "https://github.com/KhronosGroup/SPIRV-LLVM-Translator";
     description = "A tool and a library for bi-directional translation between SPIR-V and LLVM IR";
     license     = licenses.ncsa;

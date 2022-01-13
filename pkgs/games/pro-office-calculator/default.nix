@@ -1,4 +1,4 @@
-{ mkDerivation, lib, fetchFromGitHub, tinyxml-2, cmake, qtbase, qtmultimedia }:
+{ mkDerivation, stdenv, fetchFromGitHub, tinyxml-2, cmake, qtbase, qtmultimedia }:
 mkDerivation rec {
   version = "1.0.13";
   pname = "pro-office-calculator";
@@ -14,7 +14,7 @@ mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A completely normal office calculator";
     homepage = "https://proofficecalculator.com/";
     maintainers = [ maintainers.pmiddend ];

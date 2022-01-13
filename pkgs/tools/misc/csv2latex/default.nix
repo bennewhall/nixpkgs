@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "csv2latex";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   make PREFIX=$out install
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Command-line CSV to LaTeX file converter";
     homepage = "http://brouits.free.fr/csv2latex/";
     license = licenses.gpl2;

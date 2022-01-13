@@ -1,4 +1,4 @@
-{ lib, fetchurl, python2Packages }:
+{ stdenv, fetchurl, python2Packages }:
 
 python2Packages.buildPythonApplication rec {
   pname = "getmail";
@@ -19,11 +19,12 @@ python2Packages.buildPythonApplication rec {
 
   meta = {
     description = "A program for retrieving mail";
-    maintainers = [ lib.maintainers.raskin ];
-    platforms = lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.raskin stdenv.lib.maintainers.domenkozar ];
+    platforms = stdenv.lib.platforms.linux;
 
     homepage = "http://pyropus.ca/software/getmail/";
+    inherit version;
     updateWalker = true;
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

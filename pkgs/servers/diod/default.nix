@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, munge, lua,
+{ stdenv, fetchurl, munge, lua,
   libcap, perl, ncurses
 }:
 
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ munge lua libcap perl ncurses ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An I/O forwarding server that implements a variant of the 9P protocol";
     maintainers = with maintainers; [ rnhmjoj ];
     platforms   = platforms.linux;

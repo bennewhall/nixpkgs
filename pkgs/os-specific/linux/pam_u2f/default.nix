@@ -1,30 +1,22 @@
-{ lib, stdenv, fetchurl, pkg-config, libfido2, pam, openssl }:
+{ stdenv, fetchurl, pkgconfig, libfido2, pam, openssl }:
 
 stdenv.mkDerivation rec {
   pname = "pam_u2f";
-  version = "1.2.0";
+  version = "1.1.0";
 
   src     = fetchurl {
     url = "https://developers.yubico.com/pam-u2f/Releases/${pname}-${version}.tar.gz";
-    sha256 = "sha256-IwPm+Zsf3o7jw6sopN4tpt3SJclTaT6EXWstg4giH7M=";
+    sha256 = "01fwbrfnjkv93vvqm54jywdcxa1p7d4r32azicwnx75nxfbbzhqd";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libfido2 pam openssl ];
 
   preConfigure = ''
     configureFlagsArray+=("--with-pam-dir=$out/lib/security")
   '';
 
-  # a no-op makefile to prevent building the fuzz targets
-  postConfigure = ''
-    cat > fuzz/Makefile <<EOF
-    all:
-    install:
-    EOF
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://developers.yubico.com/pam-u2f/";
     description = "A PAM module for allowing authentication with a U2F device";
     license = licenses.bsd2;

@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, libck, darwin }:
+{ stdenv, fetchFromGitHub, libck, darwin }:
 
 let
-  version = "0.30.0";
+  version = "0.21";
   bootstrap = stdenv.mkDerivation {
     pname = "cyclone-bootstrap";
     inherit version;
@@ -10,12 +10,12 @@ let
       owner = "justinethier";
       repo = "cyclone-bootstrap";
       rev = "v${version}";
-      sha256 = "sha256-/zAcCBdJ7YQXsspdjrMca1Oj9SUUFXQKLwZPoZLhHYg=";
+      sha256 = "0bb3a7x7vzmdyhm4nilm8bcn4q50pwqryggnxz21n16v6xakwjmr";
     };
 
     enableParallelBuilding = true;
 
-    nativeBuildInputs = lib.optionals stdenv.isDarwin [ darwin.cctools ];
+    nativeBuildInputs = stdenv.lib.optionals stdenv.isDarwin [ darwin.cctools ];
 
     buildInputs = [ libck ];
 
@@ -30,19 +30,19 @@ stdenv.mkDerivation {
     owner = "justinethier";
     repo = "cyclone";
     rev = "v${version}";
-    sha256 = "sha256-a3wiqKlIbnvIhyrI0lyVGciQiM7KSuYH5iUfGFrgOuM=";
+    sha256 = "1vb4yaprs2bwbxmxx2zkqvysxx8r9qww2q1nqkz8yps3ji715jw7";
   };
 
   enableParallelBuilding = true;
 
   nativeBuildInputs = [ bootstrap ]
-    ++ lib.optionals stdenv.isDarwin [ darwin.cctools ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ darwin.cctools ];
 
   buildInputs = [ libck ];
 
   makeFlags = [ "PREFIX=${placeholder "out"}" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://justinethier.github.io/cyclone/";
     description = "A brand-new compiler that allows practical application development using R7RS Scheme";
     license = licenses.mit;

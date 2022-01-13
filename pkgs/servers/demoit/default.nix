@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildGoModule
 , fetchFromGitHub
 }:
@@ -6,6 +6,7 @@
 buildGoModule {
   pname = "demoit";
   version = "unstable-2020-06-11";
+  goPackagePath = "github.com/dgageot/demoit";
 
   src = fetchFromGitHub {
     owner = "dgageot";
@@ -16,7 +17,7 @@ buildGoModule {
   vendorSha256 = null;
   subPackages = [ "." ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Live coding demos without Context Switching";
     homepage = "https://github.com/dgageot/demoit";
     license = licenses.asl20;

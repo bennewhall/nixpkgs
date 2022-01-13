@@ -1,6 +1,8 @@
-{ lib, gccStdenv, fetchFromGitHub }:
+{ stdenv
+, fetchFromGitHub
+}:
 
-gccStdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "cc65";
   version = "2.19";
 
@@ -11,11 +13,9 @@ gccStdenv.mkDerivation rec {
     sha256 = "01a15yvs455qp20hri2pbg2wqvcip0d50kb7dibi9427hqk9cnj4";
   };
 
-  makeFlags = [ "PREFIX=${placeholder "out"}" ];
+  makeFlags = [ "PREFIX=${placeholder "out"}"];
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://cc65.github.io/";
     description = "C compiler for processors of 6502 family";
     longDescription = ''
@@ -53,6 +53,5 @@ gccStdenv.mkDerivation rec {
     '';
     license = licenses.zlib;
     maintainers = with maintainers; [ AndersonTorres ];
-    platforms = platforms.unix;
   };
 }

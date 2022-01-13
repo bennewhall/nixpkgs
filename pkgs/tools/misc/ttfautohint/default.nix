@@ -1,5 +1,5 @@
 {
-  stdenv, lib, fetchurl, pkg-config, autoreconfHook
+  stdenv, lib, fetchurl, pkgconfig, autoreconfHook
 , freetype, harfbuzz, libiconv, qtbase
 , enableGUI ? true
 }:
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     substituteInPlace configure --replace "macx-g++" "macx-clang"
   '';
 
-  nativeBuildInputs = [ pkg-config autoreconfHook ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
   buildInputs = [ freetype harfbuzz libiconv ] ++ lib.optional enableGUI qtbase;
 
@@ -25,9 +25,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  dontWrapQtApps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An automatic hinter for TrueType fonts";
     longDescription = ''
       A library and two programs which take a TrueType font as the

@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchgit, libowfat, zlib, nixosTests }:
+{ stdenv, fetchgit, libowfat, zlib }:
 
 stdenv.mkDerivation {
-  pname = "opentracker";
-  version = "unstable-2018-05-26";
+  name = "opentracker-2018-05-26";
 
   src = fetchgit {
     url = "https://erdgeist.org/gitweb/opentracker";
@@ -24,11 +23,7 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
-  passthru.tests = {
-    bittorrent-integration = nixosTests.bittorrent;
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://erdgeist.org/arts/software/opentracker/";
     license = licenses.beerware;
     platforms = platforms.linux;

@@ -1,20 +1,20 @@
-{ lib, stdenv
+{ stdenv
 , requireFile
 , xorg
 , zlib
 , freetype
-, alsa-lib
+, alsaLib
 , setJavaClassPath
 }:
 
 let result = stdenv.mkDerivation rec {
   pname = "oraclejdk";
-  version = "11.0.10";
+  version = "11.0.8";
 
   src = requireFile {
     name = "jdk-${version}_linux-x64_bin.tar.gz";
     url = "https://www.oracle.com/java/technologies/javase-jdk11-downloads.html";
-    sha256 = "94bd34f85ee38d3ef59e5289ec7450b9443b924c55625661fffe66b03f2c8de2";
+    sha256 = "6390878c91e29bad7b2483eb0b470620bd145269600f3b6a9d65724e6f83b6fd";
   };
 
   installPhase = ''
@@ -30,7 +30,7 @@ let result = stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    rpath="$out/lib/jli:$out/lib/server:$out/lib:${lib.strings.makeLibraryPath [ zlib xorg.libX11 xorg.libXext xorg.libXtst xorg.libXi xorg.libXrender freetype alsa-lib]}"
+    rpath="$out/lib/jli:$out/lib/server:$out/lib:${stdenv.lib.strings.makeLibraryPath [ zlib xorg.libX11 xorg.libXext xorg.libXtst xorg.libXi xorg.libXrender freetype alsaLib]}"
 
     for f in $(find $out -name "*.so") $(find $out -type f -perm -0100); do
       patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
@@ -47,7 +47,7 @@ let result = stdenv.mkDerivation rec {
 
   dontStrip = true; # See: https://github.com/NixOS/patchelf/issues/10
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.unfree;
     platforms = [ "x86_64-linux" ];
   };

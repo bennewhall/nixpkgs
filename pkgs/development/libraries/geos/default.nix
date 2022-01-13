@@ -1,22 +1,23 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl, python }:
 
 stdenv.mkDerivation rec {
-  pname = "geos";
-  version = "3.9.1";
+  name = "geos-3.8.1";
 
   src = fetchurl {
-    url = "https://download.osgeo.org/geos/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-fmMFB9ysncB1ZdJJom8GoVyfWwxS3SkSmg49OB1+OCo=";
+    url = "https://download.osgeo.org/geos/${name}.tar.bz2";
+    sha256 = "1xqpmr10xi0n9sj47fbwc89qb0yr9imh4ybk0jsxpffy111syn22";
   };
 
   enableParallelBuilding = true;
 
-  # https://trac.osgeo.org/geos/ticket/993
-  configureFlags = lib.optional stdenv.isAarch32 "--disable-inline";
+  buildInputs = [ python ];
 
-  meta = with lib; {
+  # https://trac.osgeo.org/geos/ticket/993
+  configureFlags = stdenv.lib.optional stdenv.isAarch32 "--disable-inline";
+
+  meta = with stdenv.lib; {
     description = "C++ port of the Java Topology Suite (JTS)";
     homepage = "https://trac.osgeo.org/geos";
-    license = licenses.lgpl21Only;
+    license = licenses.lgpl21;
   };
 }

@@ -1,29 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, cmake, itk, Cocoa }:
+{ stdenv, fetchFromGitHub, cmake, itk4, Cocoa }:
 
 stdenv.mkDerivation rec {
   pname   = "c3d";
-  version = "unstable-2021-09-14";
+  version = "unstable-2020-10-05";
 
   src = fetchFromGitHub {
     owner = "pyushkevich";
     repo = pname;
-    rev = "cc06e6e2f04acd3d6faa3d8c9a66b499f02d4388";
-    sha256 = "sha256:1ql1y6694njsmdapywhppb54viyw8wdpaxxr1b3hm2rqhvwmhn52";
+    rev = "0a87e3972ea403babbe2d05ec6d50855e7c06465";
+    sha256 = "0wsmkifqrcfy13fnwvinmnq1m0lkqmpyg7bgbwnb37mbrlbq06wf";
   };
 
   nativeBuildInputs = [ cmake ];
-  buildInputs = [ itk ]
-    ++ lib.optional stdenv.isDarwin Cocoa;
+  buildInputs = [ itk4 ]
+    ++ stdenv.lib.optional stdenv.isDarwin Cocoa;
 
-  cmakeFlags = [ "-DCONVERT3D_USE_ITK_REMOTE_MODULES=OFF" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pyushkevich/c3d";
     description = "Medical imaging processing tool";
     maintainers = with maintainers; [ bcdarwin ];
     platforms = platforms.unix;
     license = licenses.gpl3;
     broken = stdenv.isAarch64;
-    # /build/source/itkextras/OneDimensionalInPlaceAccumulateFilter.txx:312:10: fatal error: xmmintrin.h: No such file or directory
+    # /build/git-3453f61/itkextras/OneDimensionalInPlaceAccumulateFilter.txx:311:10: fatal error: xmmintrin.h: No such file or directory
   };
 }

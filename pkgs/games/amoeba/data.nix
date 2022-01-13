@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "amoeba-data";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     cp demo.dat $out/share/amoeba/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast-paced, polished OpenGL demonstration by Excess (data files)";
     homepage = "https://packages.qa.debian.org/a/amoeba-data.html";
     license = licenses.unfree;

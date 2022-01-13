@@ -1,34 +1,17 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, click
-, prompt-toolkit
-, six
-, pytestCheckHook
-}:
+{ stdenv, buildPythonPackage, fetchPypi, click, prompt_toolkit }:
 
 buildPythonPackage rec {
   pname = "click-repl";
-  version = "0.2.0";
+  version = "0.1.6";
 
-  src = fetchFromGitHub {
-    owner = "click-contrib";
-    repo = "click-repl";
-    rev = version;
-    hash = "sha256-kaTUKaIomJL0u3NX40bL0I54vkR+Utcdw1QKSbnVy5s=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "1mcmz95595nrp4r58spy1ac993db26hk4q97isghbmn4md99vwmr";
   };
 
-  propagatedBuildInputs = [
-    click
-    prompt-toolkit
-    six
-  ];
+  propagatedBuildInputs = [ click prompt_toolkit ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/click-contrib/click-repl";
     description = "Subcommand REPL for click apps";
     license = licenses.mit;

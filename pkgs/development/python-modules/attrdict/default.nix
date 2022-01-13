@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, coverage, nose, six }:
+{ stdenv, buildPythonPackage, fetchPypi, coverage, nose, six }:
 
 buildPythonPackage rec {
   pname = "attrdict";
@@ -11,7 +11,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ coverage nose six ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A dict with attribute-style access";
     homepage = "https://github.com/bcj/AttrDict";
     license = licenses.mit;

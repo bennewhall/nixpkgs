@@ -1,5 +1,5 @@
 .PHONY: all
-all: manual-combined.xml
+all: manual-combined.xml format
 
 .PHONY: debug
 debug: generated manual-combined.xml

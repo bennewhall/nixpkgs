@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildDunePackage, angstrom, async }:
+{ stdenv, fetchFromGitHub, buildDunePackage, angstrom, async }:
 
 buildDunePackage rec {
   pname = "angstrom-async";
@@ -14,6 +14,6 @@ buildDunePackage rec {
   meta = {
     inherit (angstrom.meta) homepage license;
     description = "Async support for Angstrom";
-    maintainers = with lib.maintainers; [ romildo ];
+    maintainers = with stdenv.lib.maintainers; [ romildo ];
   };
 }

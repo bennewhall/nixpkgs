@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, opencv, zlib
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, opencv, zlib
 , libxml2, freetype, libjpeg, libtiff, swig, openexr
 , ilmbase, boost165
 , withPython ? true, python3
@@ -20,13 +20,12 @@ stdenv.mkDerivation rec {
       NIX_CFLAGS_COMPILE+=" -isystem ${ilmbase.dev}/include/OpenEXR"
     '';
 
-    nativeBuildInputs = [ cmake pkg-config ];
     buildInputs = [
-      boost165 opencv zlib libxml2 freetype libjpeg libtiff
+      cmake pkgconfig boost165 opencv zlib libxml2 freetype libjpeg libtiff
       swig openexr ilmbase
-    ] ++ lib.optional withPython python3;
+    ] ++ stdenv.lib.optional withPython python3;
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "A free, open source raytracer";
       homepage = "http://www.yafaray.org";
       maintainers = with maintainers; [ hodapp ];

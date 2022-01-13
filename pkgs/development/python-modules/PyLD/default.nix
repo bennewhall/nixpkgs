@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, python, requests, gnugrep }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, python, requests, gnugrep }:
 
 let
 
@@ -48,7 +48,7 @@ buildPythonPackage rec {
     ${python.interpreter} tests/runtests.py -d ${normalization}/tests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python implementation of the JSON-LD API";
     homepage = "https://github.com/digitalbazaar/pyld";
     license = licenses.bsd3;

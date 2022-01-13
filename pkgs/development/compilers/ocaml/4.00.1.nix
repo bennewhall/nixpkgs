@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl, ncurses, xlibsWrapper }:
+{ stdenv, fetchurl, ncurses, xlibsWrapper }:
 
 let
    useX11 = !stdenv.isAarch32 && !stdenv.isMips;
    useNativeCompilers = !stdenv.isMips;
-   inherit (lib) optional optionals optionalString;
+   inherit (stdenv.lib) optional optionals optionalString;
 in
 
 stdenv.mkDerivation rec {
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     nativeCompilers = useNativeCompilers;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://caml.inria.fr/ocaml";
     branch = "4.00";
     license = with licenses; [

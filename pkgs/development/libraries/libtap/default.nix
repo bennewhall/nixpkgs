@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, pkg-config, cmake, perl }:
+{ stdenv, fetchurl, pkgconfig, cmake, perl }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
 
   pname = "libtap";
@@ -11,10 +11,10 @@ stdenv.mkDerivation rec {
     sha256 = "1ga7rqmppa8ady665736cx443icscqlgflkqmxd4xbkzypmdj9bk";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ cmake perl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library to implement a test protocol";
     longDescription = ''
       libtap is a library to implement the Test Anything Protocol for

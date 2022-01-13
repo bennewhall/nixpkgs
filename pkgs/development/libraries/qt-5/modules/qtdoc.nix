@@ -1,7 +1,7 @@
 { qtModule, qtdeclarative }:
 
 qtModule {
-  pname = "qtdoc";
+  name = "qtdoc";
   qtInputs = [ qtdeclarative ];
   outputs = [ "out" ];
 }

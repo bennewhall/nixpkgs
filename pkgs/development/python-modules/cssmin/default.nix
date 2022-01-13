@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "cssmin";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # no tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Python port of the YUI CSS compression algorithm";
     homepage = "https://github.com/zacharyvoase/cssmin";
     license = licenses.bsd3;

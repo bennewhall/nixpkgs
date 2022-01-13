@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libtool }:
+{ stdenv, fetchFromGitHub, libtool }:
 
 stdenv.mkDerivation rec {
   pname = "libmpack";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "LIBTOOL=libtool" "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple implementation of msgpack in C";
     homepage = "https://github.com/tarruda/libmpack/";
     license = licenses.mit;

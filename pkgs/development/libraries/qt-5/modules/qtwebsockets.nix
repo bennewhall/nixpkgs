@@ -1,7 +1,7 @@
 { qtModule, qtbase, qtdeclarative }:
 
 qtModule {
-  pname = "qtwebsockets";
+  name = "qtwebsockets";
   qtInputs = [ qtbase qtdeclarative ];
   outputs = [ "out" "dev" "bin" ];
 }

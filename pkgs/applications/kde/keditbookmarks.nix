@@ -5,7 +5,7 @@
 }:
 
 mkDerivation {
-  pname = "keditbookmarks";
+  name = "keditbookmarks";
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
   buildInputs = [ kio kparts kwindowsystem ];
   meta = with lib; {

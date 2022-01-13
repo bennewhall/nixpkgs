@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchurl, gnuplot, ruby }:
+{ stdenv, fetchurl, gnuplot, ruby }:
 
 stdenv.mkDerivation {
-  pname = "eplot";
-  version = "2.09";
+  name = "eplot-2.07";
 
   # Upstream has been contacted (2015-03) regarding providing versioned
   # download URLs. Initial response was positive, but no action yet.
@@ -21,19 +20,15 @@ stdenv.mkDerivation {
   dontUnpack = true;
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p "$out/bin"
     cp "$src" "$out/bin/eplot"
     cp "$ecSrc" "$out/bin/ec"
     chmod +x "$out/bin/"*
 
     sed -i -e "s|gnuplot -persist|${gnuplot}/bin/gnuplot -persist|" "$out/bin/eplot"
-
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Create plots quickly with gnuplot";
     longDescription = ''
       eplot ("easy gnuplot") is a ruby script which allows to pipe data easily
@@ -44,9 +39,9 @@ stdenv.mkDerivation {
       This package also includes the complementary 'ec' tool (say "extract
       column").
     '';
-    homepage = "https://perso.liris.cnrs.fr/christian.wolf/software/eplot/";
+    homepage = "http://liris.cnrs.fr/christian.wolf/software/eplot/";
     license = licenses.gpl2Plus;
     platforms = platforms.all;
-    maintainers = with maintainers; [ bjornfor shamilton ];
+    maintainers = [ maintainers.bjornfor ];
   };
 }

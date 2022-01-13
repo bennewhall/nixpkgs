@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, jre8, unzip }:
+{ stdenv, fetchurl, jre8, unzip }:
 
 stdenv.mkDerivation rec {
   pname = "galen";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "13dq8cf0yy24vym6z7p8hb0mybgpcl4j5crsaq8a6pjfxz6d17mq";
   };
 
-  nativeBuildInputs = [ unzip ];
+  buildInputs = [ unzip ];
 
   buildPhase = ''
   mkdir -p $out/bin
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   cp galen.jar $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://galenframework.com";
     description = "Automated layout testing for websites";
     license = licenses.asl20;

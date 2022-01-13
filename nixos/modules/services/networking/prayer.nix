@@ -44,8 +44,7 @@ in
       enable = mkEnableOption "the prayer webmail http server";
 
       port = mkOption {
-        default = 2080;
-        type = types.port;
+        default = "2080";
         description = ''
           Port the prayer http server is listening to.
         '';

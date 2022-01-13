@@ -1,4 +1,4 @@
-{ lib, stdenv, autoreconfHook, fetchurl, libjack2, gtk2, pkg-config }:
+{ stdenv, autoreconfHook, fetchurl, libjack2, gtk2, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "bitmeter";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "09ck2gxqky701dc1p0ip61rrn16v0pdc7ih2hc2sd63zcw53g2a7";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ libjack2 gtk2 ];
 
   patches = [
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://devel.tlrmx.org/audio/bitmeter/";
     description = "Also known as jack bitscope. Useful to detect denormals";
     license = licenses.gpl2;

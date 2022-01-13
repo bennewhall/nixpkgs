@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... }:
 
-
 # TODO: test configuration when building nixexpr (use -t parameter)
 # TODO: support sqlite3 (it's deprecate?) and mysql
 
@@ -112,7 +111,6 @@ let
   {
     options = {
       password = mkOption {
-        type = types.str;
         # TODO: required?
         description = ''
           Specifies the password that must be supplied for the default Bacula
@@ -132,7 +130,6 @@ let
       };
 
       monitor = mkOption {
-        type = types.enum [ "no" "yes" ];
         default = "no";
         example = "yes";
         description = ''
@@ -153,7 +150,6 @@ let
   {
     options = {
       changerDevice = mkOption {
-        type = types.str;
         description = ''
           The specified name-string must be the generic SCSI device name of the
           autochanger that corresponds to the normal read/write Archive Device
@@ -172,7 +168,6 @@ let
       };
 
       changerCommand = mkOption {
-        type = types.str;
         description = ''
           The name-string specifies an external program to be called that will
           automatically change volumes as required by Bacula. Normally, this
@@ -195,13 +190,12 @@ let
       };
 
       devices = mkOption {
-        description = "";
-        type = types.listOf types.str;
+        description = ''
+        '';
       };
 
       extraAutochangerConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Autochanger directive.
         '';
@@ -218,7 +212,6 @@ let
     options = {
       archiveDevice = mkOption {
         # TODO: required?
-        type = types.str;
         description = ''
           The specified name-string gives the system file name of the storage
           device managed by this storage daemon. This will usually be the
@@ -235,7 +228,6 @@ let
 
       mediaType = mkOption {
         # TODO: required?
-        type = types.str;
         description = ''
           The specified name-string names the type of media supported by this
           device, for example, <literal>DLT7000</literal>. Media type names are
@@ -273,7 +265,6 @@ let
 
       extraDeviceConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Device directive.
         '';
@@ -302,8 +293,6 @@ in {
 
       name = mkOption {
         default = "${config.networking.hostName}-fd";
-        defaultText = literalExpression ''"''${config.networking.hostName}-fd"'';
-        type = types.str;
         description = ''
           The client name that must be used by the Director when connecting.
           Generally, it is a good idea to use a name related to the machine so
@@ -332,7 +321,6 @@ in {
 
       extraClientConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Client directive.
         '';
@@ -344,7 +332,6 @@ in {
 
       extraMessagesConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Messages directive.
         '';
@@ -365,8 +352,6 @@ in {
 
       name = mkOption {
         default = "${config.networking.hostName}-sd";
-        defaultText = literalExpression ''"''${config.networking.hostName}-sd"'';
-        type = types.str;
         description = ''
           Specifies the Name of the Storage daemon.
         '';
@@ -407,7 +392,6 @@ in {
 
       extraStorageConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Storage directive.
         '';
@@ -419,7 +403,6 @@ in {
 
       extraMessagesConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Messages directive.
         '';
@@ -441,8 +424,6 @@ in {
 
       name = mkOption {
         default = "${config.networking.hostName}-dir";
-        defaultText = literalExpression ''"''${config.networking.hostName}-dir"'';
-        type = types.str;
         description = ''
           The director name used by the system administrator. This directive is
           required.
@@ -464,7 +445,6 @@ in {
 
       password = mkOption {
         # TODO: required?
-        type = types.str;
         description = ''
            Specifies the password that must be supplied for a Director.
         '';
@@ -472,7 +452,6 @@ in {
 
       extraMessagesConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Messages directive.
         '';
@@ -483,7 +462,6 @@ in {
 
       extraDirectorConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra configuration to be passed in Director directive.
         '';

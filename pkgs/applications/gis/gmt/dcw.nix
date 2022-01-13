@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "dcw-gmt";
-  version = "2.0.2";
+  version = "1.1.4";
   src = fetchurl {
     url = "ftp://ftp.soest.hawaii.edu/gmt/dcw-gmt-${version}.tar.gz";
-    sha256 = "sha256-KzAPAco1DbF6rdAmCuM7823GthvkFQ5mgpAzzsPWXDw=";
+    sha256 = "8d47402abcd7f54a0f711365cd022e4eaea7da324edac83611ca035ea443aad3";
   };
 
   installPhase = ''
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
     cp -rv ./* $out/share/dcw-gmt
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.soest.hawaii.edu/pwessel/dcw/";
     description = "Vector basemap of the world, for use with GMT";
     longDescription = ''

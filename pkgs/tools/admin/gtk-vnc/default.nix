@@ -1,13 +1,13 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchurl
+, fetchpatch
 , meson
 , ninja
 , gobject-introspection
 , gnutls
 , cairo
 , glib
-, pkg-config
+, pkgconfig
 , cyrus_sasl
 , libpulseaudio
 , libgcrypt
@@ -15,32 +15,38 @@
 , vala
 , gettext
 , perl
-, python3
-, gnome
+, gnome3
 , gdk-pixbuf
 , zlib
 }:
 
 stdenv.mkDerivation rec {
   pname = "gtk-vnc";
-  version = "1.3.0";
+  version = "1.0.0";
 
   outputs = [ "out" "bin" "man" "dev" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "X6qlgjuMvowLC6HkVsTnDEsa5mhcn+gaQoLZjPAKIR0=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1060ws037v556rx1qhfrcg02859rscksrzr8fq11himdg4d1y6m8";
   };
+
+  patches = [
+    # Fix undeclared gio-unix-2.0 in example program.
+    (fetchpatch {
+      url = "https://gitlab.gnome.org/GNOME/gtk-vnc/commit/8588bc1c8321152ddc5086ca9b2c03a7f511e0d0.patch";
+      sha256 = "0i1iapsbngl1mhnz22dd73mnzk68qc4n51pqdhnm18zqc8pawvh4";
+    })
+  ];
 
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
     gobject-introspection
     vala
     gettext
     perl # for pod2man
-    python3
   ];
 
   buildInputs = [
@@ -56,13 +62,13 @@ stdenv.mkDerivation rec {
   ];
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
       versionPolicy = "none";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GTK VNC widget";
     homepage = "https://wiki.gnome.org/Projects/gtk-vnc";
     license = licenses.lgpl2Plus;

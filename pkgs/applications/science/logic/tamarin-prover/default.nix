@@ -4,12 +4,12 @@
 }:
 
 let
-  version = "1.6.1";
+  version = "1.6.0";
   src = fetchFromGitHub {
     owner  = "tamarin-prover";
     repo   = "tamarin-prover";
     rev    = version;
-    sha256 = "sha256:0cz1v7k4d0im749ag632nc34n91b51b0pq4z05rzw1p59a5lza92";
+    sha256 = "1pl3kz7gyw9g6s4x5j90z4snd10vq6296g3ajlr8d4n53p3c9i3w";
   };
 
   # tamarin has its own dependencies, but they're kept inside the repo,
@@ -85,7 +85,7 @@ mkDerivation (common "tamarin-prover" src // {
 
   executableHaskellDepends = (with haskellPackages; [
     binary-instances binary-orphans blaze-html conduit file-embed
-    gitrev http-types lifted-base monad-control
+    gitrev http-types lifted-base monad-control monad-unlift
     resourcet shakespeare threads wai warp yesod-core yesod-static
   ]) ++ [ tamarin-prover-utils
           tamarin-prover-sapic

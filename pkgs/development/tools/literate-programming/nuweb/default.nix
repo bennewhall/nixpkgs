@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, tex}:
+{stdenv, fetchurl, tex}:
 
 stdenv.mkDerivation rec {
 
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     cp htdocs/index.html nuweb.w nuweb.pdf nuwebdoc.pdf README $out/share/doc/${pname}-${version}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple literate programming tool";
     homepage = "http://nuweb.sourceforge.net";
     license = licenses.free;

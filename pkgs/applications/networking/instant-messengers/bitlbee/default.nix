@@ -1,21 +1,20 @@
-{ lib, fetchurl, fetchpatch, stdenv, gnutls, glib, pkg-config, check, libotr, python2
+{ fetchurl, fetchpatch, stdenv, gnutls, glib, pkgconfig, check, libotr, python
 , enableLibPurple ? false, pidgin ? null
 , enablePam ? false, pam ? null
 }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
-  pname = "bitlbee";
-  version = "3.6";
+  name = "bitlbee-3.6";
 
   src = fetchurl {
-    url = "mirror://bitlbee/src/bitlbee-${version}.tar.gz";
+    url = "mirror://bitlbee/src/${name}.tar.gz";
     sha256 = "0zhhcbcr59sx9h4maf8zamzv2waya7sbsl7w74gbyilvy93dw5cz";
   };
 
-  nativeBuildInputs = [ pkg-config ] ++ optional doCheck check;
+  nativeBuildInputs = [ pkgconfig ] ++ optional doCheck check;
 
-  buildInputs = [ gnutls libotr python2 ]
+  buildInputs = [ gnutls libotr python ]
     ++ optional enableLibPurple pidgin
     ++ optional enablePam pam;
 

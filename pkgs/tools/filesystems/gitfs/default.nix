@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   pname = "gitfs";
@@ -14,15 +14,9 @@ python3Packages.buildPythonApplication rec {
   patchPhase = ''
     # requirement checks are unnecessary at runtime
     echo > requirements.txt
-
-    # NOTE: As of gitfs 0.5.2, The pygit2 release that upstream uses is a major
-    # version behind the one packaged in nixpkgs.
-    substituteInPlace gitfs/mounter.py --replace \
-      'from pygit2.remote import RemoteCallbacks' \
-      'from pygit2 import RemoteCallbacks'
   '';
 
-  checkInputs = with python3Packages; [ pytest pytest-cov mock ];
+  checkInputs = with python3Packages; [ pytest pytestcov mock ];
   propagatedBuildInputs = with python3Packages; [ atomiclong fusepy pygit2 six ];
 
   checkPhase = "py.test";
@@ -36,8 +30,8 @@ python3Packages.buildPythonApplication rec {
       automatically committed to the remote.
     '';
     homepage = "https://github.com/PressLabs/gitfs";
-    license = lib.licenses.asl20;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.robbinch ];
+    license = stdenv.lib.licenses.asl20;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.robbinch ];
   };
 }

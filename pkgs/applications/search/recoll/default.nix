@@ -33,25 +33,25 @@
 , withGui ? true
 }:
 
+assert stdenv.hostPlatform.system != "powerpc-linux";
+
 mkDerivation rec {
   pname = "recoll";
-  version = "1.31.0";
+  version = "1.27.12";
 
   src = fetchurl {
     url = "https://www.lesbonscomptes.com/${pname}/${pname}-${version}.tar.gz";
-    sha256 = "sha256-TtkfohzeT0HO6ywCMNxrODW1DnJg5KMFkx9AbDfQt+c=";
+    sha256 = "0bgadm8p319fws66ca4rpv9fx2bllbphgn892rh78db81lz20i5v";
   };
 
   configureFlags = [ "--enable-recollq" "--disable-webkit" ]
     ++ lib.optionals (!withGui) [ "--disable-qtgui" "--disable-x11mon" ]
     ++ (if stdenv.isLinux then [ "--with-inotify" ] else [ "--without-inotify" ]);
 
-  nativeBuildInputs = [
-    file pkg-config python3Packages.setuptools which
-  ];
+  nativeBuildInputs = [ pkg-config ];
 
-  buildInputs = [
-    bison chmlib python3Packages.python xapian zlib
+  buildInputs = with python3Packages; [
+    bison chmlib file python setuptools which xapian zlib
   ] ++ lib.optional withGui qtbase
     ++ lib.optional stdenv.isDarwin libiconv;
 
@@ -85,13 +85,13 @@ mkDerivation rec {
         substituteInPlace $f --replace /usr/bin/perl   ${lib.getBin perl}/bin/perl
       fi
     done
-  '' + lib.optionalString stdenv.isLinux ''
+  '' + stdenv.lib.optionalString stdenv.isLinux ''
     substituteInPlace  $f --replace '"lyx"' '"${lib.getBin lyx}/bin/lyx"'
   '';
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A full-text search tool";
     longDescription = ''
       Recoll is an Xapian frontend that can search through files, archive
@@ -100,6 +100,6 @@ mkDerivation rec {
     homepage = "https://www.lesbonscomptes.com/recoll/";
     license = licenses.gpl2;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ jcumming kiyengar ];
+    maintainers = [ maintainers.jcumming ];
   };
 }

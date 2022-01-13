@@ -1,25 +1,24 @@
-{ lib, fetchFromGitHub, buildDunePackage, ocaml }:
+{ stdenv, fetchurl, ocaml, findlib, ocamlbuild, topkg }:
 
-buildDunePackage rec {
-  pname = "octavius";
-  version = "1.2.2";
+if !stdenv.lib.versionAtLeast ocaml.version "4.03"
+then throw "octavius is not available for OCaml ${ocaml.version}" else
 
-  src = fetchFromGitHub {
-    owner = "ocaml-doc";
-    repo = "octavius";
-    rev = "v${version}";
-    sha256 = "sha256-/S6WpIo1c5J9uM3xgtAM/elhnsl0XimnIFsKy3ootbA=";
-  };
+stdenv.mkDerivation {
+	name = "ocaml${ocaml.version}-octavius-0.2.0";
+	src = fetchurl {
+		url = "https://github.com/ocaml-doc/octavius/releases/download/v0.2.0/octavius-0.2.0.tbz";
+		sha256 = "02milzzlr4xk5aymg2fjz27f528d5pyscqvld3q0dm41zcpkz5ml";
+	};
 
-  minimumOCamlVersion = "4.03";
-  useDune2 = lib.versionAtLeast ocaml.version "4.08";
+	buildInputs = [ ocaml findlib ocamlbuild topkg ];
 
-  doCheck = true;
+	inherit (topkg) buildPhase installPhase;
 
-  meta = with lib; {
-    description = "Ocamldoc comment syntax parser";
-    homepage = "https://github.com/ocaml-doc/octavius";
-    license = licenses.isc;
-    maintainers = with maintainers; [ vbgl ];
-  };
+	meta = {
+		description = "Ocamldoc comment syntax parser";
+		homepage = "https://github.com/ocaml-doc/octavius";
+		license = stdenv.lib.licenses.isc;
+		maintainers = [ stdenv.lib.maintainers.vbgl ];
+		inherit (ocaml.meta) platforms;
+	};
 }

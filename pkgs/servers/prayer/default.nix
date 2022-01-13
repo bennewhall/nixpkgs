@@ -1,15 +1,14 @@
-{ lib, stdenv, fetchurl, fetchpatch, perl, openssl, db, zlib, uwimap, html-tidy, pam}:
+{ stdenv, fetchurl, fetchpatch, perl, openssl, db, zlib, uwimap, html-tidy, pam}:
 
 let
-  ssl = lib.optionals uwimap.withSSL
+  ssl = stdenv.lib.optionals uwimap.withSSL
     "-e 's/CCLIENT_SSL_ENABLE.*= false/CCLIENT_SSL_ENABLE=true/'";
 in
 stdenv.mkDerivation rec {
-  pname = "prayer";
-  version = "1.3.5";
+  name = "prayer-1.3.5";
 
   src = fetchurl {
-    url = "ftp://ftp.csx.cam.ac.uk/pub/software/email/prayer/${pname}-${version}.tar.gz";
+    url = "ftp://ftp.csx.cam.ac.uk/pub/software/email/prayer/${name}.tar.gz";
     sha256 = "135fjbxjn385b6cjys6qhbwfw61mdcl2akkll4jfpdzfvhbxlyda";
   };
 
@@ -50,7 +49,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www-uxsup.csx.cam.ac.uk/~dpc22/prayer/";
     description = "Yet another Webmail interface for IMAP servers on Unix systems written in C";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

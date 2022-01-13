@@ -1,52 +1,49 @@
-{ lib
-, stdenv
+{ stdenv
 , buildGoModule
 , fetchFromGitHub
+, packr
 , pkg-config
 , bzip2
 , lz4
-, rocksdb_6_23
+, rocksdb
 , snappy
 , zeromq
 , zlib
-, nixosTests
 }:
 
-let
-  rocksdb = rocksdb_6_23;
-in
 buildGoModule rec {
   pname = "blockbook";
-  version = "0.3.6";
-  commit = "5f8cf45";
+  version = "0.3.4";
+  commit = "eb4e10a";
 
   src = fetchFromGitHub {
     owner = "trezor";
     repo = "blockbook";
     rev = "v${version}";
-    sha256 = "1jb195chy3kbspmv9vyg7llw6kgykkmvz3znd97mxf24f4q622jv";
+    sha256 = "0da1kav5x2xcmwvdgfk1q70l1k0sqqj3njgx2xx885d40m6qbnrs";
   };
 
-  vendorSha256 = "0d17qaqn33wi7lzw4hlym56d9v4qnmvs6plpm5jiby2g5yckq0mz";
+  runVend = true;
+  vendorSha256 = "0p7vyw61nwvmaz7gz2bdh9fi6wp62i2vnzw6iz2r8cims4sbz53b";
 
-  nativeBuildInputs = [ pkg-config ];
+  doCheck = false;
+
+  nativeBuildInputs = [ packr pkg-config ];
 
   buildInputs = [ bzip2 lz4 rocksdb snappy zeromq zlib ];
 
-  ldflags = [
-    "-X github.com/trezor/blockbook/common.version=${version}"
-    "-X github.com/trezor/blockbook/common.gitcommit=${commit}"
-    "-X github.com/trezor/blockbook/common.buildDate=unknown"
-  ];
+  buildFlagsArray = ''
+    -ldflags=
+       -X github.com/trezor/blockbook/common.version=${version}
+       -X github.com/trezor/blockbook/common.gitcommit=${commit}
+       -X github.com/trezor/blockbook/common.buildDate=unknown
+  '';
 
-  tags = [ "rocksdb_6_16" ];
-
-  preBuild = lib.optionalString stdenv.isDarwin ''
+  preBuild = stdenv.lib.optionalString stdenv.isDarwin ''
     ulimit -n 8192
   '' + ''
     export CGO_LDFLAGS="-L${stdenv.cc.cc.lib}/lib -lrocksdb -lz -lbz2 -lsnappy -llz4 -lm -lstdc++"
-    buildFlagsArray+=("-tags=${lib.concatStringsSep " " tags}")
-    buildFlagsArray+=("-ldflags=${lib.concatStringsSep " " ldflags}")
+    packr clean && packr
   '';
 
   subPackages = [ "." ];
@@ -57,11 +54,7 @@ buildGoModule rec {
     cp -r $src/static/css/ $out/share/
   '';
 
-  passthru.tests = {
-    smoke-test = nixosTests.blockbook-frontend;
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Trezor address/account balance backend";
     homepage = "https://github.com/trezor/blockbook";
     license = licenses.agpl3;

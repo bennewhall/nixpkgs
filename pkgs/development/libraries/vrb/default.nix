@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "vrb";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     cp -p vrb/man/man3/*.3 $out/share/man/man3/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A virtual ring buffer library written in C";
     license     = licenses.lgpl21;
     homepage    = "http://vrb.sourceforge.net/";

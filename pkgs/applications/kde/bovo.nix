@@ -4,9 +4,9 @@
 }:
 
 mkDerivation {
-  pname = "bovo";
+  name = "bovo";
   meta = with lib; {
-    homepage = "https://apps.kde.org/bovo/";
+    homepage = "https://kde.org/applications/en/games/org.kde.bovo";
     description = "Five in a row application";
     longDescription = ''
       Bovo is a Gomoku (from Japanese 五目並べ - lit. "five points") like game for two players,

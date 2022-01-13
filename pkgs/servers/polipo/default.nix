@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, texinfo }:
+{ stdenv, fetchurl, texinfo }:
 
 stdenv.mkDerivation rec {
   pname = "polipo";
@@ -12,11 +12,11 @@ stdenv.mkDerivation rec {
   buildInputs = [ texinfo ];
   makeFlags = [ "PREFIX=$(out)" "LOCAL_ROOT=$(out)/share/polipo/www" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.pps.jussieu.fr/~jch/software/polipo/";
     description = "A small and fast caching web proxy";
     license = licenses.mit;
-    maintainers = with maintainers; [ ehmry ];
+    maintainers = with maintainers; [ phreedom ehmry ];
     platforms = platforms.all;
     knownVulnerabilities = [
       "Unmaintained upstream: https://github.com/jech/polipo/commit/4d42ca1b5849"

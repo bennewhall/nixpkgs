@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, parallel, sassc, inkscape, libxml2, glib, gdk-pixbuf, librsvg, gtk-engine-murrine, gnome }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, parallel, sassc, inkscape, libxml2, glib, gdk-pixbuf, librsvg, gtk-engine-murrine, gnome3 }:
 
 stdenv.mkDerivation rec {
   pname = "adapta-gtk-theme";
@@ -15,13 +15,13 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoreconfHook
-    pkg-config
+    pkgconfig
     parallel
     sassc
     inkscape
     libxml2
     glib.dev
-    gnome.gnome-shell
+    gnome3.gnome-shell
   ];
 
   buildInputs = [
@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
     "--disable-unity"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An adaptive GTK theme based on Material Design Guidelines";
     homepage = "https://github.com/adapta-project/adapta-gtk-theme";
     license = with licenses; [ gpl2 cc-by-sa-30 ];

@@ -1,4 +1,4 @@
-{ aspell, aspellDicts_de, aspellDicts_en, buildEnv, fetchurl, fortune, gnugrep, makeWrapper, lib, stdenv, tk, tre }:
+{ aspell, aspellDicts_de, aspellDicts_en, buildEnv, fetchurl, fortune, gnugrep, makeWrapper, stdenv, tk, tre }:
 let
   aspellEnv = buildEnv {
     name = "env-ding-aspell";
@@ -10,16 +10,14 @@ let
   };
 in
 stdenv.mkDerivation rec {
-  pname = "ding";
-  version = "1.9";
+  name = "ding-1.8.1";
 
   src = fetchurl {
-    url = "http://ftp.tu-chemnitz.de/pub/Local/urz/ding/ding-${version}.tar.gz";
-    sha256 = "sha256-aabIH894WihsBTo1LzIBzIZxxyhRYVxLcHpDQwmwmOU=";
+    url = "http://ftp.tu-chemnitz.de/pub/Local/urz/ding/${name}.tar.gz";
+    sha256 = "0chjqs3z9zs1w3l7b5lsaj682rgnkf9kibcbzhggqqcn1pbvl5sq";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ aspellEnv fortune gnugrep tk tre ];
+  buildInputs = [ aspellEnv fortune gnugrep makeWrapper tk tre ];
 
   patches = [ ./dict.patch ];
 
@@ -44,10 +42,10 @@ stdenv.mkDerivation rec {
     cp -v ding.png $out/share/pixmaps/
     cp -v ding.desktop $out/share/applications/
 
-    wrapProgram $out/bin/ding --prefix PATH : ${lib.makeBinPath [ gnugrep aspellEnv tk fortune ]} --prefix ASPELL_CONF : "\"prefix ${aspellEnv};\""
+    wrapProgram $out/bin/ding --prefix PATH : ${stdenv.lib.makeBinPath [ gnugrep aspellEnv tk fortune ]} --prefix ASPELL_CONF : "\"prefix ${aspellEnv};\""
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple and fast dictionary lookup tool";
     homepage = "https://www-user.tu-chemnitz.de/~fri/ding/";
     license = licenses.gpl2Plus;

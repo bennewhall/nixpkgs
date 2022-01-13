@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k
 , influxdb, graphite_api, memcached
 }:
 
@@ -11,7 +11,7 @@ buildPythonPackage rec {
     sha256 = "0l33sfwdh4bfprmzp2kx0d9098g6yxbnhyyx9qr3kzczpm0jg9vy";
   };
 
-  patchPhase = lib.optionalString isPy3k ''
+  patchPhase = stdenv.lib.optionalString isPy3k ''
     sed 's/python-memcached/python3-memcached/' \
       -i ./influxgraph.egg-info/requires.txt    \
       -i ./setup.py
@@ -21,7 +21,7 @@ buildPythonPackage rec {
 
   passthru.moduleName = "influxgraph.InfluxDBFinder";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "InfluxDB storage plugin for Graphite-API";
     homepage = "https://github.com/InfluxGraph/influxgraph";
     license = licenses.asl20;

@@ -9,7 +9,7 @@ let
 
     virtualisation.emptyDiskImages = [ 4096 ];
 
-    virtualisation.fileSystems =
+    fileSystems = pkgs.lib.mkVMOverride
       { "/data" =
           { device = "/dev/disk/by-label/data";
             fsType = "ext4";

@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, pcsclite, pkg-config, libusb1, perl }:
+{ stdenv, fetchurl, pcsclite, pkgconfig, libusb1, perl }:
 
 stdenv.mkDerivation rec {
   pname = "ccid";
-  version = "1.4.36";
+  version = "1.4.33";
 
   src = fetchurl {
     url = "https://ccid.apdu.fr/files/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-K3OsiF8byrgZ3DV4lE0XQGJB4MckBCmJzqQ3NTtnScE=";
+    sha256 = "0974h2v9wq0j0ajw3c7yckaw8wqcppb2npfhfhmv9phijy9xlmjj";
   };
 
   postPatch = ''
@@ -18,10 +18,10 @@ stdenv.mkDerivation rec {
     configureFlagsArray+=("--enable-usbdropdir=$out/pcsc/drivers")
   '';
 
-  nativeBuildInputs = [ pkg-config perl ];
+  nativeBuildInputs = [ pkgconfig perl ];
   buildInputs = [ pcsclite libusb1 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ccid drivers for pcsclite";
     homepage = "https://ccid.apdu.fr/";
     license = licenses.gpl2Plus;

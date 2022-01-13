@@ -5,12 +5,11 @@
 
 buildPythonPackage rec {
   pname = "portpicker";
-  version = "1.4.0";
-  format = "pyproject";
+  version = "1.3.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "c2831ff4328a21e928ffc9e52124bcafacaf5816d38a1a72dc329680dc1bb7ba";
+    sha256 = "0rwn5ca7ns3yh6bp785zdd2l4018ccpd5i0m2d1fsd9nhxvcgkfj";
   };
 
   meta = {

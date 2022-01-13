@@ -26,7 +26,7 @@ import ./make-test-python.nix ({ pkgs, ... }:
 
   in {
     name = "mongodb";
-    meta = with pkgs.lib.maintainers; {
+    meta = with pkgs.stdenv.lib.maintainers; {
       maintainers = [ bluescreen303 offline cstrahan rvl phile314 ];
     };
 

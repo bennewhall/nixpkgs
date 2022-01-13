@@ -2,7 +2,7 @@
 
 import ./make-test-python.nix ({ pkgs, ...} : {
   name = "haka";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ tvestelind ];
   };
 

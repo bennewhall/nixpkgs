@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, guile }:
+{ stdenv, fetchurl, guile }:
 
 stdenv.mkDerivation rec {
   pname = "guile-lint";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   doCheck = !stdenv.isDarwin;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Checks syntax and semantics in a Guile program or module";
     homepage = "https://user42.tuxfamily.org/guile-lint/index.html";
     license = licenses.gpl3Plus;

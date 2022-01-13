@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchurl, substituteAll
-, pkg-config
+{ stdenv, fetchurl, substituteAll
+, pkgconfig
 , cups, libjpeg, libusb1, python2Packages, sane-backends, dbus, usbutils
 , net-snmp, openssl, nettools
-, bash, util-linux
+, bash, coreutils, util-linux
 , qtSupport ? true
 , withPlugin ? false
 }:
@@ -60,7 +60,7 @@ python2Packages.buildPythonApplication {
   ];
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
   ];
 
   pythonPath = with python2Packages; [
@@ -69,7 +69,7 @@ python2Packages.buildPythonApplication {
     pygobject2
     reportlab
     usbutils
-  ] ++ lib.optionals qtSupport [
+  ] ++ stdenv.lib.optionals qtSupport [
     pyqt4
   ];
 
@@ -111,7 +111,7 @@ python2Packages.buildPythonApplication {
 
   enableParallelBuilding = true;
 
-  postInstall = lib.optionalString withPlugin ''
+  postInstall = stdenv.lib.optionalString withPlugin ''
     sh ${plugin} --noexec --keep
     cd plugin_tmp
 
@@ -179,7 +179,7 @@ python2Packages.buildPythonApplication {
       --replace {/usr,$out}/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Print, scan and fax HP drivers for Linux";
     homepage = "http://hplipopensource.com/";
     downloadPage = "https://sourceforge.net/projects/hplip/files/hplip/";

@@ -17,7 +17,6 @@ buildPythonPackage rec {
 
   # There are no tests
   doCheck = false;
-  pythonImportsCheck = [ "easywatch" ];
 
   meta = with lib; {
     description = "Dead-simple way to watch a directory";

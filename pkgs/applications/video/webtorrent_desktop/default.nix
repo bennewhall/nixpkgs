@@ -1,13 +1,13 @@
 {
-  alsa-lib, atk, cairo, cups, dbus, dpkg, expat, fetchurl, fetchzip, fontconfig, freetype,
-  gdk-pixbuf, glib, gtk3, libX11, libXScrnSaver, libXcomposite, libXcursor,
+  alsaLib, atk, cairo, cups, dbus, dpkg, expat, fetchurl, fetchzip, fontconfig, freetype,
+  gdk-pixbuf, glib, gnome3, libX11, libXScrnSaver, libXcomposite, libXcursor,
   libXdamage, libXext, libXfixes, libXi, libXrandr, libXrender, libXtst,
-  libxcb, nspr, nss, lib, stdenv, udev, libuuid, pango, at-spi2-atk, at-spi2-core
+  libxcb, nspr, nss, stdenv, udev, libuuid, pango, at-spi2-atk, at-spi2-core
 }:
 
   let
-    rpath = lib.makeLibraryPath ([
-    alsa-lib
+    rpath = stdenv.lib.makeLibraryPath ([
+    alsaLib
     atk
     at-spi2-core
     at-spi2-atk
@@ -19,7 +19,7 @@
     freetype
     gdk-pixbuf
     glib
-    gtk3
+    gnome3.gtk
     pango
     libuuid
     libX11
@@ -63,6 +63,7 @@
       url = "https://raw.githubusercontent.com/webtorrent/webtorrent-desktop/v${version}/static/linux/share/icons/hicolor/48x48/apps/webtorrent-desktop.png";
       sha256 = "00y96w9shbbrdbf6xcjlahqd08154kkrxmqraik7qshiwcqpw7p4";
     };
+    phases = [ "unpackPhase" "installPhase" ];
     nativeBuildInputs = [ dpkg ];
     installPhase = ''
       mkdir -p $out/share/{applications,icons/hicolor/{48x48,256x256}/apps}
@@ -83,7 +84,7 @@
         --replace /opt/webtorrent-desktop $out/libexec
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Streaming torrent app for Mac, Windows, and Linux";
       homepage = "https://webtorrent.io/desktop";
       license = licenses.mit;

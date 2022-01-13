@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, meson, ninja, pkg-config, libseccomp }:
+{ stdenv, lib, fetchFromGitHub, meson, ninja, pkgconfig, libseccomp }:
 
 stdenv.mkDerivation rec {
   name = "unstick";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   sourceRoot = "source/src";
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
   buildInputs = [ libseccomp ];
 
   meta = {

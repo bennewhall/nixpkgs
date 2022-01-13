@@ -2,7 +2,6 @@
 with lib;
 let
   cfg = config.services.jenkins;
-  jenkinsUrl = "http://${cfg.listenAddress}:${toString cfg.port}${cfg.prefix}";
 in {
   options = {
     services.jenkins = {
@@ -61,7 +60,7 @@ in {
 
       port = mkOption {
         default = 8080;
-        type = types.port;
+        type = types.int;
         description = ''
           Specifies port number on which the jenkins HTTP interface listens.
           The default is 8080.
@@ -81,14 +80,14 @@ in {
 
       package = mkOption {
         default = pkgs.jenkins;
-        defaultText = literalExpression "pkgs.jenkins";
+        defaultText = "pkgs.jenkins";
         type = types.package;
         description = "Jenkins package to use.";
       };
 
       packages = mkOption {
         default = [ pkgs.stdenv pkgs.git pkgs.jdk11 config.programs.ssh.package pkgs.nix ];
-        defaultText = literalExpression "[ pkgs.stdenv pkgs.git pkgs.jdk11 config.programs.ssh.package pkgs.nix ]";
+        defaultText = "[ pkgs.stdenv pkgs.git pkgs.jdk11 config.programs.ssh.package pkgs.nix ]";
         type = types.listOf types.package;
         description = ''
           Packages to add to PATH for the jenkins process.
@@ -120,7 +119,7 @@ in {
           <literal>null</literal>. You can generate this set with a
           tool such as <literal>jenkinsPlugins2nix</literal>.
         '';
-        example = literalExpression ''
+        example = literalExample ''
           import path/to/jenkinsPlugins2nix-generated-plugins.nix { inherit (pkgs) fetchurl stdenv; }
         '';
       };
@@ -142,34 +141,14 @@ in {
           Additional command line arguments to pass to the Java run time (as opposed to Jenkins).
         '';
       };
-
-      withCLI = mkOption {
-        type = types.bool;
-        default = false;
-        description = ''
-          Whether to make the CLI available.
-
-          More info about the CLI available at
-          <link xlink:href="https://www.jenkins.io/doc/book/managing/cli">
-          https://www.jenkins.io/doc/book/managing/cli</link> .
-        '';
-      };
     };
   };
 
   config = mkIf cfg.enable {
-    environment = {
-      # server references the dejavu fonts
-      systemPackages = [
-        pkgs.dejavu_fonts
-      ] ++ optional cfg.withCLI cfg.package;
-
-      variables = {}
-        // optionalAttrs cfg.withCLI {
-          # Make it more convenient to use the `jenkins-cli`.
-          JENKINS_URL = jenkinsUrl;
-        };
-    };
+    # server references the dejavu fonts
+    environment.systemPackages = [
+      pkgs.dejavu_fonts
+    ];
 
     users.groups = optionalAttrs (cfg.group == "jenkins") {
       jenkins.gid = config.ids.gids.jenkins;
@@ -236,7 +215,7 @@ in {
       '';
 
       postStart = ''
-        until [[ $(${pkgs.curl.bin}/bin/curl -L -s --head -w '\n%{http_code}' ${jenkinsUrl} | tail -n1) =~ ^(200|403)$ ]]; do
+        until [[ $(${pkgs.curl.bin}/bin/curl -L -s --head -w '\n%{http_code}' http://${cfg.listenAddress}:${toString cfg.port}${cfg.prefix} | tail -n1) =~ ^(200|403)$ ]]; do
           sleep 1
         done
       '';

@@ -1,17 +1,16 @@
-{ lib
-, stdenv
-, fetchurl
-, CoreServices
-, buildPackages
-}:
+{ stdenv, fetchurl
+, CoreServices ? null
+, buildPackages }:
 
-stdenv.mkDerivation rec {
+let version = "4.29"; in
+
+stdenv.mkDerivation {
   pname = "nspr";
-  version = "4.32";
+  inherit version;
 
   src = fetchurl {
     url = "mirror://mozilla/nspr/releases/v${version}/src/nspr-${version}.tar.gz";
-    sha256 = "0v3zds1id71j5a5si42a658fjz8nv2f6zp6w4gqrqmdr6ksz8sxv";
+    sha256 = "22286bdb8059d74632cc7c2865c139e63953ecfb33bf4362ab58827e86e92582";
   };
 
   patches = [
@@ -23,7 +22,7 @@ stdenv.mkDerivation rec {
 
   preConfigure = ''
     cd nspr
-  '' + lib.optionalString stdenv.isDarwin ''
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace configure --replace '@executable_path/' "$out/lib/"
     substituteInPlace configure.in --replace '@executable_path/' "$out/lib/"
   '';
@@ -33,21 +32,20 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--enable-optimize"
     "--disable-debug"
-  ] ++ lib.optional stdenv.is64bit "--enable-64bit";
+  ] ++ stdenv.lib.optional stdenv.is64bit "--enable-64bit";
 
   postInstall = ''
     find $out -name "*.a" -delete
     moveToOutput share "$dev" # just aclocal
   '';
 
-  buildInputs = lib.optionals stdenv.isDarwin [ CoreServices ];
+  buildInputs = [] ++ stdenv.lib.optionals stdenv.isDarwin [ CoreServices ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
-    homepage = "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Reference/NSPR_functions";
+  meta = with stdenv.lib; {
+    homepage = "http://www.mozilla.org/projects/nspr/";
     description = "Netscape Portable Runtime, a platform-neutral API for system-level and libc-like functions";
-    maintainers = with maintainers; [ ];
     platforms = platforms.all;
     license = licenses.mpl20;
   };

@@ -8,10 +8,9 @@ let
   wrappedPlugins = pkgs.runCommand "wrapped-plugins" { preferLocalBuild = true; } ''
     mkdir -p $out/libexec/netdata/plugins.d
     ln -s /run/wrappers/bin/apps.plugin $out/libexec/netdata/plugins.d/apps.plugin
-    ln -s /run/wrappers/bin/cgroup-network $out/libexec/netdata/plugins.d/cgroup-network
+    ln -s /run/wrappers/bin/freeipmi.plugin $out/libexec/netdata/plugins.d/freeipmi.plugin
     ln -s /run/wrappers/bin/perf.plugin $out/libexec/netdata/plugins.d/perf.plugin
     ln -s /run/wrappers/bin/slabinfo.plugin $out/libexec/netdata/plugins.d/slabinfo.plugin
-    ln -s /run/wrappers/bin/freeipmi.plugin $out/libexec/netdata/plugins.d/freeipmi.plugin
   '';
 
   plugins = [
@@ -27,10 +26,6 @@ let
       "web files owner" = "root";
       "web files group" = "root";
     };
-    "plugin:cgroups" = {
-      "script to get cgroup network interfaces" = "${wrappedPlugins}/libexec/netdata/plugins.d/cgroup-network";
-      "use unified cgroups" = "yes";
-    };
   };
   mkConfig = generators.toINI {} (recursiveUpdate localConfig cfg.config);
   configFile = pkgs.writeText "netdata.conf" (if cfg.configText != null then cfg.configText else mkConfig);
@@ -45,7 +40,7 @@ in {
       package = mkOption {
         type = types.package;
         default = pkgs.netdata;
-        defaultText = literalExpression "pkgs.netdata";
+        defaultText = "pkgs.netdata";
         description = "Netdata package to use.";
       };
 
@@ -82,10 +77,9 @@ in {
           '';
         };
         extraPackages = mkOption {
-          type = types.functionTo (types.listOf types.package);
           default = ps: [];
-          defaultText = literalExpression "ps: []";
-          example = literalExpression ''
+          defaultText = "ps: []";
+          example = literalExample ''
             ps: [
               ps.psycopg2
               ps.docker
@@ -102,7 +96,7 @@ in {
       extraPluginPaths = mkOption {
         type = types.listOf types.path;
         default = [ ];
-        example = literalExpression ''
+        example = literalExample ''
           [ "/path/to/plugins.d" ]
         '';
         description = ''
@@ -121,27 +115,16 @@ in {
         type = types.attrsOf types.attrs;
         default = {};
         description = "netdata.conf configuration as nix attributes. cannot be combined with configText.";
-        example = literalExpression ''
+        example = literalExample ''
           global = {
             "debug log" = "syslog";
             "access log" = "syslog";
             "error log" = "syslog";
           };
         '';
-      };
-
-      enableAnalyticsReporting = mkOption {
-        type = types.bool;
-        default = false;
-        description = ''
-          Enable reporting of anonymous usage statistics to Netdata Inc. via either
-          Google Analytics (in versions prior to 1.29.4), or Netdata Inc.'s
-          self-hosted PostHog (in versions 1.29.4 and later).
-          See: <link xlink:href="https://learn.netdata.cloud/docs/agent/anonymous-statistics"/>
-        '';
+        };
       };
     };
-  };
 
   config = mkIf cfg.enable {
     assertions =
@@ -154,15 +137,10 @@ in {
       description = "Real time performance monitoring";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
-      path = (with pkgs; [ curl gawk iproute2 which ])
-        ++ lib.optional cfg.python.enable (pkgs.python3.withPackages cfg.python.extraPackages)
-        ++ lib.optional config.virtualisation.libvirtd.enable (config.virtualisation.libvirtd.package);
-      environment = {
-        PYTHONPATH = "${cfg.package}/libexec/netdata/python.d/python_modules";
-      } // lib.optionalAttrs (!cfg.enableAnalyticsReporting) {
-        DO_NOT_TRACK = "1";
-      };
+      path = (with pkgs; [ curl gawk which ]) ++ lib.optional cfg.python.enable
+        (pkgs.python3.withPackages cfg.python.extraPackages);
       serviceConfig = {
+        Environment="PYTHONPATH=${cfg.package}/libexec/netdata/python.d/python_modules";
         ExecStart = "${cfg.package}/bin/netdata -P /run/netdata/netdata.pid -D -c ${configFile}";
         ExecReload = "${pkgs.util-linux}/bin/kill -s HUP -s USR1 -s USR2 $MAINPID";
         TimeoutStopSec = 60;
@@ -197,8 +175,6 @@ in {
           "CAP_SYS_PTRACE"        # is required for apps plugin
           "CAP_SYS_RESOURCE"      # is required for ebpf plugin
           "CAP_NET_RAW"           # is required for fping app
-          "CAP_SYS_CHROOT"        # is required for cgroups plugin
-          "CAP_SETUID"            # is required for cgroups and cgroups-network plugins
         ];
         # Sandboxing
         ProtectSystem = "full";
@@ -211,47 +187,36 @@ in {
 
     systemd.enableCgroupAccounting = true;
 
-    security.wrappers = {
-      "apps.plugin" = {
-        source = "${cfg.package}/libexec/netdata/plugins.d/apps.plugin.org";
-        capabilities = "cap_dac_read_search,cap_sys_ptrace+ep";
-        owner = cfg.user;
-        group = cfg.group;
-        permissions = "u+rx,g+x,o-rwx";
-      };
+    security.wrappers."apps.plugin" = {
+      source = "${cfg.package}/libexec/netdata/plugins.d/apps.plugin.org";
+      capabilities = "cap_dac_read_search,cap_sys_ptrace+ep";
+      owner = cfg.user;
+      group = cfg.group;
+      permissions = "u+rx,g+rx,o-rwx";
+    };
 
-      "cgroup-network" = {
-        source = "${cfg.package}/libexec/netdata/plugins.d/cgroup-network.org";
-        capabilities = "cap_setuid+ep";
-        owner = cfg.user;
-        group = cfg.group;
-        permissions = "u+rx,g+x,o-rwx";
-      };
+    security.wrappers."freeipmi.plugin" = {
+      source = "${cfg.package}/libexec/netdata/plugins.d/freeipmi.plugin.org";
+      capabilities = "cap_dac_override,cap_fowner+ep";
+      owner = cfg.user;
+      group = cfg.group;
+      permissions = "u+rx,g+rx,o-rwx";
+    };
 
-      "perf.plugin" = {
-        source = "${cfg.package}/libexec/netdata/plugins.d/perf.plugin.org";
-        capabilities = "cap_sys_admin+ep";
-        owner = cfg.user;
-        group = cfg.group;
-        permissions = "u+rx,g+x,o-rwx";
-      };
+    security.wrappers."perf.plugin" = {
+      source = "${cfg.package}/libexec/netdata/plugins.d/perf.plugin.org";
+      capabilities = "cap_sys_admin+ep";
+      owner = cfg.user;
+      group = cfg.group;
+      permissions = "u+rx,g+rx,o-rx";
+    };
 
-      "slabinfo.plugin" = {
-        source = "${cfg.package}/libexec/netdata/plugins.d/slabinfo.plugin.org";
-        capabilities = "cap_dac_override+ep";
-        owner = cfg.user;
-        group = cfg.group;
-        permissions = "u+rx,g+x,o-rwx";
-      };
-
-    } // optionalAttrs (cfg.package.withIpmi) {
-      "freeipmi.plugin" = {
-        source = "${cfg.package}/libexec/netdata/plugins.d/freeipmi.plugin.org";
-        capabilities = "cap_dac_override,cap_fowner+ep";
-        owner = cfg.user;
-        group = cfg.group;
-        permissions = "u+rx,g+x,o-rwx";
-      };
+    security.wrappers."slabinfo.plugin" = {
+      source = "${cfg.package}/libexec/netdata/plugins.d/slabinfo.plugin.org";
+      capabilities = "cap_dac_override+ep";
+      owner = cfg.user;
+      group = cfg.group;
+      permissions = "u+rx,g+rx,o-rx";
     };
 
     security.pam.loginLimits = [
@@ -261,7 +226,6 @@ in {
 
     users.users = optionalAttrs (cfg.user == defaultUser) {
       ${defaultUser} = {
-        group = defaultUser;
         isSystemUser = true;
       };
     };

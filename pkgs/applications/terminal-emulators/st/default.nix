@@ -1,17 +1,7 @@
-{ lib
-, stdenv
-, fetchurl
-, pkg-config
-, fontconfig
-, freetype
-, libX11
-, libXft
-, ncurses
-, writeText
-, conf ? null
-, patches ? [ ]
-, extraLibs ? [ ]
-}:
+{ stdenv, fetchurl, pkgconfig, writeText, libX11, ncurses
+, libXft, conf ? null, patches ? [], extraLibs ? []}:
+
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "st";
@@ -19,45 +9,26 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://dl.suckless.org/st/${pname}-${version}.tar.gz";
-    hash = "sha256-1C087OtNamXjLpClM249RG22EsP72evBeAvGyaAzRqY=";
+    sha256 = "19j66fhckihbg30ypngvqc9bcva47mp379ch5vinasjdxgn3qbfl";
   };
 
   inherit patches;
 
-  configFile = lib.optionalString (conf != null)
-    (writeText "config.def.h" conf);
+  configFile = optionalString (conf!=null) (writeText "config.def.h" conf);
 
-  postPatch = lib.optionalString (conf != null) "cp ${configFile} config.def.h"
-    + lib.optionalString stdenv.isDarwin ''
+  postPatch = optionalString (conf!=null) "cp ${configFile} config.def.h"
+            + optionalString stdenv.isDarwin ''
     substituteInPlace config.mk --replace "-lrt" ""
   '';
 
-  strictDeps = true;
-
-  makeFlags = [
-    "PKG_CONFIG=${stdenv.cc.targetPrefix}pkg-config"
-  ];
-
-  nativeBuildInputs = [
-    pkg-config
-    ncurses
-    fontconfig
-    freetype
-  ];
-  buildInputs = [
-    libX11
-    libXft
-  ] ++ extraLibs;
+  nativeBuildInputs = [ pkgconfig ncurses ];
+  buildInputs = [ libX11 libXft ] ++ extraLibs;
 
   installPhase = ''
-    runHook preInstall
-
     TERMINFO=$out/share/terminfo make install PREFIX=$out
-
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = {
     homepage = "https://st.suckless.org/";
     description = "Simple Terminal for X from Suckless.org Community";
     license = licenses.mit;

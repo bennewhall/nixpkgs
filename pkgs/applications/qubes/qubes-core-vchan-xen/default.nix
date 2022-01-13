@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , xen_4_10
 }:
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     make install DESTDIR=$out PREFIX=/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Libraries required for the higher-level Qubes daemons and tools";
     homepage = "https://qubes-os.org";
     license = licenses.gpl2Plus;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "mp3val";
@@ -30,8 +30,8 @@ stdenv.mkDerivation rec {
       common types of tags (ID3v1, ID3v2, APEv2).
     '';
     homepage = "http://mp3val.sourceforge.net/index.shtml";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.devhell ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.devhell ];
   };
 }

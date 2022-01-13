@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.amule;
-  opt = options.services.amule;
   user = if cfg.user != null then cfg.user else "amule";
 in
 
@@ -25,18 +24,13 @@ in
       };
 
       dataDir = mkOption {
-        type = types.str;
-        default = "/home/${user}/";
-        defaultText = literalExpression ''
-          "/home/''${config.${opt.user}}/"
-        '';
+        default = ''/home/${user}/'';
         description = ''
           The directory holding configuration, incoming and temporary files.
         '';
       };
 
       user = mkOption {
-        type = types.nullOr types.str;
         default = null;
         description = ''
           The user the AMule daemon should run as.

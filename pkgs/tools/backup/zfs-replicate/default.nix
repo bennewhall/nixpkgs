@@ -1,5 +1,5 @@
 { buildPythonApplication, click, fetchPypi, hypothesis, mypy, pytest
-, pytest-cov, pytest-runner, lib, stringcase
+, pytestcov, pytestrunner, stdenv, stringcase
 }:
 
 buildPythonApplication rec {
@@ -15,11 +15,11 @@ buildPythonApplication rec {
     hypothesis
     mypy
     pytest
-    pytest-cov
+    pytestcov
   ];
 
   buildInputs = [
-    pytest-runner
+    pytestrunner
   ];
 
   propagatedBuildInputs = [
@@ -33,7 +33,7 @@ buildPythonApplication rec {
     pytest --doctest-modules
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/alunduil/zfs-replicate";
     description = "ZFS Snapshot Replication";
     license = licenses.bsd2;

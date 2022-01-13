@@ -1,34 +1,32 @@
-{ lib, stdenv, fetchurl, atk, glibmm, pkg-config, gnome, meson, ninja, python3 }:
+{ stdenv, fetchurl, atk, glibmm, pkgconfig, gnome3 }:
 
 stdenv.mkDerivation rec {
   pname = "atkmm";
-  version = "2.28.2";
+  version = "2.28.0";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "sha256-oLtJdlzszCk6ssZzW6EAQxgH04T/oUwuvTDgeZP9L6Q=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0fnxrspxkhhbrjphqrpvl3zjm66n50s4cywrrrwkhbflgy8zqk2c";
   };
 
   outputs = [ "out" "dev" ];
 
   propagatedBuildInputs = [ atk glibmm ];
 
-  nativeBuildInputs = [ pkg-config meson python3 ninja ];
+  nativeBuildInputs = [ pkgconfig ];
 
   doCheck = true;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
-      freeze = true;
     };
   };
 
   meta = {
     description = "C++ wrappers for ATK accessibility toolkit";
-    license = lib.licenses.lgpl21Plus;
+    license = stdenv.lib.licenses.lgpl21Plus;
     homepage = "https://gtkmm.org";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

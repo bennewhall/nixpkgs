@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, glibc, dns-root-data, nixosTests } :
+{ stdenv, fetchurl, glibc, dns-root-data } :
 
 let
   version = "1.05";
@@ -19,14 +19,7 @@ stdenv.mkDerivation {
     sha256 = "0j3baf92vkczr5fxww7rp1b7gmczxmmgrqc8w2dy7kgk09m85k9w";
   };
 
-  patches = [
-    ./hier.patch
-    ./fix-nix-usernamespace-build.patch
-
-    # To fix https://github.com/NixOS/nixpkgs/issues/119066.
-    # Note that the NixOS test <nixpkgs/nixos/tests/tinydns.nix> tests for this.
-    ./softlimit.patch
-  ];
+  patches = [ ./hier.patch ./fix-nix-usernamespace-build.patch ];
 
   postPatch = ''
     echo gcc -O2 -include ${glibc.dev}/include/errno.h > conf-cc
@@ -48,11 +41,7 @@ stdenv.mkDerivation {
     rm -rv djbdns-man;
   '';
 
-  passthru.tests = {
-    tinydns = nixosTests.tinydns;
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A collection of Domain Name System tools";
     longDescription = "Includes software for all the fundamental DNS operations: DNS cache: finding addresses of Internet hosts; DNS server: publishing addresses of Internet hosts; and DNS client: talking to a DNS cache.";
     homepage = "https://cr.yp.to/djbdns.html";

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , gettext
 , fetchurl
 , python3
@@ -15,7 +15,7 @@
 , libxml2
 , docbook-xsl-nons
 , docbook_xml_dtd_42
-, gnome
+, gnome3
 , gdk-pixbuf
 , libxslt
 , gsettings-desktop-schemas
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
   version = "3.38.2";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/glade/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    url = "mirror://gnome/sources/glade/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "1dxsiz9ahqkxg2a1dw9sbd8jg59y5pdz4c1gvnbmql48gmj8gz4q";
   };
 
@@ -54,16 +54,16 @@ stdenv.mkDerivation rec {
     python3.pkgs.pygobject3
     gsettings-desktop-schemas
     gdk-pixbuf
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
   ];
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Apps/Glade";
     description = "User interface designer for GTK applications";
     maintainers = teams.gnome.members;

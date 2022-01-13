@@ -1,21 +1,17 @@
-{ stdenv, lib, fetchFromGitLab
-, autoreconfHook, pkg-config, python3, addOpenGLRunpath
-, libX11, libXext, xorgproto
-}:
+{ stdenv, lib, fetchFromGitHub, fetchpatch, autoreconfHook, python3, pkgconfig, libX11, libXext, xorgproto, addOpenGLRunpath }:
 
 stdenv.mkDerivation rec {
   pname = "libglvnd";
-  version = "1.3.4";
+  version = "1.3.2";
 
-  src = fetchFromGitLab {
-    domain = "gitlab.freedesktop.org";
-    owner = "glvnd";
+  src = fetchFromGitHub {
+    owner = "NVIDIA";
     repo = "libglvnd";
     rev = "v${version}";
-    sha256 = "0phvgg2h3pcz3x39gaymwb37bnw1s26clq9wsj0zx398zmp3dwpk";
+    sha256 = "10x7fgb114r4gikdg6flszl3kwzcb9y5qa7sj9936mk0zxhjaylz";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config python3 addOpenGLRunpath ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig python3 addOpenGLRunpath ];
   buildInputs = [ libX11 libXext xorgproto ];
 
   postPatch = lib.optionalString stdenv.isDarwin ''
@@ -35,11 +31,8 @@ stdenv.mkDerivation rec {
     "-Wno-error=array-bounds"
   ] ++ lib.optional stdenv.cc.isClang "-Wno-error");
 
-  configureFlags  = []
-    # Indirectly: https://bugs.freedesktop.org/show_bug.cgi?id=35268
-    ++ lib.optional stdenv.hostPlatform.isMusl "--disable-tls"
-    # Remove when aarch64-darwin asm support is upstream: https://gitlab.freedesktop.org/glvnd/libglvnd/-/issues/216
-    ++ lib.optional (stdenv.hostPlatform.isDarwin && stdenv.hostPlatform.isAarch64) "--disable-asm";
+  # Indirectly: https://bugs.freedesktop.org/show_bug.cgi?id=35268
+  configureFlags  = stdenv.lib.optional stdenv.hostPlatform.isMusl "--disable-tls";
 
   outputs = [ "out" "dev" ];
 
@@ -52,19 +45,10 @@ stdenv.mkDerivation rec {
 
   passthru = { inherit (addOpenGLRunpath) driverLink; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The GL Vendor-Neutral Dispatch library";
-    longDescription = ''
-      libglvnd is a vendor-neutral dispatch layer for arbitrating OpenGL API
-      calls between multiple vendors. It allows multiple drivers from different
-      vendors to coexist on the same filesystem, and determines which vendor to
-      dispatch each API call to at runtime.
-      Both GLX and EGL are supported, in any combination with OpenGL and OpenGL ES.
-    '';
-    inherit (src.meta) homepage;
-    # https://gitlab.freedesktop.org/glvnd/libglvnd#libglvnd:
-    license = with licenses; [ mit bsd1 bsd3 gpl3Only asl20 ];
+    homepage = "https://github.com/NVIDIA/libglvnd";
+    license = licenses.bsd2;
     platforms = platforms.linux ++ platforms.darwin;
-    maintainers = with maintainers; [ primeos ];
   };
 }

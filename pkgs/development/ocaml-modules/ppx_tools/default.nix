@@ -1,11 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, buildDunePackage, ocaml, findlib, cppo }:
+{ stdenv, fetchFromGitHub, buildDunePackage, ocaml, findlib }:
 
 let param =
-  let v6_4 = {
-    version = "6.4";
-    sha256 = "15v7yfv6gyp8lzlgwi9garz10wpg34dk4072jdv19n6v20zfg7n1";
-    useDune2 = true;
-    buildInputs = [cppo];
+  let v6_2 = {
+    version = "6.2";
+    sha256 = "0qf4fwnn4hhk52kjw9frv21v23azqnn4mjvwf1hs0nxf7q4kacb5";
   }; in
 {
   "4.02" = {
@@ -27,12 +25,10 @@ let param =
   "4.07" = {
     version = "5.1+4.06.0";
     sha256 = "1ww4cspdpgjjsgiv71s0im5yjkr3544x96wsq1vpdacq7dr7zwiw"; };
-  "4.08" = v6_4;
-  "4.09" = v6_4;
-  "4.10" = v6_4;
-  "4.11" = v6_4;
-  "4.12" = v6_4;
-  "4.13" = v6_4;
+  "4.08" = v6_2;
+  "4.09" = v6_2;
+  "4.10" = v6_2;
+  "4.11" = v6_2;
 }.${ocaml.meta.branch};
 in
 
@@ -43,18 +39,18 @@ let src = fetchFromGitHub {
       inherit (param) sha256;
     };
     pname = "ppx_tools";
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Tools for authors of ppx rewriters";
       homepage = "https://www.lexifi.com/ppx_tools";
       license = licenses.mit;
       maintainers = with maintainers; [ vbgl ];
     };
 in
-if lib.versionAtLeast param.version "6.0"
+if stdenv.lib.versionAtLeast param.version "6.0"
 then
   buildDunePackage {
     inherit pname src meta;
-    inherit (param) version useDune2 buildInputs;
+    inherit (param) version;
   }
 else
   stdenv.mkDerivation {

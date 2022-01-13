@@ -1,30 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, pkg-config, readline }:
+{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, readline }:
 
 stdenv.mkDerivation rec {
-  pname = "mrsh-unstable";
-  version = "2021-01-10";
+  pname   = "mrsh";
+  version = "2020-11-04";
 
   src = fetchFromGitHub {
     owner = "emersion";
     repo = "mrsh";
-    rev = "9f9884083831ea1f94bdda5151c5df3888932849";
-    sha256 = "0vvdwzw3fq74lwgmy6xxkk01sd68fzhsw84c750lm1dma22xhjci";
+    rev = "1738e41b2a35e5f99b9a1300a5f687478458226a";
+    sha256 = "08gak5261d4sd6b2w2kscmdwa4gwcp5drgfyb3swyrj9cl0nlcbn";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
   buildInputs = [ readline ];
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A minimal POSIX shell";
     homepage = "https://mrsh.sh";
     license = licenses.mit;
     maintainers = with maintainers; [ matthiasbeyer ];
     platforms = platforms.unix;
-  };
-
-  passthru = {
-    shellPath = "/bin/mrsh";
+    broken = stdenv.isDarwin;
   };
 }

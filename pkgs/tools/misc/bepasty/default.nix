@@ -36,7 +36,7 @@ in with python.pkgs; buildPythonPackage rec {
     xstatic-pygments
   ];
 
-  buildInputs = [ setuptools-scm ];
+  buildInputs = [ setuptools_scm ];
 
   src = fetchPypi {
     inherit pname version;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, jre }:
+{ stdenv, fetchurl, jre }:
 
 stdenv.mkDerivation rec {
   pname = "subsonic";
@@ -26,11 +26,13 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://subsonic.org";
     description = "Personal media streamer";
     license = licenses.unfree;
     maintainers = with maintainers; [ telotortium ];
     platforms = platforms.unix;
   };
+
+  phases = ["unpackPhase" "installPhase"];
 }

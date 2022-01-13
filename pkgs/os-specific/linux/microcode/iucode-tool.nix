@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, autoreconfHook }:
+{ stdenv, fetchFromGitLab, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "iucode-tool";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Intel® 64 and IA-32 processor microcode tool";
     homepage = "https://gitlab.com/iucode-tool/iucode-tool";
     license = licenses.gpl2;

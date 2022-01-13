@@ -1,32 +1,30 @@
-{ lib, stdenv, fetchFromGitHub, qmake, qtbase, protobuf }:
+{ stdenv, fetchFromGitHub, qmake, qtbase, protobuf }:
 
 stdenv.mkDerivation rec {
   pname = "qtpbfimageplugin";
-  version = "2.3";
+  version = "2.2";
 
   src = fetchFromGitHub {
     owner = "tumic0";
     repo = "QtPBFImagePlugin";
     rev = version;
-    sha256 = "063agzcrcihasqqk2yqxqxg9xknjs99y6vx3n1v7md7dqnfv4iva";
+    sha256 = "1w2d33g13vkjasabmcgvhsmfqv3jmwbxhqxm1jnyc7d4nlk4jwmb";
   };
 
   nativeBuildInputs = [ qmake ];
   buildInputs = [ qtbase protobuf ];
 
-  dontWrapQtApps = true;
-
   postPatch = ''
     # Fix plugin dir
     substituteInPlace pbfplugin.pro \
       --replace "\$\$[QT_INSTALL_PLUGINS]" "$out/$qtPluginPrefix"
-  '' + lib.optionalString stdenv.isDarwin ''
+
     # Fix darwin build
     substituteInPlace pbfplugin.pro \
       --replace '$$PROTOBUF/lib/libprotobuf-lite.a' '${protobuf}/lib/libprotobuf-lite.dylib'
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Qt image plugin for displaying Mapbox vector tiles";
     longDescription = ''
       QtPBFImagePlugin is a Qt image plugin that enables applications capable of
@@ -34,7 +32,7 @@ stdenv.mkDerivation rec {
       vector tiles without (almost) any application modifications.
     '';
     homepage = "https://github.com/tumic0/QtPBFImagePlugin";
-    license = licenses.lgpl3Only;
+    license = licenses.lgpl3;
     maintainers = with maintainers; [ sikmir ];
     platforms = platforms.unix;
   };

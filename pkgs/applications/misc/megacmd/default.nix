@@ -1,14 +1,11 @@
-{ lib
-, stdenv
+{ stdenv
 , autoconf
-, automake115x
+, automake
 , c-ares
 , cryptopp
 , curl
 , fetchFromGitHub
-  # build fails with latest ffmpeg, see https://github.com/meganz/MEGAcmd/issues/523.
-  # to be re-enabled when patch available
-  # , ffmpeg
+, ffmpeg_3
 , freeimage
 , gcc-unwrapped
 , libmediainfo
@@ -18,40 +15,41 @@
 , libuv
 , libzen
 , pcre-cpp
-, pkg-config
+, pkgconfig
 , readline
 , sqlite
 }:
 
 stdenv.mkDerivation rec {
   pname = "megacmd";
-  version = "1.4.0";
+  version = "1.2.0";
 
   src = fetchFromGitHub {
     owner = "meganz";
     repo = "MEGAcmd";
     rev = "${version}_Linux";
-    sha256 = "sha256-Q1SZSDTPGgBA/W/ZVYfTQsiP41RE1LJ+esQ3PK9EjIc=";
+    sha256 = "0czyhsms0a0237d6h9b21n9p4nm4zkjanhhbvw26k6266g6c1nyr";
     fetchSubmodules = true;
   };
 
   nativeBuildInputs = [
     autoconf
-    automake115x
+    automake
     libtool
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
     c-ares
     cryptopp
     curl
-    # ffmpeg
+    ffmpeg_3
     freeimage
     gcc-unwrapped
     libmediainfo
     libraw
     libsodium
+    libtool
     libuv
     libzen
     pcre-cpp
@@ -69,7 +67,7 @@ stdenv.mkDerivation rec {
     "--with-cares"
     "--with-cryptopp"
     "--with-curl"
-    # "--with-ffmpeg"
+    "--with-ffmpeg"
     "--with-freeimage"
     "--with-libmediainfo"
     "--with-libuv"
@@ -80,11 +78,11 @@ stdenv.mkDerivation rec {
     "--with-termcap"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "MEGA Command Line Interactive and Scriptable Application";
-    homepage = "https://mega.nz/cmd";
-    license = with licenses; [ bsd2 gpl3Only ];
-    platforms = [ "i686-linux" "x86_64-linux" ];
-    maintainers = with maintainers; [ lunik1 ];
+    homepage    = "https://mega.nz/";
+    license     = licenses.unfree;
+    platforms   = [ "i686-linux" "x86_64-linux" ];
+    maintainers = [ maintainers.wedens ];
   };
 }

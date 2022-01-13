@@ -1,6 +1,5 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, python2
 , python3
 , pkg-config
 , readline
@@ -27,7 +26,6 @@ stdenv.mkDerivation rec {
     docbook-xsl-nons
     docbook_xml_dtd_42
     wafHook
-    python2 # For wafHook
   ];
 
   buildInputs = [
@@ -42,7 +40,7 @@ stdenv.mkDerivation rec {
     "--builtin-libraries=replace,ccan"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The not-so trivial database";
     homepage = "https://tdb.samba.org/";
     license = licenses.lgpl3Plus;

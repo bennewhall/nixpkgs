@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, pkg-config, xfce4-dev-tools, hicolor-icon-theme, xfce, wrapGAppsHook }:
+{ stdenv, fetchgit, pkgconfig, xfce4-dev-tools, hicolor-icon-theme, xfce, wrapGAppsHook }:
 
 { category
 , pname
@@ -14,7 +14,7 @@
 
 let
   inherit (builtins) filter getAttr head isList;
-  inherit (lib) attrNames concatLists recursiveUpdate zipAttrsWithNames;
+  inherit (stdenv.lib) attrNames concatLists recursiveUpdate zipAttrsWithNames;
 
   filterAttrNames = f: attrs:
     filter (n: f (getAttr n attrs)) (attrNames attrs);
@@ -23,16 +23,14 @@ let
     zipAttrsWithNames (filterAttrNames isList (head attrsets)) (_: concatLists) attrsets;
 
   template = rec {
-    inherit pname version;
+    name = "${pname}-${version}";
 
-    nativeBuildInputs = [ pkg-config xfce4-dev-tools wrapGAppsHook ];
+    nativeBuildInputs = [ pkgconfig xfce4-dev-tools wrapGAppsHook ];
     buildInputs = [ hicolor-icon-theme ];
     configureFlags = [ "--enable-maintainer-mode" ];
 
-    src = fetchFromGitLab {
-      domain = "gitlab.xfce.org";
-      owner = category;
-      repo = pname;
+    src = fetchgit {
+      url = "git://git.xfce.org/${category}/${pname}";
       inherit rev sha256;
     };
 
@@ -43,12 +41,12 @@ let
 
     passthru.updateScript = xfce.updateScript {
       inherit pname version attrPath rev-prefix odd-unstable patchlevel-unstable;
-      versionLister = xfce.gitLister src.meta.homepage;
+      versionLister = xfce.gitLister src.url;
     };
 
-    meta = with lib; {
-      homepage = "https://gitlab.xfce.org/${category}/${pname}";
-      license = licenses.gpl2Plus; # some libraries are under LGPLv2+
+    meta = with stdenv.lib; {
+      homepage = "https://git.xfce.org/${category}/${pname}/about";
+      license = licenses.gpl2; # some libraries are under LGPLv2+
       platforms = platforms.linux;
     };
   };
@@ -57,4 +55,3 @@ let
 in
 
 stdenv.mkDerivation (recursiveUpdate template publicArgs // concatAttrLists [ template args ])
-# TODO [ AndersonTorres ]: verify if it allows using hash attribute as an option to sha256

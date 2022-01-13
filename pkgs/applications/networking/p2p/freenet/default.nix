@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchFromGitHub, ant, jdk, bash, coreutils, substituteAll }:
+{ stdenv, fetchurl, fetchFromGitHub, ant, jdk, bash, coreutils, substituteAll }:
 
 let
   freenet_ext = fetchurl {
@@ -15,7 +15,7 @@ let
     url = "https://downloads.freenetproject.org/alpha/opennet/seednodes.fref";
     sha256 = "08awwr8n80b4cdzzb3y8hf2fzkr1f2ly4nlq779d6pvi5jymqdvv";
   };
-  version = "build01480";
+  version = "build01475";
 
   freenet-jars = stdenv.mkDerivation {
     pname = "freenet-jars";
@@ -25,7 +25,7 @@ let
       owner = "freenet";
       repo = "fred";
       rev = version;
-      sha256 = "0wddkfyhsgs7bcq9svicz6l0a35yv82yqzmji3c345hg4hbch3kb";
+      sha256 = "0k02fna9x219j7dhginbnf27i36bibb0rmm4qdwr5xm28hy1nd08";
     };
 
     patchPhase = ''
@@ -61,7 +61,7 @@ in stdenv.mkDerivation {
 
   jars = freenet-jars;
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -73,8 +73,8 @@ in stdenv.mkDerivation {
   meta = {
     description = "Decentralised and censorship-resistant network";
     homepage = "https://freenetproject.org/";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     maintainers = [ ];
-    platforms = with lib.platforms; linux;
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

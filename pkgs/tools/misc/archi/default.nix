@@ -1,9 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , fetchzip
 , autoPatchelfHook
-, makeWrapper
-, jdk
 , libsecret
 }:
 
@@ -31,20 +29,17 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoPatchelfHook
-    makeWrapper
   ];
 
   installPhase =
     if stdenv.hostPlatform.system == "x86_64-linux" then
       ''
-        mkdir -p $out/bin $out/libexec
-        for f in configuration features p2 plugins Archi.ini; do
-          cp -r $f $out/libexec
+      mkdir -p $out/bin
+        for f in configuration features p2 plugins Archi.ini Archi; do
+          cp $f $out/bin/
         done
 
-        install -D -m755 Archi $out/libexec/Archi
-        makeWrapper $out/libexec/Archi $out/bin/Archi \
-          --prefix PATH : ${jdk}/bin
+        install -D -m755 Archi $out/bin/Archi
       ''
     else
       ''
@@ -52,7 +47,7 @@ stdenv.mkDerivation rec {
         mv Archi.app "$out/Applications/"
       '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ArchiMate modelling toolkit";
     longDescription = ''
       Archi is an open source modelling toolkit to create ArchiMate

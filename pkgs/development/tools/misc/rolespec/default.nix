@@ -1,17 +1,18 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper }:
+{ stdenv, fetchFromGitHub, makeWrapper }:
 
 stdenv.mkDerivation rec {
-  pname = "rolespec";
-  version = "20161104";
+
+  name = "rolespec-${meta.version}";
 
   src = fetchFromGitHub {
     owner = "nickjj";
     repo = "rolespec";
     rev = "d9ee530cd709168882059776c482fc37f46cb743";
     sha256 = "1jkidw6aqr0zfqwmcvlpi9qa140z2pxcfsd43xm5ikx6jcwjdrzl";
+    inherit name;
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   # The default build phase (`make`) runs the test code. It's difficult to do
   # the test in the build environment because it depends on the system package
@@ -31,7 +32,7 @@ stdenv.mkDerivation rec {
   dontPatchELF = true;
   dontStrip = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/nickjj/rolespec";
     description = "A test library for testing Ansible roles";
     longDescription = ''
@@ -40,7 +41,9 @@ stdenv.mkDerivation rec {
     '';
     downloadPage = "https://github.com/nickjj/rolespec";
     license = licenses.gpl3;
+    version = "20161104";
     maintainers = [ maintainers.dochang ];
     platforms = platforms.unix;
   };
+
 }

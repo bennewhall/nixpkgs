@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub}:
+{stdenv, fetchFromGitHub}:
 
 stdenv.mkDerivation rec {
   pname = "git-radar";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     ln -s $out/git-radar $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/michaeldfallen/git-radar";
     license = licenses.mit;
     description = "A tool you can add to your prompt to provide at-a-glance information on your git repo";

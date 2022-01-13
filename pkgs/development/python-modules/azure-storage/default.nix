@@ -1,10 +1,10 @@
 { pkgs
 , buildPythonPackage
 , fetchPypi
+, python
 , azure-common
-, cryptography
-, futures ? null
-, python-dateutil
+, futures
+, dateutil
 , requests
 , isPy3k
 }:
@@ -18,7 +18,7 @@ buildPythonPackage rec {
     sha256 = "0pyasfxkin6j8j00qmky7d9cvpxgis4fi9bscgclj6yrpvf14qpv";
   };
 
-  propagatedBuildInputs = [ azure-common cryptography python-dateutil requests ]
+  propagatedBuildInputs = [ azure-common dateutil requests ]
                             ++ pkgs.lib.optionals (!isPy3k) [ futures ];
 
   postPatch = ''

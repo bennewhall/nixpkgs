@@ -1,10 +1,11 @@
-{ lib, stdenv, mkDerivation, fetchFromGitHub, cmake, zlib, libusb1
+{ stdenv, mkDerivation, fetchFromGitHub, cmake, zlib, libusb1
 , enableGUI ? false, qtbase ? null
 }:
 
-mkDerivation rec {
-  pname = "heimdall${lib.optionalString enableGUI "-gui"}";
-  version = "1.4.2";
+let version = "1.4.2"; in
+
+mkDerivation {
+  name = "heimdall-${if enableGUI then "gui-" else ""}${version}";
 
   src = fetchFromGitHub {
     owner  = "Benjamin-Dobell";
@@ -14,9 +15,8 @@ mkDerivation rec {
   };
 
   buildInputs = [
-    zlib
-    libusb1
-  ] ++ lib.optional enableGUI qtbase;
+    zlib libusb1
+  ] ++ stdenv.lib.optional enableGUI qtbase;
   nativeBuildInputs = [ cmake ];
 
   cmakeFlags = [
@@ -27,15 +27,11 @@ mkDerivation rec {
   preConfigure = ''
     # Give ownership of the Galaxy S USB device to the logged in user.
     substituteInPlace heimdall/60-heimdall.rules --replace 'MODE="0666"' 'TAG+="uaccess"'
-  '' + lib.optionalString stdenv.isDarwin ''
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace libpit/CMakeLists.txt --replace "-std=gnu++11" ""
   '';
 
-  installPhase = lib.optionalString (stdenv.isDarwin && enableGUI) ''
-    mkdir -p $out/Applications
-    mv bin/heimdall-frontend.app $out/Applications/heimdall-frontend.app
-    wrapQtApp $out/Applications/heimdall-frontend.app/Contents/MacOS/heimdall-frontend
-  '' + ''
+  installPhase = ''
     mkdir -p $out/{bin,share/doc/heimdall,lib/udev/rules.d}
     install -m755 -t $out/bin                bin/*
     install -m644 -t $out/lib/udev/rules.d   ../heimdall/60-heimdall.rules
@@ -43,11 +39,13 @@ mkDerivation rec {
     install -m644 ../OSX/README.txt $out/share/doc/heimdall/README.osx
   '';
 
-  meta = with lib; {
-    homepage = "http://www.glassechidna.com.au/products/heimdall/";
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
+    homepage    = "http://www.glassechidna.com.au/products/heimdall/";
     description = "A cross-platform tool suite to flash firmware onto Samsung Galaxy S devices";
-    license = licenses.mit;
+    license     = licenses.mit;
     maintainers = with maintainers; [ peterhoeg ];
-    platforms = platforms.unix;
+    platforms   = platforms.unix;
   };
 }

@@ -1,9 +1,9 @@
-{ stdenv, lib, makeWrapper, pkg-config, mono, dotnetbuildhelpers }:
+{ stdenv, lib, makeWrapper, pkgconfig, mono, dotnetbuildhelpers }:
 
 attrsOrig @
-{ pname
+{ baseName
 , version
-, nativeBuildInputs ? []
+, buildInputs ? []
 , xBuildFiles ? [ ]
 , xBuildFlags ? [ "/p:Configuration=Release" ]
 , outputFiles ? [ "bin/Release/*" ]
@@ -17,14 +17,14 @@ attrsOrig @
     arrayToShell = (a: toString (map (lib.escape (lib.stringToCharacters "\\ ';$`()|<>\t") ) a));
 
     attrs = {
-      inherit pname version;
+      name = "${baseName}-${version}";
 
-      nativeBuildInputs = [
-        pkg-config
-        makeWrapper
-        dotnetbuildhelpers
+      nativeBuildInputs = [ pkgconfig ];
+      buildInputs = [
         mono
-      ] ++ nativeBuildInputs;
+        dotnetbuildhelpers
+        makeWrapper
+      ] ++ buildInputs;
 
       configurePhase = ''
         runHook preConfigure
@@ -64,7 +64,7 @@ attrsOrig @
       installPhase = ''
         runHook preInstall
 
-        target="$out/lib/dotnet/${pname}"
+        target="$out/lib/dotnet/${baseName}"
         mkdir -p "$target"
 
         cp -rv ${arrayToShell outputFiles} "''${outputFilesArray[@]}" "$target"
@@ -87,7 +87,7 @@ attrsOrig @
             then
               echo "$dll already exported by a buildInputs, not re-exporting"
             else
-              create-pkg-config-for-dll.sh "$out/lib/pkgconfig" "$dll"
+              ${dotnetbuildhelpers}/bin/create-pkg-config-for-dll.sh "$out/lib/pkgconfig" "$dll"
             fi
           done
         done
@@ -113,4 +113,4 @@ attrsOrig @
       '';
     };
   in
-    stdenv.mkDerivation (attrs // (builtins.removeAttrs attrsOrig [ "nativeBuildInputs" ] ))
+    stdenv.mkDerivation (attrs // (builtins.removeAttrs attrsOrig [ "buildInputs" ] ))

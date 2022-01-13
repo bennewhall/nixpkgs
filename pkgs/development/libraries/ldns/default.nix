@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, openssl, perl, which, dns-root-data }:
+{ stdenv, fetchurl, openssl, perl, which, dns-root-data }:
 
 stdenv.mkDerivation rec {
   pname = "ldns";
-  version = "1.8.1";
+  version = "1.7.1";
 
   src = fetchurl {
     url = "https://www.nlnetlabs.nl/downloads/ldns/${pname}-${version}.tar.gz";
-    sha256 = "sha256-lYIpq85NOqoZp1wNEnZmVksXIWkCGG6VLKSu9Hxtf6M=";
+    sha256 = "0ac242n7996fswq1a3nlh1bbbhrsdwsq4mx7xq8ffq6aplb4rj4a";
   };
 
   postPatch = ''
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     "--with-drill"
     "--disable-gost"
     "--with-examples"
-  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     "ac_cv_func_malloc_0_nonnull=yes"
     "ac_cv_func_realloc_0_nonnull=yes"
   ];
@@ -40,7 +40,7 @@ stdenv.mkDerivation rec {
     moveToOutput "bin/ldns-config" "$dev"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library with the aim of simplifying DNS programming in C";
     license = licenses.bsd3;
     homepage = "http://www.nlnetlabs.nl/projects/ldns/";

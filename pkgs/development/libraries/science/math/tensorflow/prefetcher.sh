@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-# ./prefetcher.sh 2.4.0 binary-hashes.nix
-
-version="$1"
-hashfile="$2"
+version=1.14.0
+hashfile=binary-hashes.nix
 rm -f $hashfile
 echo "{" >> $hashfile
 echo "version = \"$version\";" >> $hashfile

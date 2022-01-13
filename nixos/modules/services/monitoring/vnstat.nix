@@ -6,21 +6,21 @@ let
   cfg = config.services.vnstat;
 in {
   options.services.vnstat = {
-    enable = mkEnableOption "update of network usage statistics via vnstatd";
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable update of network usage statistics via vnstatd.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
-
-    environment.systemPackages = [ pkgs.vnstat ];
-
-    users = {
-      groups.vnstatd = {};
-
-      users.vnstatd = {
-        isSystemUser = true;
-        group = "vnstatd";
-        description = "vnstat daemon user";
-      };
+    users.users.vnstatd = {
+      isSystemUser = true;
+      description = "vnstat daemon user";
+      home = "/var/lib/vnstat";
+      createHome = true;
     };
 
     systemd.services.vnstat = {
@@ -33,6 +33,7 @@ in {
         "man:vnstat(1)"
         "man:vnstat.conf(5)"
       ];
+      preStart = "chmod 755 /var/lib/vnstat";
       serviceConfig = {
         ExecStart = "${pkgs.vnstat}/bin/vnstatd -n";
         ExecReload = "${pkgs.procps}/bin/kill -HUP $MAINPID";
@@ -51,10 +52,7 @@ in {
         RestrictNamespaces = true;
 
         User = "vnstatd";
-        Group = "vnstatd";
       };
     };
   };
-
-  meta.maintainers = [ maintainers.evils ];
 }

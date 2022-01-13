@@ -1,32 +1,27 @@
-{ lib, stdenv, fetchurl
-, perl, gmp, mpfr, flint, boost
+{ stdenv, fetchurl
+, ninja, libxml2, libxslt, readline, perl, gmp, mpfr, boost
 , bliss, ppl, singular, cddlib, lrs, nauty
-, ninja, ant, openjdk
+, ant, openjdk
 , perlPackages
 , makeWrapper
 }:
 
-# polymake compiles its own version of sympol and atint because we
-# don't have those packages. other missing optional dependencies:
-# javaview, libnormaliz, scip, soplex, jreality.
-
 stdenv.mkDerivation rec {
   pname = "polymake";
-  version = "4.5";
+  version = "3.2.rc4";
 
   src = fetchurl {
-    # "The minimal version is a packager friendly version which omits
-    # the bundled sources of cdd, lrs, libnormaliz, nauty and jReality."
-    url = "https://polymake.org/lib/exe/fetch.php/download/polymake-${version}-minimal.tar.bz2";
-    sha256 = "sha256-6UPUuzHBEvrYUjQONZW8WRwgcGkqFtUBg6OxBFZteZY=";
+    url = "https://polymake.org/lib/exe/fetch.php/download/polymake-3.2r4.tar.bz2";
+    sha256 = "02jpkvy1cc6kc23vkn7nkndzr40fq1gkb3v257bwyi1h5d37fyqy";
   };
 
   buildInputs = [
-    perl gmp mpfr flint boost
+    libxml2 libxslt readline perl gmp mpfr boost
     bliss ppl singular cddlib lrs nauty
     openjdk
-  ] ++ (with perlPackages; [
-    JSON TermReadLineGnu TermReadKey XMLSAX
+  ] ++
+  (with perlPackages; [
+    XMLLibXML XMLLibXSLT XMLWriter TermReadLineGnu TermReadKey
   ]);
 
   nativeBuildInputs = [
@@ -41,11 +36,12 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = {
+    inherit version;
     description = "Software for research in polyhedral geometry";
-    license = licenses.gpl2Plus;
-    maintainers = teams.sage.members;
-    platforms = platforms.linux;
+    license = stdenv.lib.licenses.gpl2 ;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
     homepage = "https://www.polymake.org/doku.php";
   };
 }

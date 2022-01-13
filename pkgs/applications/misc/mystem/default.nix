@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl }:
+{stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "mystem";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     patchelf --set-interpreter $(cat ${stdenv.cc}/nix-support/dynamic-linker) $out/bin/mystem
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Morphological analysis of Russian text";
     homepage = "https://yandex.ru/dev/mystem/";
     license = licenses.unfreeRedistributable;

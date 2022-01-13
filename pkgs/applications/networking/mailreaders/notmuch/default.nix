@@ -1,5 +1,5 @@
-{ fetchurl, lib, stdenv
-, pkg-config, gnupg
+{ fetchurl, fetchgit, stdenv
+, pkgconfig, gnupg
 , xapian, gmime, talloc, zlib
 , doxygen, perl, texinfo
 , pythonPackages
@@ -9,22 +9,29 @@
 , withEmacs ? true
 }:
 
-stdenv.mkDerivation rec {
-  pname = "notmuch";
-  version = "0.34.1";
+with stdenv.lib;
 
-  src = fetchurl {
-    url = "https://notmuchmail.org/releases/notmuch-${version}.tar.xz";
-    sha256 = "05nq64gp8vnrwrl22d60v7ixgdhm9339ajhcdfkq0ll1qiycyyj5";
+stdenv.mkDerivation rec {
+  version = "0.31";
+  pname = "notmuch";
+
+  passthru = {
+    pythonSourceRoot = "${src.name}/bindings/python";
+    inherit version;
+  };
+
+  src = fetchgit {
+    url = "https://git.notmuchmail.org/git/notmuch";
+    sha256 = "0f9d9k9avb46yh2r8fvijvw7bryqwckvyzc68f9phax2g4c99x4x";
+    rev = version;
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     doxygen                   # (optional) api docs
     pythonPackages.sphinx     # (optional) documentation -> doc/INSTALL
     texinfo                   # (optional) documentation -> doc/INSTALL
-    pythonPackages.cffi
-  ] ++ lib.optional withEmacs emacs;
+  ] ++ optional withEmacs [ emacs ];
 
   buildInputs = [
     gnupg                     # undefined dependencies
@@ -35,11 +42,12 @@ stdenv.mkDerivation rec {
   ];
 
   postPatch = ''
-    patchShebangs configure test/
+    patchShebangs configure
+    patchShebangs test/
 
     substituteInPlace lib/Makefile.local \
       --replace '-install_name $(libdir)' "-install_name $out/lib"
-  '' + lib.optionalString withEmacs ''
+  '' + optionalString withEmacs ''
     substituteInPlace emacs/notmuch-emacs-mua \
       --replace 'EMACS:-emacs' 'EMACS:-${emacs}/bin/emacs' \
       --replace 'EMACSCLIENT:-emacsclient' 'EMACSCLIENT:-${emacs}/bin/emacsclient'
@@ -49,9 +57,9 @@ stdenv.mkDerivation rec {
     "--zshcompletiondir=${placeholder "out"}/share/zsh/site-functions"
     "--bashcompletiondir=${placeholder "out"}/share/bash-completion/completions"
     "--infodir=${placeholder "info"}/share/info"
-  ] ++ lib.optional (!withEmacs) "--without-emacs"
-    ++ lib.optional withEmacs "--emacslispdir=${placeholder "emacs"}/share/emacs/site-lisp"
-    ++ lib.optional (isNull ruby) "--without-ruby";
+  ] ++ optional (!withEmacs) "--without-emacs"
+    ++ optional (withEmacs) "--emacslispdir=${placeholder "emacs"}/share/emacs/site-lisp"
+    ++ optional (isNull ruby) "--without-ruby";
 
   # Notmuch doesn't use autoconf and consequently doesn't tag --bindir and
   # friends
@@ -59,7 +67,8 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
   makeFlags = [ "V=1" ];
 
-  outputs = [ "out" "man" "info" ] ++ lib.optional withEmacs "emacs";
+
+  outputs = [ "out" "man" "info" ] ++ stdenv.lib.optional withEmacs "emacs";
 
   preCheck = let
     test-database = fetchurl {
@@ -70,8 +79,7 @@ stdenv.mkDerivation rec {
     mkdir -p test/test-databases
     ln -s ${test-database} test/test-databases/database-v1.tar.xz
   '';
-
-  doCheck = !stdenv.hostPlatform.isDarwin && (lib.versionAtLeast gmime.version "3.0.3");
+  doCheck = !stdenv.hostPlatform.isDarwin && (versionAtLeast gmime.version "3.0.3");
   checkTarget = "test";
   checkInputs = [
     which dtach openssl bash
@@ -80,19 +88,16 @@ stdenv.mkDerivation rec {
 
   installTargets = [ "install" "install-man" "install-info" ];
 
-  postInstall = lib.optionalString withEmacs ''
+  postInstall = stdenv.lib.optionalString withEmacs ''
     moveToOutput bin/notmuch-emacs-mua $emacs
   '';
 
-  passthru = {
-    pythonSourceRoot = "notmuch-${version}/bindings/python";
-    inherit version;
-  };
+  dontGzipMan = true; # already compressed
 
-  meta = with lib; {
+  meta = {
     description = "Mail indexer";
     homepage    = "https://notmuchmail.org/";
-    license     = licenses.gpl3Plus;
+    license     = licenses.gpl3;
     maintainers = with maintainers; [ flokli puckipedia ];
     platforms   = platforms.unix;
   };

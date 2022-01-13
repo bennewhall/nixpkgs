@@ -1,6 +1,6 @@
-{ system, bootstrapFiles, extraAttrs }:
+{ system, bootstrapFiles }:
 
-derivation ({
+derivation {
   name = "bootstrap-tools";
 
   builder = bootstrapFiles.busybox;
@@ -15,4 +15,4 @@ derivation ({
   langC = true;
   langCC = true;
   isGNU = true;
-} // extraAttrs)
+}

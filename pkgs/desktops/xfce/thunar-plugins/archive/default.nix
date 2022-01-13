@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , mkXfceDerivation
 , gtk3
 , thunar
@@ -13,7 +13,7 @@ mkXfceDerivation {
   pname  = "thunar-archive-plugin";
   version = "0.4.0";
 
-  sha256 = "sha256-aEAErm87K2k8TAz2ZtMQEhmzhOeR2hkJjcoBUFn8I50=";
+  sha256 = "1793zicm00fail4iknliwy2b668j239ndxhc9hy6jarvdyp08h38";
 
   nativeBuildInputs = [
     intltool
@@ -31,8 +31,7 @@ mkXfceDerivation {
     ./autogen.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Thunar plugin providing file context menus for archives";
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
   };
 }

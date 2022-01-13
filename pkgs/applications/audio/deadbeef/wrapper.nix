@@ -5,7 +5,7 @@ symlinkJoin {
 
   paths = [ deadbeef ] ++ plugins;
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   postBuild = ''
     wrapProgram $out/bin/deadbeef \

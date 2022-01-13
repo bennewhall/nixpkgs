@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, git }:
+{ stdenv, fetchFromGitHub, makeWrapper, git }:
 
 stdenv.mkDerivation rec {
   pname = "git-test";
@@ -20,10 +20,10 @@ stdenv.mkDerivation rec {
     install -m444 -Dt $out/share/man/man1 git-test.1
 
     wrapProgram $out/bin/git-test \
-      --prefix PATH : "${lib.makeBinPath [ git ]}"
+      --prefix PATH : "${stdenv.lib.makeBinPath [ git ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Test your commits";
     homepage = "https://github.com/spotify/git-test";
     license = licenses.asl20;

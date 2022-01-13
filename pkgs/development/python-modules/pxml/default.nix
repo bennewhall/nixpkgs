@@ -1,5 +1,6 @@
-{ lib
+{ stdenv
 , pythonAtLeast
+, isPy27
 , buildPythonPackage
 , fetchPypi
 , blessings
@@ -27,7 +28,7 @@ buildPythonPackage rec {
     nosetests -e 'test_prefixedWhitespace'
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/metagriffin/pxml";
     description = ''A python library and command-line tool to "prettify" and colorize XML.'';
     maintainers = with maintainers; [ glittershark ];

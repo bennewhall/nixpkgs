@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , cmake
 , fuse }:
 
@@ -14,16 +14,12 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  patches = [
-    # Make it build with macFUSE
-    # Backported from https://github.com/netheril96/securefs/pull/114
-    ./add-macfuse-support.patch
-  ];
-
   nativeBuildInputs = [ cmake ];
   buildInputs = [ fuse ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Transparent encryption filesystem";
     longDescription = ''
@@ -37,6 +33,6 @@ stdenv.mkDerivation rec {
       contents.
     '';
     license = with licenses; [ bsd2 mit ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

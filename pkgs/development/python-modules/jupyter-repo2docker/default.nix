@@ -1,49 +1,39 @@
-{ lib
-, buildPythonPackage
+{ stdenv, buildPythonPackage, fetchPypi, pythonAtLeast
 , docker
-, entrypoints
 , escapism
-, fetchFromGitHub
-, iso8601
 , jinja2
 , pkgs-docker
 , python-json-logger
-, pythonOlder
-, ruamel-yaml
+, pyyaml
+, ruamel_yaml
 , semver
 , toml
 , traitlets
 }:
 
 buildPythonPackage rec {
-  version = "2021.08.0";
+  version = "0.11.0";
   pname = "jupyter-repo2docker";
-  format = "setuptools";
+  disabled = !(pythonAtLeast "3.4");
 
-  disabled = pythonOlder "3.6";
-
-  src = fetchFromGitHub {
-    owner = "jupyterhub";
-    repo = "repo2docker";
-    rev = version;
-    sha256 = "10hcdag7ivyqyiqrmr9c48zynp8d81ic3px1ffgnaysih7lvkwb6";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "7fc2edf0cda1e46f2e7553bfb84a47e6d141b8dac393268ef01ee3504ca6ad94";
   };
 
   propagatedBuildInputs = [
     docker
-    entrypoints
     escapism
-    iso8601
     jinja2
     pkgs-docker
     python-json-logger
-    ruamel-yaml
+    ruamel_yaml
     semver
     toml
     traitlets
   ];
 
-  # Tests require a running Docker instance
+  # tests not packaged with pypi release
   doCheck = false;
 
   pythonImportsCheck = [
@@ -53,10 +43,10 @@ buildPythonPackage rec {
     "repo2docker.contentproviders.base"
   ];
 
-  meta = with lib; {
-    description = "Turn code repositories into Jupyter enabled Docker Images";
-    homepage = "https://repo2docker.readthedocs.io/";
+  meta = with stdenv.lib; {
+    homepage = "https://repo2docker.readthedocs.io/en/latest/";
+    description = "Repo2docker: Turn code repositories into Jupyter enabled Docker Images";
     license = licenses.bsdOriginal;
-    maintainers = with maintainers; [ costrouc ];
+    maintainers = [ maintainers.costrouc ];
   };
 }

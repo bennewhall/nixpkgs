@@ -1,6 +1,5 @@
-{ lib, stdenv, fetchFromGitHub
-, meson, ninja, pkg-config, scdoc, wayland-scanner
-, wayland, wayland-protocols, ffmpeg, x264, libpulseaudio, ocl-icd, opencl-headers
+{ stdenv, fetchFromGitHub, meson, ninja, pkg-config, wayland, scdoc
+, wayland-protocols, ffmpeg, x264, libpulseaudio, ocl-icd, opencl-headers
 }:
 
 stdenv.mkDerivation rec {
@@ -14,12 +13,12 @@ stdenv.mkDerivation rec {
     sha256 = "1cw6kpcbl33wh95pvy32xrsrm6kkk1awccr3phyh885xjs3b3iim";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config wayland-scanner scdoc ];
+  nativeBuildInputs = [ meson ninja pkg-config wayland scdoc ];
   buildInputs = [
-    wayland wayland-protocols ffmpeg x264 libpulseaudio ocl-icd opencl-headers
+    wayland-protocols ffmpeg x264 libpulseaudio ocl-icd opencl-headers
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utility program for screen recording of wlroots-based compositors";
     inherit (src.meta) homepage;
     changelog = "https://github.com/ammen99/wf-recorder/releases/tag/v${version}";

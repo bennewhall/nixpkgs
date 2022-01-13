@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchzip, libtool, pkg-config, ncurses, unibilium }:
+{ stdenv, lib, fetchzip, libtool, pkgconfig, ncurses, unibilium }:
 
 stdenv.mkDerivation rec {
   pname = "libtermkey";
@@ -11,9 +11,9 @@ stdenv.mkDerivation rec {
   };
 
   makeFlags = [ "PREFIX=$(out)" ]
-    ++ lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool";
+    ++ stdenv.lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool";
 
-  nativeBuildInputs = [ libtool pkg-config ];
+  nativeBuildInputs = [ libtool pkgconfig ];
   buildInputs = [ ncurses unibilium ];
 
   meta = with lib; {

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , fetchFromGitHub
 , python3
 , keybinder3
@@ -13,13 +13,13 @@
 
 python3.pkgs.buildPythonApplication rec {
   pname = "terminator";
-  version = "2.1.1";
+  version = "1.92";
 
   src = fetchFromGitHub {
     owner = "gnome-terminator";
     repo = "terminator";
     rev = "v${version}";
-    sha256 = "1pfrzna30xv9yri6dsny1j5k35417m4hsg97c455vssywyl9w4jr";
+    sha256 = "105f660wzf9cpn24xzwaaa09igg5h3qhchafv190v5nqck6g1ssh";
   };
 
   nativeBuildInputs = [
@@ -27,7 +27,6 @@ python3.pkgs.buildPythonApplication rec {
     intltool
     gobject-introspection
     wrapGAppsHook
-    python3.pkgs.pytest-runner
   ];
 
   buildInputs = [
@@ -48,21 +47,21 @@ python3.pkgs.buildPythonApplication rec {
   ];
 
   postPatch = ''
-    patchShebangs tests po
+    patchShebangs run_tests tests po
     # dbus-python is correctly passed in propagatedBuildInputs, but for some reason setup.py complains.
     # The wrapped terminator has the correct path added, so ignore this.
     substituteInPlace setup.py --replace "'dbus-python'," ""
   '';
 
-  doCheck = false;
+  checkPhase = ''
+    runHook preCheck
 
-  dontWrapGApps = true;
+    ./run_tests
 
-  preFixup = ''
-    makeWrapperArgs+=("''${gappsWrapperArgs[@]}")
+    runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Terminal emulator with support for tiling and tabs";
     longDescription = ''
       The goal of this project is to produce a useful tool for arranging

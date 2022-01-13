@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
-  pname = "chmlib";
-  version = "0.40a";
+  name = "chmlib-0.40a";
 
   src = fetchFromGitHub {
     owner = "jedwing";
@@ -13,10 +12,10 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  meta = with lib; {
+  meta = {
     homepage = "http://www.jedrea.com/chmlib";
-    license = licenses.lgpl2;
+    license = stdenv.lib.licenses.lgpl2;
     description = "A library for dealing with Microsoft ITSS/CHM format files";
-    platforms = platforms.unix;
+    platforms = ["x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux"];
   };
 }

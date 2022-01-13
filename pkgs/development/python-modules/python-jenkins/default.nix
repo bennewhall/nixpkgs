@@ -1,5 +1,4 @@
 { lib
-, stdenv
 , buildPythonPackage
 , fetchPypi
 , mock
@@ -22,13 +21,6 @@ buildPythonPackage rec {
     inherit pname version;
     sha256 = "01jid5s09lr3kayr2h1z9n8h9nhyw3jxv9c4b5hrlxijknkqzvfy";
   };
-
-  # test uses timeout mechanism unsafe for use with the "spawn"
-  # multiprocessing backend used on macos
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace tests/test_jenkins_sockets.py \
-      --replace test_jenkins_open_no_timeout dont_test_jenkins_open_no_timeout
-  '';
 
   buildInputs = [ mock ];
   propagatedBuildInputs = [ pbr pyyaml setuptools six multi_key_dict requests ];

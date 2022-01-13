@@ -24,8 +24,6 @@ buildPythonPackage rec {
     })
   ];
 
-  propagatedNativeBuildInputs = [ cffi ];
-
   propagatedBuildInputs = [ cffi ];
 
   installCheckPhase = ''
@@ -44,6 +42,5 @@ buildPythonPackage rec {
     homepage = "https://github.com/bivab/smbus-cffi";
     license = licenses.gpl2;
     maintainers = with maintainers; [ mic92 ];
-    platforms = platforms.linux;
   };
 }

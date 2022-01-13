@@ -1,19 +1,18 @@
-{ lib, stdenv, fetchurl, gtk2, glib, pkg-config, libGLU, libGL, wxGTK, libX11, xorgproto
+{ stdenv, fetchurl, gtk2, glib, pkgconfig, libGLU, libGL, wxGTK, libX11, xorgproto
 , runtimeShell }:
 
-stdenv.mkDerivation rec {
-  pname = "fsg";
-  version = "4.4";
+stdenv.mkDerivation {
+  name = "fsg-4.4";
 
   src = fetchurl {
-    name = "fsg-src-${version}.tar.gz";
-    url = "https://github.com/ctrlcctrlv/wxsand/blob/master/fsg-src-${version}-ORIGINAL.tar.gz?raw=true";
+    name = "fsg-src-4.4.tar.gz";
+    url = "https://github.com/ctrlcctrlv/wxsand/blob/master/fsg-src-4.4-ORIGINAL.tar.gz?raw=true";
     sha256 = "1756y01rkvd3f1pkj88jqh83fqcfl2fy0c48mcq53pjzln9ycv8c";
   };
 
   hardeningDisable = [ "format" ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ gtk2 glib libGLU libGL wxGTK libX11 xorgproto ];
 
   preBuild = ''
@@ -32,7 +31,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Cellular automata engine tuned towards the likes of Falling Sand";
-    maintainers = [lib.maintainers.raskin];
-    platforms = lib.platforms.linux;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

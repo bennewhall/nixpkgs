@@ -1,54 +1,34 @@
-{ lib
-, stdenv
-, fetchurl
-, pkg-config
-, geos
-, librttopo
-, libxml2
-, minizip
-, proj
-, sqlite
-, libiconv
-}:
+{ stdenv, lib, fetchurl, pkgconfig, libxml2, sqlite, zlib, proj, geos, libiconv }:
+
+with lib;
 
 stdenv.mkDerivation rec {
-  pname = "libspatialite";
-  version = "5.0.1";
-
-  outputs = [ "out" "dev" ];
+  name = "libspatialite-4.3.0a";
 
   src = fetchurl {
-    url = "https://www.gaia-gis.it/gaia-sins/libspatialite-sources/${pname}-${version}.tar.gz";
-    sha256 = "sha256-7svJQxHHgBLQWevA+uhupe9u7LEzA+boKzdTwbNAnpg=";
+    url = "https://www.gaia-gis.it/gaia-sins/libspatialite-sources/${name}.tar.gz";
+    sha256 = "16d4lpl7xrm9zy4gphy6nwanpjp8wn9g4wq2i2kh8abnlhq01448";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildInputs = [
-    geos
-    librttopo
-    libxml2
-    minizip
-    proj
-    sqlite
-  ] ++ lib.optionals stdenv.isDarwin [
-    libiconv
-  ];
+  buildInputs = [ libxml2 sqlite zlib proj geos libiconv ];
 
   configureFlags = [ "--disable-freexl" ];
 
   enableParallelBuilding = true;
 
-  postInstall = lib.optionalString stdenv.isDarwin ''
+  CFLAGS = "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1";
+
+  postInstall = "" + optionalString stdenv.isDarwin ''
     ln -s $out/lib/mod_spatialite.{so,dylib}
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Extensible spatial index library in C++";
     homepage = "https://www.gaia-gis.it/fossil/libspatialite";
     # They allow any of these
     license = with licenses; [ gpl2Plus lgpl21Plus mpl11 ];
     platforms = platforms.unix;
-    maintainers = with maintainers; [ dotlambda ];
   };
 }

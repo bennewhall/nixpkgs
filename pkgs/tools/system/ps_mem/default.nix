@@ -1,4 +1,4 @@
-{ lib, pythonPackages, fetchFromGitHub }:
+{ stdenv, pythonPackages, fetchFromGitHub }:
 
 let
   version = "3.13";
@@ -13,11 +13,11 @@ in pythonPackages.buildPythonApplication {
     sha256 = "0pgi9hvwfbkzvwicqlkwx4rwal1ikza018yxbwpnf7c80zw0zaw9";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A utility to accurately report the in core memory usage for a program";
     homepage = "https://github.com/pixelb/ps_mem";
     license = licenses.lgpl21;
-    maintainers = [ ];
+    maintainers = [ maintainers.gnidorah ];
     platforms = platforms.linux;
   };
 }

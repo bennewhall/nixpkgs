@@ -1,7 +1,4 @@
-{ lib, stdenv, callPackage, fetchFromGitHub
-, enableStatic ? stdenv.hostPlatform.isStatic
-, enableShared ? !stdenv.hostPlatform.isStatic
-}:
+{ stdenv, callPackage, fetchFromGitHub, enableStatic ? false, enableShared ? true }:
 let
   yesno = b: if b then "yes" else "no";
 in stdenv.mkDerivation rec {
@@ -17,9 +14,9 @@ in stdenv.mkDerivation rec {
     "--enable-static=${yesno enableStatic}"
     "--enable-shared=${yesno enableShared}"
   ];
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A C library that may be linked into a C/C++ program to produce symbolic backtraces";
-    homepage = "https://github.com/ianlancetaylor/libbacktrace";
+    homepage = https://github.com/ianlancetaylor/libbacktrace;
     maintainers = with maintainers; [ twey ];
     license = with licenses; [ bsd3 ];
   };

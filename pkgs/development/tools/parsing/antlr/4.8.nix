@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, jre
-, fetchFromGitHub, cmake, ninja, pkg-config, libuuid, darwin }:
+{ stdenv, fetchurl, jre
+, fetchFromGitHub, cmake, ninja, pkgconfig, libuuid, darwin }:
 
 let
   version = "4.8";
@@ -18,19 +18,15 @@ let
 
       outputs = [ "out" "dev" "doc" ];
 
-      nativeBuildInputs = [ cmake ninja pkg-config ];
-      buildInputs = lib.optional stdenv.isLinux libuuid
-        ++ lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.CoreFoundation;
-
-      # Install CMake config files, used to locate the runtime from another
-      # CMake project, using the find_package function.
-      cmakeFlags = [ "-DANTLR4_INSTALL=ON" ];
+      nativeBuildInputs = [ cmake ninja pkgconfig ];
+      buildInputs = stdenv.lib.optional stdenv.isLinux libuuid
+        ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.CoreFoundation;
 
       postUnpack = ''
         export sourceRoot=$sourceRoot/runtime/Cpp
       '';
 
-      meta = with lib; {
+      meta = with stdenv.lib; {
         description = "C++ target for ANTLR 4";
         homepage = "https://www.antlr.org/";
         license = licenses.bsd3;
@@ -71,7 +67,7 @@ let
       jarLocation = "${antlr}/share/java/antlr-${version}-complete.jar";
     };
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Powerful parser generator";
       longDescription = ''
         ANTLR (ANother Tool for Language Recognition) is a powerful parser

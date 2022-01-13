@@ -15,8 +15,8 @@ buildGoModule rec {
 
   doCheck = false;
 
-  ldflags = [
-    "-X main.buildVersion=${version}" "-X main.buildCommit=${version}" "-X main.buildDate=1970-01-01"
+  buildFlagsArray = [
+    "-ldflags=-X main.buildVersion=${version} -X main.buildCommit=${version} -X main.buildDate=1970-01-01"
   ];
 
   meta = with lib; {
@@ -26,3 +26,4 @@ buildGoModule rec {
     maintainers = with maintainers; [ doronbehar ];
   };
 }
+

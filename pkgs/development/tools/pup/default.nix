@@ -1,22 +1,21 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ lib, buildGoPackage, fetchgit }:
 
-buildGoModule rec {
+buildGoPackage rec {
   pname = "pup";
-  version = "unstable-2019-09-19";
+  version = "0.4.0";
+  rev = "v${version}";
 
-  src = fetchFromGitHub {
-    owner = "ericchiang";
-    repo = "pup";
-    rev = "681d7bb639334bf485476f5872c5bdab10931f9a";
-    sha256 = "1hx1k0qlc1bq6gg5d4yprn4d7kvqzagg6mi5mvb39zdq6c4y17vr";
+  goPackagePath = "github.com/ericchiang/pup";
+
+  src = fetchgit {
+    inherit rev;
+    url = "https://${goPackagePath}";
+    sha256 = "0mnhw0yph5fvcnrcmj1kfbyw1a4lcg3k9f6y28kf44ihlq8h1dfz";
   };
 
-  vendorSha256 = null;
-
   meta = with lib; {
-    description = "Parsing HTML at the command line";
-    homepage = "https://github.com/ericchiang/pup";
+    description = "Streaming HTML processor/selector";
     license = licenses.mit;
-    maintainers = with maintainers; [ SuperSandro2000 yana ];
+    maintainers = with maintainers; [ yegortimoshenko ];
   };
 }

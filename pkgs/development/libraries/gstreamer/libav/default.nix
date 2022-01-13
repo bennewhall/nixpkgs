@@ -3,7 +3,7 @@
 , fetchurl
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , python3
 , gst-plugins-base
 , gettext
@@ -15,11 +15,11 @@
 
 stdenv.mkDerivation rec {
   pname = "gst-libav";
-  version = "1.18.4";
+  version = "1.18.1";
 
   src = fetchurl {
-    url = "https://gstreamer.freedesktop.org/src/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "15n3x3vhshqa3icw93g4vqmqd46122anzqvfxwn6q8famlxlcjil";
+    url = "${meta.homepage}/src/${pname}/${pname}-${version}.tar.xz";
+    sha256 = "1n1fkkbxxsndblnbm0c2ziqp967hrz5gag6z36xbpvqk4sy1g9rr";
   };
 
   outputs = [ "out" "dev" ];
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     gettext
-    pkg-config
+    pkgconfig
     python3
   ];
 

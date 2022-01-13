@@ -1,12 +1,11 @@
-{ lib, stdenv, fetchurl, libcap, openssl, pam }:
+{ stdenv, fetchurl, libcap, openssl, pam }:
 
 stdenv.mkDerivation rec {
-  pname = "vsftpd";
-  version = "3.0.5";
+  name = "vsftpd-3.0.3";
 
   src = fetchurl {
-    url = "https://security.appspot.com/downloads/vsftpd-${version}.tar.gz";
-    sha256 = "sha256-JrYCrkVLC6bZnvRKCba54N+n9nIoEGc23x8njHC8kdM=";
+    url = "https://security.appspot.com/downloads/${name}.tar.gz";
+    sha256 = "1xsyjn68k3fgm2incpb3lz2nikffl9by2safp994i272wvv2nkcx";
   };
 
   buildInputs = [ libcap openssl pam ];
@@ -19,22 +18,16 @@ stdenv.mkDerivation rec {
     substituteInPlace Makefile \
       --replace -dirafter "" \
       --replace /usr $out \
-      --replace /etc $out/etc \
-      --replace "-Werror" ""
-
+      --replace /etc $out/etc
 
     mkdir -p $out/sbin $out/man/man{5,8}
   '';
-
-  makeFlags = [
-    "CC=${stdenv.cc.targetPrefix}cc"
-  ];
 
   NIX_LDFLAGS = "-lcrypt -lssl -lcrypto -lpam -lcap";
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A very secure FTP daemon";
     license = licenses.gpl2;
     maintainers = with maintainers; [ peterhoeg ];

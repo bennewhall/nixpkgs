@@ -1,16 +1,16 @@
-{ lib, stdenv, fetchFromGitHub, automake, autoconf, intltool, pkg-config, gtk3, vte, wrapGAppsHook
+{ stdenv, fetchurl, automake, autoconf, intltool, pkgconfig, gtk3, vte, wrapGAppsHook
 , libxslt, docbook_xml_dtd_412, docbook_xsl, libxml2, findXMLCatalogs
 }:
 
-stdenv.mkDerivation rec {
-  pname = "lxterminal";
-  version = "0.3.2";
+let version = "0.3.2"; in
 
-  src = fetchFromGitHub {
-    owner = "lxde";
-    repo = "lxterminal";
-    rev = version;
-    sha256 = "sha256-5J21Xvx43Ie01IxB2usyixDl+WZEeFHn2HXZsRS5imo=";
+stdenv.mkDerivation {
+  pname = "lxterminal";
+  inherit version;
+
+  src = fetchurl {
+    url = "https://github.com/lxde/lxterminal/archive/${version}.tar.gz";
+    sha256 = "1iafqmccsm3nnzwp6pb2c04iniqqnscj83bq1rvf58ppzk0bvih3";
   };
 
   configureFlags = [
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    automake autoconf intltool pkg-config wrapGAppsHook
+    automake autoconf intltool pkgconfig wrapGAppsHook
     libxslt docbook_xml_dtd_412 docbook_xsl libxml2 findXMLCatalogs
   ];
 
@@ -43,8 +43,8 @@ stdenv.mkDerivation rec {
       unnecessary dependencies.
     '';
     homepage = "https://wiki.lxde.org/en/LXTerminal";
-    license = lib.licenses.gpl2;
-    maintainers = [ lib.maintainers.velovix ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = [ stdenv.lib.maintainers.velovix ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

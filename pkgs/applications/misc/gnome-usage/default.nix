@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , vala
 , gettext
 , libxml2
@@ -12,18 +12,18 @@
 , gtk3
 , libgtop
 , libdazzle
-, gnome
+, gnome3
 , tracker
 , libhandy
 }:
 
 stdenv.mkDerivation rec {
   pname = "gnome-usage";
-  version = "3.38.1";
+  version = "3.38.0";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "mMdm4X4VZXEfx0uaJP0u0NX618y0VRlhLdTiFHaO05M=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0mqs39yi2cqwkzlmmgzrszsva5hbdpws6zk4lbi4w2cjzl185mcl";
   };
 
   nativeBuildInputs = [
@@ -32,14 +32,14 @@ stdenv.mkDerivation rec {
     libxml2
     meson
     ninja
-    pkg-config
+    pkgconfig
     vala
     wrapGAppsHook
   ];
 
   buildInputs = [
     glib
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
     gtk3
     libdazzle
     libgtop
@@ -53,12 +53,12 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A nice way to view information about use of system resources, like memory and disk space";
     license = licenses.gpl3;
     platforms = platforms.linux;

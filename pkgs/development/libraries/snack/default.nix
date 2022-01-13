@@ -1,13 +1,12 @@
-# alsa-lib vorbis-tools python can be made optional
+# alsaLib vorbis-tools python can be made optional
 
-{ lib, stdenv, fetchurl, python, tcl, tk, vorbis-tools, pkg-config, xlibsWrapper }:
+{ stdenv, fetchurl, python, tcl, tk, vorbis-tools, pkgconfig, xlibsWrapper }:
 
-stdenv.mkDerivation rec {
-  pname = "snack";
-  version = "2.2.10";
+stdenv.mkDerivation {
+  name = "snack-2.2.10";
 
   src = fetchurl {
-    url = "https://www.speech.kth.se/snack/dist/${pname}${version}.tar.gz";
+    url = "https://www.speech.kth.se/snack/dist/snack2.2.10.tar.gz";
     sha256 = "07p89jv9qnjqkszws9sssq93ayvwpdnkcxrvyicbm4mb8x2pdzjb";
   };
 
@@ -15,7 +14,7 @@ stdenv.mkDerivation rec {
 
   postUnpack = ''sourceRoot="$sourceRoot/unix"'';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ python tcl tk vorbis-tools xlibsWrapper ];
 
   hardeningDisable = [ "format" ];
@@ -24,13 +23,13 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out
-    make install DESTDIR="$out"
+    make install DESTDIR="$out" 
   '';
 
-  meta = {
+  meta = { 
     description = "The Snack Sound Toolkit (Tcl)";
-    homepage = "https://www.speech.kth.se/snack/";
-    license = lib.licenses.gpl2;
+    homepage = "http://www.speech.kth.se/snack/";
+    license = stdenv.lib.licenses.gpl2;
     broken = true;
   };
 }

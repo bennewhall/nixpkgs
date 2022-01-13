@@ -11,7 +11,6 @@ let
 
   haveAliases = cfg.postmasterAlias != "" || cfg.rootAlias != ""
                       || cfg.extraAliases != "";
-  haveCanonical = cfg.canonical != "";
   haveTransport = cfg.transport != "";
   haveVirtual = cfg.virtual != "";
   haveLocalRecipients = cfg.localRecipients != null;
@@ -25,6 +24,8 @@ let
       (map (s: "reject_rbl_client " + s) cfg.dnsBlacklists);
 
   clientRestrictions = concatStringsSep ", " (clientAccess ++ dnsBl);
+
+  smtpTlsSecurityLevel = if cfg.useDane then "dane" else "may";
 
   mainCf = let
     escape = replaceStrings ["$"] ["$$"];
@@ -51,7 +52,7 @@ let
       };
 
       type = mkOption {
-        type = types.enum [ "inet" "unix" "unix-dgram" "fifo" "pass" ];
+        type = types.enum [ "inet" "unix" "fifo" "pass" ];
         default = "unix";
         example = "inet";
         description = "The type of the service";
@@ -194,7 +195,7 @@ let
       # We need to handle the last column specially here, because it's
       # open-ended (command + args).
       lines = [ labels labelDefaults ] ++ (map (l: init l ++ [""]) masterCf);
-    in foldr foldLine (genList (const 0) (length labels)) lines;
+    in fold foldLine (genList (const 0) (length labels)) lines;
 
     # Pad a string with spaces from the right (opposite of fixedWidthString).
     pad = width: str: let
@@ -203,7 +204,7 @@ let
     in str + optionalString (padWidth > 0) padding;
 
     # It's + 2 here, because that's the amount of spacing between columns.
-    fullWidth = foldr (width: acc: acc + width + 2) 0 maxWidths;
+    fullWidth = fold (width: acc: acc + width + 2) 0 maxWidths;
 
     formatLine = line: concatStringsSep "  " (zipListsWith pad maxWidths line);
 
@@ -245,7 +246,6 @@ let
   ;
 
   aliasesFile = pkgs.writeText "postfix-aliases" aliases;
-  canonicalFile = pkgs.writeText "postfix-canonical" cfg.canonical;
   virtualFile = pkgs.writeText "postfix-virtual" cfg.virtual;
   localRecipientMapFile = pkgs.writeText "postfix-local-recipient-map" (concatMapStrings (x: x + " ACCEPT\n") cfg.localRecipients);
   checkClientAccessFile = pkgs.writeText "postfix-check-client-access" cfg.dnsBlacklistOverrides;
@@ -294,7 +294,7 @@ in
       };
 
       submissionOptions = mkOption {
-        type = with types; attrsOf str;
+        type = types.attrs;
         default = {
           smtpd_tls_security_level = "encrypt";
           smtpd_sasl_auth_enable = "yes";
@@ -312,7 +312,7 @@ in
       };
 
       submissionsOptions = mkOption {
-        type = with types; attrsOf str;
+        type = types.attrs;
         default = {
           smtpd_sasl_auth_enable = "yes";
           smtpd_client_restrictions = "permit_sasl_authenticated,reject";
@@ -505,9 +505,16 @@ in
       tlsTrustedAuthorities = mkOption {
         type = types.str;
         default = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-        defaultText = literalExpression ''"''${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"'';
         description = ''
           File containing trusted certification authorities (CA) to verify certificates of mailservers contacted for mail delivery. This basically sets smtp_tls_CAfile and enables opportunistic tls. Defaults to NixOS trusted certification authorities.
+        '';
+      };
+
+      useDane = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Sets smtp_tls_security_level to "dane" rather than "may". See postconf(5) for details.
         '';
       };
 
@@ -532,20 +539,11 @@ in
         ";
       };
 
-      canonical = mkOption {
-        type = types.lines;
-        default = "";
-        description = ''
-          Entries for the <citerefentry><refentrytitle>canonical</refentrytitle>
-          <manvolnum>5</manvolnum></citerefentry> table.
-        '';
-      };
-
       virtual = mkOption {
         type = types.lines;
         default = "";
         description = "
-          Entries for the virtual alias map, cf. man-page virtual(5).
+          Entries for the virtual alias map, cf. man-page virtual(8).
         ";
       };
 
@@ -572,7 +570,6 @@ in
 
       transport = mkOption {
         default = "";
-        type = types.lines;
         description = "
           Entries for the transport map, cf. man-page transport(8).
         ";
@@ -586,7 +583,6 @@ in
 
       dnsBlacklistOverrides = mkOption {
         default = "";
-        type = types.lines;
         description = "contents of check_client_access for overriding dnsBlacklists";
       };
 
@@ -674,7 +670,6 @@ in
       services.mail.sendmailSetuidWrapper = mkIf config.services.postfix.setSendmail {
         program = "sendmail";
         source = "${pkgs.postfix}/bin/sendmail";
-        owner = "root";
         group = setgidGroup;
         setuid = false;
         setgid = true;
@@ -683,7 +678,6 @@ in
       security.wrappers.mailq = {
         program = "mailq";
         source = "${pkgs.postfix}/bin/mailq";
-        owner = "root";
         group = setgidGroup;
         setuid = false;
         setgid = true;
@@ -692,7 +686,6 @@ in
       security.wrappers.postqueue = {
         program = "postqueue";
         source = "${pkgs.postfix}/bin/postqueue";
-        owner = "root";
         group = setgidGroup;
         setuid = false;
         setgid = true;
@@ -701,7 +694,6 @@ in
       security.wrappers.postdrop = {
         program = "postdrop";
         source = "${pkgs.postfix}/bin/postdrop";
-        owner = "root";
         group = setgidGroup;
         setuid = false;
         setgid = true;
@@ -778,7 +770,7 @@ in
         };
 
       services.postfix.config = (mapAttrs (_: v: mkDefault v) {
-        compatibility_level  = pkgs.postfix.version;
+        compatibility_level  = "9999";
         mail_owner           = cfg.user;
         default_privs        = "nobody";
 
@@ -827,13 +819,13 @@ in
       // optionalAttrs cfg.enableHeaderChecks { header_checks = [ "regexp:/etc/postfix/header_checks" ]; }
       // optionalAttrs (cfg.tlsTrustedAuthorities != "") {
         smtp_tls_CAfile = cfg.tlsTrustedAuthorities;
-        smtp_tls_security_level = mkDefault "may";
+        smtp_tls_security_level = smtpTlsSecurityLevel;
       }
       // optionalAttrs (cfg.sslCert != "") {
         smtp_tls_cert_file = cfg.sslCert;
         smtp_tls_key_file = cfg.sslKey;
 
-        smtp_tls_security_level = mkDefault "may";
+        smtp_tls_security_level = smtpTlsSecurityLevel;
 
         smtpd_tls_cert_file = cfg.sslCert;
         smtpd_tls_key_file = cfg.sslKey;
@@ -957,9 +949,6 @@ in
     (mkIf haveAliases {
       services.postfix.aliasFiles.aliases = aliasesFile;
     })
-    (mkIf haveCanonical {
-      services.postfix.mapFiles.canonical = canonicalFile;
-    })
     (mkIf haveTransport {
       services.postfix.mapFiles.transport = transportFile;
     })
@@ -980,9 +969,5 @@ in
   imports = [
    (mkRemovedOptionModule [ "services" "postfix" "sslCACert" ]
      "services.postfix.sslCACert was replaced by services.postfix.tlsTrustedAuthorities. In case you intend that your server should validate requested client certificates use services.postfix.extraConfig.")
-
-   (mkChangedOptionModule [ "services" "postfix" "useDane" ]
-     [ "services" "postfix" "config" "smtp_tls_security_level" ]
-     (config: mkIf config.services.postfix.useDane "dane"))
   ];
 }

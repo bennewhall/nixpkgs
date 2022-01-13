@@ -1,80 +1,56 @@
-{ lib
-, fetchFromGitHub
-, libpulseaudio
-, libconfig
-# Needs a gnuradio built with qt gui support
-, gnuradio3_8
-, thrift
-# Not gnuradioPackages'
-, codec2
-, log4cpp
-, gmp
-, gsm
-, libopus
-, libjpeg
-, libsndfile
-, libftdi
-, limesuite
-, protobuf
-, speex
-, speexdsp
-}:
+{ stdenv, fetchFromGitHub, alsaLib, boost
+, qt4, libpulseaudio, codec2, libconfig
+, gnuradio, gr-osmosdr, gsm
+, libopus, libjpeg, protobuf, qwt, speex
+} :
 
-gnuradio3_8.pkgs.mkDerivation rec {
+let
+  version = "0.5.0";
+
+in stdenv.mkDerivation {
   pname = "qradiolink";
-  version = "0.8.6-2";
+  inherit version;
 
   src = fetchFromGitHub {
-    owner = "qradiolink";
+    owner = "kantooon";
     repo = "qradiolink";
     rev = version;
-    sha256 = "1694yyw0vc77m5pbc5rwl6khd8000dbrliz3q4vsa9dqnfnz1777";
+    sha256 = "0xhg5zhjznmls5m3rhpk1qx0dipxmca12s85w15d0i7qwva2f1gi";
   };
 
   preBuild = ''
-    cd src/ext
+    cd ext
     protoc --cpp_out=. Mumble.proto
     protoc --cpp_out=. QRadioLink.proto
-    cd ../..
+    cd ..
     qmake
   '';
 
   installPhase = ''
-    install -D qradiolink $out/bin/qradiolink
-    install -Dm644 src/res/icon.png $out/share/pixmaps/qradiolink.png
-    install -Dm644 qradiolink.desktop $out/share/applications/qradiolink.desktop
+    mkdir -p $out/bin
+    cp qradiolink $out/bin
   '';
 
   buildInputs = [
-    gnuradio3_8.unwrapped.boost
-    codec2
-    log4cpp
-    gmp
+    qt4
+    alsaLib
+    boost
     libpulseaudio
+    codec2
     libconfig
     gsm
-    gnuradio3_8.pkgs.osmosdr
+    gnuradio
+    gr-osmosdr
     libopus
     libjpeg
-    limesuite
-    speex
-    speexdsp
-    gnuradio3_8.qt.qtbase
-    gnuradio3_8.qt.qtmultimedia
-    libftdi
-    libsndfile
-    gnuradio3_8.qwt
-  ] ++ lib.optionals (gnuradio3_8.hasFeature "gr-ctrlport") [
-    thrift
-    gnuradio3_8.unwrapped.python.pkgs.thrift
-  ];
-  nativeBuildInputs = [
     protobuf
-    gnuradio3_8.qt.qmake
-    gnuradio3_8.qt.wrapQtAppsHook
+    speex
+    qwt
   ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "SDR transceiver application for analog and digital modes";
     homepage = "http://qradiolink.org/";
     license = licenses.agpl3;

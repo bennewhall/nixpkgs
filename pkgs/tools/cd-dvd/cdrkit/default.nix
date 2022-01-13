@@ -1,21 +1,19 @@
-{lib, stdenv, fetchurl, cmake, libcap, zlib, bzip2, perl}:
+{stdenv, fetchurl, cmake, libcap, zlib, bzip2, perl}:
 
 stdenv.mkDerivation rec {
-  pname = "cdrkit";
-  version = "1.1.11";
+  name = "cdrkit-1.1.11";
 
   src = fetchurl {
-    url = "http://cdrkit.org/releases/cdrkit-${version}.tar.gz";
+    url = "http://cdrkit.org/releases/${name}.tar.gz";
     sha256 = "1nj7iv3xrq600i37na9a5idd718piiiqbs4zxvpjs66cdrsk1h6i";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ libcap zlib bzip2 perl ];
+  buildInputs = [cmake libcap zlib bzip2 perl];
 
   hardeningDisable = [ "format" ];
 
   # efi-boot-patch extracted from http://arm.koji.fedoraproject.org/koji/rpminfo?rpmID=174244
-  patches = [ ./include-path.patch ./cdrkit-1.1.9-efi-boot.patch ./cdrkit-1.1.11-fno-common.patch ];
+  patches = [ ./include-path.patch ./cdrkit-1.1.9-efi-boot.patch ];
 
   postInstall = ''
     # file name compatibility with the old cdrecord (growisofs wants this name)
@@ -38,9 +36,9 @@ stdenv.mkDerivation rec {
       cdrkit is not affiliated with any of these authors; it is now an
       independent project.
     '';
-
+    
     homepage = "http://cdrkit.org/";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

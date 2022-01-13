@@ -1,27 +1,18 @@
-{ lib, stdenv, autoconf, automake, fetchFromGitHub, fetchpatch
-, libgcc, libjpeg_turbo
-, libpng, libtool, libxml2, pkg-config, which, xorg
+{ stdenv, autoconf, automake, fetchFromGitHub, libgcc, libjpeg_turbo
+, libpng, libtool, libxml2, pkgconfig, which, xorg
 , libtirpc
 }:
 stdenv.mkDerivation rec {
   pname = "nx-libs";
-  version = "3.5.99.26";
+  version = "3.5.99.25";
   src = fetchFromGitHub {
     owner = "ArcticaProject";
     repo = "nx-libs";
     rev = version;
-    sha256 = "sha256-qVOdD85sBMxKYx1cSLAGKeODsKKAm9UPBmYzPBbBOzQ=";
+    sha256 = "01aqdwy0i4nxdyfa24bwnrqjz93q0idihdaqals2yjqpg160nwfc";
   };
 
-  patches = [
-    (fetchpatch {
-      name = "binutils-2.36.patch";
-      url = "https://github.com/ArcticaProject/nx-libs/commit/605a266911b50ababbb3f8a8b224efb42743379c.patch";
-      sha256 = "sha256-kk5ms3i0PrHL74I4OlsqDrdDcCJ0us03cQcBy4zjAoQ=";
-    })
-  ];
-
-  nativeBuildInputs = [ autoconf automake libtool pkg-config which
+  nativeBuildInputs = [ autoconf automake libtool pkgconfig which
     xorg.gccmakedep xorg.imake ];
   buildInputs = [ libgcc libjpeg_turbo libpng libxml2 xorg.fontutil
     xorg.libXcomposite xorg.libXdamage xorg.libXdmcp xorg.libXext xorg.libXfont2
@@ -31,6 +22,8 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = [ "-I${libtirpc.dev}/include/tirpc" ];
   NIX_LDFLAGS = [ "-ltirpc" ];
+
+  enableParallelBuilding = true;
 
   postPatch = ''
     patchShebangs .
@@ -50,8 +43,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "NX X server based on Xnest";
     homepage = "https://github.com/ArcticaProject/nx-libs";
-    license = lib.licenses.gpl2;
-    maintainers = with lib.maintainers; [ ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ jD91mZM2 ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

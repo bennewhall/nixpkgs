@@ -3,48 +3,30 @@
 , marisa-trie
 , pythonOlder
 , fetchPypi
-, poetry-core
-, pytestCheckHook
-, language-data
+, nose
 }:
 
 buildPythonPackage rec {
   pname = "langcodes";
-  version = "3.3.0";
-  format = "pyproject";
-
-  disabled = pythonOlder "3.6";
+  version = "2.1.0";
+  disabled = pythonOlder "3.3";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "794d07d5a28781231ac335a1561b8442f8648ca07cd518310aeb45d6f0807ef6";
+    sha256 = "75bcaca8825e1a321965b136815dee53083c63314975e024ad0ccff8545e681f";
   };
 
-  nativeBuildInputs = [
-    poetry-core
-  ];
+  propagatedBuildInputs = [ marisa-trie ];
 
-  propagatedBuildInputs = [
-    language-data
-    marisa-trie
-  ];
+  checkInputs = [ nose ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  disabledTests = [
-    # AssertionError: assert 'Unknown language [aqk]' == 'Aninka'
-    "test_updated_iana"
-  ];
-
-  pythonImportsCheck = [
-    "langcodes"
-  ];
+  checkPhase = ''
+    nosetests
+  '';
 
   meta = with lib; {
-    description = "Python toolkit for working with and comparing the standardized codes for languages";
-    homepage = "https://github.com/LuminosoInsight/langcodes";
+    description = "A toolkit for working with and comparing the standardized codes for languages, such as ‘en’ for English or ‘es’ for Spanish";
+    homepage =  "https://github.com/LuminosoInsight/langcodes";
     license = licenses.mit;
     maintainers = with maintainers; [ ixxie ];
   };

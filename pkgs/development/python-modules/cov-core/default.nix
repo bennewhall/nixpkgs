@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, coverage }:
+{ stdenv, buildPythonPackage, fetchPypi, coverage }:
 
 buildPythonPackage rec {
   pname = "cov-core";
@@ -11,7 +11,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ coverage ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Plugin core for use by pytest-cov, nose-cov and nose2-cov";
   };
 }

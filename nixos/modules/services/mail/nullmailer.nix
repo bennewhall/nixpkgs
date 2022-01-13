@@ -204,7 +204,6 @@ with lib;
       users.${cfg.user} = {
         description = "Nullmailer relay-only mta user";
         group = cfg.group;
-        isSystemUser = true;
       };
 
       groups.${cfg.group} = { };
@@ -220,7 +219,7 @@ with lib;
       after = [ "network.target" ];
 
       preStart = ''
-        mkdir -p /var/spool/nullmailer/{queue,tmp,failed}
+        mkdir -p /var/spool/nullmailer/{queue,tmp}
         rm -f /var/spool/nullmailer/trigger && mkfifo -m 660 /var/spool/nullmailer/trigger
       '';
 

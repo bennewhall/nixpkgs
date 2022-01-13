@@ -2,16 +2,16 @@
 
 buildGoModule rec {
   pname = "oneshot";
-  version = "1.5.1";
+  version = "1.3.1";
 
   src = fetchFromGitHub {
     owner = "raphaelreyna";
     repo = "oneshot";
     rev = "v${version}";
-    sha256 = "sha256-5NCGKgmioTOHGJEWMIEsZlA+072XXL9L8KbEH6+caHc=";
+    sha256 = "047mncv9abs4xj7bh9lhc3wan37cldjjyrpkis7pvx6zhzml74kf";
   };
 
-  vendorSha256 = "sha256-rL/NWIIggvngTrdTDm1g1uH3vC55JF3cWllPc6Yb5jc=";
+  vendorSha256 = "1cxr96yrrmz37r542mc5376jll9lqjqm18k8761h9jqfbzmh9rkp";
 
   doCheck = false;
 
@@ -21,6 +21,6 @@ buildGoModule rec {
     description = "A first-come-first-serve single-fire HTTP server";
     homepage = "https://github.com/raphaelreyna/oneshot";
     license = licenses.mit;
-    maintainers = with maintainers; [ milibopp ];
+    maintainers = with maintainers; [ edibopp ];
   };
 }

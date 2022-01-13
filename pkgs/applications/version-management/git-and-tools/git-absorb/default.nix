@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, installShellFiles, libiconv, Security }:
+{ stdenv, fetchFromGitHub, rustPlatform, installShellFiles, libiconv, Security }:
 
 rustPlatform.buildRustPackage rec {
   pname = "git-absorb";
@@ -13,9 +13,9 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ installShellFiles ];
 
-  buildInputs = lib.optionals stdenv.isDarwin [ libiconv Security ];
+  buildInputs = stdenv.lib.optionals stdenv.isDarwin [ libiconv Security ];
 
-  cargoSha256 = "0dax6wkbyk5p8p0mm406vfgmqfmfxzyzqps6yk8fachi61x12ja6";
+  cargoSha256 = "0h0vlz4qd8i9bf1mgjr618zbdwfp6bmy7ql9a1xzjmfdpkl3cgk9";
 
   postInstall = ''
     installManPage Documentation/git-absorb.1
@@ -25,7 +25,7 @@ rustPlatform.buildRustPackage rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/tummychow/git-absorb";
     description = "git commit --fixup, but automatic";
     license = [ licenses.bsd3 ];

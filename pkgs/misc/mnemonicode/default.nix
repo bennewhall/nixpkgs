@@ -21,7 +21,7 @@ stdenv.mkDerivation {
       back to data on the other side.
     '';
     license = licenses.mit;
-    platforms = platforms.all;
+    platforms = platforms.linux;
     maintainers = [ maintainers.cstrahan ];
   };
 }

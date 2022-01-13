@@ -8,11 +8,11 @@
 
 stdenv.mkDerivation rec {
   pname = "atlassian-jira";
-  version = "8.20.1";
+  version = "8.14.0";
 
   src = fetchurl {
     url = "https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-${version}.tar.gz";
-    sha256 = "0jygjl5irmnlmc4m2y76b5vj1igyw5ax39gygjzbhwy41zah9p4z";
+    sha256 = "12dm0sasw98ywd074rjd9hnbymvy8z16bicjxfxqz91n1y13732i";
   };
 
   buildPhase = ''
@@ -37,10 +37,10 @@ stdenv.mkDerivation rec {
     cp -rva . $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Proprietary issue tracking product, also providing project management functions";
     homepage = "https://www.atlassian.com/software/jira";
     license = licenses.unfree;
-    maintainers = with maintainers; [ fpletz globin ciil megheaiulian ];
+    maintainers = with maintainers; [ fpletz globin ciil ];
   };
 }

@@ -5,13 +5,13 @@
 
 buildDunePackage rec {
   pname = "digestif";
-  version = "1.0.0";
+  version = "0.9.0";
 
   useDune2 = true;
 
   src = fetchurl {
     url = "https://github.com/mirage/digestif/releases/download/v${version}/digestif-v${version}.tbz";
-    sha256 = "11188ya6ksb0p0zvs6saz3qxv4a8pyy8m3sq35f3qfxrxhghqi99";
+    sha256 = "0vk9prgjp46xs8qizq7szkj6mqjj2ymncs2016bc8zswcdc1a3q4";
   };
 
   propagatedBuildInputs = [ bigarray-compat eqaf stdlib-shims ];

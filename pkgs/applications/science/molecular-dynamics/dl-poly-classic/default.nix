@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , gfortran, mpi
 }:
 
@@ -11,9 +11,7 @@ stdenv.mkDerivation {
     sha256 = "1r76zvln3bwycxlmqday0sqzv5j260y7mdh66as2aqny6jzd5ld7";
   };
 
-  nativeBuildInputs = [ gfortran ];
-
-  buildInputs = [ mpi ];
+  buildInputs = [ mpi gfortran ];
 
   configurePhase = ''
     cd source
@@ -29,7 +27,7 @@ stdenv.mkDerivation {
     cp -v ../execute/DLPOLY.X $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.ccp5.ac.uk/DL_POLY_C";
     description = "DL_POLY Classic is a general purpose molecular dynamics simulation package";
     license = licenses.bsdOriginal;

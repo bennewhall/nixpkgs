@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ZerBea/hcxdumptool";
     description = "Small tool to capture packets from wlan devices";
     license = licenses.mit;

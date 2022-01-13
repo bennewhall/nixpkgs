@@ -1,45 +1,30 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
+, pantheon
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , vala
 , libgee
 , granite
 , gtk3
 , pulseaudio
+, libcanberra
 , libcanberra-gtk3
 , switchboard
 }:
 
 stdenv.mkDerivation rec {
   pname = "switchboard-plug-sound";
-  version = "2.3.0";
+  version = "2.2.5";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = pname;
     rev = version;
-    sha256 = "sha256-yHuboDpIcioZPNgpmnrM6J2eUCJpoNDdvgu27YuN65I=";
+    sha256 = "sha256-ITgxLZSB4zhSaFKX7Vbf89DGI8ibIcGEQTtLjcGN2tA=";
   };
-
-  nativeBuildInputs = [
-    meson
-    ninja
-    pkg-config
-    vala
-  ];
-
-  buildInputs = [
-    granite
-    gtk3
-    libcanberra-gtk3
-    libgee
-    pulseaudio
-    switchboard
-  ];
 
   passthru = {
     updateScript = nix-update-script {
@@ -47,11 +32,28 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  nativeBuildInputs = [
+    meson
+    ninja
+    pkgconfig
+    vala
+  ];
+
+  buildInputs = [
+    granite
+    gtk3
+    libcanberra
+    libcanberra-gtk3
+    libgee
+    pulseaudio
+    switchboard
+  ];
+
+  meta = with stdenv.lib; {
     description = "Switchboard Sound Plug";
     homepage = "https://github.com/elementary/switchboard-plug-sound";
-    license = licenses.lgpl21Plus;
+    license = licenses.lgpl2Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
   };
 }

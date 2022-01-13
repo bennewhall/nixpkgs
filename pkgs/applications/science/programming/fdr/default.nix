@@ -1,13 +1,12 @@
-{ lib, stdenv, fetchurl, qtbase, qtx11extras, ncurses5, xorg, zlib, python27Packages }:
+{stdenv, fetchurl, qtbase, qtx11extras, ncurses5, xorg, zlib, python27Packages}:
 stdenv.mkDerivation {
-  pname = "fdr";
-  version = "4.2.7";
+  name = "fdr-4.2.3";
   src = fetchurl {
-    url = "https://dl.cocotec.io/fdr/fdr-3814-linux-x86_64.tar.gz";
-    sha256 = "0cajz1gz4slq9nfhm8dqdgxl0kc950838n0lrf8jw4vl54gv6chh";
+    url = "https://www.cs.ox.ac.uk/projects/fdr/downloads/fdr-3789-linux-x86_64.tar.gz";
+    sha256 = "0n2yqichym5xdawlgk3r7yha88k7ycnx6585jfrcm7043sls1i88";
   };
 
-  libPath = lib.makeLibraryPath [
+  libPath = stdenv.lib.makeLibraryPath [
     stdenv.cc.cc
     python27Packages.python
     qtbase
@@ -18,7 +17,7 @@ stdenv.mkDerivation {
     zlib
   ];
 
-  dontConfigure = true;
+  phases = [ "unpackPhase" "installPhase" ];
   installPhase = ''
     mkdir -p "$out"
 
@@ -59,8 +58,8 @@ stdenv.mkDerivation {
     done
   '';
 
-  meta = with lib; {
-    homepage = "https://cocotec.io/fdr/";
+  meta = with stdenv.lib; {
+    homepage = "https://www.cs.ox.ac.uk/projects/fdr/";
     description = "The CSP refinement checker";
     license = licenses.unfreeRedistributable;
     platforms = platforms.linux;

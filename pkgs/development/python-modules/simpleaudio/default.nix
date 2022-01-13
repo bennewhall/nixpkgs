@@ -1,4 +1,4 @@
-{ alsa-lib, buildPythonPackage, fetchFromGitHub, isPy27, lib }:
+{ alsaLib, buildPythonPackage, fetchFromGitHub, isPy27, lib }:
 
 buildPythonPackage rec {
   pname = "simpleaudio";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
     sha256 = "12nypzb1m14yip4zrbzin5jc5awyp1d5md5y40g5anj4phb4hx1i";
   };
 
-  buildInputs = [ alsa-lib ];
+  buildInputs = [ alsaLib ];
 
   meta = with lib; {
     homepage = "https://github.com/hamiltron/py-simple-audio";

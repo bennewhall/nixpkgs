@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, zlib, unzip }:
+{ stdenv, fetchurl, zlib, unzip }:
 
 stdenv.mkDerivation rec {
   pname = "libipasirglucose4";
@@ -6,8 +6,6 @@ stdenv.mkDerivation rec {
   # Glucose 4.x), but it was submitted to the 2017 SAT competition so let's use
   # that as the version number, I guess.
   version = "2017";
-
-  libname = pname + stdenv.targetPlatform.extensions.sharedLibrary;
 
   src = fetchurl {
     url = "https://baldur.iti.kit.edu/sat-competition-2017/solvers/incremental/glucose-ipasir.zip";
@@ -20,19 +18,16 @@ stdenv.mkDerivation rec {
   sourceRoot = "sat/glucose4";
   patches = [ ./0001-Support-shared-library-build.patch ];
 
-  makeFlags = [ "CXX=${stdenv.cc.targetPrefix}c++" ];
-
   postBuild = ''
-    $CXX -shared -o ${libname} \
-        ${if stdenv.cc.isClang then "" else "-Wl,-soname,${libname}"} \
+    g++ -shared -Wl,-soname,libipasirglucose4.so -o libipasirglucose4.so \
         ipasirglucoseglue.o libipasirglucose4.a
   '';
 
   installPhase = ''
-    install -D ${libname} $out/lib/${libname}
+    install -D libipasirglucose4.so $out/lib/libipasirglucose4.so
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Shared library providing IPASIR interface to the Glucose SAT solver";
     license = licenses.mit;
     platforms = platforms.unix;

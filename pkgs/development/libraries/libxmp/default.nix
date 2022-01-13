@@ -1,10 +1,9 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "libxmp";
-  version = "4.5.0";
+  name = "libxmp-4.4.1";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extended module player library";
     homepage    = "http://xmp.sourceforge.net/";
     longDescription = ''
@@ -13,11 +12,11 @@ stdenv.mkDerivation rec {
       Scream Tracker 3 (S3M), Fast Tracker II (XM), and Impulse Tracker (IT).
     '';
     license     = licenses.lgpl21Plus;
-    platforms   = platforms.all;
+    platforms   = platforms.linux;
   };
 
   src = fetchurl {
-    url = "mirror://sourceforge/xmp/libxmp/${pname}-${version}.tar.gz";
-    sha256 = "sha256-eEfSYhEtFOhEL0TlrG7Z3bylTCUShHILVjyFKzHybnU=";
+    url = "mirror://sourceforge/xmp/libxmp/${name}.tar.gz";
+    sha256 = "1kycz4jsyvmf7ny9227b497wc7y5ligydi6fvvldmkf8hk63ad9m";
   };
 }

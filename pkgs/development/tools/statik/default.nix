@@ -1,26 +1,18 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
-buildGoModule rec {
+buildGoPackage {
   pname = "statik";
-  version = "0.1.7";
+  version = "unstable-2019-07-31";
+  goPackagePath = "github.com/rakyll/statik";
 
   src = fetchFromGitHub {
     owner = "rakyll";
     repo = "statik";
-    rev = "v${version}";
-    sha256 = "ahsNiac/3I2+PUqc90E73Brb99M68ewh9nWXoupfE3g=";
+    rev = "925a23bda946b50bb0804894f340c5da2b95603b";
+    sha256 = "15wwgrprfq36pa13b9anp7097q1fqcad28hirvivybmc011p0fri";
   };
 
-  vendorSha256 = "pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=";
-
-  # Avoid building example
-  subPackages = [ "." "fs" ];
-  # Tests are checking that the files embeded are preserving
-  # their meta data like dates etc, but it assumes to be in 2048
-  # which is not the case once entered the nix store
-  doCheck = false;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/rakyll/statik";
     description = "Embed files into a Go executable ";
     license = licenses.asl20;

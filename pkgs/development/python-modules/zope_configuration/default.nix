@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , zope_i18nmessageid
@@ -23,7 +23,7 @@ buildPythonPackage rec {
   # Need to investigate how to run the tests with zope-testrunner
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Zope Configuration Markup Language (ZCML)";
     homepage = "https://github.com/zopefoundation/zope.configuration";
     license = licenses.zpl20;

@@ -1,51 +1,27 @@
-{ lib
+{ stdenv, fetchurl, buildPythonPackage, isPy27, pep8, nose, unittest2, docutils
 , blockdiag
-, buildPythonPackage
-, fetchFromGitHub
-, nose
-, pytestCheckHook
-, pythonOlder
-, setuptools
 }:
 
 buildPythonPackage rec {
   pname = "seqdiag";
-  version = "3.0.0";
-  format = "setuptools";
+  version = "2.0.0";
+  disabled = isPy27;
 
-  disabled = pythonOlder "3.7";
-
-  src = fetchFromGitHub {
-    owner = "blockdiag";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-Dh9JMx50Nexi0q39rYr9MpkKmQRAfT7lzsNOXoTuphg=";
+  src = fetchurl {
+    url = "mirror://pypi/s/seqdiag/${pname}-${version}.tar.gz";
+    sha256 = "0k7j4f9j3d0325piwvbv90nfh0wzfk2n6s73s6h6nsxmqshcgswk";
   };
 
-  propagatedBuildInputs = [
-    blockdiag
-    setuptools
-  ];
+  buildInputs = [ pep8 nose unittest2 docutils ];
 
-  checkInputs = [
-    nose
-    pytestCheckHook
-  ];
+  propagatedBuildInputs = [ blockdiag ];
 
-  pytestFlagsArray = [
-    "src/seqdiag/tests/"
-  ];
+  # Tests fail:
+  #   ...
+  #   ERROR: Failure: OSError ([Errno 2] No such file or directory: '/tmp/nix-build-python2.7-seqdiag-0.9.0.drv-0/seqdiag-0.9.0/src/seqdiag/tests/diagrams/')
+  doCheck = false;
 
-  disabledTests = [
-    # UnicodeEncodeError: 'latin-1' codec can't encode...
-    "test_setup_inline_svg_is_true_with_multibytes"
-  ];
-
-  pythonImportsCheck = [
-    "seqdiag"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Generate sequence-diagram image from spec-text file (similar to Graphviz)";
     homepage = "http://blockdiag.com/";
     license = licenses.asl20;

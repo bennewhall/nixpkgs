@@ -1,13 +1,15 @@
-{ buildGoModule, fetchFromGitHub, lib }:
+{ buildGoModule, fetchFromGitHub, stdenv }:
 
-buildGoModule rec {
+let
   pname = "dapr";
-  version = "1.1.0";
-
-  vendorSha256 = "0fng5a1pvpbwil79xapdalzgkgc9dwsdxs6bznjfwnkyd1vvw6fm";
+  version = "0.9.0";
+  sha256 = "1vdbh5pg3j7kqqqhhf4d9xfzbpqmjc4x373sk43pb05prg4w71s7";
+  vendorSha256 = "19qcpd5i60xmsr8m8mx16imm5falkqcgqpwpx3clfvqxjyflglpp";
+in buildGoModule {
+  inherit pname version vendorSha256;
 
   src = fetchFromGitHub {
-    sha256 = "0x2mvlzlmcik6ys6xp722px9l4lj9ssyxb06bzxd7yj7m1wwcwp9";
+    inherit sha256;
 
     owner = "dapr";
     repo = "cli";
@@ -20,7 +22,7 @@ buildGoModule rec {
     mv $out/bin/cli $out/bin/dapr
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://dapr.io";
     description = "A CLI for managing Dapr, the distributed application runtime";
     license = licenses.mit;

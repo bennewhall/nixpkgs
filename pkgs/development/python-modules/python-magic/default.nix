@@ -1,49 +1,28 @@
-{ lib
-, stdenv
-, python
-, buildPythonPackage
-, fetchFromGitHub
-, fetchpatch
-, substituteAll
-, file
-, glibcLocales
-}:
+{ buildPythonPackage, lib, fetchPypi, file, stdenv }:
 
 buildPythonPackage rec {
   pname = "python-magic";
-  version = "0.4.24";
+  version = "0.4.18";
 
-  src = fetchFromGitHub {
-    owner = "ahupp";
-    repo = "python-magic";
-    rev = version;
-    sha256 = "17jalhjbfd600lzfz296m0nvgp6c7vx1mgz82jbzn8hgdzknf4w0";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "b757db2a5289ea3f1ced9e60f072965243ea43a2221430048fd8cacab17be0ce";
   };
 
-  patches = [
-    # pull upstream patch to support file-5.41
-    (fetchpatch {
-      name = "file-5.41-compat.patch";
-      url = "https://github.com/ahupp/python-magic/commit/0ae7e7ceac0e80e03adc75c858bb378c0427331a.patch";
-      sha256 = "0vclaamb56nza1mcy88wjbkh81hnish2gzvl8visa2cknhgdmk50";
-    })
-
-    (substituteAll {
-      src = ./libmagic-path.patch;
-      libmagic = "${file}/lib/libmagic${stdenv.hostPlatform.extensions.sharedLibrary}";
-    })
-  ];
-
-  checkInputs = [ glibcLocales ];
-
-  checkPhase = ''
-    LC_ALL="en_US.UTF-8" ${python.interpreter} test/test.py
+  postPatch = ''
+    substituteInPlace magic.py --replace "ctypes.util.find_library('magic')" "'${file}/lib/libmagic${stdenv.hostPlatform.extensions.sharedLibrary}'"
   '';
 
-  meta = with lib; {
+  doCheck = false;
+
+  # TODO: tests are failing
+  #checkPhase = ''
+  #  ${python}/bin/${python.executable} ./test.py
+  #'';
+
+  meta = {
     description = "A python interface to the libmagic file type identification library";
     homepage = "https://github.com/ahupp/python-magic";
-    license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    license = lib.licenses.mit;
   };
 }

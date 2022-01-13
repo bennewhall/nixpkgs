@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, apacheHttpd, apr, cairo, iniparser, mapnik }:
+{ stdenv, fetchFromGitHub, autoreconfHook, apacheHttpd, apr, cairo, iniparser, mapnik }:
 
 stdenv.mkDerivation rec {
   pname = "mod_tile";
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     rm -rf $out/nix
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/openstreetmap/mod_tile";
     description = "Efficiently render and serve OpenStreetMap tiles using Apache and Mapnik";
     license = licenses.gpl2;

@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy27
 # python dependencies
 , click
-, python-dateutil
+, dateutil
 , etelemetry
 , filelock
 , funcsigs
@@ -19,14 +19,14 @@
 , pybids
 , pydot
 , pytest
-, pytest-xdist
+, pytest_xdist
 , pytest-forked
 , rdflib
 , scipy
 , simplejson
 , traits
 , xvfbwrapper
-, pytest-cov
+, pytestcov
 , codecov
 , sphinx
 # other dependencies
@@ -49,12 +49,12 @@ in
 
 buildPythonPackage rec {
   pname = "nipype";
-  version = "1.7.0";
+  version = "1.6.0";
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "e689fe2e5049598c9cd3708e8df1cac732fa1a88696f283e3bc0a70fecb8ab51";
+    sha256 = "bc56ce63f74c9a9a23c6edeaf77631377e8ad2bea928c898cc89527a47f101cf";
   };
 
   postPatch = ''
@@ -68,7 +68,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     click
-    python-dateutil
+    dateutil
     etelemetry
     filelock
     funcsigs
@@ -93,8 +93,8 @@ buildPythonPackage rec {
     mock
     pytest
     pytest-forked
-    pytest-xdist
-    pytest-cov
+    pytest_xdist
+    pytestcov
     which
   ];
 
@@ -106,7 +106,7 @@ buildPythonPackage rec {
   '';
   pythonImportsCheck = [ "nipype" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://nipy.org/nipype/";
     description = "Neuroimaging in Python: Pipelines and Interfaces";
     license = licenses.bsd3;

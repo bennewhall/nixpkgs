@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchurl, callPackage, ncurses, gettext, pkg-config
+{ stdenv, fetchurl, callPackage, ncurses, gettext, pkgconfig
 # default vimrc
 , vimrc ? fetchurl {
     name = "default-vimrc";
-    url = "https://raw.githubusercontent.com/archlinux/svntogit-packages/68f6d131750aa778807119e03eed70286a17b1cb/trunk/archlinux.vim";
+    url = "https://git.archlinux.org/svntogit/packages.git/plain/trunk/archlinux.vim?id=68f6d131750aa778807119e03eed70286a17b1cb";
     sha256 = "18ifhv5q9prd175q3vxbqf6qyvkk6bc7d2lhqdk0q78i68kv9y0c";
   }
 # apple frameworks
@@ -17,14 +17,14 @@ stdenv.mkDerivation {
 
   inherit (common) version src postPatch hardeningDisable enableParallelBuilding meta;
 
-  nativeBuildInputs = [ gettext pkg-config ];
+  nativeBuildInputs = [ gettext pkgconfig ];
   buildInputs = [ ncurses ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [ Carbon Cocoa ];
+    ++ stdenv.lib.optionals stdenv.hostPlatform.isDarwin [ Carbon Cocoa ];
 
   configureFlags = [
     "--enable-multibyte"
     "--enable-nls"
-  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     "vim_cv_toupper_broken=no"
     "--with-tlib=ncurses"
     "vim_cv_terminfo=yes"
@@ -33,6 +33,8 @@ stdenv.mkDerivation {
     "vim_cv_tty_mode=0660"
     "vim_cv_getcwd_broken=no"
     "vim_cv_stat_ignores_slash=yes"
+    "ac_cv_sizeof_int=4"
+    "vim_cv_memmove_handles_overlap=yes"
     "vim_cv_memmove_handles_overlap=yes"
   ];
 

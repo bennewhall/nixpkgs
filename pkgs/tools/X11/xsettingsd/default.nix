@@ -1,31 +1,38 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, libX11 }:
+{ stdenv, fetchFromGitHub, scons, pkgconfig, libX11 }:
 
 stdenv.mkDerivation rec {
   pname = "xsettingsd";
-  version = "1.0.2";
+  version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "derat";
     repo = "xsettingsd";
     rev = "v${version}";
-    sha256 = "sha256-CIYshZqJICuL8adKHIN4R6nudaqWOCK2UPrGhsKf9pE=";
+    sha256 = "05m4jlw0mgwp24cvyklncpziq1prr2lg0cq9c055sh4n9d93d07v";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  patches = [
+    ./SConstruct.patch
+  ];
+
+  nativeBuildInputs = [ scons pkgconfig ];
 
   buildInputs = [ libX11 ];
 
-  # we end up with symlinked unit files if we don't move them around ourselves
-  postFixup = ''
-    rm -r $out/lib/systemd
-    mv $out/share/systemd $out/lib
+  buildPhase = ''
+    scons -j$NIX_BUILD_CORES -l$NIX_BUILD_CORES
+  '';
+  
+  installPhase = ''
+    install -D -t "$out"/bin xsettingsd dump_xsettings
+    install -D -t "$out"/usr/share/man/man1 xsettingsd.1 dump_xsettings.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Provides settings to X11 applications via the XSETTINGS specification";
     homepage = "https://github.com/derat/xsettingsd";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ romildo ];
     platforms = platforms.linux;
+    maintainers = [ maintainers.romildo ];
   };
 }

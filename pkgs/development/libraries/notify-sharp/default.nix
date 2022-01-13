@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, pkg-config, autoreconfHook
+{ stdenv, fetchFromGitLab, pkgconfig, autoreconfHook
 , mono, gtk-sharp-3_0, dbus-sharp-1_0, dbus-sharp-glib-1_0 }:
 
 stdenv.mkDerivation rec {
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config autoreconfHook
+    pkgconfig autoreconfHook
   ];
 
   buildInputs = [
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     sed -i 's#^[ \t]*DOCDIR=.*$#DOCDIR=$out/lib/monodoc#' ./configure.ac
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "D-Bus for .NET";
     platforms = platforms.linux;
     license = licenses.mit;

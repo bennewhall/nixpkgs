@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, perl, finger_bsd
+{ stdenv, fetchurl, fetchpatch, perl, perlPackages, finger_bsd, makeWrapper
 , abook ? null
 , gnupg ? null
 , goobook ? null
@@ -7,30 +7,31 @@
 }:
 
 let
-  perl' = perl.withPackages (p: with p; [ ConvertASN1 perlldap AuthenSASL ]);
-in
-stdenv.mkDerivation rec {
-  pname = "lbdb";
   version = "0.48.1";
+in
+with stdenv.lib;
+with perlPackages;
+stdenv.mkDerivation {
+  pname = "lbdb";
+  inherit version;
   src = fetchurl {
     url = "https://www.spinnaker.de/lbdb/download/lbdb_${version}.tar.gz";
     sha256 = "1gr5l2fr9qbdccga8bhsrpvz6jxigvfkdxrln9wyf2xpps5cdjxh";
   };
 
-  buildInputs = [ goobook perl' ]
-    ++ lib.optional (!stdenv.isDarwin) finger_bsd
-    ++ lib.optional   (abook != null) abook
-    ++ lib.optional   (gnupg != null) gnupg
-    ++ lib.optional (goobook != null) goobook
-    ++ lib.optional   (khard != null) khard
-    ++ lib.optional      (mu != null) mu;
-
+  buildInputs = [ goobook makeWrapper perl ConvertASN1 perlldap AuthenSASL ]
+    ++ optional (!stdenv.isDarwin) finger_bsd
+    ++ optional   (abook != null) abook
+    ++ optional   (gnupg != null) gnupg
+    ++ optional (goobook != null) goobook
+    ++ optional   (khard != null) khard
+    ++ optional      (mu != null) mu;
   configureFlags = [ ]
-    ++ lib.optional   (abook != null) "--with-abook"
-    ++ lib.optional   (gnupg != null) "--with-gpg"
-    ++ lib.optional (goobook != null) "--with-goobook"
-    ++ lib.optional   (khard != null) "--with-khard"
-    ++ lib.optional      (mu != null) "--with-mu";
+    ++ optional   (abook != null) "--with-abook"
+    ++ optional   (gnupg != null) "--with-gpg"
+    ++ optional (goobook != null) "--with-goobook"
+    ++ optional   (khard != null) "--with-khard"
+    ++ optional      (mu != null) "--with-mu";
 
   patches = [ ./add-methods-to-rc.patch
     # fix undefined exec_prefix. Remove with the next release
@@ -40,8 +41,12 @@ stdenv.mkDerivation rec {
       excludes = [ "debian/changelog" ];
     })
   ];
+  postFixup = "wrapProgram $out/lib/mutt_ldap_query --prefix PERL5LIB : "
+    + "${AuthenSASL}/${perl.libPrefix}"
+    + ":${ConvertASN1}/${perl.libPrefix}"
+    + ":${perlldap}/${perl.libPrefix}";
 
-  meta = with lib; {
+  meta = {
     homepage = "https://www.spinnaker.de/lbdb/";
     license = licenses.gpl2;
     platforms = platforms.all;

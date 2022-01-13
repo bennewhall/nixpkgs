@@ -1,6 +1,6 @@
 { lib
 , fetchFromGitHub
-, buildPythonPackage
+, buildPythonApplication
 , bash
 , bashInteractive
 , systemd
@@ -10,9 +10,10 @@
 , distro
 }:
 
-buildPythonPackage rec {
+buildPythonApplication rec {
   pname = "google-compute-engine";
   version = "20190124";
+  namePrefix = "";
 
   src = fetchFromGitHub {
     owner = "GoogleCloudPlatform";
@@ -23,6 +24,7 @@ buildPythonPackage rec {
 
   buildInputs = [ bash ];
   propagatedBuildInputs = [ boto setuptools distro ];
+
 
   postPatch = ''
     for file in $(find google_compute_engine -type f); do
@@ -52,7 +54,6 @@ buildPythonPackage rec {
   '';
 
   doCheck = false;
-  pythonImportsCheck = [ "google_compute_engine" ];
 
   meta = with lib; {
     description = "Google Compute Engine tools and services";

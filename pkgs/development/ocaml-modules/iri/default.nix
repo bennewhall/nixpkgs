@@ -1,26 +1,34 @@
-{ lib, buildDunePackage, fetchFromGitLab
-, sedlex_2, uunf, uutf
+{ stdenv, fetchFromGitLab, ocaml, findlib
+, sedlex, uunf, uutf
 }:
 
-buildDunePackage rec {
-  pname = "iri";
-  version = "0.6.0";
-  useDune2 = true;
+if !stdenv.lib.versionAtLeast ocaml.version "4.03"
+then throw "iri is not available for OCaml ${ocaml.version}"
+else
+
+stdenv.mkDerivation rec {
+  version = "0.4.0";
+  name = "ocaml${ocaml.version}-iri-${version}";
 
   src = fetchFromGitLab {
     domain = "framagit.org";
     owner = "zoggy";
     repo = "ocaml-iri";
     rev = version;
-    sha256 = "sha256:0zk8nnwcyljkc1a556byncv6cn1vqhk4267z1lm15flh1k7chyax";
+    sha256 = "0fsmfmzmyggm0h77a7mb0n41vqi6q4ln1xzsv72zbvysa7l8w84q";
   };
 
-  propagatedBuildInputs = [ sedlex_2 uunf uutf ];
+  buildInputs = [ ocaml findlib ];
+
+  propagatedBuildInputs = [ sedlex uunf uutf ];
+
+  createFindlibDestdir = true;
 
   meta = {
     description = "IRI (RFC3987) native OCaml implementation";
-    license = lib.licenses.lgpl3;
-    maintainers = [ lib.maintainers.vbgl ];
+    license = stdenv.lib.licenses.lgpl3;
+    maintainers = [ stdenv.lib.maintainers.vbgl ];
     inherit (src.meta) homepage;
+    inherit (ocaml.meta) platforms;
   };
 }

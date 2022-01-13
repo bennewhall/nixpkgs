@@ -1,44 +1,25 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
-, python3
-, jq
-, expat
-, libX11
-, libXdmcp
-, libXrandr
-, libffi
-, libxcb
-, wayland
-, xcbutilkeysyms
-, xcbutilwm
-, vulkan-headers
-, vulkan-loader
-, symlinkJoin
-, vulkan-validation-layers
-, writeText
-}:
+{ stdenv, cmake, expat, fetchFromGitHub, jq, lib, libXdmcp, libXrandr, libffi
+, libxcb, pkgconfig, python3, symlinkJoin, vulkan-headers, vulkan-loader
+, vulkan-validation-layers, wayland, writeText, xcbutilkeysyms, xcbutilwm
+, xlibsWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "vulkan-tools-lunarg";
   # The version must match that in vulkan-headers
-  version = "1.2.189.1";
+  version = "1.2.141.0";
 
-  src = (assert version == vulkan-headers.version;
-    fetchFromGitHub {
-      owner = "LunarG";
-      repo = "VulkanTools";
-      rev = "sdk-${version}";
-      sha256 = "0431dgplv5wiz8bj0ja91mbpc2qhjgdhqhrgaqarvyvjr1f7jw52";
-      fetchSubmodules = true;
-    });
+  src = (assert version == vulkan-headers.version; fetchFromGitHub {
+    owner = "LunarG";
+    repo = "VulkanTools";
+    rev = "sdk-${version}";
+    sha256 = "1zsgc1hdmivdahzrarx7a5byhgnmm5ahz366l92fmdb8pffgq42g";
+    fetchSubmodules = true;
+  });
 
-  nativeBuildInputs = [ cmake python3 jq ];
+  nativeBuildInputs = [ cmake pkgconfig python3 jq ];
 
   buildInputs = [
     expat
-    libX11
     libXdmcp
     libXrandr
     libffi
@@ -46,6 +27,7 @@ stdenv.mkDerivation rec {
     wayland
     xcbutilkeysyms
     xcbutilwm
+    xlibsWrapper
   ];
 
   cmakeFlags = [
@@ -57,8 +39,6 @@ stdenv.mkDerivation rec {
         paths = [ vulkan-validation-layers.headers vulkan-validation-layers ];
       }
     }"
-    # Hide dev warnings that are useless for packaging
-    "-Wno-dev"
   ];
 
   preConfigure = ''
@@ -81,7 +61,10 @@ stdenv.mkDerivation rec {
     done
   '';
 
+  enableParallelBuilding = true;
+
   # Same as vulkan-validation-layers
+  libraryPath = lib.strings.makeLibraryPath [ vulkan-loader ];
   dontPatchELF = true;
 
   # Help vulkan-loader find the validation layers
@@ -89,7 +72,7 @@ stdenv.mkDerivation rec {
     export XDG_CONFIG_DIRS=@out@/etc''${XDG_CONFIG_DIRS:+:''${XDG_CONFIG_DIRS}}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "LunarG Vulkan Tools and Utilities";
     longDescription = ''
       Tools to aid in Vulkan development including useful layers, trace and

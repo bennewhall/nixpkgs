@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitLab, meson, ninja, glib, check, python3, vala, gtk-doc, glibcLocales
-, libxml2, libxslt, pkg-config, sqlite, docbook_xsl, docbook_xml_dtd_43, gobject-introspection }:
+{ stdenv, fetchFromGitLab, meson, ninja, glib, check, python3, vala, gtk-doc, glibcLocales
+, libxml2, libxslt, pkgconfig, sqlite, docbook_xsl, docbook_xml_dtd_43, gobject-introspection }:
 
 stdenv.mkDerivation rec {
   pname = "libaccounts-glib";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     gtk-doc
     meson
     ninja
-    pkg-config
+    pkgconfig
     vala
   ];
 
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
     "-Dpy-overrides-dir=${placeholder "py"}/${python3.sitePackages}/gi/overrides"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library for managing accounts which can be used from GLib applications";
     platforms = platforms.linux;
     license = licenses.lgpl21;

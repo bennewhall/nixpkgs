@@ -1,62 +1,34 @@
-{ mkDerivation
-, lib
-, stdenv
-, fetchFromGitHub
-, qmake
-, qttools
-, qttranslations
-, gdal
-, proj
-, qtsvg
-, qtwebengine
-, withGeoimage ? true, exiv2
-, withGpsdlib ? (!stdenv.isDarwin), gpsd
-, withLibproxy ? false, libproxy
-, withZbar ? false, zbar
-}:
+{ stdenv, fetchFromGitHub, makeWrapper, qmake, pkgconfig, boost, gdal, proj
+, qtbase, qtsvg, qtwebview, qtwebkit }:
 
-mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "merkaartor";
-  version = "0.19.0";
+  version = "unstable-2019-11-12";
 
   src = fetchFromGitHub {
     owner = "openstreetmap";
     repo = "merkaartor";
-    rev = version;
-    sha256 = "sha256-I3QNCXzwhEFa8aOdwl3UJV8MLZ9caN9wuaaVrGFRvbQ=";
+    rev = "29b3388680a03f1daac0037a2b504ea710da879a";
+    sha256 = "0h3d3srzl06p2ajq911j05zr4vkl88qij18plydx45yqmvyvh0xz";
   };
 
-  nativeBuildInputs = [ qmake qttools ];
+  nativeBuildInputs = [ makeWrapper qmake pkgconfig ];
 
-  buildInputs = [ gdal proj qtsvg qtwebengine ]
-    ++ lib.optional withGeoimage exiv2
-    ++ lib.optional withGpsdlib gpsd
-    ++ lib.optional withLibproxy libproxy
-    ++ lib.optional withZbar zbar;
+  buildInputs = [ boost gdal proj qtbase qtsvg qtwebview qtwebkit ];
 
-  preConfigure = ''
-    lrelease src/src.pro
+  enableParallelBuilding = true;
+
+  NIX_CFLAGS_COMPILE = "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H";
+
+  postInstall = ''
+    wrapProgram $out/bin/merkaartor \
+      --set QT_QPA_PLATFORM_PLUGIN_PATH ${qtbase.bin}/lib/qt-*/plugins/platforms
   '';
 
-  qmakeFlags = [
-    "TRANSDIR_SYSTEM=${qttranslations}/translations"
-    "USEWEBENGINE=1"
-  ] ++ lib.optional withGeoimage "GEOIMAGE=1"
-    ++ lib.optional withGpsdlib "GPSDLIB=1"
-    ++ lib.optional withLibproxy "LIBPROXY=1"
-    ++ lib.optional withZbar "ZBAR=1";
-
-  postInstall = lib.optionalString stdenv.isDarwin ''
-    mkdir -p $out/Applications
-    mv binaries/bin/merkaartor.app $out/Applications
-    mv binaries/bin/plugins $out/Applications/merkaartor.app/Contents
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "OpenStreetMap editor";
     homepage = "http://merkaartor.be/";
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ sikmir ];
-    platforms = platforms.unix;
+    maintainers = with maintainers; [ ];
   };
 }

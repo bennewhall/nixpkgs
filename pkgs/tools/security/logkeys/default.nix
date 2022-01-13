@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, which, procps, kbd }:
+{ stdenv, fetchFromGitHub, autoconf, automake, which, procps, kbd }:
 
 stdenv.mkDerivation {
   pname = "logkeys";
@@ -21,7 +21,7 @@ stdenv.mkDerivation {
 
   preConfigure = "./autogen.sh";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A GNU/Linux keylogger that works!";
     license = licenses.gpl3;
     homepage = "https://github.com/kernc/logkeys";

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, fetchPypi, buildPythonPackage }:
 
 buildPythonPackage rec {
   pname = "easydict";
@@ -11,9 +11,9 @@ buildPythonPackage rec {
 
   docheck = false; # No tests in archive
 
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/makinacorpus/easydict";
-    license = licenses.lgpl3;
+    license = with stdenv.lib; licenses.lgpl3;
     description = "Access dict values as attributes (works recursively)";
   };
 }

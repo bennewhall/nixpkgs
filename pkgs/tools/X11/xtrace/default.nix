@@ -1,4 +1,4 @@
-{ lib, stdenv, autoreconfHook, fetchFromGitLab, libX11, xauth, makeWrapper }:
+{ stdenv, autoreconfHook, fetchFromGitLab, libX11, xauth, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "xtrace";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
         --prefix PATH ':' "${xauth}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://salsa.debian.org/debian/xtrace";
     description = "Tool to trace X11 protocol connections";
     license = licenses.gpl2;

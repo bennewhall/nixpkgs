@@ -1,28 +1,15 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, fetchpatch
-, pytest
-}:
+{ stdenv, buildPythonPackage, fetchPypi, fetchpatch, pytest }:
 
 buildPythonPackage rec {
-  pname = "pytest-dependency";
   version = "0.5.1";
+  pname = "pytest-dependency";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-wqiSkGGSZj+FAwpquRME5QjlRs3f5VfWktYexXodlGs=";
+    sha256 = "c2a892906192663f85030a6ab91304e508e546cddfe557d692d61ec57a1d946b";
   };
 
-  patches = [
-    # Fix build with pytest >= 6.2.0, https://github.com/RKrahl/pytest-dependency/pull/51
-    (fetchpatch {
-      url = "https://github.com/RKrahl/pytest-dependency/commit/0930889a13e2b9baa7617f05dc9b55abede5209d.patch";
-      sha256 = "sha256-xRreoIz8+yW0mAUb4FvKVlPjALzMAZDmdpbmDKRISE0=";
-    })
-  ];
-
-  buildInputs = [ pytest ];
+  propagatedBuildInputs = [ pytest ];
 
   checkInputs = [ pytest ];
 
@@ -30,7 +17,7 @@ buildPythonPackage rec {
     pytest
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/RKrahl/pytest-dependency";
     description = "Manage dependencies of tests";
     license = licenses.asl20;

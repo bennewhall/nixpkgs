@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, openssl, trousers, autoreconfHook, libtool, bison, flex }:
+{ stdenv, fetchFromGitHub, openssl, trousers, autoreconfHook, libtool, bison, flex }:
 
 stdenv.mkDerivation rec {
   pname = "opencryptoki";
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PKCS#11 implementation for Linux";
     homepage    = "https://github.com/opencryptoki/opencryptoki";
     license     = licenses.cpl10;

@@ -1,4 +1,4 @@
-{lib, stdenv, fetchgit, gettext, python2, elfutils}:
+{stdenv, fetchgit, gettext, python, elfutils}:
 
 stdenv.mkDerivation {
   pname = "libsystemtap";
@@ -13,18 +13,18 @@ stdenv.mkDerivation {
 
   dontBuild = true;
 
-  nativeBuildInputs = [ gettext python2 elfutils ];
+  nativeBuildInputs = [ gettext python elfutils ];
 
   installPhase = ''
     mkdir -p $out/include
     cp -r includes/* $out/include/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Statically defined probes development files";
     homepage = "https://sourceware.org/systemtap/";
     license = licenses.bsd3;
     platforms = platforms.unix;
-    maintainers = [ lib.maintainers.farlion ];
+    maintainers = [ stdenv.lib.maintainers.farlion ];
   };
 }

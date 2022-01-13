@@ -1,16 +1,16 @@
-{ lib, stdenv, fetchFromGitHub, cmake
+{ stdenv, fetchFromGitHub, cmake
 , krb5, liburcu , libtirpc, libnsl
 } :
 
 stdenv.mkDerivation rec {
   pname = "ntirpc";
-  version = "4.0";
+  version = "3.3";
 
   src = fetchFromGitHub {
     owner = "nfs-ganesha";
     repo = "ntirpc";
     rev = "v${version}";
-    sha256 = "0hffma57b4c7g7862yvfr8bvbsbxh5w383mvjkjv3jpzi01l79yv";
+    sha256 = "08vc2z9sl1p9mk1mx0zn4xv7dw12gamhciy41fbavm90iavf3vqm";
   };
 
   postPatch = ''
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     cp ${libtirpc}/etc/netconfig $out/etc/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Transport-independent RPC (TI-RPC)";
     homepage = "https://github.com/nfs-ganesha/ntirpc";
     maintainers = [ maintainers.markuskowa ];

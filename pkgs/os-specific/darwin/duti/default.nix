@@ -1,25 +1,17 @@
-{stdenv, lib, fetchFromGitHub, autoreconfHook, ApplicationServices}:
+{stdenv, lib, fetchFromGitHub, autoreconfHook, darwin}:
 
 stdenv.mkDerivation rec {
   pname = "duti";
-  version = "1.5.5pre";
+  version = "1.5.4pre";
   src = fetchFromGitHub {
     owner = "moretension";
     repo = pname;
-    rev = "fe3d3dc411bcea6af7a8cbe53c0e08ed5ecacdb2";
-    sha256 = "1pg4i6ghpib2gy1sqpml7dbnhr1vbr43fs2pqkd09i4w3nmgpic9";
+    rev = "7dbcae86f99fedef5a6c4311f032a0f1ca0539cc";
+    sha256 = "1z9sa0yk87vs57d5338y6lvm1v1vvynxb7dy1x5aqzkcr0imhljl";
   };
-
   nativeBuildInputs = [autoreconfHook];
-  buildInputs = [ApplicationServices];
-  configureFlags = [
-    "--with-macosx-sdk=/homeless-shelter"
-
-    # needed to prevent duti from trying to guess our sdk
-    # NOTE: this is different than stdenv.hostPlatform.config!
-    "--host=x86_64-apple-darwin18"
-  ];
-
+  buildInputs = [darwin.apple_sdk.frameworks.ApplicationServices];
+  configureFlags = ["--with-macosx-sdk=/homeless-shelter"];
   meta = with lib; {
     description = "A command-line tool to select default applications for document types and URL schemes on Mac OS X";
     longDescription = ''

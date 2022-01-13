@@ -1,4 +1,4 @@
-{ lib, fetchurl, stdenv, SDL, openal, SDL_mixer, libxml2, pkg-config, libvorbis
+{ fetchurl, stdenv, SDL, openal, SDL_mixer, libxml2, pkgconfig, libvorbis
 , libpng, libGLU, libGL, makeWrapper, zlib, freetype }:
 
 let
@@ -21,7 +21,7 @@ stdenv.mkDerivation {
 
   buildInputs = [ SDL SDL_mixer openal libxml2 libvorbis libpng libGLU libGL zlib freetype ];
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
 
   NIX_CFLAGS_COMPILE="-include ${zlib.dev}/include/zlib.h";
 
@@ -34,9 +34,9 @@ stdenv.mkDerivation {
   meta = {
     description = "2D action/rpg space game";
     homepage = "http://www.naev.org";
-    license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [viric];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3Plus;
+    maintainers = with stdenv.lib.maintainers; [viric];
+    platforms = stdenv.lib.platforms.linux;
     hydraPlatforms = [];
   };
 }

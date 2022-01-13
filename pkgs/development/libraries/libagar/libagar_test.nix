@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, bsdbuild, libagar, perl, libjpeg, libpng, openssl }:
+{ stdenv, fetchurl, bsdbuild, libagar, perl, libjpeg, libpng, openssl }:
 
 let srcs = import ./srcs.nix { inherit fetchurl; }; in
 stdenv.mkDerivation {
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
 
   buildInputs = [ perl bsdbuild libagar libjpeg libpng openssl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tests for libagar";
     homepage = "http://libagar.org/index.html";
     license = with licenses; bsd3;

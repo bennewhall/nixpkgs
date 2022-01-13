@@ -1,20 +1,20 @@
-{ mkDerivation, lib, fetchurl, pkg-config, libjack2
-, alsa-lib, liblo, libsndfile, lv2, qtbase, qttools
+{ mkDerivation, lib, fetchurl, pkgconfig, libjack2
+, alsaLib, liblo, libsndfile, lv2, qtbase, qttools
 , rubberband
 }:
 
 mkDerivation rec {
   pname = "samplv1";
-  version = "0.9.23";
+  version = "0.9.18";
 
   src = fetchurl {
     url = "mirror://sourceforge/samplv1/${pname}-${version}.tar.gz";
-    sha256 = "sha256-eJA6ixH20Wv+cD2CKGomncyfJ4tfpOL3UrTeCkb5/q0=";
+    sha256 = "ePhM9OTLJp1Wa2D9Y1Dqq/69WlEhEp3ih9yNUIJU5Y4=";
   };
 
-  nativeBuildInputs = [ qttools pkg-config ];
+  nativeBuildInputs = [ qttools pkgconfig ];
 
-  buildInputs = [ libjack2 alsa-lib liblo libsndfile lv2 qtbase rubberband ];
+  buildInputs = [ libjack2 alsaLib liblo libsndfile lv2 qtbase rubberband ];
 
   meta = with lib; {
     description = "An old-school all-digital polyphonic sampler synthesizer with stereo fx";

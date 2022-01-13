@@ -1,38 +1,31 @@
-{ lib
-, stdenv
+{ stdenv
 , mkDerivation
 , fetchFromGitHub
 , qmake
 , qttools
 , cmake
-, clang_8
+, clang
 , grpc
 , protobuf
 , openssl
-, pkg-config
+, pkgconfig
 , c-ares
 , abseil-cpp
 , libGL
 , zlib
-, curl
 }:
 
 mkDerivation rec {
   pname = "qv2ray";
-  version = "2.7.0";
+  version = "2.6.3";
 
   src = fetchFromGitHub {
     owner = "Qv2ray";
     repo = "Qv2ray";
     rev = "v${version}";
-    sha256 = "sha256-afFTGX/zrnwq/p5p1kj+ANU4WeN7jNq3ieeW+c+GO5M=";
+    sha256 = "sha256-zf3IlpRbZGDZMEny0jp7S+kWtcE1Z10U9GzKC0W0mZI=";
     fetchSubmodules = true;
   };
-
-  patchPhase = lib.optionals stdenv.isDarwin ''
-    substituteInPlace cmake/platforms/macos.cmake \
-      --replace \''${QV2RAY_QtX_DIR}/../../../bin/macdeployqt macdeployqt
-  '';
 
   cmakeFlags = [
     "-DCMAKE_BUILD_TYPE=Release"
@@ -57,17 +50,13 @@ mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
-
-    # The default clang_7 will result in reproducible ICE.
-    clang_8
-
-    pkg-config
+    clang
+    pkgconfig
     qmake
     qttools
-    curl
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An GUI frontend to v2ray";
     homepage = "https://qv2ray.github.io/en/";
     license = licenses.gpl3;

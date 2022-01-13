@@ -1,50 +1,33 @@
-{ lib
-, buildPythonPackage
+{ lib, buildPythonPackage, fetchPypi, fetchpatch
 , confluent-kafka
 , distributed
-, fetchPypi
 , flaky
 , graphviz
 , networkx
-, pytest-asyncio
-, pytestCheckHook
-, pythonOlder
+, pytest
 , requests
 , six
 , toolz
 , tornado
 , zict
-, fetchpatch
+, pythonOlder
 }:
 
 buildPythonPackage rec {
   pname = "streamz";
-  version = "0.6.3";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
+  version = "0.6.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-0wZ1ldLFRAIL9R+gLfwsFbL+gvdORAkYWNjnDmeafm8=";
+    sha256 = "215703456479d24f524cdcd0365006250d4502d242f57e2f5db18e8638bc8694";
   };
-
-  patches = [
-    # remove with next bump
-    (fetchpatch {
-      name = "fix-tests-against-distributed-2021.10.0.patch";
-      url = "https://github.com/python-streamz/streamz/commit/5bd3bc4d305ff40c740bc2550c8491be9162778a.patch";
-      sha256 = "1xzxcbf7yninkyizrwm3ahqk6ij2fmh0454iqjx2n7mmzx3sazx7";
-      includes = ["streamz/tests/test_dask.py"];
-    })
-  ];
 
   propagatedBuildInputs = [
     networkx
-    six
-    toolz
     tornado
+    toolz
     zict
+    six
   ];
 
   checkInputs = [
@@ -52,32 +35,24 @@ buildPythonPackage rec {
     distributed
     flaky
     graphviz
-    pytest-asyncio
-    pytestCheckHook
+    pytest
     requests
   ];
 
-  pythonImportsCheck = [
-    "streamz"
-  ];
+  disabled = pythonOlder "3.6";
 
-  disabledTests = [
-    # test_tcp_async fails on sandbox build
-    "test_tcp_async"
-    "test_tcp"
-    "test_partition_timeout"
-    # flaky
-    "test_from_iterable_backpressure"
-  ];
-  disabledTestPaths = [
-    # disable kafka tests
-    "streamz/tests/test_kafka.py"
-  ];
+  # Disable test_tcp_async because fails on sandbox build
+  # disable kafka tests
+  checkPhase = ''
+    pytest --deselect=streamz/tests/test_sources.py::test_tcp_async \
+      --deselect=streamz/tests/test_sources.py::test_tcp \
+      --ignore=streamz/tests/test_kafka.py
+  '';
 
   meta = with lib; {
     description = "Pipelines to manage continuous streams of data";
     homepage = "https://github.com/python-streamz/streamz";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ costrouc ];
+    maintainers = [ maintainers.costrouc ];
   };
 }

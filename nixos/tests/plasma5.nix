@@ -2,7 +2,7 @@ import ./make-test-python.nix ({ pkgs, ...} :
 
 {
   name = "plasma5";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ ttuegel ];
   };
 
@@ -12,13 +12,14 @@ import ./make-test-python.nix ({ pkgs, ...} :
     imports = [ ./common/user-account.nix ];
     services.xserver.enable = true;
     services.xserver.displayManager.sddm.enable = true;
-    services.xserver.displayManager.defaultSession = "plasma";
+    services.xserver.displayManager.defaultSession = "plasma5";
     services.xserver.desktopManager.plasma5.enable = true;
     services.xserver.displayManager.autoLogin = {
       enable = true;
       user = "alice";
     };
     hardware.pulseaudio.enable = true; # needed for the factl test, /dev/snd/* exists without them but udev doesn't care then
+    virtualisation.memorySize = 1024;
   };
 
   testScript = { nodes, ... }: let
@@ -34,22 +35,19 @@ import ./make-test-python.nix ({ pkgs, ...} :
         machine.wait_until_succeeds("pgrep plasmashell")
         machine.wait_for_window("^Desktop ")
 
-    with subtest("Check that KDED is running"):
-        machine.succeed("pgrep kded5")
-
     with subtest("Check that logging in has given the user ownership of devices"):
         machine.succeed("getfacl -p /dev/snd/timer | grep -q ${user.name}")
 
     with subtest("Run Dolphin"):
-        machine.execute("su - ${user.name} -c 'DISPLAY=:0.0 dolphin >&2 &'")
+        machine.execute("su - ${user.name} -c 'DISPLAY=:0.0 dolphin &'")
         machine.wait_for_window(" Dolphin")
 
     with subtest("Run Konsole"):
-        machine.execute("su - ${user.name} -c 'DISPLAY=:0.0 konsole >&2 &'")
+        machine.execute("su - ${user.name} -c 'DISPLAY=:0.0 konsole &'")
         machine.wait_for_window("Konsole")
 
     with subtest("Run systemsettings"):
-        machine.execute("su - ${user.name} -c 'DISPLAY=:0.0 systemsettings5 >&2 &'")
+        machine.execute("su - ${user.name} -c 'DISPLAY=:0.0 systemsettings5 &'")
         machine.wait_for_window("Settings")
 
     with subtest("Wait to get a screenshot"):

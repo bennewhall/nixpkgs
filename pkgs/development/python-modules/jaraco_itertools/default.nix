@@ -1,19 +1,23 @@
-{ lib, buildPythonPackage, fetchPypi, setuptools-scm
+{ lib, buildPythonPackage, fetchPypi, setuptools_scm
 , inflect, more-itertools, six, pytest
 }:
 
 buildPythonPackage rec {
   pname = "jaraco.itertools";
-  version = "6.0.3";
+  version = "5.0.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1775bfcad5de275a540a36720c5ab34594ea1dbe7ffefa32099b0129c5604608";
+    sha256 = "6447d567f57efe5efea386265c7864652e9530830a1b80f43e60b4f222b9ab84";
   };
 
   pythonNamespaces = [ "jaraco" ];
 
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools_scm ];
+
+  patches = [
+    ./0001-Don-t-run-flake8-checks-during-the-build.patch
+  ];
 
   propagatedBuildInputs = [ inflect more-itertools six ];
   checkInputs = [ pytest ];

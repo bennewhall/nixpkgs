@@ -1,19 +1,19 @@
-{ lib, mkDerivation, fetchFromGitHub, fetchpatch, pkg-config, qmake
+{ lib, mkDerivation, fetchFromGitHub, fetchpatch, pkgconfig, qmake
 , SDL2, fluidsynth, libsndfile, libvorbis, mpg123, qtbase
 }:
 
 mkDerivation rec {
   pname = "qtads";
-  version = "3.2.0";
+  version = "3.0.0";
 
   src = fetchFromGitHub {
     owner = "realnc";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-xMAGbOA+qtwMk5VT5yi//GDzTKtYfGku/Sm4l5smzEs=";
+    sha256 = "02kk2hs20h9ffhylwms9f8zikmmlrz1nvbrm97gis9iljkyx035c";
   };
 
-  nativeBuildInputs = [ pkg-config qmake ];
+  nativeBuildInputs = [ pkgconfig qmake ];
 
   buildInputs = [ SDL2 fluidsynth libsndfile libvorbis mpg123 qtbase ];
 

@@ -1,45 +1,32 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, docutils
 , sphinx
 , readthedocs-sphinx-ext
-, pytestCheckHook
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "sphinx_rtd_theme";
-  version = "1.0.0";
+  version = "0.4.3";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0p3abj91c3l72ajj5jwblscsdf1jflrnn0djx2h5y6f2wjbx9ipf";
+    sha256 = "728607e34d60456d736cc7991fd236afb828b21b82f956c5ea75f94c8414040a";
   };
 
-  postPatch = ''
-    substituteInPlace setup.py \
-      --replace "docutils<0.17" "docutils"
+  propagatedBuildInputs = [ sphinx ];
+
+  checkInputs = [ readthedocs-sphinx-ext pytest ];
+
+  checkPhase = ''
+    py.test
   '';
 
-  preBuild = ''
-    # Don't use NPM to fetch assets. Assets are included in sdist.
-    export CI=1
-  '';
-
-  propagatedBuildInputs = [
-    docutils
-    sphinx
-  ];
-
-  checkInputs = [
-    readthedocs-sphinx-ext
-    pytestCheckHook
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ReadTheDocs.org theme for Sphinx";
-    homepage = "https://github.com/readthedocs/sphinx_rtd_theme";
-    license = licenses.mit;
+    homepage = "https://github.com/snide/sphinx_rtd_theme/";
+    license = licenses.bsd3;
     platforms = platforms.unix;
   };
 

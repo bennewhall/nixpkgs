@@ -1,15 +1,17 @@
-{ lib, stdenv, fetchurl, Xaw3d, ghostscriptX, perl, pkg-config, libiconv }:
+{ stdenv, fetchurl, Xaw3d, ghostscriptX, perl, pkgconfig, libiconv }:
 
-stdenv.mkDerivation rec {
-  pname = "gv";
-  version = "3.7.4";
+let
+  name = "gv-3.7.4";
+in
+stdenv.mkDerivation {
+  inherit name;
 
   src = fetchurl {
-    url = "mirror://gnu/gv/gv-${version}.tar.gz";
+    url = "mirror://gnu/gv/${name}.tar.gz";
     sha256 = "0q8s43z14vxm41pfa8s5h9kyyzk1fkwjhkiwbf2x70alm6rv6qi1";
   };
 
-  configureFlags = lib.optionals stdenv.isDarwin [
+  configureFlags = stdenv.lib.optionals stdenv.isDarwin [
     "--enable-SIGCHLD-fallback"
   ];
 
@@ -17,8 +19,8 @@ stdenv.mkDerivation rec {
     Xaw3d
     ghostscriptX
     perl
-    pkg-config
-  ] ++ lib.optionals stdenv.isDarwin [
+    pkgconfig
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
     libiconv
   ];
 
@@ -39,8 +41,8 @@ stdenv.mkDerivation rec {
       interface for the Ghostscript interpreter.
     '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
     maintainers = [ ];
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

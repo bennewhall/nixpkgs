@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, unzip, tnt}:
+{stdenv, fetchurl, unzip, tnt}:
 
 stdenv.mkDerivation rec {
   pname = "jama";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "031ns526fvi2nv7jzzv02i7i5sjcyr0gj884i3an67qhsx8vyckl";
   };
 
-  nativeBuildInputs = [ unzip ];
+  buildInputs = [ unzip ];
   propagatedBuildInputs = [ tnt ];
 
   unpackPhase = ''
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
       cp *.h $out/include
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://math.nist.gov/tnt/";
     description = "JAMA/C++ Linear Algebra Package: Java-like matrix C++ templates";
     platforms = platforms.unix;

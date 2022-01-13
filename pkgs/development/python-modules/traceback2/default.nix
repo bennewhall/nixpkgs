@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pbr
@@ -19,7 +19,7 @@ buildPythonPackage rec {
   # circular dependencies for tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A backport of traceback to older supported Pythons";
     homepage = "https://pypi.python.org/pypi/traceback2/";
     license = licenses.psfl;

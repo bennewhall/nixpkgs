@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation {
   pname = "emv";
@@ -9,7 +9,7 @@ stdenv.mkDerivation {
     sha256 = "7e0e12afa45ef5ed8025e5f2c6deea0ff5f512644a721f7b1b95b63406a8f7ce";
   };
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
     mkdir -pv $out/bin
@@ -20,7 +20,7 @@ stdenv.mkDerivation {
   meta = {
     homepage = "http://www.i0i0.de/toolchest/emv";
     description = "Editor Move: Rename files with your favourite text editor";
-    license = lib.licenses.publicDomain;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.publicDomain;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

@@ -1,25 +1,24 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , fetchpatch
 , cmake
 , git
 
-, llvmPackages_11
+, llvmPackages_8
 , spirv-llvm-translator
 
 , buildWithPatches ? true
 }:
 
 let
-  llvmPkgs = llvmPackages_11 // {
+  llvmPkgs = llvmPackages_8 // {
     inherit spirv-llvm-translator;
   };
 
-  inherit (lib) getVersion;
+  inherit (stdenv.lib) getVersion;
 
   addPatches = component: pkg:
-    with builtins; with lib;
+    with builtins; with stdenv.lib;
     let path = "${passthru.patchesOut}/${component}";
     in pkg.overrideAttrs (super: {
       postPatch = (if super ? postPatch then super.postPatch + "\n" else "") + ''
@@ -31,11 +30,8 @@ let
     });
 
   passthru = rec {
-    spirv-llvm-translator = llvmPkgs.spirv-llvm-translator;
-    llvm = addPatches "llvm" llvmPkgs.llvm;
-    libclang = addPatches "clang" llvmPkgs.libclang;
 
-    clang-unwrapped = libclang.out;
+    clang-unwrapped = addPatches "clang" llvmPkgs.clang-unwrapped;
 
     clang = llvmPkgs.clang.override {
       cc = clang-unwrapped;
@@ -43,39 +39,32 @@ let
 
     patchesOut = stdenv.mkDerivation rec {
       pname = "opencl-clang-patches";
-      inherit (library) version src patches;
-      # Clang patches assume the root is the llvm root dir
-      # but clang root in nixpkgs is the clang sub-directory
-      postPatch = ''
-        for filename in patches/clang/*.patch; do
-          substituteInPlace "$filename" \
-            --replace "a/clang/" "a/" \
-            --replace "b/clang/" "b/"
-        done
-      '';
-
+      inherit (lib) version src patches;
       installPhase = ''
         [ -d patches ] && cp -r patches/ $out || mkdir $out
-        mkdir -p $out/clang $out/llvm
+        mkdir -p $out/clang $out/spirv
       '';
     };
+
+    spirv-llvm-translator = addPatches "spirv" llvmPkgs.spirv-llvm-translator;
+
   };
 
-  library = let
+  lib = let
     inherit (llvmPkgs) llvm;
-    inherit (if buildWithPatches then passthru else llvmPkgs) libclang spirv-llvm-translator;
+    inherit (if buildWithPatches then passthru else llvmPkgs) clang-unwrapped spirv-llvm-translator;
   in
     stdenv.mkDerivation rec {
       pname = "opencl-clang";
-      version = "unstable-2021-06-22";
+      version = "unstable-2019-08-16";
 
       inherit passthru;
 
       src = fetchFromGitHub {
         owner = "intel";
         repo = "opencl-clang";
-        rev = "fd68f64b33e67d58f6c36b9e25c31c1178a1962a";
-        sha256 = "sha256-q1YPBb/LY67iEuQx1fMUQD/I7OsNfobW3yNfJxLXx3E=";
+        rev = "94af090661d7c953c516c97a25ed053c744a0737";
+        sha256 = "05cg89m62nqjqm705h7gpdz4jd4hiczg8944dcjsvaybrqv3hcm5";
       };
 
       patches = [
@@ -84,26 +73,19 @@ let
         ./opencl-headers-dir.patch
       ];
 
-      # Uses linker flags that are not supported on Darwin.
-      postPatch = lib.optionalString stdenv.isDarwin ''
-        sed -i -e '/SET_LINUX_EXPORTS_FILE/d' CMakeLists.txt
-        substituteInPlace CMakeLists.txt \
-          --replace '-Wl,--no-undefined' ""
-      '';
+      nativeBuildInputs = [ cmake git ];
 
-      nativeBuildInputs = [ cmake git llvm.dev ];
-
-      buildInputs = [ libclang llvm spirv-llvm-translator ];
+      buildInputs = [ clang-unwrapped llvm spirv-llvm-translator ];
 
       cmakeFlags = [
         "-DPREFERRED_LLVM_VERSION=${getVersion llvm}"
-        "-DOPENCL_HEADERS_DIR=${libclang.lib}/lib/clang/${getVersion libclang}/include/"
+        "-DOPENCL_HEADERS_DIR=${clang-unwrapped}/lib/clang/${getVersion clang-unwrapped}/include/"
 
         "-DLLVMSPIRV_INCLUDED_IN_LLVM=OFF"
         "-DSPIRV_TRANSLATOR_DIR=${spirv-llvm-translator}"
       ];
 
-      meta = with lib; {
+      meta = with stdenv.lib; {
         homepage    = "https://github.com/intel/opencl-clang/";
         description = "A clang wrapper library with an OpenCL-oriented API and the ability to compile OpenCL C kernels to SPIR-V modules";
         license     = licenses.ncsa;
@@ -112,4 +94,4 @@ let
       };
     };
 in
-  library
+  lib

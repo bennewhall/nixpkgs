@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , colord
 , gettext
@@ -12,7 +12,7 @@
 , libxslt
 , glib
 , gtk3
-, pkg-config
+, pkgconfig
 , lcms2
 }:
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     gettext
     meson
     ninja
@@ -50,7 +50,7 @@ stdenv.mkDerivation rec {
     gtk3
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.freedesktop.org/software/colord/intro.html";
     license = licenses.lgpl21Plus;
     platforms = platforms.linux;

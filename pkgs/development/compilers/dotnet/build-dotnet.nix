@@ -3,9 +3,8 @@
 , sha512
 }:
 
-assert builtins.elem type [ "aspnetcore" "runtime" "sdk"];
-{ lib
-, stdenv
+assert builtins.elem type [ "aspnetcore" "netcore" "sdk"];
+{ stdenv
 , fetchurl
 , libunwind
 , openssl
@@ -13,48 +12,44 @@ assert builtins.elem type [ "aspnetcore" "runtime" "sdk"];
 , libuuid
 , zlib
 , curl
-, lttng-ust_2_12
 }:
 
 let
   pname = if type == "aspnetcore" then
     "aspnetcore-runtime"
-  else if type == "runtime" then
+  else if type == "netcore" then
     "dotnet-runtime"
   else
     "dotnet-sdk";
-  platform = {
-    x86_64-linux = "linux-x64";
-    aarch64-linux = "linux-arm64";
-    x86_64-darwin = "osx-x64";
-    aarch64-darwin = "osx-arm64";
-  }.${stdenv.hostPlatform.system} or (throw "unsupported system: ${stdenv.hostPlatform.system}");
+  platform = if stdenv.isDarwin then "osx" else "linux";
+  suffix = {
+    x86_64-linux = "x64";
+    aarch64-linux = "arm64";
+    x86_64-darwin = "x64";
+  }."${stdenv.hostPlatform.system}" or (throw
+    "Unsupported system: ${stdenv.hostPlatform.system}");
   urls = {
-    aspnetcore = "https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/${version}/${pname}-${version}-${platform}.tar.gz";
-    runtime = "https://dotnetcli.azureedge.net/dotnet/Runtime/${version}/${pname}-${version}-${platform}.tar.gz";
-    sdk = "https://dotnetcli.azureedge.net/dotnet/Sdk/${version}/${pname}-${version}-${platform}.tar.gz";
+    aspnetcore = "https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/${version}/${pname}-${version}-${platform}-${suffix}.tar.gz";
+    netcore = "https://dotnetcli.azureedge.net/dotnet/Runtime/${version}/${pname}-${version}-${platform}-${suffix}.tar.gz";
+    sdk = "https://dotnetcli.azureedge.net/dotnet/Sdk/${version}/${pname}-${version}-${platform}-${suffix}.tar.gz";
   };
   descriptions = {
-    aspnetcore = "ASP.NET Core Runtime ${version}";
-    runtime = ".NET Runtime ${version}";
+    aspnetcore = "ASP .NET Core runtime ${version}";
+    netcore = ".NET Core runtime ${version}";
     sdk = ".NET SDK ${version}";
   };
 in stdenv.mkDerivation rec {
   inherit pname version;
 
-  # Some of these dependencies are `dlopen()`ed.
-  rpath = lib.makeLibraryPath ([
-    stdenv.cc.cc
-    zlib
-
+  rpath = stdenv.lib.makeLibraryPath [
     curl
     icu
     libunwind
     libuuid
     openssl
-  ] ++ lib.optionals stdenv.isLinux [
-    lttng-ust_2_12
-  ]);
+    stdenv.cc.cc
+    zlib
+  ];
 
   src = fetchurl {
     url = builtins.getAttr type urls;
@@ -75,11 +70,11 @@ in stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  postFixup = lib.optionalString stdenv.isLinux ''
+  postFixup = stdenv.lib.optionalString stdenv.isLinux ''
     patchelf --set-interpreter "${stdenv.cc.bintools.dynamicLinker}" $out/dotnet
     patchelf --set-rpath "${rpath}" $out/dotnet
     find $out -type f -name "*.so" -exec patchelf --set-rpath '$ORIGIN:${rpath}' {} \;
-    find $out -type f \( -name "apphost" -or -name "createdump" \) -exec patchelf --set-interpreter "${stdenv.cc.bintools.dynamicLinker}" --set-rpath '$ORIGIN:${rpath}' {} \;
+    find $out -type f -name "apphost" -exec patchelf --set-interpreter "${stdenv.cc.bintools.dynamicLinker}" --set-rpath '$ORIGIN:${rpath}' {} \;
   '';
 
   doInstallCheck = true;
@@ -87,10 +82,10 @@ in stdenv.mkDerivation rec {
     $out/bin/dotnet --info
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://dotnet.github.io/";
     description = builtins.getAttr type descriptions;
-    platforms = builtins.attrNames sha512;
+    platforms = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" ];
     maintainers = with maintainers; [ kuznero ];
     license = licenses.mit;
   };

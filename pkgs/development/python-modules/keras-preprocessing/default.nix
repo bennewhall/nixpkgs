@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, numpy, six, scipy, pillow, pytest, keras }:
+{ lib, buildPythonPackage, fetchPypi, numpy, six, scipy, pillow, pytest, Keras }:
 
 buildPythonPackage rec {
   pname = "Keras_Preprocessing";
@@ -17,7 +17,7 @@ buildPythonPackage rec {
   ];
 
   checkInputs = [
-    pytest keras
+    pytest Keras
   ];
 
   checkPhase = ''

@@ -1,6 +1,5 @@
 { package ? null
 , maintainer ? null
-, predicate ? null
 , path ? null
 , max-workers ? null
 , include-overlays ? false
@@ -35,7 +34,7 @@ let
 
   /* Recursively find all packages (derivations) in `pkgs` matching `cond` predicate.
 
-    Type: packagesWithPath :: AttrPath → (AttrPath → derivation → bool) → AttrSet → List<AttrSet{attrPath :: str; package :: derivation; }>
+    Type: packagesWithPath :: AttrPath → (AttrPath → derivation → bool) → (AttrSet | List) → List<AttrSet{attrPath :: str; package :: derivation; }>
           AttrPath :: [str]
 
     The packages will be returned as a list of named pairs comprising of:
@@ -61,6 +60,8 @@ let
                 if path == rootPath || evaluatedPathContent.recurseForDerivations or false || evaluatedPathContent.recurseForRelease or false then
                   dedupResults (lib.mapAttrsToList (name: elem: packagesWithPathInner (path ++ [name]) elem) evaluatedPathContent)
                 else []
+              else if lib.isList evaluatedPathContent then
+                dedupResults (lib.imap0 (i: elem: packagesWithPathInner (path ++ [i]) elem) evaluatedPathContent)
               else []
           else [];
     in
@@ -69,11 +70,6 @@ let
   /* Recursively find all packages (derivations) in `pkgs` matching `cond` predicate.
    */
   packagesWith = packagesWithPath [];
-
-  /* Recursively find all packages in `pkgs` with updateScript matching given predicate.
-   */
-  packagesWithUpdateScriptMatchingPredicate = cond:
-    packagesWith (path: pkg: builtins.hasAttr "updateScript" pkg && cond path pkg);
 
   /* Recursively find all packages in `pkgs` with updateScript by given maintainer.
    */
@@ -85,7 +81,7 @@ let
         else
           builtins.getAttr maintainer' lib.maintainers;
     in
-      packagesWithUpdateScriptMatchingPredicate (path: pkg:
+      packagesWith (path: pkg: builtins.hasAttr "updateScript" pkg &&
                          (if builtins.hasAttr "maintainers" pkg.meta
                            then (if builtins.isList pkg.meta.maintainers
                                    then builtins.elem maintainer pkg.meta.maintainers
@@ -103,7 +99,7 @@ let
       pathContent = lib.attrByPath prefix null pkgs;
     in
       if pathContent == null then
-        builtins.throw "Attribute path `${path}` does not exist."
+        builtins.throw "Attribute path `${path}` does not exists."
       else
         packagesWithPath prefix (path: pkg: builtins.hasAttr "updateScript" pkg)
                        pathContent;
@@ -115,7 +111,7 @@ let
         package = lib.attrByPath (lib.splitString "." path) null pkgs;
     in
       if package == null then
-        builtins.throw "Package with an attribute name `${path}` does not exist."
+        builtins.throw "Package with an attribute name `${path}` does not exists."
       else if ! builtins.hasAttr "updateScript" package then
         builtins.throw "Package with an attribute name `${path}` does not have a `passthru.updateScript` attribute defined."
       else
@@ -126,8 +122,6 @@ let
   packages =
     if package != null then
       [ (packageByName package pkgs) ]
-    else if predicate != null then
-      packagesWithUpdateScriptMatchingPredicate predicate pkgs
     else if maintainer != null then
       packagesWithUpdateScriptAndMaintainer maintainer pkgs
     else if path != null then
@@ -143,15 +137,11 @@ let
     to run all update scripts for all packages that lists \`garbas\` as a maintainer
     and have \`updateScript\` defined, or:
 
-        % nix-shell maintainers/scripts/update.nix --argstr package gnome.nautilus
+        % nix-shell maintainers/scripts/update.nix --argstr package gnome3.nautilus
 
     to run update script for specific package, or
 
-        % nix-shell maintainers/scripts/update.nix --arg predicate '(path: pkg: builtins.isList pkg.updateScript && builtins.length pkg.updateScript >= 1 && (let script = builtins.head pkg.updateScript; in builtins.isAttrs script && script.name == "gnome-update-script"))'
-
-    to run update script for all packages matching given predicate, or
-
-        % nix-shell maintainers/scripts/update.nix --argstr path gnome
+        % nix-shell maintainers/scripts/update.nix --argstr path gnome3
 
     to run update script for all package under an attribute path.
 

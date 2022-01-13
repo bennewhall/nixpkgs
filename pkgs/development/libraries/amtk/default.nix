@@ -1,28 +1,24 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , gtk3
-, meson
-, ninja
-, pkg-config
+, pkgconfig
 , gobject-introspection
-, gnome
+, gnome3
 , dbus
-, xvfb-run
+, xvfb_run
 }:
 
 stdenv.mkDerivation rec {
   pname = "amtk";
-  version = "5.3.1";
+  version = "5.2.0";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "12v3nj1bb7507ndprjggq0hpz8k719b4bwvl8sm43p3ibmn27anm";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0y3hmmflw4i0y0yb9a8rlihbv3cbwnvdcf1n5jycwzpq9jxla1c2";
   };
 
   nativeBuildInputs = [
-    meson
-    ninja
-    pkg-config
+    pkgconfig
     dbus
     gobject-introspection
   ];
@@ -34,17 +30,14 @@ stdenv.mkDerivation rec {
   doCheck = stdenv.isLinux;
   checkPhase = ''
     export NO_AT_BRIDGE=1
-    ${xvfb-run}/bin/xvfb-run -s '-screen 0 800x600x24' dbus-run-session \
+    ${xvfb_run}/bin/xvfb-run -s '-screen 0 800x600x24' dbus-run-session \
       --config-file=${dbus.daemon}/share/dbus-1/session.conf \
-      meson test --print-errorlogs
+      make check
   '';
 
-  passthru.updateScript = gnome.updateScript {
-    packageName = pname;
-    versionPolicy = "none";
-  };
+  passthru.updateScript = gnome3.updateScript { packageName = pname; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Projects/Amtk";
     description = "Actions, Menus and Toolbars Kit for GTK applications";
     maintainers = [ maintainers.manveru ];

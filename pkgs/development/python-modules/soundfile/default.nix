@@ -21,7 +21,6 @@ buildPythonPackage rec {
 
     checkInputs = [ pytest ];
     propagatedBuildInputs = [ numpy libsndfile cffi ];
-    propagatedNativeBuildInputs = [ cffi ];
 
     meta = {
       description = "An audio library based on libsndfile, CFFI and NumPy";

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, love, lua, makeWrapper, makeDesktopItem }:
+{ stdenv, fetchurl, love, lua, makeWrapper, makeDesktopItem }:
 
 let
   pname = "90secondportraits";
@@ -32,7 +32,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ lua love ];
 
-  dontUnpack = true;
+  phases = "installPhase";
 
   installPhase =
   ''
@@ -48,7 +48,7 @@ stdenv.mkDerivation {
     ln -s ${desktopItem}/share/applications/* $out/share/applications/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A silly speed painting game";
     maintainers = with maintainers; [ leenaars ];
     platforms = platforms.linux;

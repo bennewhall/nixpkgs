@@ -1,13 +1,16 @@
-{ buildDunePackage, js_of_ocaml-compiler, js_of_ocaml-ppx
+{ stdenv, ocaml, findlib, dune_2, js_of_ocaml-compiler, js_of_ocaml-ppx
+, ocaml-migrate-parsetree, ppx_tools_versioned
 , js_of_ocaml, ocaml_lwt, lwt_log
 }:
 
-buildDunePackage {
-  pname = "js_of_ocaml-lwt";
+stdenv.mkDerivation {
+	pname = "js_of_ocaml-lwt"; 
 
-  inherit (js_of_ocaml-compiler) version src meta useDune2;
+	inherit (js_of_ocaml-compiler) version src installPhase meta;
 
-  buildInputs = [ js_of_ocaml-ppx ];
+	buildInputs = [ ocaml findlib dune_2 js_of_ocaml-ppx ocaml-migrate-parsetree ppx_tools_versioned ];
 
-  propagatedBuildInputs = [ js_of_ocaml ocaml_lwt lwt_log ];
+	propagatedBuildInputs = [ js_of_ocaml ocaml_lwt lwt_log ];
+
+	buildPhase = "dune build -p js_of_ocaml-lwt";
 }

@@ -1,11 +1,11 @@
-{ stdenv, lib, fetchurl, dpkg
-, alsa-lib, atk, cairo, cups, dbus, expat, fontconfig, freetype
-, gdk-pixbuf, glib, gnome2, pango, nspr, nss, gtk3, mesa
+{ stdenv, lib, makeWrapper, fetchurl, dpkg
+, alsaLib, atk, cairo, cups, dbus, expat, fontconfig, freetype
+, gdk-pixbuf, glib, gnome2, pango, nspr, nss, gtk3
 , xorg, autoPatchelfHook, systemd, libnotify, libappindicator
 }:
 
 let deps = [
-    alsa-lib
+    alsaLib
     atk
     cairo
     cups
@@ -20,7 +20,6 @@ let deps = [
     gtk3
     libappindicator
     libnotify
-    mesa
     xorg.libX11
     xorg.libXScrnSaver
     xorg.libXcomposite
@@ -33,7 +32,6 @@ let deps = [
     xorg.libXrender
     xorg.libXtst
     xorg.libxcb
-    xorg.libxshmfence
     nspr
     nss
     systemd
@@ -43,11 +41,11 @@ in
 
 stdenv.mkDerivation rec {
   pname = "mullvad-vpn";
-  version = "2021.6";
+  version = "2020.7";
 
   src = fetchurl {
-    url = "https://github.com/mullvad/mullvadvpn-app/releases/download/${version}/MullvadVPN-${version}_amd64.deb";
-    sha256 = "0vpahryw4hm1k9p4vang84ji88znz67s7wxnwqndf02a627n7fcm";
+    url = "https://www.mullvad.net/media/app/MullvadVPN-${version}_amd64.deb";
+    sha256 = "07vryz1nq8r4m5y9ry0d0v62ykz1cnnsv628x34yvwiyazbav4ri";
   };
 
   nativeBuildInputs = [
@@ -73,7 +71,7 @@ stdenv.mkDerivation rec {
     mv usr/bin/* $out/bin
     mv opt/Mullvad\ VPN/* $out/share/mullvad
 
-    sed -i 's|"\/opt\/Mullvad.*VPN|env MULLVAD_DISABLE_UPDATE_NOTIFICATION=1 "'$out'/bin|g' $out/share/applications/mullvad-vpn.desktop
+    sed -i 's|\/opt\/Mullvad.*VPN|'$out'/bin|g' $out/share/applications/mullvad-vpn.desktop
 
     ln -s $out/share/mullvad/mullvad-{gui,vpn} $out/bin/
     ln -s $out/share/mullvad/resources/mullvad-daemon $out/bin/mullvad-daemon
@@ -82,13 +80,13 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/mullvad/mullvadvpn-app";
     description = "Client for Mullvad VPN";
     changelog = "https://github.com/mullvad/mullvadvpn-app/blob/${version}/CHANGELOG.md";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     platforms = [ "x86_64-linux" ];
-    maintainers = with maintainers; [ Br1ght0ne ymarkus flexagoon ];
+    maintainers = with maintainers; [ Br1ght0ne ];
   };
 
 }

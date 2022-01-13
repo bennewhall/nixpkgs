@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , fetchpatch
 , gnome-icon-theme
-, gnome
+, gnome3
 , gtk-engine-murrine
 , gtk3
 , hicolor-icon-theme
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [
     gnome-icon-theme
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
     humanity-icon-theme
     hicolor-icon-theme
   ];
@@ -67,7 +67,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Ubuntu monochrome and Suru icon themes, Ambiance and Radiance themes, and Ubuntu artwork";
     homepage = "https://launchpad.net/ubuntu-themes";
     license = with licenses; [ cc-by-sa-40 gpl3 ];

@@ -1,25 +1,26 @@
-{ lib, stdenv, fetchurl, jdk, makeWrapper }:
+{ stdenv, fetchurl, jdk, makeWrapper }:
 
 assert jdk != null;
 
+let version = "3.6.3"; in
 stdenv.mkDerivation rec {
   pname = "apache-maven";
-  version = "3.8.4";
+  inherit version;
 
   builder = ./builder.sh;
 
   src = fetchurl {
     url = "mirror://apache/maven/maven-3/${version}/binaries/${pname}-${version}-bin.tar.gz";
-    sha256 = "sha256-LNycUZQnuyD9wlvvWpBjt5Dkq9kw57FLTp9IY9b58Tw=";
+    sha256 = "1i9qlj3vy4j1yyf22nwisd0pg88n9qzp9ymfhwqabadka7br3b96";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   inherit jdk;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Build automation tool (used primarily for Java projects)";
-    homepage = "https://maven.apache.org/";
+    homepage = "http://maven.apache.org/";
     license = licenses.asl20;
     platforms = platforms.unix;
     maintainers = with maintainers; [ cko ];

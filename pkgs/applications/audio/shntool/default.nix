@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, flac }:
+{ stdenv, fetchurl, flac }:
 
 stdenv.mkDerivation {
   version = "3.0.10";
@@ -14,8 +14,8 @@ stdenv.mkDerivation {
   meta = {
     description = "Multi-purpose WAVE data processing and reporting utility";
     homepage = "http://www.etree.org/shnutils/shntool/";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.all;
-    maintainers = with lib.maintainers; [ jcumming ];
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.all;
+    maintainers = with stdenv.lib.maintainers; [ jcumming ];
   };
 }

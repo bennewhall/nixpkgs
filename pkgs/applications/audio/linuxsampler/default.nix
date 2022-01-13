@@ -1,26 +1,26 @@
-{ lib, stdenv, fetchurl, autoconf, automake, bison, libtool, pkg-config, which
-, alsa-lib, asio, libjack2, libgig, libsndfile, lv2 }:
+{ stdenv, fetchurl, autoconf, automake, bison, libtool, pkgconfig, which
+, alsaLib, asio, libjack2, libgig, libsndfile, lv2 }:
 
 stdenv.mkDerivation rec {
   pname = "linuxsampler";
-  version = "2.2.0";
+  version = "2.1.1";
 
   src = fetchurl {
     url = "https://download.linuxsampler.org/packages/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-xNFjxrrC0B8Oj10HIQ1AmI7pO34HuYRyyUaoB2MDmYw=";
+    sha256 = "1gijf50x5xbpya5dj3v2mzj7azx4qk9p012csgddp73f0qi0n190";
   };
 
   preConfigure = ''
     make -f Makefile.svn
   '';
 
-  nativeBuildInputs = [ autoconf automake bison libtool pkg-config which ];
+  nativeBuildInputs = [ autoconf automake bison libtool pkgconfig which ];
 
-  buildInputs = [ alsa-lib asio libjack2 libgig libsndfile lv2 ];
+  buildInputs = [ alsaLib asio libjack2 libgig libsndfile lv2 ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.linuxsampler.org";
     description = "Sampler backend";
     longDescription = ''

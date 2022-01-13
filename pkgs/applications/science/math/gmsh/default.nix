@@ -1,15 +1,15 @@
-{ lib, stdenv, fetchurl, cmake, blas, lapack, gfortran, gmm, fltk, libjpeg
+{ stdenv, fetchurl, cmake, blas, lapack, gfortran, gmm, fltk, libjpeg
 , zlib, libGL, libGLU, xorg, opencascade-occt }:
 
 assert (!blas.isILP64) && (!lapack.isILP64);
 
 stdenv.mkDerivation rec {
   pname = "gmsh";
-  version = "4.9.0";
+  version = "4.7.1";
 
   src = fetchurl {
     url = "http://gmsh.info/src/gmsh-${version}-source.tgz";
-    sha256 = "sha256-uO8TPJtm/+Et8XR+ctSs8Z8esenNlesPV3y8QIHZvqM=";
+    sha256 = "0shwi41van3k0z6rnpl3sz5nh46xbyyljwfpcp8pwxbc26aw5169";
   };
 
   buildInputs = [ blas lapack gmm fltk libjpeg zlib libGLU libGL
@@ -24,6 +24,6 @@ stdenv.mkDerivation rec {
     description = "A three-dimensional finite element mesh generator";
     homepage = "http://gmsh.info/";
     platforms = [ "x86_64-linux" ];
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

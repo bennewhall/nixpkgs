@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage, requests, hidapi }:
+{ stdenv, fetchPypi, buildPythonPackage, requests, hidapi }:
 
 buildPythonPackage rec {
   pname = "python-u2flib-host";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
   # Tests fail: "ValueError: underlying buffer has been detached"
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python based U2F host library";
     homepage = "https://github.com/Yubico/python-u2flib-host";
     license = licenses.bsd2;

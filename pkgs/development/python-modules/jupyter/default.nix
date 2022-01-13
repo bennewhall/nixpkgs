@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , notebook
@@ -23,7 +23,7 @@ buildPythonPackage rec {
   # Meta-package, no tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Installs all the Jupyter components in one go";
     homepage = "https://jupyter.org/";
     license = licenses.bsd3;

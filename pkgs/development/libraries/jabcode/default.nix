@@ -2,10 +2,8 @@
 , fetchFromGitHub
 , lib
 , subproject ? "library" # one of "library", "reader" or  "writer"
-, zlib
-, libpng
-, libtiff
-, jabcode
+, zlib, libpng, libtiff
+, jabcode 
 }:
 let
   subdir = lib.getAttr subproject {
@@ -13,10 +11,9 @@ let
     "reader" = "jabcodeReader";
     "writer" = "jabcodeWriter";
   };
-in
-stdenv.mkDerivation rec {
+in stdenv.mkDerivation rec {
   pname = "jabcode-${subproject}";
-  version = "unstable-2020-05-13";
+  version = "git-2020-05-13";
   src = fetchFromGitHub {
     repo = "jabcode";
     owner = "jabcode";
@@ -30,14 +27,13 @@ stdenv.mkDerivation rec {
 
   preConfigure = "cd src/${subdir}";
 
-  installPhase =
-    if subproject == "library" then ''
-      mkdir -p $out/lib
-      cp build/* $out/lib
-    '' else ''
-      mkdir -p $out/bin
-      cp -RT bin $out/bin
-    '';
+  installPhase = if subproject == "library" then ''
+    mkdir -p $out/lib
+    cp build/* $out/lib
+  '' else ''
+    mkdir -p $out/bin
+    cp -RT bin $out/bin
+  '';
 
   meta = with lib; {
     description = "A high-capacity 2D color bar code (${subproject})";

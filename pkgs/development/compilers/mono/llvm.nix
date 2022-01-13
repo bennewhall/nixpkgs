@@ -24,8 +24,7 @@ stdenv.mkDerivation {
     sha256 = "07wd1cs3fdvzb1lv41b655z5zk34f47j8fgd9ljjimi5j9pj71f7";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ perl groff libxml2 python2 libffi ] ++ lib.optional stdenv.isLinux valgrind;
+  buildInputs = [ perl groff cmake libxml2 python2 libffi ] ++ lib.optional stdenv.isLinux valgrind;
 
   propagatedBuildInputs = [ ncurses zlib ];
 
@@ -39,13 +38,15 @@ stdenv.mkDerivation {
   cmakeFlags = with stdenv; [
     "-DLLVM_ENABLE_FFI=ON"
     "-DLLVM_BINUTILS_INCDIR=${libbfd.dev}/include"
-  ] ++ lib.optional (!isDarwin) "-DBUILD_SHARED_LIBS=ON";
+  ] ++ stdenv.lib.optional (!isDarwin) "-DBUILD_SHARED_LIBS=ON";
+
+  enableParallelBuilding = true;
 
   meta = {
     description = "Collection of modular and reusable compiler and toolchain technologies - Mono build";
     homepage    = "http://llvm.org/";
-    license     = lib.licenses.bsd3;
-    maintainers = with lib.maintainers; [ thoughtpolice ];
-    platforms   = lib.platforms.all;
+    license     = stdenv.lib.licenses.bsd3;
+    maintainers = with stdenv.lib.maintainers; [ thoughtpolice ];
+    platforms   = stdenv.lib.platforms.all;
   };
 }

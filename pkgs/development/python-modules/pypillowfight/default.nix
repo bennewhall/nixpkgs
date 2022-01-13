@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitLab, nose, pillow
+{ stdenv, buildPythonPackage, fetchFromGitLab, nose, pillow
 , isPy3k, isPyPy
 }:
 buildPythonPackage rec {
@@ -30,7 +30,7 @@ buildPythonPackage rec {
   buildInputs = [ nose ];
   propagatedBuildInputs = [ pillow ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library containing various image processing algorithms";
     inherit (src.meta) homepage;
     license = licenses.gpl3Plus;

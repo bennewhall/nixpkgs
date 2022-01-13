@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, makeWrapper,
+{ stdenv, fetchFromGitHub, cmake, makeWrapper,
   perlPackages,
   libminc, EBTKS }:
 
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/BIC-MNI/${pname}";
     description = "Program to normalize intensity of MINC files";
     maintainers = with maintainers; [ bcdarwin ];

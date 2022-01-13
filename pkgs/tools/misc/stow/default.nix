@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl, perlPackages }:
+{ stdenv, fetchurl, perl, perlPackages }:
 
 let
   pname = "stow";
@@ -29,8 +29,8 @@ stdenv.mkDerivation {
       as .../share, .../man, and so on.
     '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
     homepage = "https://www.gnu.org/software/stow/";
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

@@ -1,32 +1,29 @@
-{ lib, stdenv, fetchurl, fetchsvn, makeWrapper, unzip, jre, libXxf86vm
-, extraJavaOpts ? "-Djosm.restart=true -Djava.net.useSystemProxies=true"
-}:
+{ stdenv, fetchurl, fetchsvn, makeWrapper, unzip, jre, libXxf86vm }:
 let
   pname = "josm";
-  version = "18303";
+  version = "17329";
   srcs = {
     jar = fetchurl {
       url = "https://josm.openstreetmap.de/download/josm-snapshot-${version}.jar";
-      sha256 = "sha256-+gUJsx238iQKrYx/rdtd8ESVXI0u/kW2s0p33T4MSWU=";
+      sha256 = "0hra146akadqz9acj1xa2vzrmipfzf8li7sgsmk169xr991y653k";
     };
     macosx = fetchurl {
-      url = "https://josm.openstreetmap.de/download/macosx/josm-macos-${version}-java17.zip";
-      sha256 = "sha256-s8MuXcDl+DwjXOtf6ltpxYSeCE9R2/x9iJs2BoZHgXM=";
+      url = "https://josm.openstreetmap.de/download/macosx/josm-macosx-${version}.zip";
+      sha256 = "0i09jnfqbcirmic9vayrp78lnyk4mfh7ax3v3cs8kyqhk930pscf";
     };
     pkg = fetchsvn {
       url = "https://josm.openstreetmap.de/svn/trunk/native/linux/tested";
       rev = version;
-      sha256 = "sha256-+zsbksfQPwzVPpKlXdRWachWwjVuhExlyiEKDMkaxp8=";
+      sha256 = "0ybjca6dhnbwl3xqwrc91c444fzs1zrlnz7qr3l79s1vll9r4qd1";
     };
   };
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   inherit pname version;
 
   dontUnpack = true;
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = lib.optionals (!stdenv.isDarwin) [ jre ];
+  buildInputs = stdenv.lib.optionals (!stdenv.isDarwin) [ jre makeWrapper ];
 
   installPhase =
     if stdenv.isDarwin then ''
@@ -38,11 +35,12 @@ stdenv.mkDerivation rec {
 
       # Add libXxf86vm to path because it is needed by at least Kendzi3D plugin
       makeWrapper ${jre}/bin/java $out/bin/josm \
-        --add-flags "${extraJavaOpts} -jar $out/share/josm/josm.jar" \
+        --add-flags "-Djosm.restart=true -Djava.net.useSystemProxies=true" \
+        --add-flags "-jar $out/share/josm/josm.jar" \
         --prefix LD_LIBRARY_PATH ":" '${libXxf86vm}/lib'
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An extensible editor for OpenStreetMap";
     homepage = "https://josm.openstreetmap.de/";
     changelog = "https://josm.openstreetmap.de/wiki/Changelog";

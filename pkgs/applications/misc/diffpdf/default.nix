@@ -1,4 +1,4 @@
-{ lib, mkDerivation, fetchurl, fetchpatch, qmake, qttools, qtbase, poppler }:
+{ stdenv, mkDerivation, fetchurl, fetchpatch, qmake, qttools, qtbase, poppler }:
 
 mkDerivation rec {
   version = "2.1.3";
@@ -34,6 +34,7 @@ mkDerivation rec {
     install -dpm755 $out/share/doc/${pname}-${version} $out/share/licenses/${pname}-${version} $out/share/icons $out/share/pixmaps $out/share/applications
     install -Dpm644 CHANGES README help.html $out/share/doc/${pname}-${version}/
     install -Dpm644 gpl-2.0.txt $out/share/licenses/${pname}-${version}/
+    install -Dpm644 images/icon.png $out/share/icons/diffpdf.png
     install -Dpm644 images/icon.png $out/share/pixmaps/diffpdf.png
 
     cat > $out/share/applications/diffpdf.desktop <<EOF
@@ -51,8 +52,9 @@ mkDerivation rec {
   meta = {
     homepage = "http://www.qtrac.eu/diffpdfc.html";
     description = "Tool for diffing pdf files visually or textually";
-    license = lib.licenses.gpl2Plus;
-    maintainers = with lib.maintainers; [ tstrobel ];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.gpl2Plus;
+    maintainers = with stdenv.lib.maintainers; [ tstrobel ];
+    platforms = with stdenv.lib.platforms; linux;
+    inherit version;
   };
 }

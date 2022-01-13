@@ -2,13 +2,13 @@
 
 mkDerivation rec {
   pname = "generic";
-  version = "0.1.0.2";
+  version = "0.1.0.1";
 
   src = fetchFromGitHub {
-    owner = "effectfully";
     repo = "Generic";
+    owner = "effectfully";
     rev = "v${version}";
-    sha256 = "05igsd2gaj6h9bkqwp8llhvn4qvc5gmi03x4fnz096ba8m6x8s3n";
+    sha256 = "07l44yzx1jly20kmkmkjk8q493bn6x7i3xxpz6mhadkqlxyhmc8s";
   };
 
   buildInputs = [
@@ -21,8 +21,6 @@ mkDerivation rec {
   '';
 
   meta = with lib; {
-    # Remove if a version compatible with agda 2.6.2 is made
-    broken = true;
     description =
       "A library for doing generic programming in Agda";
     homepage = src.meta.homepage;

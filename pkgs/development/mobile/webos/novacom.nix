@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, webos, cmake, pkg-config }:
+{ stdenv, fetchFromGitHub, webos, cmake, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "novacom";
@@ -11,14 +11,14 @@ stdenv.mkDerivation rec {
     sha256 = "12s6g7l20kakyjlhqpli496miv2kfsdp17lcwhdrzdxvxl6hnf4n";
   };
 
-  nativeBuildInputs = [ cmake pkg-config webos.cmake-modules ];
+  nativeBuildInputs = [ cmake pkgconfig webos.cmake-modules ];
 
   postInstall = ''
     install -Dm755 -t $out/bin ../scripts/novaterm
     substituteInPlace $out/bin/novaterm --replace "exec novacom" "exec $out/bin/novacom"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utility for communicating with WebOS devices";
     license = licenses.asl20;
     maintainers = with maintainers; [ dtzWill ];

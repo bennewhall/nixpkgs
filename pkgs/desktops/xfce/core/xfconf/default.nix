@@ -1,18 +1,15 @@
-{ lib, mkXfceDerivation, libxfce4util, gobject-introspection, vala }:
+{ mkXfceDerivation, libxfce4util }:
 
 mkXfceDerivation {
   category = "xfce";
   pname = "xfconf";
-  version = "4.16.0";
+  version = "4.14.3";
 
-  sha256 = "sha256-w8wnHFj1KBX6lCnGbVLgWPEo2ul4SwfemUYVHioTlwE=";
-
-  nativeBuildInputs = [ gobject-introspection vala ];
+  sha256 = "0yxpdcyz81di7w9493jzps09bgrlgianjj5abnzahqmkpmpvb0rh";
 
   buildInputs = [ libxfce4util ];
 
-  meta = with lib; {
+  meta = {
     description = "Simple client-server configuration storage and query system for Xfce";
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
   };
 }

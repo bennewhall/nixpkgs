@@ -1,59 +1,45 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , copper
+, ruby
 , python3
+, qtbase
+, gtk3
 , pkg-config
-, withQt ? false, qtbase ? null, wrapQtAppsHook ? null
-, withGtk2 ? false, gtk2
-, withGtk3 ? false, gtk3
-, mkDerivation ? stdenv.mkDerivation
+, withQt ? false
+, withGtk ? false, wrapQtAppsHook ? null
 }:
-let onlyOneEnabled = xs: 1 == builtins.length (builtins.filter lib.id xs);
-in assert onlyOneEnabled [ withQt withGtk2 withGtk3 ];
-mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "code-browser";
-  version = "8.0";
+  version = "7.1.20";
   src = fetchurl {
     url = "https://tibleiz.net/download/code-browser-${version}-src.tar.gz";
-    sha256 = "sha256-beCp4lx4MI1+hVgWp2h3piE/zu51zfwQdB5g7ImgmwY=";
+    sha256 = "1svi0v3h42h2lrb8c7pjvqc8019v1p20ibsnl48pfhl8d96mmdnz";
   };
   postPatch = ''
     substituteInPlace Makefile --replace "LFLAGS=-no-pie" "LFLAGS=-no-pie -L."
-    patchShebangs .
-  ''
-  + lib.optionalString withQt ''
     substituteInPlace libs/copper-ui/Makefile --replace "moc -o" "${qtbase.dev}/bin/moc -o"
-    substituteInPlace libs/copper-ui/Makefile --replace "all: qt gtk gtk2" "all: qt"
-  ''
-  + lib.optionalString withGtk2 ''
-    substituteInPlace libs/copper-ui/Makefile --replace "all: qt gtk gtk2" "all: gtk2"
-  ''
-  + lib.optionalString withGtk3 ''
-    substituteInPlace libs/copper-ui/Makefile --replace "all: qt gtk gtk2" "all: gtk"
-  ''
-  ;
+    patchShebangs .
+  '';
   nativeBuildInputs = [ copper
                         python3
+                        ruby
+                        qtbase
+                        gtk3
                         pkg-config
                       ]
-  ++ lib.optionals withGtk2 [ gtk2 ]
-  ++ lib.optionals withGtk3 [ gtk3 ]
-  ++ lib.optionals withQt [ qtbase wrapQtAppsHook ];
-  buildInputs = lib.optionals withQt [ qtbase ]
-                ++ lib.optionals withGtk2 [ gtk2 ]
-                ++ lib.optionals withGtk3 [ gtk3 ];
+  ++ stdenv.lib.optionals withQt [ wrapQtAppsHook ];
+  buildInputs = stdenv.lib.optionals withQt [ qtbase ]
+                ++ stdenv.lib.optionals withGtk [ gtk3 ];
   makeFlags = [
     "prefix=$(out)"
     "COPPER=${copper}/bin/copper-elf64"
     "with-local-libs"
+    "QINC=${qtbase.dev}/include"
   ]
-  ++ lib.optionals withQt [ "QINC=${qtbase.dev}/include"
-                            "UI=qt"
-                          ]
-  ++ lib.optionals withGtk2 [ "UI=gtk2" ]
-  ++ lib.optionals withGtk3 [ "UI=gtk" ];
-
-  meta = with lib; {
+  ++ stdenv.lib.optionals withQt [ "UI=qt" ]
+  ++ stdenv.lib.optionals withGtk [ "UI=gtk" ];
+  meta = with stdenv.lib; {
     description = "Folding text editor, designed to hierarchically structure any kind of text file and especially source code";
     homepage = "https://tibleiz.net/code-browser/";
     license = licenses.gpl2;

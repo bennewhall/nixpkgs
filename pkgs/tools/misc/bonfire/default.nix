@@ -1,4 +1,4 @@
-{ lib, python3Packages, fetchFromGitHub }:
+{ stdenv, python3Packages, fetchFromGitHub }:
 
 with python3Packages;
 
@@ -29,7 +29,7 @@ buildPythonApplication rec {
       --replace "data_files = *.rst, *.txt" ""
   '';
 
-  buildInputs = [ httpretty pytest pytest-cov ];
+  buildInputs = [ httpretty pytest pytestcov ];
 
   preCheck = ''
     # fix compatibility with pytest 4
@@ -38,7 +38,7 @@ buildPythonApplication rec {
 
   propagatedBuildInputs = [ arrow click keyring parsedatetime requests six termcolor ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pypi.python.org/pypi/bonfire";
     description = "CLI Graylog Client with Follow Mode";
     license = licenses.bsd3;

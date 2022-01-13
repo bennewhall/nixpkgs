@@ -1,15 +1,15 @@
-{ mkDerivation, lib, fetchurl, pkg-config, ffmpeg, glew, libass, openal, qtbase }:
+{ mkDerivation, lib, fetchurl, pkgconfig, ffmpeg, glew, libass, openal, qtbase }:
 
 mkDerivation rec {
   pname = "bino";
-  version = "1.6.8";
+  version = "1.6.7";
 
   src = fetchurl {
     url = "https://bino3d.org/releases/${pname}-${version}.tar.xz";
-    sha256 = "sha256-8sIdX+qm7CGPHIziFBHHIe+KEbhbwDY6w/iRm1V+so4=";
+    sha256 = "04yl7ibnhajlli4a5x77az8jxbzw6b2wjay8aa6px551nmiszn9k";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ ffmpeg glew libass openal qtbase ];
 

@@ -1,31 +1,25 @@
-{ lib, stdenv, python3, emacs, bash }:
+{ stdenv, fetchurl, python, emacsPackages }:
 
 stdenv.mkDerivation rec {
   pname = "cask";
 
-  inherit (emacs.pkgs.melpaStablePackages.cask) src version;
+  inherit (emacsPackages.melpaStablePackages.cask) src version;
 
   doCheck = true;
 
-  nativeBuildInputs = [ emacs ];
-  buildInputs = with emacs.pkgs; [
+  nativeBuildInputs = [ emacsPackages.emacs ];
+  buildInputs = with emacsPackages; [
     s f dash ansi ecukes servant ert-runner el-mock
     noflet ert-async shell-split-string git package-build
   ] ++ [
-    python3
-    bash
+    python
   ];
 
-  strictDeps = true;
-
   buildPhase = ''
-    runHook preBuild
     emacs --batch -L . -f batch-byte-compile cask.el cask-cli.el
-    runHook postBuild
   '';
 
   installPhase = ''
-    runHook preInstall
     mkdir -p $out/bin
     mkdir -p $out/templates
     mkdir -p $out/share/emacs/site-lisp/cask/bin
@@ -34,10 +28,9 @@ stdenv.mkDerivation rec {
     install -Dm644 templates/* $out/templates/
     touch $out/.no-upgrade
     ln -s $out/share/emacs/site-lisp/cask/bin/cask $out/bin/cask
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Project management for Emacs";
     longDescription = ''
       Cask is a project management tool for Emacs that helps automate the

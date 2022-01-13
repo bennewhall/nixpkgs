@@ -1,8 +1,7 @@
 { stdenv, gnupg, coreutils, writeScript }:
 
 stdenv.mkDerivation {
-  pname = "gnupg1compat";
-  version = gnupg.version;
+  name = "gnupg1compat-${gnupg.version}";
 
   builder = writeScript "gnupg1compat-builder" ''
     PATH=${coreutils}/bin

@@ -1,37 +1,29 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, cmake, boost, libevdevplus, libuinputplus, iodash, cxxopts}:
+{ stdenv, fetchFromGitHub, pkgconfig, cmake, boost, libevdevplus, libuinputplus }:
 
 stdenv.mkDerivation rec {
   pname = "ydotool";
-  version = "unstable-2021-01-20";
+  version = "0.1.8";
 
   src = fetchFromGitHub {
     owner = "ReimuNotMoe";
     repo = "ydotool";
-    rev = "b1d041f52f7bac364d6539b1251d29c3b77c0f37";
-    sha256 = "1gzdbx6fv0dbcyia3yyzhv93az2gf90aszb9kcj5cnxywfpv9w9g";
+    rev = "v${version}";
+    sha256 = "0mx3636p0f8pznmwm4rlbwq7wrmjb2ygkf8b3a6ps96a7j1fw39l";
   };
 
-  # upstream decided to use a cpp package manager called cpm.
-  # we need to disable that because it wants networking, furthermore,
-  # it does some system folder creating which also needs to be disabled.
-  # Both changes are to respect the sandbox.
-  patches = [ ./fixup-cmakelists.patch ];
-
-
-  # cxxopts is a header only library.
-  # See pull request: https://github.com/ReimuNotMoe/ydotool/pull/105
+  # disable static linking
   postPatch = ''
     substituteInPlace CMakeLists.txt --replace \
-      "PUBLIC cxxopts" \
-      "PUBLIC"
+      "-static" \
+      ""
   '';
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [
-    boost libevdevplus libuinputplus iodash cxxopts
+    boost libevdevplus libuinputplus
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Generic Linux command-line automation tool";
     license = licenses.mit;

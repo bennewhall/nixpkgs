@@ -1,65 +1,54 @@
-{ lib
-, buildPythonPackage
+{ lib, buildPythonPackage, fetchPypi, isPy27
 , cachetools
 , cytoolz
-, fetchPypi
 , jellyfish
-, joblib
 , matplotlib
 , networkx
 , numpy
 , pyemd
 , pyphen
-, pytestCheckHook
-, pythonOlder
+, pytest
 , requests
-, scikit-learn
+, scikitlearn
 , scipy
 , spacy
-, tqdm
+, srsly
 }:
 
 buildPythonPackage rec {
   pname = "textacy";
-  version = "0.11.0";
-  disabled = pythonOlder "3.7";
+  version = "0.10.1";
+  disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-d/tyTCewoERA15iBv4H2LORFzgco15fnnN1sneeGuF4=";
+    sha256 = "ff72adc6dbb85db6981324e226fff77830da57d7fe7e4adb2cafd9dc2a8bfa7d";
   };
 
   propagatedBuildInputs = [
     cachetools
     cytoolz
     jellyfish
-    joblib
     matplotlib
     networkx
     numpy
     pyemd
     pyphen
     requests
-    scikit-learn
+    scikitlearn
     scipy
     spacy
-    tqdm
+    srsly
   ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  pytestFlagsArray = [
-    # Almost all tests have to deal with downloading a dataset, only test pure tests
-    "tests/test_constants.py"
-    "tests/preprocessing/test_normalize.py"
-    "tests/similarity/test_edits.py"
-    "tests/preprocessing/test_resources.py"
-    "tests/preprocessing/test_replace.py"
-  ];
-
-  pythonImportsCheck = [ "textacy" ];
+  checkInputs = [ pytest ];
+  # almost all tests have to deal with downloading a dataset, only test pure tests
+  checkPhase = ''
+    pytest tests/test_text_utils.py \
+      tests/test_utils.py \
+      tests/preprocessing \
+      tests/datasets/test_base_dataset.py
+  '';
 
   meta = with lib; {
     description = "Higher-level text processing, built on spaCy";

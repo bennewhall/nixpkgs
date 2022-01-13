@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, libxpdf, libxml2}:
+{stdenv, fetchurl, libxpdf, libxml2}:
 
 stdenv.mkDerivation {
   name = "pdf2xml";
@@ -32,7 +32,7 @@ stdenv.mkDerivation {
     cp exe/* $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PDF to XML converter";
     platforms = platforms.unix;
     license = licenses.gpl2;

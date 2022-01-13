@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, ncurses, libpcap }:
+{stdenv, fetchurl, ncurses, libpcap }:
 
 stdenv.mkDerivation rec {
   version = "3.6.0";
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ncurses libpcap];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://sipp.sf.net";
     description = "The SIPp testing tool";
     license = licenses.gpl3;

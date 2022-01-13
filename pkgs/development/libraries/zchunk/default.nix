@@ -1,51 +1,41 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
-, argp-standalone
-, curl
+, pkgconfig
 , meson
 , ninja
-, pkg-config
 , zstd
+, curl
 }:
 
 stdenv.mkDerivation rec {
   pname = "zchunk";
-  version = "1.1.16";
+  version = "1.1.6";
+
+  outputs = [ "out" "lib" "dev" ];
 
   src = fetchFromGitHub {
     owner = "zchunk";
     repo = pname;
     rev = version;
-    hash = "sha256-+8FkivLTZXdu0+1wu+7T98y6rQzIHbG9l15Abrbln1o=";
+    sha256 = "1j05f26xppwbkxrm11895blm75i1a6p9q23x7wlkqw198mpnpbbv";
   };
 
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
-    curl
     zstd
-  ] ++ lib.optional stdenv.isDarwin argp-standalone;
+    curl
+  ];
 
-  outputs = [ "out" "lib" "dev" ];
-
-  meta = with lib; {
-    homepage = "https://github.com/zchunk/zchunk";
+  meta = with stdenv.lib; {
     description = "File format designed for highly efficient deltas while maintaining good compression";
-    longDescription = ''
-      zchunk is a compressed file format that splits the file into independent
-      chunks. This allows you to only download changed chunks when downloading a
-      new version of the file, and also makes zchunk files efficient over rsync.
-
-      zchunk files are protected with strong checksums to verify that the file
-      you downloaded is, in fact, the file you wanted.
-    '';
+    homepage = "https://github.com/zchunk/zchunk";
     license = licenses.bsd2;
-    maintainers = with maintainers; [ AndersonTorres ];
+    maintainers = with maintainers; [];
     platforms = platforms.unix;
   };
 }

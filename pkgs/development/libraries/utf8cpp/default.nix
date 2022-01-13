@@ -1,32 +1,32 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "utf8cpp";
-  version = "3.2.1";
+  version = "3.1.1";
 
   src = fetchFromGitHub {
     owner = "nemtrif";
     repo = "utfcpp";
     rev = "v${version}";
     fetchSubmodules = true;
-    sha256 = "0gsbwif97i025bxgyax4fbf6v9z44zrca4s6wwd8x36ac8qzjppf";
+    sha256 = "1s2pda75488z7c3w3a6qv31bj239248696yk5j2a1drbg2x1dpfh";
   };
 
   cmakeFlags = [
+    "-DCMAKE_BUILD_TYPE=None"
     "-DCMAKE_INSTALL_LIBDIR=lib"
+    "-DINSTALL_GTEST=OFF"
   ];
 
   nativeBuildInputs = [ cmake ];
 
-  # Tests fail on darwin, probably due to a bug in the test framework:
-  # https://github.com/nemtrif/utfcpp/issues/84
-  doCheck = !stdenv.isDarwin;
+  doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/nemtrif/utfcpp";
     description = "UTF-8 with C++ in a Portable Way";
-    license = licenses.boost;
+    license = licenses.free;
     maintainers = with maintainers; [ jobojeha ];
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }

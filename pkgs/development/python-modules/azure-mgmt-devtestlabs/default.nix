@@ -1,29 +1,28 @@
 { lib
 , buildPythonPackage
 , fetchPypi
+, python
 , isPy3k
 , msrest
 , msrestazure
 , azure-common
-, azure-mgmt-core
 , azure-mgmt-nspkg
 }:
 
 buildPythonPackage rec {
   pname = "azure-mgmt-devtestlabs";
-  version = "9.0.0";
+  version = "4.0.0";
 
   src = fetchPypi {
     inherit pname version;
     extension = "zip";
-    sha256 = "d8160d93fd3d947e5613c6919176b0edf72c94ac69679ea3b92cf27ff7398e64";
+    sha256 = "1397ksrd61jv7400mgn8sqngp6ahir55fyq9n5k69wk88169qm2r";
   };
 
   propagatedBuildInputs = [
     msrest
     msrestazure
     azure-common
-    azure-mgmt-core
   ] ++ lib.optionals (!isPy3k) [
     azure-mgmt-nspkg
   ];

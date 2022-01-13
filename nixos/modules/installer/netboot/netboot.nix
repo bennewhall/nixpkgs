@@ -9,7 +9,7 @@ with lib;
   options = {
 
     netboot.storeContents = mkOption {
-      example = literalExpression "[ pkgs.stdenv ]";
+      example = literalExample "[ pkgs.stdenv ]";
       description = ''
         This option lists additional derivations to be included in the
         Nix store in the generated netboot image.
@@ -29,39 +29,33 @@ with lib;
           then []
           else [ pkgs.grub2 pkgs.syslinux ]);
 
-    fileSystems."/" = mkImageMediaOverride
+    fileSystems."/" =
       { fsType = "tmpfs";
         options = [ "mode=0755" ];
       };
 
     # In stage 1, mount a tmpfs on top of /nix/store (the squashfs
     # image) to make this a live CD.
-    fileSystems."/nix/.ro-store" = mkImageMediaOverride
+    fileSystems."/nix/.ro-store" =
       { fsType = "squashfs";
         device = "../nix-store.squashfs";
         options = [ "loop" ];
         neededForBoot = true;
       };
 
-    fileSystems."/nix/.rw-store" = mkImageMediaOverride
+    fileSystems."/nix/.rw-store" =
       { fsType = "tmpfs";
         options = [ "mode=0755" ];
         neededForBoot = true;
       };
 
-    fileSystems."/nix/store" = mkImageMediaOverride
+    fileSystems."/nix/store" =
       { fsType = "overlay";
         device = "overlay";
         options = [
           "lowerdir=/nix/.ro-store"
           "upperdir=/nix/.rw-store/store"
           "workdir=/nix/.rw-store/work"
-        ];
-
-        depends = [
-          "/nix/.ro-store"
-          "/nix/.rw-store/store"
-          "/nix/.rw-store/work"
         ];
       };
 
@@ -94,7 +88,7 @@ with lib;
 
     system.build.netbootIpxeScript = pkgs.writeTextDir "netboot.ipxe" ''
       #!ipxe
-      kernel ${pkgs.stdenv.hostPlatform.linux-kernel.target} init=${config.system.build.toplevel}/init initrd=initrd ${toString config.boot.kernelParams}
+      kernel ${pkgs.stdenv.hostPlatform.platform.kernelTarget} init=${config.system.build.toplevel}/init initrd=initrd ${toString config.boot.kernelParams}
       initrd initrd
       boot
     '';

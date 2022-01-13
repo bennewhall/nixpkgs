@@ -1,4 +1,4 @@
-{ lib, python3Packages }:
+{ stdenv, python3Packages }:
 
 python3Packages.buildPythonPackage rec {
   pname = "pydf";
@@ -15,7 +15,7 @@ python3Packages.buildPythonPackage rec {
     install -t $out/share/man/man1 -m 444 pydf.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "colourised df(1)-clone";
     homepage = "http://kassiopeia.juls.savba.sk/~garabik/software/pydf/";
     license = licenses.publicDomain;

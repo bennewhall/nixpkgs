@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation rec {
   pname = "vitetris";
-  version = "0.59.1";
+  version = "0.58.0";
 
   src = fetchFromGitHub {
     owner = "vicgeralds";
     repo = "vitetris";
     rev = "v${version}";
-    sha256 = "sha256-Rbfa2hD67RGmInfWwYD4SthL8lm5bGSBi3oudV5hAao=";
+    sha256 = "1fvw9yqg1q25x6dlfi4bl3hrrcdgl6wwq29j89aycxwdfxrxs09w";
   };
 
   hardeningDisable = [ "format" ];

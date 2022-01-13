@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, marisa, swig
+{ stdenv, buildPythonPackage, fetchFromGitHub, marisa, swig
 , isPy3k
 }:
 
@@ -20,7 +20,7 @@ buildPythonPackage rec {
 
   sourceRoot = "${src.name}/bindings/python";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python binding for marisa package (do not confuse with marisa-trie python bindings)";
     homepage    = "https://github.com/s-yata/marisa-trie";
     license     = with licenses; [ bsd2 lgpl2 ];

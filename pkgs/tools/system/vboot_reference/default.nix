@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitiles, pkg-config, libuuid, openssl, libyaml, xz }:
+{ stdenv, fetchFromGitiles, pkgconfig, libuuid, openssl, libyaml, lzma }:
 
 stdenv.mkDerivation rec {
   version = "20180311";
@@ -12,8 +12,8 @@ stdenv.mkDerivation rec {
     sha256 = "1zja4ma6flch08h5j2l1hqnxmw2xwylidnddxxd5y2x05dai9ddj";
   };
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ openssl libuuid libyaml xz ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ openssl libuuid libyaml lzma ];
 
   enableParallelBuilding = true;
 
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     cp -r tests/devkeys* $out/share/vboot/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Chrome OS partitioning and kernel signing tools";
     license = licenses.bsd3;
     platforms = platforms.linux;

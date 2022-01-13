@@ -1,4 +1,4 @@
-{ buildPecl, fetchurl, lib, libxl, php }:
+{ buildPecl, fetchurl, lib, pkgs }:
 let
   pname = "php_excel";
   phpVersion = "php7";
@@ -12,19 +12,13 @@ buildPecl {
     sha256 = "0dpvih9gpiyh1ml22zi7hi6kslkilzby00z1p8x248idylldzs2n";
   };
 
-  buildInputs = [ libxl ];
+  buildInputs = with pkgs; [ libxl ];
 
   configureFlags = [
     "--with-excel"
-    "--with-libxl-incdir=${libxl}/include_c"
-    "--with-libxl-libdir=${libxl}/lib"
+    "--with-libxl-incdir=${pkgs.libxl}/include_c"
+    "--with-libxl-libdir=${pkgs.libxl}/lib"
   ];
 
-  meta = with lib; {
-    description = "PHP Extension interface to the Excel writing/reading library";
-    license = licenses.php301;
-    homepage = "https://github.com/iliaal/php_excel";
-    maintainers = lib.teams.php.members;
-    broken = lib.versionAtLeast php.version "8.0";
-  };
+  meta.maintainers = lib.teams.php.members;
 }

@@ -1,11 +1,9 @@
-diff --git a/testing/functional/test_restart.py b/testing/functional/test_restart.py
-index 6d972c82..e8435fd5 100644
 --- a/testing/functional/test_restart.py
 +++ b/testing/functional/test_restart.py
-@@ -350,14 +350,7 @@ class RestartTestWithoutEncryption(RestartTest):
+@@ -323,14 +323,7 @@ class RestartTestWithoutEncryption(RestartTest):
          https://launchpad.net/bugs/929067
          """
- 
+
 -        if platform.system().startswith(u'Linux'):
 -            tarcmd = u"tar"
 -        elif platform.system().startswith(u'Darwin'):
@@ -15,6 +13,6 @@ index 6d972c82..e8435fd5 100644
 -        else:
 -            raise Exception(u"Platform %s not supported by tar/gtar." % platform.platform())
 +        tarcmd = u"tar"
- 
+
          # Intial normal backup
-         self.backup(u"full", u"{0}/testfiles/blocktartest".format(_runtest_dir))
+         self.backup("full", "testfiles/blocktartest")

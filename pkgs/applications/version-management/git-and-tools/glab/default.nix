@@ -2,25 +2,20 @@
 
 buildGoModule rec {
   pname = "glab";
-  version = "1.21.1";
+  version = "1.11.1";
 
   src = fetchFromGitHub {
     owner = "profclems";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-naCCJ9s63UPDxRWbVjVikXtGUlM4Lp7vyDHlESEtXeI=";
+    sha256 = "mmrTuldU2WDe9t2nC3DYfqwb28uh6qjAaaveR221mjw=";
   };
 
-  vendorSha256 = "sha256-rciT4UcsLu/vI0PqdTlMjbYXVumzo3ASsopkgiHGM60=";
+  vendorSha256 = "B4RKcKUTdGkonsKhL7NIKzVpZq6XD6cMMWed4wr/Moc=";
+  runVend = true;
 
-  ldflags = [
-    "-X main.version=${version}"
-  ];
-
-  preCheck = ''
-    # failed to read configuration:  mkdir /homeless-shelter: permission denied
-    export HOME=$TMPDIR
-  '';
+  # Tests are trying to access /homeless-shelter
+  doCheck = false;
 
   subPackages = [ "cmd/glab" ];
 

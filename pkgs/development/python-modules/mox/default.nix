@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchurl
 }:
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # error: invalid command 'test'
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pymox.readthedocs.io/";
     description = "A mock object framework for Python";
     license = licenses.asl20;

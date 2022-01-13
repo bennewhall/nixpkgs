@@ -1,11 +1,11 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , unzip
 , jdk
 , ant
 , jre
 , makeWrapper
-, testVersion
+, runCommand
 , key
 }:
 
@@ -51,15 +51,12 @@ in stdenv.mkDerivation rec {
       --add-flags "-cp $out/share/java/KeY.jar de.uka.ilkd.key.core.Main"
   '';
 
-  passthru.tests.version =
-    testVersion {
-      package = key;
-      command = "KeY --help";
-      # Wrong '2.5' version in the code. On next version change to ${version}
-      version = "2.5";
-    };
+  passthru.tests.check-version = runCommand "key-help" {} ''
+    ${key}/bin/KeY --help | grep 2.5 # Wrong version in the code. On next version change to ${version}
+    touch $out
+  '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Java formal verification tool";
     homepage = "https://www.key-project.org"; # also https://formal.iti.kit.edu/key/
     longDescription = ''

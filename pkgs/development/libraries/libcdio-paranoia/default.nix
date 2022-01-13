@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, libcdio, pkg-config,
+{ stdenv, fetchFromGitHub, autoreconfHook, libcdio, pkgconfig,
   libiconv, IOKit, DiskArbitration}:
 
 stdenv.mkDerivation {
@@ -11,17 +11,17 @@ stdenv.mkDerivation {
     sha256 = "1wjgmmaca4baw7k5c3vdap9hnjc49ciagi5kvpvync3aqfmdvkha";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ libcdio ] ++
-    lib.optionals stdenv.isDarwin [ libiconv IOKit DiskArbitration ];
+    stdenv.lib.optionals stdenv.isDarwin [ libiconv IOKit DiskArbitration ];
 
-  propagatedBuildInputs = lib.optional stdenv.isDarwin DiskArbitration;
+  propagatedBuildInputs = stdenv.lib.optional stdenv.isDarwin DiskArbitration;
 
-  configureFlags = lib.optionals stdenv.isDarwin [
+  configureFlags = stdenv.lib.optionals stdenv.isDarwin [
     "--disable-ld-version-script"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "CD paranoia on top of libcdio";
     longDescription = ''
       This is a port of xiph.org's cdda paranoia to use libcdio for CDROM

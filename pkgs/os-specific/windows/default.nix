@@ -1,8 +1,8 @@
-{ lib, stdenv, buildPackages
+{ stdenv, buildPackages
 , newScope, overrideCC, crossLibcStdenv, libcCross
 }:
 
-lib.makeScope newScope (self: with self; {
+stdenv.lib.makeScope newScope (self: with self; {
 
   cygwinSetup = callPackage ./cygwin-setup { };
 
@@ -19,7 +19,7 @@ lib.makeScope newScope (self: with self; {
 
   crossThreadsStdenv = overrideCC crossLibcStdenv
     (if stdenv.hostPlatform.useLLVM or false
-     then buildPackages.llvmPackages_8.clangNoLibcxx
+     then buildPackages.llvmPackages_8.lldClangNoLibcxx
      else buildPackages.gccCrossStageStatic.override (old: {
        bintools = old.bintools.override {
          libc = libcCross;

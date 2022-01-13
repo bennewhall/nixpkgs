@@ -1,14 +1,17 @@
-{ lib, stdenv, fetchurl, libvorbis, libogg, libtheora, SDL, libXft, SDL_image, zlib, libX11, libpng, openal, runtimeShell, requireFile, commercialVersion ? false }:
+{ stdenv, fetchurl, libvorbis, libogg, libtheora, SDL, libXft, SDL_image, zlib, libX11, libpng, openal, runtimeShell, requireFile, commercialVersion ? false }:
 
-stdenv.mkDerivation rec {
-  pname = "andyetitmoves";
-  version   = "1.2.2";
+let plainName = "andyetitmoves";
+    version   = "1.2.2";
+in
+
+stdenv.mkDerivation {
+  name = "${plainName}-${version}";
 
   src = if stdenv.hostPlatform.system == "i686-linux" || stdenv.hostPlatform.system == "x86_64-linux"
     then
       let postfix        = if stdenv.hostPlatform.system == "i686-linux" then "i386" else "x86_64";
-          commercialName = "${pname}-${version}_${postfix}.tar.gz";
-          demoUrl        = "http://www.andyetitmoves.net/demo/${pname}Demo-${version}_${postfix}.tar.gz";
+          commercialName = "${plainName}-${version}_${postfix}.tar.gz";
+          demoUrl        = "http://www.andyetitmoves.net/demo/${plainName}Demo-${version}_${postfix}.tar.gz";
       in
       if commercialVersion
         then requireFile {
@@ -65,8 +68,8 @@ stdenv.mkDerivation rec {
 
     homepage = "http://www.andyetitmoves.net/";
 
-    license = lib.licenses.unfree;
+    license = stdenv.lib.licenses.unfree;
 
-    maintainers = with lib.maintainers; [bluescreen303];
+    maintainers = with stdenv.lib.maintainers; [bluescreen303];
   };
 }

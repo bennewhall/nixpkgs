@@ -1,14 +1,8 @@
-{ lib, stdenv, fetchurl, fetchFromGitHub, zip, love, lua, makeWrapper, makeDesktopItem }:
-stdenv.mkDerivation rec {
+{ stdenv, fetchurl, fetchFromGitHub, zip, love, lua, makeWrapper, makeDesktopItem }:
+
+let
   pname = "orthorobot";
   version = "1.1.1";
-
-  src = fetchFromGitHub {
-    owner = "Stabyourself";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "1ca6hvd890kxmamsmsfiqzw15ngsvb4lkihjb6kabgmss61a6s5p";
-  };
 
   icon = fetchurl {
     url = "http://stabyourself.net/images/screenshots/orthorobot-5.png";
@@ -25,12 +19,25 @@ stdenv.mkDerivation rec {
     categories = "Game;";
   };
 
+in
+
+stdenv.mkDerivation {
+  name = "${pname}-${version}";
+
+  src = fetchFromGitHub {
+    owner = "Stabyourself";
+    repo = pname;
+    rev = "v${version}";
+    sha256 = "1ca6hvd890kxmamsmsfiqzw15ngsvb4lkihjb6kabgmss61a6s5p";
+  };
+
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ lua love zip ];
 
-  dontBuild = true;
+  phases = [ "unpackPhase" "installPhase" ];
 
-  installPhase = ''
+  installPhase =
+  ''
     mkdir -p $out/bin $out/share/games/lovegames $out/share/applications
     zip -9 -r ${pname}.love ./*
     mv ${pname}.love $out/share/games/lovegames/${pname}.love
@@ -39,11 +46,12 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/${pname}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Recharge the robot";
     maintainers = with maintainers; [ leenaars ];
     platforms = platforms.linux;
     license = licenses.free;
     downloadPage = "http://stabyourself.net/orthorobot/";
   };
+
 }

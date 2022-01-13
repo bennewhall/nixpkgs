@@ -1,29 +1,25 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, nasm }:
+{ stdenv, fetchFromGitHub, meson, ninja, nasm }:
 
 stdenv.mkDerivation rec {
   pname = "libvmaf";
-  version = "2.3.0";
+  version = "1.5.3";
 
   src = fetchFromGitHub {
     owner = "netflix";
     repo = "vmaf";
     rev = "v${version}";
-    sha256 = "12mwl7vxc3xi0qar386mkhkpah9zzgjb74mzc2qqsgz9zzxp16dm";
+    sha256 = "0x3l3g0hgrrjh3ygmxr1pd3rd5589s07c7id35nvj76ch5b7gy63";
   };
 
   sourceRoot = "source/libvmaf";
 
   nativeBuildInputs = [ meson ninja nasm ];
-
-  mesonFlags = [ "-Denable_avx512=true" ];
-
   outputs = [ "out" "dev" ];
-  doCheck = false;
+  doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Netflix/vmaf";
     description = "Perceptual video quality assessment based on multi-method fusion (VMAF)";
-    changelog = "https://github.com/Netflix/vmaf/raw/v${version}/CHANGELOG.md";
     platforms = platforms.unix;
     license = licenses.bsd2Patent;
     maintainers = [ maintainers.cfsmp3 maintainers.marsam ];

@@ -1,24 +1,21 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k
+{ stdenv, buildPythonPackage, fetchPypi
 , nose }:
 
-let
+buildPythonPackage rec {
   pname = "crccheck";
-  version = "1.1";
-in buildPythonPackage {
-  inherit pname version;
+  version = "0.6";
 
-  checkInputs = [ nose ];
+  buildInputs = [ nose ];
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "45962231cab62b82d05160553eebd9b60ef3ae79dc39527caef52e27f979fa96";
+    sha256 = "0ckymm6s5kw08i1j35fy2cfha1hyq94pq1kc66brb552qgjs91jn";
+    extension = "zip";
   };
 
-  disabled = !isPy3k;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python library for CRCs and checksums";
-    homepage = "https://sourceforge.net/projects/crccheck/";
+    homepage = "https://bitbucket.org/martin_scharrer/crccheck";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ etu ];
     platforms = platforms.linux;

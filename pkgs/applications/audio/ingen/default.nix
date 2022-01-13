@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchgit, boost, ganv, glibmm, gtkmm2, libjack2, lilv
-, lv2, makeWrapper, pkg-config, python3, raul, serd, sord, sratom
+{ stdenv, fetchgit, boost, ganv, glibmm, gtkmm2, libjack2, lilv
+, lv2, makeWrapper, pkgconfig, python, raul, rdflib, serd, sord, sratom
 , wafHook
 , suil
 }:
@@ -16,24 +16,27 @@ stdenv.mkDerivation  rec {
     deepClone = true;
   };
 
-  nativeBuildInputs = [ pkg-config wafHook python3 python3.pkgs.wrapPython ];
+  nativeBuildInputs = [ pkgconfig wafHook ];
   buildInputs = [
-    boost ganv glibmm gtkmm2 libjack2 lilv lv2
-    python3 raul serd sord sratom suil
+    boost ganv glibmm gtkmm2 libjack2 lilv lv2 makeWrapper
+    python raul serd sord sratom suil
   ];
 
-  strictDeps = true;
-
-  pythonPath = [
-    python3
-    python3.pkgs.rdflib
-  ];
-
-  postInstall = ''
-    wrapPythonProgramsIn "$out/bin" "$out $pythonPath"
+  preConfigure = ''
+    sed -e "s@{PYTHONDIR}/'@out/'@" -i wscript
   '';
 
-  meta = with lib; {
+  propagatedBuildInputs = [ rdflib ];
+
+  postInstall = ''
+    for program in ingenams ingenish
+    do
+      wrapProgram $out/bin/$program \
+        --prefix PYTHONPATH : $out/${python.sitePackages}:$PYTHONPATH
+    done
+  '';
+
+  meta = with stdenv.lib; {
     description = "A modular audio processing system using JACK and LV2 or LADSPA plugins";
     homepage = "http://drobilla.net/software/ingen";
     license = licenses.agpl3Plus;

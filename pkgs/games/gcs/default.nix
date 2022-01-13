@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, runCommand
+{ stdenv, fetchFromGitHub, runCommand
 , jdk8, ant
 , jre8, makeWrapper
 }:
@@ -42,8 +42,7 @@ in stdenv.mkDerivation rec {
     cp -r ${library} gcs_library
   '';
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jdk8 jre8 ant ];
+  buildInputs = [ jdk8 jre8 ant makeWrapper ];
   buildPhase = ''
     cd apple_stubs
     ant
@@ -67,7 +66,7 @@ in stdenv.mkDerivation rec {
       --add-flags "-cp $out/share/java/gcs-${version}.jar com.trollworks.gcs.app.GCS"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A stand-alone, interactive, character sheet editor for the GURPS 4th Edition roleplaying game system";
     homepage = "https://gurpscharactersheet.com/";
     license = licenses.mpl20;

@@ -1,11 +1,11 @@
-{ config, lib, stdenv, fetchurl, pkg-config, freetype, yasm, ffmpeg
+{ config, stdenv, fetchurl, pkgconfig, freetype, yasm, ffmpeg_3
 , aalibSupport ? true, aalib ? null
 , fontconfigSupport ? true, fontconfig ? null, freefont_ttf ? null
 , fribidiSupport ? true, fribidi ? null
 , x11Support ? true, libX11 ? null, libXext ? null, libGLU, libGL ? null
 , xineramaSupport ? true, libXinerama ? null
 , xvSupport ? true, libXv ? null
-, alsaSupport ? stdenv.isLinux, alsa-lib ? null
+, alsaSupport ? stdenv.isLinux, alsaLib ? null
 , screenSaverSupport ? true, libXScrnSaver ? null
 , vdpauSupport ? false, libvdpau ? null
 , cddaSupport ? !stdenv.isDarwin, cdparanoia ? null
@@ -36,7 +36,7 @@ assert fribidiSupport -> (fribidi != null);
 assert x11Support -> (libX11 != null && libXext != null && libGLU != null && libGL != null);
 assert xineramaSupport -> (libXinerama != null && x11Support);
 assert xvSupport -> (libXv != null && x11Support);
-assert alsaSupport -> alsa-lib != null;
+assert alsaSupport -> alsaLib != null;
 assert screenSaverSupport -> libXScrnSaver != null;
 assert vdpauSupport -> libvdpau != null;
 assert cddaSupport -> cdparanoia != null;
@@ -84,7 +84,7 @@ let
       cp -prv * $out
     '';
 
-    meta.license = lib.licenses.unfree;
+    meta.license = stdenv.lib.licenses.unfree;
   } else null;
 
   crossBuild = stdenv.hostPlatform != stdenv.buildPlatform;
@@ -106,17 +106,15 @@ stdenv.mkDerivation rec {
     rm -rf ffmpeg
   '';
 
-  patches = [ ./svn-r38199-ffmpeg44fix.patch ];
-
   depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [ pkg-config yasm ];
-  buildInputs = with lib;
-    [ freetype ffmpeg ]
+  nativeBuildInputs = [ pkgconfig yasm ];
+  buildInputs = with stdenv.lib;
+    [ freetype ffmpeg_3 ]
     ++ optional aalibSupport aalib
     ++ optional fontconfigSupport fontconfig
     ++ optional fribidiSupport fribidi
     ++ optionals x11Support [ libX11 libXext libGLU libGL ]
-    ++ optional alsaSupport alsa-lib
+    ++ optional alsaSupport alsaLib
     ++ optional xvSupport libXv
     ++ optional theoraSupport libtheora
     ++ optional cacaSupport libcaca
@@ -141,7 +139,7 @@ stdenv.mkDerivation rec {
     ;
 
   configurePlatforms = [ ];
-  configureFlags = with lib; [
+  configureFlags = with stdenv.lib; [
     "--enable-freetype"
     (if fontconfigSupport then "--enable-fontconfig" else "--disable-fontconfig")
     (if x11Support then "--enable-x11 --enable-gl" else "--disable-x11 --disable-gl")
@@ -174,7 +172,7 @@ stdenv.mkDerivation rec {
          (useUnfreeCodecs && codecs != null && !crossBuild)
          "--codecsdir=${codecs}"
     ++ optional
-         (stdenv.hostPlatform.isx86 && !crossBuild)
+         ((stdenv.hostPlatform.isi686 || stdenv.hostPlatform.isx86_64) && !crossBuild)
          "--enable-runtime-cpudetection"
     ++ optional fribidiSupport "--enable-fribidi"
     ++ optional stdenv.isLinux "--enable-vidix"
@@ -201,20 +199,19 @@ stdenv.mkDerivation rec {
     echo CONFIG_MPEGAUDIODSP=yes >> config.mak
   '';
 
-  NIX_LDFLAGS = with lib; toString (
+  NIX_LDFLAGS = with stdenv.lib; toString (
        optional  fontconfigSupport "-lfontconfig"
     ++ optional  fribidiSupport "-lfribidi"
     ++ optionals x11Support [ "-lX11" "-lXext" ]
-    ++ optional  x264Support "-lx264"
     ++ [ "-lfreetype" ]
   );
 
-  installTargets = [ "install" ] ++ lib.optional x11Support "install-gui";
+  installTargets = [ "install" ] ++ stdenv.lib.optional x11Support "install-gui";
 
   enableParallelBuilding = true;
 
   # Provide a reasonable standard font when not using fontconfig. Maybe we should symlink here.
-  postInstall = lib.optionalString (!fontconfigSupport)
+  postInstall = stdenv.lib.optionalString (!fontconfigSupport)
     ''
       mkdir -p $out/share/mplayer
       cp ${freefont_ttf}/share/fonts/truetype/FreeSans.ttf $out/share/mplayer/subfont.ttf
@@ -223,11 +220,11 @@ stdenv.mkDerivation rec {
       fi
     '';
 
-  meta = with lib; {
+  meta = {
     description = "A movie player that supports many video formats";
     homepage = "http://mplayerhq.hu";
-    license = licenses.gpl2Only;
-    maintainers = with maintainers; [ eelco ];
-    platforms = [ "i686-linux" "x86_64-linux" "x86_64-darwin" "aarch64-darwin" ];
+    license = "GPL";
+    maintainers = [ stdenv.lib.maintainers.eelco ];
+    platforms = [ "i686-linux" "x86_64-linux" "x86_64-darwin" ];
   };
 }

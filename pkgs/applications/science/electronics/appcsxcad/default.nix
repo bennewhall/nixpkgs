@@ -45,6 +45,8 @@ mkDerivation {
     rm $out/bin/AppCSXCAD.sh
   '';
 
+  enableParallelBuilding = true;
+
   meta = with lib; {
     description = "Minimal Application using the QCSXCAD library";
     homepage = "https://github.com/thliebig/AppCSXCAD";

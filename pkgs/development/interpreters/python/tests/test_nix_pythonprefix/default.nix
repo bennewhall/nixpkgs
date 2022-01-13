@@ -1,4 +1,4 @@
-{ interpreter, writeText, runCommand }:
+{ interpreter, writeText, runCommandNoCC }:
 
 let
 
@@ -19,7 +19,7 @@ let
     print(s)
   '';
 
-in runCommand "${interpreter.name}-site-prefix-mypy-test" {} ''
+in runCommandNoCC "${interpreter.name}-site-prefix-mypy-test" {} ''
   ${pythonEnv}/bin/mypy ${pythonScript}
   touch $out
 ''

@@ -1,3 +1,5 @@
+# Test for NixOS' container support.
+
 let
   client_base = {
     networking.firewall.enable = false;
@@ -14,11 +16,11 @@ let
       };
     };
   };
-in import ./make-test-python.nix ({ pkgs, lib, ... }:
+in import ./make-test-python.nix ({ pkgs, ...} :
 {
   name = "containers-restart_networking";
-  meta = {
-    maintainers = with lib.maintainers; [ kampfschlaefer ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ kampfschlaefer ];
   };
 
   nodes = {

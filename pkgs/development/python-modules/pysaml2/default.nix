@@ -1,64 +1,38 @@
-{ lib
+{ stdenv
 , buildPythonPackage
-, cryptography
-, defusedxml
+, isPy3k
 , fetchFromGitHub
-, importlib-resources
-, mock
-, pyasn1
-, pymongo
-, pyopenssl
-, pytestCheckHook
-, python-dateutil
-, pythonOlder
-, pytz
-, requests
-, responses
-, six
+, fetchpatch
 , substituteAll
-, xmlschema
 , xmlsec
+, cryptography, defusedxml, future, pyopenssl, dateutil, pytz, requests, six
+, mock, pyasn1, pymongo, pytest, responses
 }:
 
 buildPythonPackage rec {
   pname = "pysaml2";
-  version = "7.1.0";
-  format = "setuptools";
+  version = "5.0.0";
 
-  disabled = pythonOlder "3.6";
+  disabled = !isPy3k;
 
+  # No tests in PyPI tarball
   src = fetchFromGitHub {
     owner = "IdentityPython";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-3Yl6j6KAlw7QQYnwU7+naY6D97IqX766zguekKAuic8=";
+    sha256 = "0hwhxz45h8l1b0615hf855z7valfcmm0nb7k31bcj84v68zp5rjs";
   };
-
-  propagatedBuildInputs = [
-    cryptography
-    python-dateutil
-    defusedxml
-    pyopenssl
-    pytz
-    requests
-    six
-    xmlschema
-  ] ++ lib.optionals (pythonOlder "3.9") [
-    importlib-resources
-  ];
-
-  checkInputs = [
-    mock
-    pyasn1
-    pymongo
-    pytestCheckHook
-    responses
-  ];
 
   patches = [
     (substituteAll {
       src = ./hardcode-xmlsec1-path.patch;
       inherit xmlsec;
+    })
+    # remove on next release
+    (fetchpatch {
+      name = "fix-test-dates.patch";
+      url = "https://github.com/IdentityPython/pysaml2/commit/1d97d2d26f63e42611558fdd0e439bb8a7496a27.patch";
+      sha256 = "0r6d6hkk6z9yw7aqnsnylii516ysmdsc8dghwmgnwvw6cm7l388p";
     })
   ];
 
@@ -67,22 +41,22 @@ buildPythonPackage rec {
     sed -i 's/2999\(-.*T\)/2029\1/g' tests/*.xml
   '';
 
-  disabledTests = [
-    # Disabled tests try to access the network
-    "test_load_extern_incommon"
-    "test_load_remote_encoding"
-    "test_load_external"
-    "test_conf_syslog"
-  ];
+  propagatedBuildInputs = [ cryptography defusedxml future pyopenssl dateutil pytz requests six ];
 
-  pythonImportsCheck = [
-    "saml2"
-  ];
+  checkInputs = [ mock pyasn1 pymongo pytest responses ];
 
-  meta = with lib; {
+  # Disabled tests try to access the network
+  checkPhase = ''
+    py.test -k "not test_load_extern_incommon \
+            and not test_load_remote_encoding \
+            and not test_load_external \
+            and not test_conf_syslog"
+  '';
+
+  meta = with stdenv.lib; {
+    homepage = "https://github.com/rohe/pysaml2";
     description = "Python implementation of SAML Version 2 Standard";
-    homepage = "https://github.com/IdentityPython/pysaml2";
     license = licenses.asl20;
-    maintainers = with maintainers; [ ];
   };
+
 }

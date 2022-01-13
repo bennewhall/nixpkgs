@@ -1,4 +1,4 @@
-{lib, stdenv,fetchurl}:
+{stdenv,fetchurl}:
 
 stdenv.mkDerivation rec {
   pname = "yasr";
@@ -21,8 +21,8 @@ stdenv.mkDerivation rec {
     homepage = "http://yasr.sourceforge.net";
     description = "A general-purpose console screen reader";
     longDescription = "Yasr is a general-purpose console screen reader for GNU/Linux and other Unix-like operating systems.";
-    platforms = lib.platforms.linux;
-    license = lib.licenses.gpl2;
-    maintainers = with lib.maintainers; [ jhhuh ];
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ jhhuh ];
   };
 }

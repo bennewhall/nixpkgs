@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, kernel }:
+{ stdenv, fetchFromGitHub, kernel }:
 
 stdenv.mkDerivation rec {
   name = "nvidiabl-${version}-${kernel.version}";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     "KVER=${kernel.modDirVersion}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Linux driver for setting the backlight brightness on laptops using NVIDIA GPU";
     homepage = "https://github.com/guillaumezin/nvidiabl";
     license = licenses.gpl2;

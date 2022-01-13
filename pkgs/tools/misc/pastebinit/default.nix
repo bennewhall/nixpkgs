@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , fetchpatch
 , python3
@@ -42,10 +42,10 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/bin/pastebinit --replace "'/etc/pastebin.d" "'$out/etc/pastebin.d"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://launchpad.net/pastebinit";
     description = "A software that lets you send anything you want directly to a pastebin from the command line";
-    maintainers = with maintainers; [ raboof ];
+    maintainers = with maintainers; [ lethalman raboof ];
     license = licenses.gpl2;
     platforms = platforms.linux;
   };

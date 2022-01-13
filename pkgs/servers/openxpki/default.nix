@@ -1,4 +1,4 @@
-{ lib, fetchgit, perl, openssl, perlPackages, gettext, python3Packages
+{ stdenv, fetchgit, perl, openssl, perlPackages, gettext, python3Packages
 # TODO: Remove extra dependencies once it is clear that they are NOT needed somewhere.
 , extraDependencies1 ? false, extraDependencies2 ? false, extraDependencies3 ? false }:
 
@@ -15,7 +15,7 @@ perlPackages.buildPerlPackage {
   buildInputs = [ perl openssl gettext python3Packages.sphinx ];
   propagatedBuildInputs = with perlPackages;
     [ # dependencies from Makefile.PL
-      libintl-perl ConfigVersioned LWP ClassAccessorChained IOSocketSSL ClassStd
+      libintl_perl ConfigVersioned LWP ClassAccessorChained IOSocketSSL ClassStd
       CGISession ConfigStd ConfigMerge Connector CryptCBC CryptOpenSSLAES CryptPKCS10
       DBDMock DataPassword DataSerializer DateTimeFormatDateParse IOPrompt
       IPCShareLite JSON LogLog4perl LWPProtocolConnect LWPProtocolHttps MailRFC822Address
@@ -23,18 +23,18 @@ perlPackages.buildPerlPackage {
       ProcProcessTable ProcSafeExec RegexpCommon SOAPLite Switch SysSigAction TemplateToolkit
       TestPod TestPodCoverage TextCSV_XS Workflow XMLFilterXInclude XMLParser
       XMLSAX XMLSAXWriter XMLSimple XMLValidatorSchema ]
-    ++ lib.optionals extraDependencies1
+    ++ stdenv.lib.optionals extraDependencies1
     [ # dependencies from parsing through core/server
       ClassAccessor PathTools DataDumper DateTime DateTimeFormatStrptime DBI
       Encode ExceptionClass FilePath FileTemp Filter GetoptLong HTMLParser
       ScalarListUtils MathBigInt Memoize libnet RTClientREST
       Storable ]
-    ++ lib.optionals extraDependencies2
+    ++ stdenv.lib.optionals extraDependencies2
     [ # dependencies taken from Debian
       MooseXTypesPathClass DataStreamBulk MooseXStrictConstructor GitPurePerl
       ConfigGitLike DevelStackTrace TreeDAGNode ClassObservable ClassFactory TimeDate ConfigAny
       CGIFast ClassISA YAML YAMLLibYAML AuthenSASL TextCSV FileFindRulePerl IODigest ]
-    ++ lib.optionals extraDependencies3
+    ++ stdenv.lib.optionals extraDependencies3
     [ # dependencies taken from https://metacpan.org/pod/release/ALECH/Bundle-OpenXPKI-0.06/lib/Bundle/OpenXPKI.pm
       AttributeParamsValidate BC CGI CPAN CacheCache ClassClassgenclassgen
       ClassContainer ClassDataInheritable ClassSingleton ConvertASN1 DBDSQLite DBIxHTMLViewLATEST
@@ -75,9 +75,9 @@ perlPackages.buildPerlPackage {
   meta = {
     homepage = "http://www.openxpki.org";
     description = "Enterprise-grade PKI/Trustcenter software";
-    license = lib.licenses.asl20;
-    maintainers = with lib.maintainers; [ tstrobel ];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.asl20;
+    maintainers = with stdenv.lib.maintainers; [ tstrobel ];
+    platforms = with stdenv.lib.platforms; linux;
     broken = true;  # broken with openssl 1.1 (v2.x might fix this)
   };
 }

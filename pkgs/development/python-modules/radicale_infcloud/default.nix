@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildPythonPackage }:
+{ stdenv, fetchFromGitHub, buildPythonPackage }:
 
 buildPythonPackage {
   pname = "radicale_infcloud";
@@ -13,7 +13,7 @@ buildPythonPackage {
 
   doCheck = false; # Tries to import radicale, circular dependency
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Unrud/RadicaleInfCloud/";
     description = "Integrate InfCloud into Radicale's web interface";
     license = with licenses; [ agpl3 gpl3 ];

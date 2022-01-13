@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   version = "0.99";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GNU barcode generator";
     maintainers = with maintainers; [ raskin ];
     platforms = platforms.linux; # Maybe other non-darwin Unix

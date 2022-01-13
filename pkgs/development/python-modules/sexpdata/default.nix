@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "S-expression parser for Python";
     homepage = "https://github.com/tkf/sexpdata";
     license = licenses.bsd0;

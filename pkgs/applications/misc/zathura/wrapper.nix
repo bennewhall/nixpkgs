@@ -4,21 +4,13 @@ symlinkJoin {
 
   paths = with zathura_core; [ man dev out ] ++ plugins;
 
-  nativeBuildInputs = [ makeWrapper ];
 
-  postBuild = let
-    fishCompletion = "share/fish/vendor_completions.d/zathura.fish";
-  in ''
+  buildInputs = [ makeWrapper ];
+
+  postBuild = ''
     makeWrapper ${zathura_core.bin}/bin/zathura $out/bin/zathura \
       --prefix PATH ":" "${lib.makeBinPath [ file ]}" \
       --add-flags --plugins-dir="$out/lib/zathura"
-
-    # zathura fish completion references the zathura_core derivation to
-    # check for supported plugins which live in the wrapper derivation,
-    # so we need to fix the path to reference $out instead.
-    rm "$out/${fishCompletion}"
-    substitute "${zathura_core.out}/${fishCompletion}" "$out/${fishCompletion}" \
-      --replace "${zathura_core.out}" "$out"
   '';
 
   meta = with lib; {
@@ -33,6 +25,5 @@ symlinkJoin {
     license = licenses.zlib;
     platforms = platforms.unix;
     maintainers = with maintainers; [ smironov globin TethysSvensson ];
-    mainProgram = "zathura";
   };
 }

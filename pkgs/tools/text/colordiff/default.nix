@@ -1,36 +1,26 @@
-{ lib, stdenv, fetchFromGitHub, docbook_xml_dtd_412, docbook_xsl, perl, w3m, xmlto }:
+{ stdenv, fetchurl, perl /*, xmlto */}:
 
 stdenv.mkDerivation rec {
-  pname = "colordiff";
-  version = "1.0.19";
+  name = "colordiff-1.0.19";
 
-  src = fetchFromGitHub {
-    owner = "daveewart";
-    repo = "colordiff";
-    rev = "v${version}";
-    sha256 = "1v7s1yn0qvn08iwm5js8mxn442392qyr7s9ij506byfd497ag7qk";
+  src = fetchurl {
+    urls = [
+      "https://www.colordiff.org/${name}.tar.gz"
+      "http://www.colordiff.org/archive/${name}.tar.gz"
+    ];
+    sha256 = "069vzzgs7b44bmfh3ks2psrdb26s1w19gp9w4xxbgi7nhx6w3s26";
   };
 
-  nativeBuildInputs = [ docbook_xml_dtd_412 docbook_xsl perl w3m xmlto ];
+  buildInputs = [ perl /* xmlto */ ];
 
-  buildInputs = [ perl ];
+  dontBuild = 1; # do not build doc yet.
 
-  postPatch = ''
-    substituteInPlace Makefile \
-      --replace 'TMPDIR=colordiff-''${VERSION}' ""
-  '';
+  installPhase = ''make INSTALL_DIR=/bin MAN_DIR=/share/man/man1 DESTDIR="$out" install'';
 
-  installFlags = [
-    "INSTALL_DIR=/bin"
-    "MAN_DIR=/share/man/man1"
-    "DESTDIR=${placeholder "out"}"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Wrapper for 'diff' that produces the same output but with pretty 'syntax' highlighting";
     homepage = "https://www.colordiff.org/";
-    license = licenses.gpl2Plus;
-    platforms = platforms.unix;
-    maintainers = with maintainers; [ SuperSandro2000 ];
+    license = licenses.gpl3;
+    platforms = platforms.linux ++ platforms.darwin;
   };
 }

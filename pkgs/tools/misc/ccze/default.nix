@@ -1,26 +1,18 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, ncurses, pcre }:
+{ stdenv, fetchurl, autoconf, ncurses, pcre }:
 
 stdenv.mkDerivation rec {
-  pname = "ccze";
-  version = "0.2.1-2";
+  name = "ccze-0.2.1-2";
 
-  src = fetchFromGitHub {
-    owner = "madhouse";
-    repo = "ccze";
-    rev = "ccze-${version}";
-    hash = "sha256-LVwmbrq78mZcAEuAqjXTqLE5we83H9mcMPtxQx2Tn/c=";
+  src = fetchurl {
+    url = "https://github.com/madhouse/ccze/archive/${name}.tar.gz";
+    sha256 = "1amavfvyls4v0gnikk43n2rpciaspxifgrmvi99qj6imv3mfg66n";
   };
 
-  nativeBuildInputs = [ autoconf ];
+  buildInputs = [ autoconf ncurses pcre ];
 
-  buildInputs = [ ncurses pcre ];
+  preConfigure = '' autoheader && autoconf '';
 
-  preConfigure = ''
-    autoheader
-    autoconf
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast, modular log colorizer";
     longDescription = ''
       Fast log colorizer written in C, intended to be a drop-in replacement

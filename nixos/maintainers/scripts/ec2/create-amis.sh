@@ -1,9 +1,6 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -p awscli -p jq -p qemu -i bash
 # shellcheck shell=bash
-#
-# Future Deprecation?
-# This entire thing should probably be replaced with a generic terraform config
 
 # Uploads and registers NixOS images built from the
 # <nixos/release.nix> amazonImage attribute. Images are uploaded and
@@ -18,22 +15,18 @@
 # set -x
 set -euo pipefail
 
-var () { true; }
-
 # configuration
-var ${state_dir:=$HOME/amis/ec2-images}
-var ${home_region:=eu-west-1}
-var ${bucket:=nixos-amis}
-var ${service_role_name:=vmimport}
+state_dir=$HOME/amis/ec2-images
+home_region=eu-west-1
+bucket=nixos-amis
+service_role_name=vmimport
 
-var ${regions:=eu-west-1 eu-west-2 eu-west-3 eu-central-1 eu-north-1
+regions=(eu-west-1 eu-west-2 eu-west-3 eu-central-1 eu-north-1
          us-east-1 us-east-2 us-west-1 us-west-2
          ca-central-1
          ap-southeast-1 ap-southeast-2 ap-northeast-1 ap-northeast-2
          ap-south-1 ap-east-1
-         sa-east-1}
-
-regions=($regions)
+         sa-east-1)
 
 log() {
     echo "$@" >&2
@@ -67,21 +60,10 @@ read_image_info() {
 
 # We handle a single image per invocation, store all attributes in
 # globals for convenience.
-zfs_disks=$(read_image_info .disks)
-is_zfs_image=
-if jq -e .boot <<< "$zfs_disks"; then
-  is_zfs_image=1
-  zfs_boot=".disks.boot"
-fi
-image_label="$(read_image_info .label)${is_zfs_image:+-ZFS}"
+image_label=$(read_image_info .label)
 image_system=$(read_image_info .system)
-image_files=( $(read_image_info ".disks.root.file") )
-
-image_logical_bytes=$(read_image_info "${zfs_boot:-.disks.root}.logical_bytes")
-
-if [[ -n "$is_zfs_image" ]]; then
-  image_files+=( $(read_image_info .disks.boot.file) )
-fi
+image_file=$(read_image_info .file)
+image_logical_bytes=$(read_image_info .logical_bytes)
 
 # Derived attributes
 
@@ -131,11 +113,11 @@ wait_for_import() {
     local state snapshot_id
     log "Waiting for import task $task_id to be completed"
     while true; do
-        read -r state message snapshot_id < <(
+        read -r state progress snapshot_id < <(
             aws ec2 describe-import-snapshot-tasks --region "$region" --import-task-ids "$task_id" | \
-                jq -r '.ImportSnapshotTasks[].SnapshotTaskDetail | "\(.Status) \(.StatusMessage) \(.SnapshotId)"'
+                jq -r '.ImportSnapshotTasks[].SnapshotTaskDetail | "\(.Status) \(.Progress) \(.SnapshotId)"'
         )
-        log " ... state=$state message=$message snapshot_id=$snapshot_id"
+        log " ... state=$state progress=$progress snapshot_id=$snapshot_id"
         case "$state" in
             active)
                 sleep 10
@@ -197,67 +179,48 @@ make_image_public() {
 upload_image() {
     local region=$1
 
-    for image_file in "${image_files[@]}"; do
-        local aws_path=${image_file#/}
+    local aws_path=${image_file#/}
 
-        if [[ -n "$is_zfs_image" ]]; then
-            local suffix=${image_file%.*}
-            suffix=${suffix##*.}
+    local state_key="$region.$image_label.$image_system"
+    local task_id
+    task_id=$(read_state "$state_key" task_id)
+    local snapshot_id
+    snapshot_id=$(read_state "$state_key" snapshot_id)
+    local ami_id
+    ami_id=$(read_state "$state_key" ami_id)
+
+    if [ -z "$task_id" ]; then
+        log "Checking for image on S3"
+        if ! aws s3 ls --region "$region" "s3://${bucket}/${aws_path}" >&2; then
+            log "Image missing from aws, uploading"
+            aws s3 cp --region "$region" "$image_file" "s3://${bucket}/${aws_path}" >&2
         fi
 
-        local state_key="$region.$image_label${suffix:+.${suffix}}.$image_system"
-        local task_id
-        task_id=$(read_state "$state_key" task_id)
-        local snapshot_id
-        snapshot_id=$(read_state "$state_key" snapshot_id)
-        local ami_id
-        ami_id=$(read_state "$state_key" ami_id)
+        log "Importing image from S3 path s3://$bucket/$aws_path"
 
-        if [ -z "$task_id" ]; then
-            log "Checking for image on S3"
-            if ! aws s3 ls --region "$region" "s3://${bucket}/${aws_path}" >&2; then
-                log "Image missing from aws, uploading"
-                aws s3 cp --region "$region" "$image_file" "s3://${bucket}/${aws_path}" >&2
-            fi
+        task_id=$(aws ec2 import-snapshot --role-name "$service_role_name" --disk-container "{
+          \"Description\": \"nixos-image-${image_label}-${image_system}\",
+          \"Format\": \"vhd\",
+          \"UserBucket\": {
+              \"S3Bucket\": \"$bucket\",
+              \"S3Key\": \"$aws_path\"
+          }
+        }" --region "$region" | jq -r '.ImportTaskId')
 
-            log "Importing image from S3 path s3://$bucket/$aws_path"
+        write_state "$state_key" task_id "$task_id"
+    fi
 
-            task_id=$(aws ec2 import-snapshot --role-name "$service_role_name" --disk-container "{
-              \"Description\": \"nixos-image-${image_label}-${image_system}\",
-              \"Format\": \"vhd\",
-              \"UserBucket\": {
-                  \"S3Bucket\": \"$bucket\",
-                  \"S3Key\": \"$aws_path\"
-              }
-            }" --region "$region" | jq -r '.ImportTaskId')
-
-            write_state "$state_key" task_id "$task_id"
-        fi
-
-        if [ -z "$snapshot_id" ]; then
-            snapshot_id=$(wait_for_import "$region" "$task_id")
-            write_state "$state_key" snapshot_id "$snapshot_id"
-        fi
-    done
+    if [ -z "$snapshot_id" ]; then
+        snapshot_id=$(wait_for_import "$region" "$task_id")
+        write_state "$state_key" snapshot_id "$snapshot_id"
+    fi
 
     if [ -z "$ami_id" ]; then
         log "Registering snapshot $snapshot_id as AMI"
 
         local block_device_mappings=(
-            "DeviceName=/dev/xvda,Ebs={SnapshotId=$snapshot_id,VolumeSize=$image_logical_gigabytes,DeleteOnTermination=true,VolumeType=gp3}"
+            "DeviceName=/dev/xvda,Ebs={SnapshotId=$snapshot_id,VolumeSize=$image_logical_gigabytes,DeleteOnTermination=true,VolumeType=gp2}"
         )
-
-        if [[ -n "$is_zfs_image" ]]; then
-            local root_snapshot_id=$(read_state "$region.$image_label.root.$image_system" snapshot_id)
-
-            local root_image_logical_bytes=$(read_image_info ".disks.root.logical_bytes")
-            local root_image_logical_gigabytes=$(((root_image_logical_bytes-1)/1024/1024/1024+1)) # Round to the next GB
-
-            block_device_mappings+=(
-                "DeviceName=/dev/xvdb,Ebs={SnapshotId=$root_snapshot_id,VolumeSize=$root_image_logical_gigabytes,DeleteOnTermination=true,VolumeType=gp3}"
-            )
-        fi
-
 
         local extra_flags=(
             --root-device-name /dev/xvda
@@ -278,7 +241,6 @@ upload_image() {
                 --region "$region" \
                 --architecture $amazon_arch \
                 --block-device-mappings "${block_device_mappings[@]}" \
-                --boot-mode $(read_image_info .boot_mode) \
                 "${extra_flags[@]}" \
                 | jq -r '.ImageId'
               )
@@ -286,7 +248,7 @@ upload_image() {
         write_state "$state_key" ami_id "$ami_id"
     fi
 
-    [[ -v PRIVATE ]] || make_image_public "$region" "$ami_id"
+    make_image_public "$region" "$ami_id"
 
     echo "$ami_id"
 }
@@ -314,7 +276,7 @@ copy_to_region() {
         write_state "$state_key" ami_id "$ami_id"
     fi
 
-    [[ -v PRIVATE ]] || make_image_public "$region" "$ami_id"
+    make_image_public "$region" "$ami_id"
 
     echo "$ami_id"
 }

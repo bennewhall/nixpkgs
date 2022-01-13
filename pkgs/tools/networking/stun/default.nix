@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname   = "stun";
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     cp -v debian/manpages/stund.8.gz $server/man/man8
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Stun server and test client";
     homepage    = "https://sourceforge.net/projects/stun/";
     license     = licenses.vsl10;

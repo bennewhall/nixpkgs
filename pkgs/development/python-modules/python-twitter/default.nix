@@ -1,8 +1,8 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , fetchpatch
-, pytest-runner
+, pytestrunner
 , future
 , requests
 , responses
@@ -31,11 +31,11 @@ buildPythonPackage rec {
     })
   ];
 
-  nativeBuildInputs = [ pytest-runner ];
+  nativeBuildInputs = [ pytestrunner ];
   propagatedBuildInputs = [ future requests requests_oauthlib ];
   checkInputs = [ pytest responses hypothesis ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Python wrapper around the Twitter API";
     homepage = "https://github.com/bear/python-twitter";
     license = licenses.asl20;

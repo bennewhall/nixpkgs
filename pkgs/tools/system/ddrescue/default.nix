@@ -1,13 +1,12 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl, lzip
 }:
 
 stdenv.mkDerivation rec {
-  pname = "ddrescue";
-  version = "1.25";
+  name = "ddrescue-1.25";
 
   src = fetchurl {
-    url = "mirror://gnu/ddrescue/ddrescue-${version}.tar.lz";
+    url = "mirror://gnu/ddrescue/${name}.tar.lz";
     sha256 = "0qqh38izl5ppap9a5izf3hijh94k65s3zbfkczd4b7x04syqwlyf";
   };
 
@@ -16,7 +15,7 @@ stdenv.mkDerivation rec {
   doCheck = true; # not cross;
   configureFlags = [ "CXX=${stdenv.cc.targetPrefix}c++" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GNU ddrescue, a data recovery tool";
 
     longDescription =

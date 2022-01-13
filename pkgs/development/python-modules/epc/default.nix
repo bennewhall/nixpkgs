@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , sexpdata
@@ -16,7 +16,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ sexpdata ];
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "EPC (RPC stack for Emacs Lisp) implementation in Python";
     homepage = "https://github.com/tkf/python-epc";
     license = licenses.gpl3;

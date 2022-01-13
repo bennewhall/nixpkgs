@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, nasm, SDL, zlib, libpng, ncurses, libGLU, libGL
+{stdenv, fetchFromGitHub, nasm, SDL, zlib, libpng, ncurses, libGLU, libGL
 , makeDesktopItem }:
 
 let
@@ -13,8 +13,7 @@ let
   };
 
 in stdenv.mkDerivation {
-  pname = "zsnes";
-  version = "1.51";
+  name = "zsnes-1.51";
 
   src = fetchFromGitHub {
     owner = "emillon";
@@ -56,9 +55,9 @@ in stdenv.mkDerivation {
 
   meta = {
     description = "A Super Nintendo Entertainment System Emulator";
-    license = lib.licenses.gpl2Plus;
-    maintainers = [ lib.maintainers.sander ];
-    homepage = "https://www.zsnes.com";
+    license = stdenv.lib.licenses.gpl2Plus;
+    maintainers = [ stdenv.lib.maintainers.sander ];
+    homepage = "http://www.zsnes.com";
     platforms = [ "i686-linux" "x86_64-linux" ];
   };
 }

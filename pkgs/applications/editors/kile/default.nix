@@ -22,11 +22,10 @@
 }:
 
 mkDerivation rec {
-  pname = "kile";
-  version = "2.9.93";
+  name = "kile-2.9.93";
 
   src = fetchurl {
-    url = "mirror://sourceforge/kile/kile-${version}.tar.bz2";
+    url = "mirror://sourceforge/kile/${name}.tar.bz2";
     sha256 = "BEmSEv/LJPs6aCkUmnyuTGrV15WYXwgIANbfcviMXfA=";
   };
 

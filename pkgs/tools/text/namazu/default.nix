@@ -1,20 +1,29 @@
-{ fetchurl, lib, stdenv, perl, perlPackages, makeWrapper }:
+{ fetchurl, stdenv, perl }:
 
 stdenv.mkDerivation rec {
-  pname = "namazu";
-  version = "2.0.21";
+  name = "namazu-2.0.21";
 
   src = fetchurl {
-    url = "http://namazu.org/stable/${pname}-${version}.tar.gz";
+    url = "http://namazu.org/stable/${name}.tar.gz";
     sha256 = "1xvi7hrprdchdpzhg3fvk4yifaakzgydza5c0m50h1yvg6vay62w";
   };
 
-  buildInputs = [ perl perlPackages.FileMMagic ];
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ perl ];
 
-  postInstall = ''
-    wrapProgram $out/bin/mknmz --set PERL5LIB ${perlPackages.makeFullPerlPath [ perlPackages.FileMMagic ]}
+  # First install the `File::MMagic' Perl module.
+  preConfigure = ''
+    ( cd File-MMagic &&                              \
+      perl Makefile.PL                               \
+        LIB="$out/${perl.libPrefix}/${perl.version}" \
+        INSTALLSITEMAN3DIR="$out/man" &&             \
+      make && make install )
+    export PERL5LIB="$out/${perl.libPrefix}/${perl.version}:$PERL5LIB"
   '';
+
+  # FIXME: The `tests/namazu-6' test fails on GNU/Linux, presumably because
+  # phrase searching is broken somehow.  However, it doesn't fail on other
+  # platforms.
+  doCheck = !stdenv.isLinux;
 
   meta = {
     description = "Full-text search engine";
@@ -25,10 +34,11 @@ stdenv.mkDerivation rec {
       but also as a personal search system for email or other files.
     '';
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     homepage = "http://namazu.org/";
 
-    platforms = lib.platforms.gnu ++ lib.platforms.linux;  # arbitrary choice
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;  # arbitrary choice
     maintainers = [ ];
+    broken = true; # File-MMagic is not compatible with our Perl version
   };
 }

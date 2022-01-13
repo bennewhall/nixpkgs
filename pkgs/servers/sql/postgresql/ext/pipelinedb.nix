@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, postgresql, zeromq, openssl, libsodium, libkrb5 }:
+{ stdenv, fetchFromGitHub, postgresql, zeromq, openssl }:
 
 stdenv.mkDerivation rec {
   pname = "pipelinedb";
@@ -11,11 +11,9 @@ stdenv.mkDerivation rec {
     sha256 = "1mnqpvx6g1r2n4kjrrx01vbdx7kvndfsbmm7zbzizjnjlyixz75f";
   };
 
-  buildInputs = [ postgresql openssl zeromq libsodium libkrb5 ];
+  buildInputs = [ postgresql openssl zeromq ];
 
   makeFlags = [ "USE_PGXS=1" ];
-
-  NIX_LDFLAGS = lib.optionalString stdenv.isDarwin "-lsodium";
 
   preConfigure = ''
     substituteInPlace Makefile \
@@ -28,7 +26,7 @@ stdenv.mkDerivation rec {
     install -D -t $out/share/postgresql/extension {pipelinedb-*.sql,pipelinedb.control}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "High-performance time-series aggregation for PostgreSQL";
     homepage = "https://www.pipelinedb.com/";
     license = licenses.asl20;

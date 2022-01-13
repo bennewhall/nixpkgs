@@ -1,19 +1,16 @@
-{ lib
-, fetchFromGitHub
-, python3Packages
-}:
+{ stdenv
+, fetchurl
+, python }:
 
-python3Packages.buildPythonApplication rec {
+python.pkgs.buildPythonApplication rec {
   pname = "20kly";
-  version = "1.5.0";
-
+  version = "1.4";
   format = "other";
+  disabled = !(python.isPy2 or false);
 
-  src = fetchFromGitHub {
-    owner = "20kly";
-    repo = "20kly";
-    rev = "v${version}";
-    sha256 = "1zxsxg49a02k7zidx3kgk2maa0vv0n1f9wrl5vch07sq3ghvpphx";
+  src = fetchurl {
+    url = "http://jwhitham.org.uk/20kly/lightyears-${version}.tar.bz2";
+    sha256 = "13h73cmfjqkipffimfc4iv0hf89if490ng6vd6xf3wcalpgaim5d";
   };
 
   patchPhase = ''
@@ -23,24 +20,21 @@ python3Packages.buildPythonApplication rec {
         "LIGHTYEARS_DIR = \"$out/share\""
   '';
 
-  propagatedBuildInputs = with python3Packages; [
-    pygame
-  ];
+  propagatedBuildInputs = with python.pkgs; [ pygame ];
 
-  buildPhase = ''
-    python -O -m compileall .
-  '';
+  buildPhase = "python -O -m compileall .";
 
   installPhase = ''
     mkdir -p "$out/share"
-    cp -r data lib20k lightyears "$out/share"
+    cp -r audio code data lightyears "$out/share"
     install -Dm755 lightyears "$out/bin/lightyears"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A steampunk-themed strategy game where you have to manage a steam supply network";
     homepage = "http://jwhitham.org.uk/20kly/";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ fgaz ];
   };
 }
+

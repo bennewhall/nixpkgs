@@ -1,23 +1,27 @@
-#!/usr/bin/env nix-shell
-#!nix-shell -i bash -p jq
+#!/bin/sh -e
 
-set -e
-
-pushd "$(dirname "$0")" &>/dev/null || exit 1
-
-if [ "$1" == '' ]; then
-    echo "Please select a group: 'packages', 'images', 'addons', 'extras', or 'licenses'" >&2
+if [ "$1" = "" ]
+then
+    echo "Please select a package set: 'packages', 'addons', 'system-images'" >&2
     exit 1
 fi
 
-namespace="$1"
+if [ "$2" = "" ]
+then
+    echo "Please select a package group:" >&2
+    ( cat <<EOF
+builtins.attrNames (import ./generated/$1.nix {
+  fetchurl = null;
+})
+EOF
+) | nix-instantiate --eval-only -
 
-if [ "$namespace" == 'licenses' ]; then
-    jq -r '.licenses | keys | join("\n")' < repo.json
-else
-    jq -r --arg NAMESPACE "$namespace" \
-        '.[$NAMESPACE] | paths as $path | getpath($path) as $v | select($path[-1] == "displayName") | [[$NAMESPACE] + $path[:-1] | map("\"" + . + "\"") | join("."), $v] | join(": ")' \
-        < repo.json
+    exit 1
 fi
 
-popd &>/dev/null
+( cat <<EOF
+builtins.attrNames (import ./generated/$1.nix {
+  fetchurl = null;
+}).$2
+EOF
+) | nix-instantiate --eval-only -

@@ -1,4 +1,4 @@
-{ lib, appleDerivation, makeWrapper }:
+{ stdenv, appleDerivation, makeWrapper }:
 
 appleDerivation {
   nativeBuildInputs = [ makeWrapper ];
@@ -44,6 +44,6 @@ appleDerivation {
   '';
 
   meta = {
-    platforms = lib.platforms.darwin;
+    platforms = stdenv.lib.platforms.darwin;
   };
 }

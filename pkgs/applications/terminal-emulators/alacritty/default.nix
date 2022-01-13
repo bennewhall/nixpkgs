@@ -1,7 +1,6 @@
 { stdenv
 , lib
 , fetchFromGitHub
-, fetchpatch
 , rustPlatform
 
 , cmake
@@ -9,7 +8,7 @@
 , installShellFiles
 , makeWrapper
 , ncurses
-, pkg-config
+, pkgconfig
 , python3
 
 , expat
@@ -24,7 +23,7 @@
 , libxcb
 , libxkbcommon
 , wayland
-, xdg-utils
+, xdg_utils
 
   # Darwin Frameworks
 , AppKit
@@ -32,7 +31,6 @@
 , CoreServices
 , CoreText
 , Foundation
-, libiconv
 , OpenGL
 }:
 let
@@ -54,16 +52,16 @@ let
 in
 rustPlatform.buildRustPackage rec {
   pname = "alacritty";
-  version = "0.9.0";
+  version = "0.6.0";
 
   src = fetchFromGitHub {
     owner = "alacritty";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-kgZEbOGmO+uRKaWR+oQBiGkBzDSuCznUyWNUoMICHhk=";
+    sha256 = "vQdNwNiUvoJWRT1foPRadirI2zWjnzU3sGnIxeHKlj8=";
   };
 
-  cargoSha256 = "sha256-JqnYMDkagWNGliUxi5eqJN92ULsvT7Fwmah8um1xaRw=";
+  cargoSha256 = "1PQSg6EmwVMZj2ALw6qsbtPMCtALVHx5TR05FjGD/QE=";
 
   nativeBuildInputs = [
     cmake
@@ -71,7 +69,7 @@ rustPlatform.buildRustPackage rec {
     installShellFiles
     makeWrapper
     ncurses
-    pkg-config
+    pkgconfig
     python3
   ];
 
@@ -82,33 +80,28 @@ rustPlatform.buildRustPackage rec {
     CoreServices
     CoreText
     Foundation
-    libiconv
     OpenGL
   ];
 
   outputs = [ "out" "terminfo" ];
 
-  patches = [
-    # Handle PTY EIO error for Rust 1.55+
-    (fetchpatch {
-      url = "https://github.com/alacritty/alacritty/commit/58985a4dcbe464230b5d2566ee68e2d34a1788c8.patch";
-      sha256 = "sha256-Z6589yRrQtpx3/vNqkMiGgGsLysd/QyfaX7trqX+k5c=";
-    })
-  ];
-
   postPatch = ''
-    substituteInPlace alacritty/src/config/ui_config.rs \
-      --replace xdg-open ${xdg-utils}/bin/xdg-open
+    substituteInPlace alacritty/src/config/mouse.rs \
+      --replace xdg-open ${xdg_utils}/bin/xdg-open
   '';
 
-  postInstall = (
+  installPhase = ''
+    runHook preInstall
+
+    install -D $releaseDir/alacritty $out/bin/alacritty
+
+  '' + (
     if stdenv.isDarwin then ''
       mkdir $out/Applications
       cp -r extra/osx/Alacritty.app $out/Applications
       ln -s $out/bin $out/Applications/Alacritty.app/Contents/MacOS
     '' else ''
       install -D extra/linux/Alacritty.desktop -t $out/share/applications/
-      install -D extra/linux/io.alacritty.Alacritty.appdata.xml -t $out/share/appdata/
       install -D extra/logo/compat/alacritty-term.svg $out/share/icons/hicolor/scalable/apps/Alacritty.svg
 
       # patchelf generates an ELF that binutils' "strip" doesn't like:
@@ -133,6 +126,8 @@ rustPlatform.buildRustPackage rec {
     tic -xe alacritty,alacritty-direct -o "$terminfo/share/terminfo" extra/alacritty.info
     mkdir -p $out/nix-support
     echo "$terminfo" >> $out/nix-support/propagated-user-env-packages
+
+    runHook postInstall
   '';
 
   dontPatchELF = true;
@@ -141,8 +136,7 @@ rustPlatform.buildRustPackage rec {
     description = "A cross-platform, GPU-accelerated terminal emulator";
     homepage = "https://github.com/alacritty/alacritty";
     license = licenses.asl20;
-    maintainers = with maintainers; [ Br1ght0ne mic92 ma27 ];
+    maintainers = with maintainers; [ Br1ght0ne mic92 cole-h ma27 ];
     platforms = platforms.unix;
-    changelog = "https://github.com/alacritty/alacritty/blob/v${version}/CHANGELOG.md";
   };
 }

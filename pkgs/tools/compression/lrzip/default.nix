@@ -1,41 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, zlib, lzo, bzip2, lz4, nasm, perl }:
+{stdenv, fetchurl, zlib, lzo, bzip2, nasm, perl}:
 
-let
-  inherit (stdenv.hostPlatform) isx86;
-in
 stdenv.mkDerivation rec {
+  version = "0.631";
   pname = "lrzip";
-  version = "0.641";
 
-  src = fetchFromGitHub {
-    owner = "ckolivas";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-253CH6TiHWyr13C76y9PXjyB7gj2Bhd2VRgJ5r+cm/g=";
+  src = fetchurl {
+    url = "http://ck.kolivas.org/apps/lrzip/${pname}-${version}.tar.bz2";
+    sha256 = "0mb449vmmwpkalq732jdyginvql57nxyd31sszb108yps1lf448d";
   };
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    # Building the ASM/x86 directory creates an empty archive,
-    # which fails on darwin, so remove it
-    # https://github.com/ckolivas/lrzip/issues/193
-    # https://github.com/Homebrew/homebrew-core/pull/85360
-    substituteInPlace lzma/Makefile.am --replace "SUBDIRS = C ASM/x86" "SUBDIRS = C"
-    substituteInPlace configure.ac --replace "-f elf64" "-f macho64"
-  '';
+  buildInputs = [ zlib lzo bzip2 nasm perl ];
 
-  nativeBuildInputs = [ autoreconfHook perl ] ++ lib.optionals isx86 [ nasm ];
-
-  buildInputs = [ zlib lzo bzip2 lz4 ];
-
-  configureFlags = lib.optionals (!isx86) [
-    "--disable-asm"
-  ];
-
-  meta = with lib; {
+  meta = {
     homepage = "http://ck.kolivas.org/apps/lrzip/";
     description = "The CK LRZIP compression program (LZMA + RZIP)";
-    maintainers = with maintainers; [ ];
-    license = licenses.gpl2Plus;
-    platforms = platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    inherit version;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

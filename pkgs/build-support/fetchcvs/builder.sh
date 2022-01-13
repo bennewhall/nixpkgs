@@ -1,6 +1,6 @@
 source $stdenv/setup
 
-(echo "#!$SHELL"; \
+(echo '#!/usr/bin/env sh'; \
  echo 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$@"') > ssh
 chmod +x ssh
 export CVS_RSH=$PWD/ssh

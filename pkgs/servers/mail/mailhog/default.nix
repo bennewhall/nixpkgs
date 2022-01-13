@@ -1,25 +1,25 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "MailHog";
-  version = "1.0.1";
+  version = "1.0.0";
+  rev = "v${version}";
 
   goPackagePath = "github.com/mailhog/MailHog";
 
   src = fetchFromGitHub {
+    inherit rev;
     owner = "mailhog";
     repo = "MailHog";
-    rev = "v${version}";
-    sha256 = "124216850572r1h0ii7ad6jd1cd5czcvkz7k2jzvjb4pv2kl8p3y";
+    sha256 = "0r6zidkffb8q12zyxd063jy0ig2x93llna4zb5i2qjh9gb971i83";
   };
 
-  ldflags = [ "-s" "-w" "-X main.version=${version}" ];
+  goDeps = ./deps.nix;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Web and API based SMTP testing";
     homepage = "https://github.com/mailhog/MailHog";
-    changelog = "https://github.com/mailhog/MailHog/releases/tag/v${version}";
-    maintainers = with maintainers; [ disassembler jojosch ];
+    maintainers = with maintainers; [ disassembler ];
     license = licenses.mit;
   };
 }

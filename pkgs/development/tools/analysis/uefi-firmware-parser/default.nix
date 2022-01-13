@@ -1,4 +1,4 @@
-{ lib, python3, fetchFromGitHub }:
+{ stdenv, python3, fetchFromGitHub }:
 
 with python3.pkgs;
 
@@ -14,7 +14,7 @@ buildPythonApplication rec {
     sha256 = "1yn9vi91j1yxkn0icdnjhgl0qrqqkzyhccj39af4f19q1gdw995l";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/theopolis/uefi-firmware-parser/";
     description = "Parse BIOS/Intel ME/UEFI firmware related structures: Volumes, FileSystems, Files, etc";
     # MIT + license headers in some files

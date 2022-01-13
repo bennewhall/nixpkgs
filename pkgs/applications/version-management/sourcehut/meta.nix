@@ -1,47 +1,27 @@
-{ lib
-, fetchFromSourcehut
-, buildPythonPackage
-, buildGoModule
-, pgpy
-, srht
-, redis
-, bcrypt
-, qrcode
-, stripe
-, zxcvbn
-, alembic
-, pystache
-, dnspython
-, sshpubkeys
-, weasyprint
-, prometheus-client
+{ stdenv, fetchgit, buildPythonPackage
 , python
-}:
+, buildGoModule
+, pgpy, srht, redis, bcrypt, qrcode, stripe, zxcvbn, alembic, pystache
+, sshpubkeys, weasyprint }:
+
 let
-  version = "0.57.2";
+  version = "0.51.2";
 
-  src = fetchFromSourcehut {
-    owner = "~sircmpwn";
-    repo = "meta.sr.ht";
-    rev = version;
-    sha256 = "sha256-+ksfAOuch/fLkFLYU52Ug0Hf0EoERy+oCwa9g+GKuAA=";
-  };
-
-  buildApi = src: buildGoModule {
+  buildAPI = src: buildGoModule {
     inherit src version;
     pname = "metasrht-api";
-    vendorSha256 = "sha256-vo+YbMyo/Eal7hbFxP9hwIW2cePJcGFszoDRCCzFYdM=";
+
+    vendorSha256 = "0k7i7j604wqvzjavmcsw7g2x059jkkgrgz1qyvzlqc0y4ws59xkq";
   };
-
-in
-buildPythonPackage rec {
+in buildPythonPackage rec {
   pname = "metasrht";
-  inherit version src;
+  inherit version;
 
-  patches = [
-    # Revert change breaking Unix socket support for Redis
-    patches/redis-socket/meta/0001-Revert-Add-webhook-queue-monitoring.patch
-  ];
+  src = fetchgit {
+    url = "https://git.sr.ht/~sircmpwn/meta.sr.ht";
+    rev = version;
+    sha256 = "0c9y1hzx3dj0awxrhkzrcsmy6q9fqm6v6dbp9y1ria3v47xa3nv7";
+  };
 
   nativeBuildInputs = srht.nativeBuildInputs;
 
@@ -57,26 +37,21 @@ buildPythonPackage rec {
     pystache
     sshpubkeys
     weasyprint
-    prometheus-client
-    dnspython
   ];
 
   preBuild = ''
     export PKGVER=${version}
-    export SRHT_PATH=${srht}/${python.sitePackages}/srht
   '';
 
   postInstall = ''
     mkdir -p $out/bin
-    cp ${buildApi "${src}/api/"}/bin/api $out/bin/metasrht-api
+    cp ${buildAPI "${src}/api"}/bin/api $out/bin/metasrht-api
   '';
 
-  pythonImportsCheck = [ "metasrht" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://git.sr.ht/~sircmpwn/meta.sr.ht";
     description = "Account management service for the sr.ht network";
-    license = licenses.agpl3Only;
+    license = licenses.agpl3;
     maintainers = with maintainers; [ eadwu ];
   };
 }

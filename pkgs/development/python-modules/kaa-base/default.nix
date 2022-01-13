@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPyPy
@@ -41,7 +41,7 @@ buildPythonPackage rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Generic application framework, providing the foundation for other modules";
     homepage = "https://github.com/freevo/kaa-base";
     license = licenses.lgpl21;

@@ -1,38 +1,39 @@
-{ stdenv, lib, fetchFromGitHub, rustPlatform, pkg-config, ncurses, openssl, libiconv
-, withALSA ? true, alsa-lib ? null
+{ lib, fetchFromGitHub, rustPlatform, pkg-config, ncurses, openssl
+, withALSA ? true, alsaLib ? null
 , withPulseAudio ? false, libpulseaudio ? null
 , withPortAudio ? false, portaudio ? null
 , withMPRIS ? false, dbus ? null
 }:
 
+let
+  features = [ "cursive/pancurses-backend" ]
+    ++ lib.optional withALSA "alsa_backend"
+    ++ lib.optional withPulseAudio "pulseaudio_backend"
+    ++ lib.optional withPortAudio "portaudio_backend"
+    ++ lib.optional withMPRIS "mpris";
+in
 rustPlatform.buildRustPackage rec {
   pname = "ncspot";
-  version = "0.9.3";
+  version = "0.2.4";
 
   src = fetchFromGitHub {
     owner = "hrkfdn";
     repo = "ncspot";
     rev = "v${version}";
-    sha256 = "sha256-k4EGyQjjJCvUhp56OjYl63n+giI05GiIS2++I1SVhCg=";
+    sha256 = "0vdg1ybzfj7xg8nmrb8q9vr8bpwcs52730v9v0413wjyxb7hcll2";
   };
 
-  cargoSha256 = "sha256-YsjInqmkPnAwqgRBDiwcLH0DDqCF0NElrn+WO2v+ATM=";
+  cargoSha256 = "0afaxx8dv7jn48934ba0r8kd1h8l3k00sl83v07a1xqmfcmil2qf";
+
+  cargoBuildFlags = [ "--no-default-features" "--features" "${lib.concatStringsSep "," features}" ];
 
   nativeBuildInputs = [ pkg-config ];
 
   buildInputs = [ ncurses openssl ]
-    ++ lib.optional stdenv.isDarwin libiconv
-    ++ lib.optional withALSA alsa-lib
+    ++ lib.optional withALSA alsaLib
     ++ lib.optional withPulseAudio libpulseaudio
     ++ lib.optional withPortAudio portaudio
     ++ lib.optional withMPRIS dbus;
-
-  buildNoDefaultFeatures = true;
-  buildFeatures = [ "cursive/pancurses-backend" ]
-    ++ lib.optional withALSA "alsa_backend"
-    ++ lib.optional withPulseAudio "pulseaudio_backend"
-    ++ lib.optional withPortAudio "portaudio_backend"
-    ++ lib.optional withMPRIS "mpris";
 
   doCheck = false;
 

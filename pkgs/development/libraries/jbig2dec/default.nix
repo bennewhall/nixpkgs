@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, python3, autoreconfHook }:
+{ stdenv, fetchurl, python3, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "jbig2dec";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://www.jbig2dec.com/";
     description = "Decoder implementation of the JBIG2 image compression format";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

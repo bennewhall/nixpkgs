@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchgit, chez }:
+{ stdenv, fetchgit, chez }:
 
 stdenv.mkDerivation {
   pname = "chez-srfi";
@@ -22,11 +22,11 @@ stdenv.mkDerivation {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = {
     description = "This package provides a collection of SRFI libraries for Chez Scheme";
     homepage = "https://github.com/fedeinthemix/chez-srfi/";
-    maintainers = [ maintainers.jitwit ];
-    license = licenses.free;
+    maintainers = [ stdenv.lib.maintainers.jitwit ];
+    license = stdenv.lib.licenses.free;
   };
 
 }

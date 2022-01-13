@@ -1,18 +1,18 @@
-{ lib, stdenv, fetchurl, zlib, bzip2, xz, curl, perl }:
+{ stdenv, fetchurl, zlib, bzip2, lzma, curl, perl }:
 
 stdenv.mkDerivation rec {
   pname = "htslib";
-  version = "1.13";
+  version = "1.11";
 
   src = fetchurl {
     url = "https://github.com/samtools/htslib/releases/download/${version}/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-8kB9+fl/C7awdlZXnkGhylEARkBntrIb+WKi6ksO/WU=";
+    sha256 = "1mrq4mihzx37yqhj3sfz6da6mw49niia808bzsw2gkkgmadxvyng";
   };
 
   # perl is only used during the check phase.
   nativeBuildInputs = [ perl ];
 
-  buildInputs = [ zlib bzip2 xz curl ];
+  buildInputs = [ zlib bzip2 lzma curl ];
 
   configureFlags = [ "--enable-libcurl" ]; # optional but strongly recommended
 
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A C library for reading/writing high-throughput sequencing data";
     license = licenses.mit;
     homepage = "http://www.htslib.org/";

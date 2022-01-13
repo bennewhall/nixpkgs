@@ -1,9 +1,9 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , substituteAll
 , appstream-glib
 , gettext
-, pkg-config
+, pkgconfig
 , wrapGAppsHook
 , gtk3
 , ibus
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     appstream-glib
     gettext
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
     ]))
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     isIbusEngine = true;
     description = "Ibus Hangul engine";
     homepage = "https://github.com/choehwanjin/ibus-hangul";

@@ -1,17 +1,16 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "dcfldd";
-  version = "1.3.4-1";
+  name = "dcfldd-1.3.4-1";
 
   src = fetchurl {
-    url = "mirror://sourceforge/dcfldd/dcfldd-${version}.tar.gz";
+    url = "mirror://sourceforge/dcfldd/${name}.tar.gz";
     sha256 = "1y6mwsvm75f5jzxsjjk0yhf8xnpmz6y8qvcxfandavx59lc3l57m";
   };
 
   buildInputs = [ ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An enhanced version of GNU dd";
 
     homepage = "http://dcfldd.sourceforge.net/";

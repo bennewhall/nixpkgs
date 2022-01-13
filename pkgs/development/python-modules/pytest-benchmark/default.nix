@@ -19,9 +19,7 @@ buildPythonPackage rec {
     sha256 = "1hslzzinpwc1zqhbpllqh3sllmiyk69pcycl7ahr0rz3micgwczj";
   };
 
-  buildInputs = [ pytest ];
-
-  propagatedBuildInputs = [ py-cpuinfo ] ++ lib.optionals (pythonOlder "3.4") [ pathlib statistics ];
+  propagatedBuildInputs = [ pytest py-cpuinfo ] ++ lib.optionals (pythonOlder "3.4") [ pathlib statistics ];
 
   meta = {
     description = "Py.test fixture for benchmarking code";

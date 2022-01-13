@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "shopify-themekit";
@@ -15,7 +15,7 @@ buildGoPackage rec {
     sha256 = "1780h33mf2h2lv6mr4xx3shfvsabr7w138yb59vvdgvjng9wjkg0";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A command line tool for shopify themes";
     homepage = "https://shopify.github.io/themekit/";
     license = licenses.mit;

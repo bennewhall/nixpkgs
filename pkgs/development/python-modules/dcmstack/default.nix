@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , pythonAtLeast
@@ -30,7 +30,7 @@ buildPythonPackage rec {
     runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/moloney/dcmstack";
     description = "DICOM to Nifti conversion preserving metadata";
     license = licenses.mit;

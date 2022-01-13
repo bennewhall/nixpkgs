@@ -1,12 +1,12 @@
-{ lib, buildPythonPackage, fetchPypi, pytest }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest }:
 
 buildPythonPackage rec {
   pname = "locket";
-  version = "0.2.1";
+  version = "0.2.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "3e1faba403619fe201552f083f1ecbf23f550941bc51985ac6ed4d02d25056dd";
+    sha256 = "1d4z2zngrpqkrfhnd4yhysh66kjn4mblys2l06sh5dix2p0n7vhz";
   };
 
   buildInputs = [ pytest ];
@@ -14,7 +14,7 @@ buildPythonPackage rec {
   # weird test requirements (spur.local>=0.3.7,<0.4)
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Locket implements a lock that can be used by multiple processes provided they use the same path.";
     homepage = "https://github.com/mwilliamson/locket.py";
     license = licenses.bsd2;

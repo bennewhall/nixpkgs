@@ -1,9 +1,9 @@
-{ lib, buildPythonPackage, fetchFromGitHub, xdg-utils
+{ lib, buildPythonPackage, fetchFromGitHub, xdg_utils
 , requests, filetype, pyparsing, configparser, arxiv2bib
 , pyyaml, chardet, beautifulsoup4, colorama, bibtexparser
 , click, python-slugify, habanero, isbnlib, typing-extensions
-, prompt-toolkit, pygments, stevedore, tqdm, lxml
-, python-doi, isPy3k, pytest-cov
+, prompt_toolkit, pygments, stevedore, tqdm, lxml
+, python-doi, isPy3k, pythonOlder, pytestcov
 #, optional, dependencies
 , whoosh, pytest
 , stdenv
@@ -26,7 +26,7 @@ buildPythonPackage rec {
     requests filetype pyparsing configparser arxiv2bib
     pyyaml chardet beautifulsoup4 colorama bibtexparser
     click python-slugify habanero isbnlib
-    prompt-toolkit pygments typing-extensions
+    prompt_toolkit pygments typing-extensions
     stevedore tqdm lxml
     python-doi
     # optional dependencies
@@ -40,12 +40,13 @@ buildPythonPackage rec {
       --replace "python-slugify>=1.2.6,<4" "python-slugify"
   '';
 
-  doCheck = !stdenv.isDarwin;
+  # pytest seems to hang with python3.8
+  doCheck = !stdenv.isDarwin && pythonOlder "3.8";
 
   checkInputs = ([
-    pytest pytest-cov
+    pytest pytestcov
   ]) ++ [
-    xdg-utils
+    xdg_utils
   ];
 
   # most of the downloader tests and 4 other tests require a network connection

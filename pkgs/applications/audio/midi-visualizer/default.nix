@@ -1,15 +1,15 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, libX11, glfw, makeWrapper,
+{ stdenv, fetchFromGitHub, cmake, pkg-config, libX11, glfw, makeWrapper,
   libXrandr, libXinerama, libXcursor, gtk3, ffmpeg-full, ...}:
 
 stdenv.mkDerivation rec {
   pname = "MIDIVisualizer";
-  version = "6.5";
+  version = "6.0";
 
   src = fetchFromGitHub {
     owner = "kosua20";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-thRcRJ88bz3jwu6rKaQxt2MkBSf5Ri1jygkKDguP2eE=";
+    sha256 = "052zpabkbkqzqzf8r6mdq9p6arn9mr1ywx6x3y9rqxj6sfprxd65";
   };
 
   nativeBuildInputs = [ cmake pkg-config makeWrapper];
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
       --prefix XDG_DATA_DIRS : "${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A small MIDI visualizer tool, using OpenGL";
     homepage = "https://github.com/kosua20/MIDIVisualizer";
     license = licenses.mit;

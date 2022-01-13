@@ -23,6 +23,6 @@ stdenv.mkDerivation rec {
     homepage = "http://roaringbitmap.org/";
     license = licenses.asl20;
     maintainers = with maintainers; [ orivej ];
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip, puredata, fftw }:
+{ stdenv, fetchurl, unzip, puredata, fftw }:
 
 stdenv.mkDerivation rec {
   version = "0.7.0";
@@ -9,8 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "14k2xk5zrzrw1zprdbwx45hrlc7ck8vq4drpd3l455i5r8yk4y6b";
   };
 
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [ puredata fftw ];
+  buildInputs = [ unzip puredata fftw ];
 
   unpackPhase = ''
     mkdir source
@@ -39,8 +38,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A collection of audio feature analysis externals for puredata";
     homepage = "http://williambrent.conflations.com/pages/research.html";
-    license = lib.licenses.gpl3;
-    maintainers = [ lib.maintainers.magnetophon ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3;
+    maintainers = [ stdenv.lib.maintainers.magnetophon ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

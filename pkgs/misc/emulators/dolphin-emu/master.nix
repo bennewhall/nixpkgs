@@ -1,35 +1,46 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, cmake
-, wrapQtAppsHook, qtbase, bluez, ffmpeg, libao, libGLU, libGL, pcre, gettext
+{ lib, stdenv, fetchFromGitHub, makeDesktopItem, pkgconfig, cmake
+, wrapQtAppsHook, qtbase, bluez, ffmpeg_3, libao, libGLU, libGL, pcre, gettext
 , libXrandr, libusb1, lzo, libpthreadstubs, libXext, libXxf86vm, libXinerama
-, libSM, libXdmcp, readline, openal, udev, libevdev, portaudio, curl, alsa-lib
-, miniupnpc, enet, mbedtls, soundtouch, sfml, writeScript
+, libSM, libXdmcp, readline, openal, udev, libevdev, portaudio, curl, alsaLib
+, miniupnpc, enet, mbedtls, soundtouch, sfml
 , vulkan-loader ? null, libpulseaudio ? null
 
 # - Inputs used for Darwin
 , CoreBluetooth, ForceFeedback, IOKit, OpenGL, libpng, hidapi }:
 
-stdenv.mkDerivation rec {
+let
+  desktopItem = makeDesktopItem {
+    name = "dolphin-emu-master";
+    exec = "dolphin-emu-master";
+    icon = "dolphin-emu";
+    comment = "A Wii/GameCube Emulator";
+    desktopName = "Dolphin Emulator (master)";
+    genericName = "Wii/GameCube Emulator";
+    categories = "Game;Emulator;";
+    startupNotify = "false";
+  };
+in stdenv.mkDerivation rec {
   pname = "dolphin-emu";
-  version = "5.0-15445";
+  version = "5.0-12716";
 
   src = fetchFromGitHub {
     owner = "dolphin-emu";
     repo = "dolphin";
-    rev = "db02b50d2ecdfbbc21e19aadc57253c353069f77";
-    sha256 = "l2vbTZOcjfyZjKOI3n5ig2f7cDYR22GcqKS479LMtP8=";
-    fetchSubmodules = true;
+    rev = "31524288e3b2450eaefff8202c6d26c4ba3f7333";
+    sha256 = "0vv3ahk6zdx2hx5diq4jkhl289wjybqcr4lwinrkfiywb83hcabg";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ]
+  enableParallelBuilding = true;
+  nativeBuildInputs = [ cmake pkgconfig ]
   ++ lib.optional stdenv.isLinux wrapQtAppsHook;
 
   buildInputs = [
-    curl ffmpeg libao libGLU libGL pcre gettext libpthreadstubs libpulseaudio
+    curl ffmpeg_3 libao libGLU libGL pcre gettext libpthreadstubs libpulseaudio
     libXrandr libXext libXxf86vm libXinerama libSM readline openal libXdmcp lzo
     portaudio libusb1 libpng hidapi miniupnpc enet mbedtls soundtouch sfml
     qtbase
   ] ++ lib.optionals stdenv.isLinux [
-    bluez udev libevdev alsa-lib vulkan-loader
+    bluez udev libevdev alsaLib vulkan-loader
   ] ++ lib.optionals stdenv.isDarwin [
     CoreBluetooth OpenGL ForceFeedback IOKit
   ];
@@ -46,9 +57,6 @@ stdenv.mkDerivation rec {
 
   qtWrapperArgs = lib.optionals stdenv.isLinux [
     "--prefix LD_LIBRARY_PATH : ${vulkan-loader}/lib"
-    # https://bugs.dolphin-emu.org/issues/11807
-    # The .desktop file should already set this, but Dolphin may be launched in other ways
-    "--set QT_QPA_PLATFORM xcb"
   ];
 
   # - Allow Dolphin to use nix-provided libraries instead of building them
@@ -60,19 +68,11 @@ stdenv.mkDerivation rec {
       CMakeLists.txt
   '';
 
-  postInstall = lib.optionalString stdenv.hostPlatform.isLinux ''
+  postInstall = ''
+    cp -r ${desktopItem}/share/applications $out/share
+    ln -sf $out/bin/dolphin-emu $out/bin/dolphin-emu-master
+  '' + lib.optionalString stdenv.hostPlatform.isLinux ''
     install -D $src/Data/51-usb-device.rules $out/etc/udev/rules.d/51-usb-device.rules
-  '';
-
-
-  passthru.updateScript = writeScript "dolphin-update-script" ''
-    #!/usr/bin/env nix-shell
-    #!nix-shell -i bash -p curl jq common-updater-scripts
-    set -eou pipefail
-    json="$(curl -s https://dolphin-emu.org/update/latest/beta)"
-    version="$(jq -r '.shortrev' <<< "$json")"
-    rev="$(jq -r '.hash' <<< "$json")"
-    update-source-version dolphin-emu-beta "$version" --rev="$rev"
   '';
 
   meta = with lib; {

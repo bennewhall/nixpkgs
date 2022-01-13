@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, Carbon }:
+{ stdenv, fetchFromGitHub, Carbon }:
 
 stdenv.mkDerivation rec {
   pname = "skhd";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/Library/LaunchDaemons/org.nixos.skhd.plist --subst-var out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple hotkey daemon for macOS";
     homepage = "https://github.com/koekeishiya/skhd";
     platforms = platforms.darwin;

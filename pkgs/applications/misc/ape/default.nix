@@ -1,17 +1,16 @@
-{ lib, stdenv, swiProlog, makeWrapper,
+{ stdenv, swiProlog, makeWrapper,
   fetchFromGitHub,
   lexiconPath ? "prolog/lexicon/clex_lexicon.pl",
   pname ? "ape",
   description ? "Parser for Attempto Controlled English (ACE)",
-  license ? with lib; licenses.lgpl3
+  license ? with stdenv.lib; licenses.lgpl3
 }:
 
 stdenv.mkDerivation rec {
   inherit pname;
   version = "2019-08-10";
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ swiProlog ];
+  buildInputs = [ swiProlog makeWrapper ];
 
   src = fetchFromGitHub {
      owner = "Attempto";
@@ -37,7 +36,7 @@ stdenv.mkDerivation rec {
     makeWrapper $out/ape.exe $out/bin/ape --add-flags ace
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = description;
     license = license;
     platforms = platforms.unix;

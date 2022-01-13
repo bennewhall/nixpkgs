@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "deis";
@@ -25,7 +25,7 @@ buildGoPackage rec {
     export GOPATH=$GOPATH:$NIX_BUILD_TOP/go/src/${goPackagePath}/Godeps/_workspace
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://deis.io";
     description = "A command line utility used to interact with the Deis open source PaaS";
     license = licenses.asl20;

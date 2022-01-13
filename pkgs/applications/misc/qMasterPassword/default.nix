@@ -1,4 +1,4 @@
-{ lib, stdenv, mkDerivation, fetchFromGitHub, qtbase, qmake, libX11, libXtst, openssl, libscrypt }:
+{ stdenv, mkDerivation, fetchFromGitHub, qtbase, qmake, libX11, libXtst, openssl, libscrypt }:
 
 mkDerivation rec {
   name = "qMasterPassword";
@@ -30,7 +30,7 @@ mkDerivation rec {
     mv data/icons/* $out/share/icons/qmasterpassword
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Stateless Master Password Manager";
     longDescription = ''
       Access all your passwords using only a single master password. But in

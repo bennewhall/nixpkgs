@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation {
   pname = "brigand";
@@ -13,7 +13,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Instant compile time C++ 11 metaprogramming library";
     longDescription = ''
       Brigand is a light-weight, fully functional, instant-compile time C++ 11 meta-programming library.
@@ -21,6 +21,6 @@ stdenv.mkDerivation {
     homepage = "https://github.com/edouarda/brigand";
     license = licenses.boost;
     maintainers = with maintainers; [ pmiddend ];
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }

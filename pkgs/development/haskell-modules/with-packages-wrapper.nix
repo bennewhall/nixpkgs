@@ -1,8 +1,5 @@
 { lib, stdenv, ghc, llvmPackages, packages, symlinkJoin, makeWrapper
-# GHC will have LLVM available if necessary for the respective target,
-# so useLLVM only needs to be changed if -fllvm is to be used for a
-# platform that has NCG support
-, useLLVM ? false
+, withLLVM ? false
 , postBuild ? ""
 , ghcLibdir ? null # only used by ghcjs, when resolving plugins
 }:
@@ -53,15 +50,16 @@ let
                   ([ llvmPackages.llvm ]
                    ++ lib.optional stdenv.targetPlatform.isDarwin llvmPackages.clang);
 in
-if paths == [] && !useLLVM then ghc else
+if paths == [] && !withLLVM then ghc else
 symlinkJoin {
   # this makes computing paths from the name attribute impossible;
   # if such a feature is needed, the real compiler name should be saved
   # as a dedicated drv attribute, like `compiler-name`
   name = ghc.name + "-with-packages";
   paths = paths ++ [ghc];
-  nativeBuildInputs = [ makeWrapper ];
   postBuild = ''
+    . ${makeWrapper}/nix-support/setup-hook
+
     # wrap compiler executables with correct env variables
 
     for prg in ${ghcCommand} ${ghcCommand}i ${ghcCommand}-${ghc.version} ${ghcCommand}i-${ghc.version}; do
@@ -76,7 +74,7 @@ symlinkJoin {
           ${lib.optionalString (ghc.isGhcjs or false)
             ''--set NODE_PATH "${ghc.socket-io}/lib/node_modules"''
           } \
-          ${lib.optionalString useLLVM ''--prefix "PATH" ":" "${llvm}"''}
+          ${lib.optionalString withLLVM ''--prefix "PATH" ":" "${llvm}"''}
       fi
     done
 

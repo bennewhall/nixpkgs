@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub }:
+{ stdenv, buildPythonPackage, fetchFromGitHub }:
 
 buildPythonPackage rec {
   pname = "ifconfig-parser";
@@ -16,7 +16,7 @@ buildPythonPackage rec {
     python -m unittest -v test_ifconfig_parser.TestIfconfigParser
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Unsophisticated python package for parsing raw output of ifconfig.";
     homepage = "https://github.com/KnightWhoSayNi/ifconfig-parser";
     license = licenses.mit;

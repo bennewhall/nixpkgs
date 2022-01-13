@@ -1,47 +1,37 @@
 { lib
 , buildPythonPackage
-, fetchFromGitHub
+, fetchPypi
 , isPy27
-, pytestCheckHook
+, nose
 }:
 
 buildPythonPackage rec {
   pname = "dill";
-  version = "0.3.4";
-  doCheck = !isPy27;
+  version = "0.3.1.1";
 
-  src = fetchFromGitHub {
-    owner = "uqfoundation";
-    repo = pname;
-    rev = "${pname}-${version}";
-    sha256 = "0x702gh50wb3n820p2p9w49cn4a354y207pllwc7snfxprv6hypm";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "42d8ef819367516592a825746a18073ced42ca169ab1f5f4044134703e7a049c";
   };
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
+  # python2 can't import a test fixture
+  doCheck = !isPy27;
+  checkInputs = [ nose ];
+  checkPhase = ''
+    PYTHONPATH=$PWD/tests:$PYTHONPATH
+    nosetests \
+      --ignore-files="test_classdef" \
+      --ignore-files="test_objects" \
+      --ignore-files="test_selected" \
+      --exclude="test_the_rest" \
+      --exclude="test_importable"
+  '';
   # Tests seem to fail because of import pathing and referencing items/classes in modules.
   # Seems to be a Nix/pathing related issue, not the codebase, so disabling failing tests.
-  disabledTestPaths = [
-    "tests/test_diff.py"
-    "tests/test_module.py"
-    "tests/test_objects.py"
-  ];
 
-  disabledTests = [
-    "test_class_objects"
-    "test_method_decorator"
-    "test_importable"
-    "test_the_rest"
-  ];
-
-  pythonImportsCheck = [ "dill" ];
-
-  meta = with lib; {
+  meta = {
     description = "Serialize all of python (almost)";
     homepage = "https://github.com/uqfoundation/dill/";
-    license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+    license = lib.licenses.bsd3;
   };
 }

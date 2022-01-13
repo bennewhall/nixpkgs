@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, gettext, libev, pcre, pkg-config, udns }:
+{ stdenv, fetchFromGitHub, autoreconfHook, gettext, libev, pcre, pkgconfig, udns }:
 
 stdenv.mkDerivation rec {
   pname = "sniproxy";
@@ -11,10 +11,10 @@ stdenv.mkDerivation rec {
     sha256 = "0isgl2lyq8vz5kkxpgyh1sgjlb6sqqybakr64w2mfh29k5ls8xzm";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ gettext libev pcre udns ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Transparent TLS and HTTP layer 4 proxy with SNI support";
     license = licenses.bsd2;

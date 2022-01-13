@@ -1,12 +1,11 @@
-{ lib, stdenv, fetchFromGitHub, cmake, boost165, pkg-config, guile,
-eigen, libpng, python3, libGLU, qt4, openexr, openimageio,
-opencolorio_1, xercesc, ilmbase, osl, seexpr, makeWrapper
+{ stdenv, fetchFromGitHub, cmake, boost165, pkgconfig, guile,
+eigen, libpng, python, libGLU, qt4, openexr, openimageio,
+opencolorio, xercesc, ilmbase, osl, seexpr, makeWrapper
 }:
 
 let boost_static = boost165.override {
   enableStatic = true;
   enablePython = true;
-  python = python3;
 };
 in stdenv.mkDerivation rec {
 
@@ -19,11 +18,10 @@ in stdenv.mkDerivation rec {
     rev    = version;
     sha256 = "1sq9s0rzjksdn8ayp1g17gdqhp7fqks8v1ddd3i5rsl96b04fqx5";
   };
-  nativeBuildInputs = [ cmake pkg-config makeWrapper ];
   buildInputs = [
-    boost_static guile eigen libpng python3
-    libGLU qt4 openexr openimageio opencolorio_1 xercesc
-    osl seexpr
+    cmake pkgconfig boost_static guile eigen libpng python
+    libGLU qt4 openexr openimageio opencolorio xercesc
+    osl seexpr makeWrapper
   ];
 
   NIX_CFLAGS_COMPILE = toString [
@@ -48,8 +46,9 @@ in stdenv.mkDerivation rec {
       "-DUSE_SSE=ON"
       "-DUSE_SSE42=ON"
   ];
+  enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Open source, physically-based global illumination rendering engine";
     homepage = "https://appleseedhq.net/";
     maintainers = with maintainers; [ hodapp ];
@@ -60,7 +59,7 @@ in stdenv.mkDerivation rec {
   # Work around a bug in the CMake build:
   postInstall = ''
     chmod a+x $out/bin/*
-    wrapProgram $out/bin/appleseed.studio --set PYTHONHOME ${python3}
+    wrapProgram $out/bin/appleseed.studio --set PYTHONHOME ${python}
   '';
 }
 

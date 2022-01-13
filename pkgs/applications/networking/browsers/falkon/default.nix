@@ -1,5 +1,5 @@
 { stdenv, mkDerivation, lib, fetchFromGitHub, fetchpatch
-, cmake, extra-cmake-modules, pkg-config, qmake
+, cmake, extra-cmake-modules, pkgconfig, qmake
 , libpthreadstubs, libxcb, libXdmcp
 , qtsvg, qttools, qtwebengine, qtx11extras
 , qtwayland, wrapQtAppsHook
@@ -41,13 +41,15 @@ mkDerivation rec {
   nativeBuildInputs = [
     cmake
     extra-cmake-modules
-    pkg-config
+    pkgconfig
     qmake
     qttools
     wrapQtAppsHook
   ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "QtWebEngine based cross-platform web browser";
     homepage    = "https://community.kde.org/Incubator/Projects/Falkon";
     license     = licenses.gpl3;

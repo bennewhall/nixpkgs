@@ -54,8 +54,6 @@ in
 
     services.dbus.packages = [ pkgs.dconf ];
 
-    systemd.packages = [ pkgs.dconf ];
-
     # For dconf executable
     environment.systemPackages = [ pkgs.dconf ];
 

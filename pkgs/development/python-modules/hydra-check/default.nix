@@ -5,20 +5,21 @@
 , docopt
 , requests
 , beautifulsoup4
+, black
 , mypy
-, types-requests
+, flake8
 }:
 
 buildPythonPackage rec {
   pname = "hydra-check";
-  version = "1.2.0";
+  version = "1.1.1";
   disabled = pythonOlder "3.5";
 
   src = fetchFromGitHub {
     owner = "nix-community";
-    repo = pname;
+    repo = "hydra-check";
     rev = version;
-    sha256 = "EegoQ8qTrFGFYbCDsbAOE4Afg9haLjYdC0Cux/yvSk8=";
+    sha256 = "1dmsscsib8ckp496gsfqxmq8d35zs71n99xmziq9iprvy7n5clq2";
   };
 
   propagatedBuildInputs = [
@@ -27,17 +28,14 @@ buildPythonPackage rec {
     beautifulsoup4
   ];
 
-  checkInputs = [
-    mypy
-    types-requests
-  ];
+  checkInputs = [ mypy ];
 
   checkPhase = ''
     echo -e "\x1b[32m## run mypy\x1b[0m"
     mypy hydracheck
   '';
 
-  meta = with lib; {
+  meta = with lib;{
     description = "check hydra for the build status of a package";
     homepage = "https://github.com/nix-community/hydra-check";
     license = licenses.mit;

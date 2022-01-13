@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , buildPythonPackage
 , python
 , ndtypes
@@ -28,7 +27,7 @@ buildPythonPackage {
   postInstall = ''
     mkdir $out/include
     cp python/xnd/*.h $out/include
-  '' + lib.optionalString stdenv.isDarwin ''
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
     install_name_tool -add_rpath ${libxnd}/lib $out/${python.sitePackages}/xnd/_xnd.*.so
   '';
 

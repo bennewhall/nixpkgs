@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, icu, clucene_core, curl }:
+{ stdenv, fetchurl, pkgconfig, icu, clucene_core, curl }:
 
 stdenv.mkDerivation rec {
 
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "14syphc47g6svkbg018nrsgq4z6hid1zydax243g8dx747vsi6nf";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ icu clucene_core curl ];
 
   prePatch = ''
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     "-DU_USING_ICU_NAMESPACE=1"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A software framework that allows research manipulation of Biblical texts";
     homepage = "http://www.crosswire.org/sword/";
     longDescription = ''

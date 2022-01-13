@@ -1,6 +1,5 @@
 { stdenv
 , lib
-, addOpenGLRunpath
 , buildPythonPackage
 , fetchFromGitHub
 , cmake
@@ -9,19 +8,22 @@
 , six
 , nose
 , Mako
-, cudaSupport ? false, cudatoolkit
+, cudaSupport ? false, cudatoolkit , nvidia_x11
 , openclSupport ? true, ocl-icd, clblas
 }:
 
+assert cudaSupport -> nvidia_x11 != null
+                   && cudatoolkit != null;
+
 buildPythonPackage rec {
   pname = "libgpuarray";
-  version = "0.7.6";
+  version = "0.7.5";
 
   src = fetchFromGitHub {
     owner = "Theano";
     repo = "libgpuarray";
     rev = "v${version}";
-    sha256 = "0ksil18c9ign4xrv5k323flhvdy6wdxh8szdd3nivv31jc3zsdri";
+    sha256 = "0zkdwjq3k6ciiyf8y5w663fbsnmzhgy27yvpxfhkpxazw9vg3l5v";
   };
 
   # requires a GPU
@@ -30,7 +32,8 @@ buildPythonPackage rec {
   configurePhase = "cmakeConfigurePhase";
 
   libraryPath = lib.makeLibraryPath (
-    lib.optionals cudaSupport [ cudatoolkit.lib cudatoolkit.out ]
+    []
+    ++ lib.optionals cudaSupport [ cudatoolkit.lib cudatoolkit.out nvidia_x11 ]
     ++ lib.optionals openclSupport ([ clblas ] ++ lib.optional (!stdenv.isDarwin) ocl-icd)
   );
 
@@ -45,15 +48,13 @@ buildPythonPackage rec {
 
   postFixup = ''
     rm $out/lib/libgpuarray-static.a
-  '' + lib.optionalString (!stdenv.isDarwin) ''
+  '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
     function fixRunPath {
       p=$(patchelf --print-rpath $1)
       patchelf --set-rpath "$p:$libraryPath" $1
     }
 
     fixRunPath $out/lib/libgpuarray.so
-  '' + lib.optionalString cudaSupport ''
-    addOpenGLRunpath $out/lib/libgpuarray.so
   '';
 
   propagatedBuildInputs = [
@@ -62,19 +63,16 @@ buildPythonPackage rec {
     Mako
   ];
 
-  nativeBuildInputs = [
-    cmake
-  ] ++ lib.optionals cudaSupport [
-    addOpenGLRunpath
-  ];
+  enableParallelBuilding = true;
 
+  nativeBuildInputs = [ cmake ];
 
   buildInputs = [
     cython
     nose
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Theano/libgpuarray";
     description = "Library to manipulate tensors on GPU.";
     license = licenses.free;

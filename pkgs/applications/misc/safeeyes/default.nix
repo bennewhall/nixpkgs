@@ -1,23 +1,23 @@
-{ lib, python3Packages, gobject-introspection, libappindicator-gtk3, libnotify, gtk3, gnome, xprintidle-ng, wrapGAppsHook, gdk-pixbuf, shared-mime-info, librsvg
+{ lib, python3Packages, gobject-introspection, libappindicator-gtk3, libnotify, gtk3, gnome3, xprintidle-ng, wrapGAppsHook, gdk-pixbuf, shared-mime-info, librsvg
 }:
 
-let inherit (python3Packages) python buildPythonApplication fetchPypi croniter;
+let inherit (python3Packages) python buildPythonApplication fetchPypi;
 
 in buildPythonApplication rec {
   pname = "safeeyes";
-  version = "2.1.3";
+  version = "2.0.9";
   namePrefix = "";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1b5w887hivmdrkm1ydbar4nmnks6grpbbpvxgf9j9s46msj03c9x";
+    sha256 = "13q06jv8hm0dynmr3g5pf1m4j3w9iabrpz1nhpl02f7x0d90whg2";
   };
 
   buildInputs = [
     gtk3
     gobject-introspection
-    gnome.adwaita-icon-theme
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
   ];
 
   nativeBuildInputs = [
@@ -30,7 +30,6 @@ in buildPythonApplication rec {
     xlib
     pygobject3
     dbus-python
-    croniter
 
     libappindicator-gtk3
     libnotify
@@ -57,9 +56,6 @@ in buildPythonApplication rec {
       # safeeyes images
       --prefix XDG_DATA_DIRS : "$out/lib/${python.libPrefix}/site-packages/usr/share"
     )
-    mkdir -p $out/share/applications
-    cp -r safeeyes/platform/icons $out/share/
-    cp safeeyes/platform/safeeyes.desktop $out/share/applications/
   '';
 
   doCheck = false; # no tests

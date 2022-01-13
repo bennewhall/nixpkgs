@@ -1,4 +1,4 @@
-{ lib, stdenv, autoconf, automake, libtool, wrapGAppsHook, fetchFromGitHub, pkg-config
+{ stdenv, autoconf, automake, libtool, wrapGAppsHook, fetchFromGitHub, pkgconfig
 , intltool, gtk3, json-glib, curl, glib, autoconf-archive, appstream-glib, fetchpatch }:
 
 
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs= [
     autoconf automake libtool wrapGAppsHook
-    pkg-config intltool autoconf-archive
+    pkgconfig intltool autoconf-archive
     appstream-glib
   ];
 
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
 
   doCheck = false; # fails with style validation error
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GTK remote control for the Transmission BitTorrent client";
     homepage = "https://github.com/ajf8/transmission-remote-gtk";
     license = licenses.gpl2;

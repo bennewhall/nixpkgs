@@ -1,11 +1,9 @@
-{lib, stdenv, fetchurl, perl, bash}:
+{stdenv, fetchurl, perl, bash}:
 
-stdenv.mkDerivation rec {
-  pname = "atool";
-  version = "0.39.0";
-
+stdenv.mkDerivation {
+  name = "atool-0.39.0";
   src = fetchurl {
-    url = "mirror://savannah/atool/atool-${version}.tar.gz";
+    url = "mirror://savannah/atool/atool-0.39.0.tar.gz";
     sha256 = "aaf60095884abb872e25f8e919a8a63d0dabaeca46faeba87d12812d6efc703b";
   };
 
@@ -15,7 +13,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://www.nongnu.org/atool";
     description = "Archive command line helper";
-    platforms = lib.platforms.unix;
-    license = lib.licenses.gpl3;
+    platforms = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl3;
   };
 }

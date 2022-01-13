@@ -1,11 +1,9 @@
-{fetchurl, lib, stdenv, flex, db}:
+{fetchurl, stdenv, flex, db}:
 
 stdenv.mkDerivation rec {
-  pname = "bogofilter";
-  version = "1.2.4";
-
+  name = "bogofilter-1.2.4";
   src = fetchurl {
-    url = "mirror://sourceforge/bogofilter/bogofilter-${version}.tar.bz2";
+    url = "mirror://sourceforge/bogofilter/${name}.tar.bz2";
     sha256 = "1d56n2m9inm8gnzm88aa27xl2a7sp7aff3484vmflpqkinjqf0p1";
   };
 
@@ -25,7 +23,7 @@ stdenv.mkDerivation rec {
       classifications and corrections.  It is based on a Bayesian
       filter.
     '';
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

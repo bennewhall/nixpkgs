@@ -1,4 +1,4 @@
-{ config, lib, pkgs, extendModules, noUserModules, ... }:
+{ config, lib, pkgs, baseModules, extraModules, modules, modulesPath, ... }:
 
 with lib;
 
@@ -6,8 +6,7 @@ let
 
   cfg = config.documentation;
 
-  /* Modules for which to show options even when not imported. */
-  extraDocModules = [ ../virtualisation/qemu-vm.nix ];
+  manualModules = baseModules ++ optionals cfg.nixos.includeAllModules (extraModules ++ modules);
 
   /* For the purpose of generating docs, evaluate options with each derivation
     in `pkgs` (recursively) replaced by a fake with path "\${pkgs.attribute.path}".
@@ -21,10 +20,13 @@ let
     extraSources = cfg.nixos.extraModuleSources;
     options =
       let
-        extendNixOS = if cfg.nixos.includeAllModules then extendModules else noUserModules.extendModules;
-        scrubbedEval = extendNixOS {
-          modules = extraDocModules;
-          specialArgs.pkgs = scrubDerivations "pkgs" pkgs;
+        scrubbedEval = evalModules {
+          modules = [ { nixpkgs.localSystem = config.nixpkgs.localSystem; } ] ++ manualModules;
+          args = (config._module.args) // { modules = [ ]; };
+          specialArgs = {
+            pkgs = scrubDerivations "pkgs" pkgs;
+            inherit modulesPath;
+          };
         };
         scrubDerivations = namePrefix: pkgSet: mapAttrs
           (name: value:
@@ -96,15 +98,15 @@ in
 
           See "Multiple-output packages" chapter in the nixpkgs manual for more info.
         '';
-        # which is at ../../../doc/multiple-output.chapter.md
+        # which is at ../../../doc/multiple-output.xml
       };
 
       man.enable = mkOption {
         type = types.bool;
         default = true;
         description = ''
-          Whether to install manual pages.
-          This also includes <literal>man</literal> outputs.
+          Whether to install manual pages and the <command>man</command> command.
+          This also includes "man" outputs.
         '';
       };
 
@@ -112,18 +114,9 @@ in
         type = types.bool;
         default = false;
         description = ''
-          Whether to generate the manual page index caches.
-          This allows searching for a page or
-          keyword using utilities like
-          <citerefentry>
-            <refentrytitle>apropos</refentrytitle>
-            <manvolnum>1</manvolnum>
-          </citerefentry>
-          and the <literal>-k</literal> option of
-          <citerefentry>
-            <refentrytitle>man</refentrytitle>
-            <manvolnum>1</manvolnum>
-          </citerefentry>.
+          Whether to generate the manual page index caches using
+          <literal>mandb(8)</literal>. This allows searching for a page or
+          keyword using utilities like <literal>apropos(1)</literal>.
         '';
       };
 
@@ -152,11 +145,11 @@ in
         description = ''
           Whether to install documentation targeted at developers.
           <itemizedlist>
-          <listitem><para>This includes man pages targeted at developers if <option>documentation.man.enable</option> is
+          <listitem><para>This includes man pages targeted at developers if <option>man.enable</option> is
                     set (this also includes "devman" outputs).</para></listitem>
-          <listitem><para>This includes info pages targeted at developers if <option>documentation.info.enable</option>
+          <listitem><para>This includes info pages targeted at developers if <option>info.enable</option>
                     is set (this also includes "devinfo" outputs).</para></listitem>
-          <listitem><para>This includes other pages targeted at developers if <option>documentation.doc.enable</option>
+          <listitem><para>This includes other pages targeted at developers if <option>doc.enable</option>
                     is set (this also includes "devdoc" outputs).</para></listitem>
           </itemizedlist>
         '';
@@ -170,10 +163,10 @@ in
           <itemizedlist>
           <listitem><para>This includes man pages like
                     <citerefentry><refentrytitle>configuration.nix</refentrytitle>
-                    <manvolnum>5</manvolnum></citerefentry> if <option>documentation.man.enable</option> is
+                    <manvolnum>5</manvolnum></citerefentry> if <option>man.enable</option> is
                     set.</para></listitem>
           <listitem><para>This includes the HTML manual and the <command>nixos-help</command> command if
-                    <option>documentation.doc.enable</option> is set.</para></listitem>
+                    <option>doc.enable</option> is set.</para></listitem>
           </itemizedlist>
         '';
       };
@@ -196,7 +189,7 @@ in
           Which extra NixOS module paths the generated NixOS's documentation should strip
           from options.
         '';
-        example = literalExpression ''
+        example = literalExample ''
           # e.g. with options from modules in ''${pkgs.customModules}/nix:
           [ pkgs.customModules ]
         '';
@@ -207,22 +200,38 @@ in
   };
 
   config = mkIf cfg.enable (mkMerge [
-    {
-      assertions = [
-        {
-          assertion = !(cfg.man.man-db.enable && cfg.man.mandoc.enable);
-          message = ''
-            man-db and mandoc can't be used as the default man page viewer at the same time!
-          '';
-        }
-      ];
-    }
 
-    # The actual implementation for this lives in man-db.nix or mandoc.nix,
-    # depending on which backend is active.
     (mkIf cfg.man.enable {
+      environment.systemPackages = [ pkgs.man-db ];
       environment.pathsToLink = [ "/share/man" ];
       environment.extraOutputsToInstall = [ "man" ] ++ optional cfg.dev.enable "devman";
+      environment.etc."man_db.conf".text =
+        let
+          manualPages = pkgs.buildEnv {
+            name = "man-paths";
+            paths = config.environment.systemPackages;
+            pathsToLink = [ "/share/man" ];
+            extraOutputsToInstall = ["man"];
+            ignoreCollisions = true;
+          };
+          manualCache = pkgs.runCommandLocal "man-cache" { }
+          ''
+            echo "MANDB_MAP ${manualPages}/share/man $out" > man.conf
+            ${pkgs.man-db}/bin/mandb -C man.conf -psc >/dev/null 2>&1
+          '';
+        in
+        ''
+          # Manual pages paths for NixOS
+          MANPATH_MAP /run/current-system/sw/bin /run/current-system/sw/share/man
+          MANPATH_MAP /run/wrappers/bin          /run/current-system/sw/share/man
+
+          ${optionalString cfg.man.generateCaches ''
+          # Generated manual pages cache for NixOS (immutable)
+          MANDB_MAP /run/current-system/sw/share/man ${manualCache}
+          ''}
+          # Manual pages caches for NixOS
+          MANDB_MAP /run/current-system/sw/share/man /var/cache/man/nixos
+        '';
     })
 
     (mkIf cfg.info.enable {
@@ -249,9 +258,10 @@ in
 
       environment.systemPackages = []
         ++ optional cfg.man.enable manual.manpages
-        ++ optionals cfg.doc.enable [ manual.manualHTML nixos-help ];
+        ++ optionals cfg.doc.enable ([ manual.manualHTML nixos-help ]
+           ++ optionals config.services.xserver.enable [ pkgs.nixos-icons ]);
 
-      services.getty.helpLine = mkIf cfg.doc.enable (
+      services.mingetty.helpLine = mkIf cfg.doc.enable (
           "\nRun 'nixos-help' for the NixOS manual."
       );
     })

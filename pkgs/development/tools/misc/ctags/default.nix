@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchsvn, autoreconfHook }:
+{ stdenv, fetchsvn, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   name = "ctags-${revision}";
@@ -15,14 +15,7 @@ stdenv.mkDerivation rec {
   # don't use $T(E)MP which is set to the build directory
   configureFlags= [ "--enable-tmpdir=/tmp" ];
 
-  patches = [
-    # Library defines an `__unused__` which is a reserved name, and may
-    # conflict with the standard library definition. One such conflict is with
-    # macOS headers.
-    ./unused-collision.patch
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool for fast source code browsing (exuberant ctags)";
     longDescription = ''
       Ctags generates an index (or tag) file of language objects found

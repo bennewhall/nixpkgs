@@ -1,18 +1,18 @@
-{ lib, mkDerivation, fetchurl, cmake, pkg-config, xlibsWrapper
+{ stdenv, mkDerivation, fetchurl, cmake, pkgconfig, xlibsWrapper
 , qtbase, qttools, qtmultimedia, qtx11extras
 # transports
 , curl, libmms
 # input plugins
 , libmad, taglib, libvorbis, libogg, flac, libmpcdec, libmodplug, libsndfile
-, libcdio, cdparanoia, libcddb, faad2, ffmpeg, wildmidi
+, libcdio, cdparanoia, libcddb, faad2, ffmpeg_3, wildmidi
 # output plugins
-, alsa-lib, libpulseaudio
+, alsaLib, libpulseaudio
 # effect plugins
 , libsamplerate
 }:
 
 # Additional plugins that can be added:
-#  wavpack (https://www.wavpack.com/)
+#  wavpack (http://www.wavpack.com/)
 #  gme (Game music support)
 #  Ogg Opus support
 #  BS2B effect plugin (http://bs2b.sourceforge.net/)
@@ -29,15 +29,14 @@
 # handle that.
 
 mkDerivation rec {
-  pname = "qmmp";
-  version = "1.4.4";
+  name = "qmmp-1.4.2";
 
   src = fetchurl {
-    url = "https://qmmp.ylsoftware.com/files/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-sZRZVhCf2ceETuV4AULA0kVkuIMn3C+aYdKThqvPnVQ=";
+    url = "http://qmmp.ylsoftware.com/files/${name}.tar.bz2";
+    sha256 = "1kvzw0n90crg3dgy8834qrjv0zb3ia5cny7virax9ax73y653jfa";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs =
     [ # basic requirements
       qtbase qttools qtmultimedia qtx11extras xlibsWrapper
@@ -45,19 +44,21 @@ mkDerivation rec {
       curl libmms
       # input plugins
       libmad taglib libvorbis libogg flac libmpcdec libmodplug libsndfile
-      libcdio cdparanoia libcddb faad2 ffmpeg wildmidi
+      libcdio cdparanoia libcddb faad2 ffmpeg_3 wildmidi
       # output plugins
-      alsa-lib libpulseaudio
+      alsaLib libpulseaudio
       # effect plugins
       libsamplerate
     ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "Qt-based audio player that looks like Winamp";
-    homepage = "https://qmmp.ylsoftware.com/";
-    license = licenses.gpl2Plus;
+    homepage = "http://qmmp.ylsoftware.com/";
+    license = licenses.gpl2;
     platforms = platforms.linux;
     maintainers = [ maintainers.bjornfor ];
-    repositories.svn = "https://svn.code.sf.net/p/qmmp-dev/code";
+    repositories.svn = "http://qmmp.googlecode.com/svn/";
   };
 }

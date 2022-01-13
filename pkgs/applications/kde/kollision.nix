@@ -1,7 +1,7 @@
 { mkDerivation, lib, extra-cmake-modules, kdoctools, ki18n, kio, libkdegames }:
 
 mkDerivation {
-  pname = "kollision";
+  name = "kollision";
   meta = with lib; {
     homepage = "https://kde.org/applications/en/games/org.kde.kollision";
     description = "A casual game";

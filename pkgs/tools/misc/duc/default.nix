@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
 , tokyocabinet, ncurses
 , cairo ? null, pango ? null
 , enableCairo ? stdenv.isLinux
@@ -17,19 +17,19 @@ stdenv.mkDerivation rec {
     sha256 = "1i7ry25xzy027g6ysv6qlf09ax04q4vy0kikl8h0aq5jbxsl9q52";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ tokyocabinet ncurses ] ++
-    lib.optionals enableCairo [ cairo pango ];
+    stdenv.lib.optionals enableCairo [ cairo pango ];
 
   configureFlags =
-    lib.optionals (!enableCairo) [ "--disable-x11" "--disable-cairo" ];
+    stdenv.lib.optionals (!enableCairo) [ "--disable-x11" "--disable-cairo" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://duc.zevv.nl/";
     description = "Collection of tools for inspecting and visualizing disk usage";
     license = licenses.gpl2;
 
     platforms = platforms.all;
-    maintainers = [ ];
+    maintainers = [ maintainers.lethalman ];
   };
 }

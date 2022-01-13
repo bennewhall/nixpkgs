@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, pkg-config, m4}:
+{stdenv, fetchurl, pkgconfig, m4}:
 
 stdenv.mkDerivation rec {
   name = "libsigc++-1.2.7";
@@ -8,10 +8,10 @@ stdenv.mkDerivation rec {
     sha256 = "099224v5y0y1ggqrfc8vga8afr3nb93iicn7cj8xxgsrwa83s5nr";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ m4];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://libsigcplusplus.github.io/libsigcplusplus/";
     description = "A typesafe callback system for standard C++";
     branch = "1.2";

@@ -5,7 +5,7 @@ let
 
 in {
   name = "zookeeper";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ nequissimus ztzg ];
   };
 

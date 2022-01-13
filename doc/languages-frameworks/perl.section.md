@@ -58,7 +58,13 @@ in `all-packages.nix`. You can test building a Perl package as follows:
 $ nix-build -A perlPackages.ClassC3
 ```
 
-To install it with `nix-env` instead: `nix-env -f. -iA perlPackages.ClassC3`.
+`buildPerlPackage` adds `perl-` to the start of the name attribute, so the package above is actually called `perl-Class-C3-0.21`. So to install it, you can say:
+
+```ShellSession
+$ nix-env -i perl-Class-C3
+```
+
+(Of course you can also install using the attribute name: `nix-env -i -A perlPackages.ClassC3`.)
 
 So what does `buildPerlPackage` do? It does the following:
 
@@ -104,7 +110,7 @@ ClassC3Componentised = buildPerlPackage rec {
 On Darwin, if a script has too many `-Idir` flags in its first line (its “shebang line”), it will not run. This can be worked around by calling the `shortenPerlShebang` function from the `postInstall` phase:
 
 ```nix
-{ lib, stdenv, buildPerlPackage, fetchurl, shortenPerlShebang }:
+{ stdenv, buildPerlPackage, fetchurl, shortenPerlShebang }:
 
 ImageExifTool = buildPerlPackage {
   pname = "Image-ExifTool";
@@ -115,8 +121,8 @@ ImageExifTool = buildPerlPackage {
     sha256 = "0d8v48y94z8maxkmw1rv7v9m0jg2dc8xbp581njb6yhr7abwqdv3";
   };
 
-  buildInputs = lib.optional stdenv.isDarwin shortenPerlShebang;
-  postInstall = lib.optionalString stdenv.isDarwin ''
+  buildInputs = stdenv.lib.optional stdenv.isDarwin shortenPerlShebang;
+  postInstall = stdenv.lib.optional stdenv.isDarwin ''
     shortenPerlShebang $out/bin/exiftool
   '';
 };
@@ -129,10 +135,8 @@ This will remove the `-I` flags from the shebang line, rewrite them in the `use 
 Nix expressions for Perl packages can be generated (almost) automatically from CPAN. This is done by the program `nix-generate-from-cpan`, which can be installed as follows:
 
 ```ShellSession
-$ nix-env -f "<nixpkgs>" -iA nix-generate-from-cpan
+$ nix-env -i nix-generate-from-cpan
 ```
-
-Substitute `<nixpkgs>` by the path of a nixpkgs clone to use the latest version.
 
 This program takes a Perl module name, looks it up on CPAN, fetches and unpacks the corresponding package, and prints a Nix expression on standard output. For example:
 
@@ -147,7 +151,7 @@ $ nix-generate-from-cpan XML::Simple
     propagatedBuildInputs = [ XMLNamespaceSupport XMLSAX XMLSAXExpat ];
     meta = {
       description = "An API for simple XML files";
-      license = with lib.licenses; [ artistic1 gpl1Plus ];
+      license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
 ```

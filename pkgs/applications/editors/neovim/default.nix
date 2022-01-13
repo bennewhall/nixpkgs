@@ -1,16 +1,15 @@
-{ lib, stdenv, fetchFromGitHub, cmake, gettext, msgpack, libtermkey, libiconv
-, libuv, lua, ncurses, pkg-config
-, unibilium, gperf
+{ stdenv, fetchFromGitHub, cmake, gettext, msgpack, libtermkey, libiconv
+, libuv, lua, ncurses, pkgconfig
+, unibilium, xsel, gperf
 , libvterm-neovim
-, tree-sitter
 , glibcLocales ? null, procps ? null
 
 # now defaults to false because some tests can be flaky (clipboard etc)
 , doCheck ? false
-, nodejs ? null, fish ? null, python3 ? null
+, nodejs ? null, fish ? null, python ? null
 }:
 
-with lib;
+with stdenv.lib;
 
 let
   neovimLuaEnv = lua.withPackages(ps:
@@ -20,7 +19,7 @@ let
       ]
     ));
 
-  pyEnv = python3.withPackages(ps: with ps; [ pynvim msgpack ]);
+  pyEnv = python.withPackages(ps: [ ps.pynvim ps.msgpack ]);
 
   # FIXME: this is verry messy and strange.
   # see https://github.com/NixOS/nixpkgs/pull/80528
@@ -32,13 +31,13 @@ let
 in
   stdenv.mkDerivation rec {
     pname = "neovim-unwrapped";
-    version = "0.6.1";
+    version = "0.4.4";
 
     src = fetchFromGitHub {
       owner = "neovim";
       repo = "neovim";
       rev = "v${version}";
-      sha256 = "sha256-0XCW047WopPr3pRTy9rF3Ff6MvNRHT4FletzOERD41A=";
+      sha256 = "11zyj6jvkwas3n6w1ckj3pk6jf81z1g7ngg4smmwm7c27y2a6f2m";
     };
 
     patches = [
@@ -49,8 +48,7 @@ in
     ];
 
     dontFixCmake = true;
-
-    inherit lua;
+    enableParallelBuilding = true;
 
     buildInputs = [
       gperf
@@ -61,7 +59,6 @@ in
       msgpack
       ncurses
       neovimLuaEnv
-      tree-sitter
       unibilium
     ] ++ optional stdenv.isDarwin libiconv
       ++ optionals doCheck [ glibcLocales procps ]
@@ -78,7 +75,7 @@ in
     nativeBuildInputs = [
       cmake
       gettext
-      pkg-config
+      pkgconfig
     ];
 
     # extra programs test via `make functionaltest`
@@ -100,7 +97,6 @@ in
       "-DGPERF_PRG=${gperf}/bin/gperf"
       "-DLUA_PRG=${neovimLuaEnv.interpreter}"
       "-DLIBLUV_LIBRARY=${luvpath}"
-      "-DUSE_BUNDLED=OFF"
     ]
     ++ optional doCheck "-DBUSTED_PRG=${neovimLuaEnv}/bin/busted"
     ++ optional (!lua.pkgs.isLuaJIT) "-DPREFER_LUA=ON"
@@ -109,8 +105,12 @@ in
     # triggers on buffer overflow bug while running tests
     hardeningDisable = [ "fortify" ];
 
-    preConfigure = lib.optionalString stdenv.isDarwin ''
+    preConfigure = stdenv.lib.optionalString stdenv.isDarwin ''
       substituteInPlace src/nvim/CMakeLists.txt --replace "    util" ""
+    '';
+
+    postInstall = stdenv.lib.optionalString stdenv.isLinux ''
+      sed -i -e "s|'xsel|'${xsel}/bin/xsel|g" $out/share/nvim/runtime/autoload/provider/clipboard.vim
     '';
 
     # export PATH=$PWD/build/bin:${PATH}
@@ -129,7 +129,6 @@ in
         - Improve extensibility with a new plugin architecture
       '';
       homepage    = "https://www.neovim.io";
-      mainProgram = "nvim";
       # "Contributions committed before b17d96 by authors who did not sign the
       # Contributor License Agreement (CLA) remain under the Vim license.
       # Contributions committed after b17d96 are licensed under Apache 2.0 unless

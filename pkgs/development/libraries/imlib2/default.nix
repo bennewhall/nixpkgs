@@ -1,22 +1,22 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 # Image file formats
 , libjpeg, libtiff, giflib, libpng, libwebp
 # imlib2 can load images from ID3 tags.
 , libid3tag
-, freetype , bzip2, pkg-config
+, freetype , bzip2, pkgconfig
 , x11Support ? true, xlibsWrapper ? null
 }:
 
 let
-  inherit (lib) optional;
+  inherit (stdenv.lib) optional;
 in
 stdenv.mkDerivation rec {
   pname = "imlib2";
-  version = "1.7.3";
+  version = "1.7.0";
 
   src = fetchurl {
     url = "mirror://sourceforge/enlightenment/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-FY0LjCC8ESIa+ed6ZKEW/KcFGwPN6ixPMdMfRpOC+Zc=";
+    sha256 = "0zdk4afdrrr1539f2q15zja19j4wwfmpswzws2ffgflcnhywlxhr";
   };
 
   buildInputs = [
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     bzip2 freetype libid3tag
   ] ++ optional x11Support xlibsWrapper;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   enableParallelBuilding = true;
 
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
     moveToOutput bin/imlib2-config "$dev"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Image manipulation library";
 
     longDescription = ''

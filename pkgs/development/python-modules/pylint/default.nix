@@ -1,85 +1,55 @@
-{ stdenv
-, lib
-, buildPythonPackage
-, fetchFromGitHub
-, pythonOlder
-, installShellFiles
-, astroid
-, isort
-, GitPython
-, mccabe
-, platformdirs
-, toml
-, pytest-benchmark
-, pytest-xdist
-, pytestCheckHook
-}:
+{ stdenv, lib, buildPythonPackage, fetchPypi, pythonOlder, astroid, installShellFiles,
+  isort, mccabe, pytestCheckHook, pytest-benchmark, pytestrunner, toml }:
 
 buildPythonPackage rec {
   pname = "pylint";
-  version = "2.12.2";
+  version = "2.6.0";
 
-  disabled = pythonOlder "3.6";
+  disabled = pythonOlder "3.5";
 
-  src = fetchFromGitHub {
-    owner = "PyCQA";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-seBYBTB+8PLIovqxVohkoQEfDAZI1fehLgXuHeTx9Wo=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "bb4a908c9dadbc3aac18860550e870f58e1a02c9f2c204fdf5693d73be061210";
   };
 
-  nativeBuildInputs = [
-    installShellFiles
-  ];
+  nativeBuildInputs = [ pytestrunner installShellFiles ];
 
-  propagatedBuildInputs = [
-    astroid
-    isort
-    mccabe
-    platformdirs
-    toml
-  ];
+  checkInputs = [ pytestCheckHook pytest-benchmark ];
 
-  postInstall = ''
-    mkdir -p $out/share/emacs/site-lisp
-    cp -v "elisp/"*.el $out/share/emacs/site-lisp/
-    installManPage man/*.1
+  propagatedBuildInputs = [ astroid isort mccabe toml ];
+
+  postPatch = lib.optionalString stdenv.isDarwin ''
+    # Remove broken darwin test
+    rm -vf pylint/test/test_functional.py
   '';
 
-  checkInputs = [
-    GitPython
-    pytest-benchmark
-    pytest-xdist
-    pytestCheckHook
-  ];
-
-  dontUseSetuptoolsCheck = true;
+  disabledTests = [
+    # https://github.com/PyCQA/pylint/issues/3198
+    "test_by_module_statement_value"
+    # has issues with local directories
+    "test_version"
+   ] ++ lib.optionals stdenv.isDarwin [
+      "test_parallel_execution"
+      "test_py3k_jobs_option"
+   ];
 
   # calls executable in one of the tests
   preCheck = ''
     export PATH=$PATH:$out/bin
-    export HOME=$TEMPDIR
   '';
 
-  pytestFlagsArray = [
-    "-n auto"
-  ];
+  dontUseSetuptoolsCheck = true;
 
-  disabledTestPaths = [
-    # tests miss multiple input files
-    # FileNotFoundError: [Errno 2] No such file or directory
-    "tests/pyreverse/test_writer.py"
-  ];
-
-  disabledTests = lib.optionals stdenv.isDarwin [
-    "test_parallel_execution"
-    "test_py3k_jobs_option"
-  ];
+  postInstall = ''
+    mkdir -p $out/share/emacs/site-lisp
+    cp "elisp/"*.el $out/share/emacs/site-lisp/
+    installManPage man/*.1
+  '';
 
   meta = with lib; {
     homepage = "https://pylint.pycqa.org/";
     description = "A bug and style checker for Python";
     license = licenses.gpl1Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ nand0p ];
   };
 }

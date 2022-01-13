@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , twitter-common-log
@@ -15,7 +15,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ twitter-common-log ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Twitter's API to the confluence wiki";
     homepage    = "https://twitter.github.io/commons/";
     license     = licenses.asl20;

@@ -21,6 +21,7 @@ mkDerivation rec {
     qtbase qtmultimedia qtx11extras qtwebengine
     libidn qca-qt5 libXScrnSaver hunspell
   ];
+  enableParallelBuilding = true;
 
   meta = with lib; {
     homepage = "https://psi-im.org";

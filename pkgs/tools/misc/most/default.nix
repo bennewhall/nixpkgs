@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, slang, ncurses }:
+{ stdenv, fetchurl, slang, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "most";
@@ -8,11 +8,6 @@ stdenv.mkDerivation rec {
     url = "https://www.jedsoft.org/releases/${pname}/${pname}-${version}.tar.gz";
     sha256 = "008537ns659pw2aag15imwjrxj73j26aqq90h285is6kz8gmv06v";
   };
-
-  patches = [
-    # Upstream patch to fix parallel build failure
-    ./parallel-make.patch
-  ];
 
   outputs = [ "out" "doc" ];
 
@@ -31,9 +26,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ slang ncurses ];
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A terminal pager similar to 'more' and 'less'";
     longDescription = ''
       MOST is a powerful paging program for Unix, VMS, MSDOS, and win32

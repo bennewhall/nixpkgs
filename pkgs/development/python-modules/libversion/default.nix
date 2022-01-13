@@ -1,41 +1,23 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, libversion
-, pkg-config
-, pythonOlder
-}:
+{ stdenv, buildPythonPackage, fetchPypi, pkgconfig, libversion, pythonOlder }:
 
 buildPythonPackage rec {
   pname = "libversion";
-  version = "1.2.4";
-  format = "setuptools";
+  version = "1.2.1";
+
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "1h8x9hglrqi03f461lhw3wwz23zs84dgw7hx4laxcmyrgvyzvcq1";
+  };
+
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ libversion ];
 
   disabled = pythonOlder "3.6";
 
-  src = fetchFromGitHub {
-    owner = "repology";
-    repo = "py-libversion";
-    rev = version;
-    sha256 = "sha256-p0wtSB+QXAERf+57MMb8cqWoy1bG3XaCpR9GPwYYvJM=";
-  };
-
-  nativeBuildInputs = [
-    pkg-config
-  ];
-
-  buildInputs = [
-    libversion
-  ];
-
-  pythonImportsCheck = [
-    "libversion"
-  ];
-
-  meta = with lib; {
-    description = "Python bindings for libversion, which provides fast, powerful and correct generic version string comparison algorithm";
+  meta = with stdenv.lib; {
     homepage = "https://github.com/repology/py-libversion";
+    description = "Python bindings for libversion, which provides fast, powerful and correct generic version string comparison algorithm";
     license = licenses.mit;
-    maintainers = with maintainers; [ ryantm ];
+    maintainers = [ maintainers.ryantm ];
   };
 }

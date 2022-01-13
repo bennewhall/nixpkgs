@@ -1,18 +1,18 @@
-{ lib, stdenv, fetchFromGitHub }:
-
-stdenv.mkDerivation rec {
-  pname = "curaengine";
+{ stdenv, fetchurl }:
+let
   version = "15.04.6";
+in
+stdenv.mkDerivation {
+  pname = "curaengine";
+  inherit version;
 
-  src = fetchFromGitHub {
-    owner = "Ultimaker";
-    repo = "CuraEngine";
-    rev = version;
-    sha256 = "sha256-8V21TRSqCN+hkTlz51d5A5oK5JOwEtx+ROt8cfJBL/0=";
+  src = fetchurl {
+    url = "https://github.com/Ultimaker/CuraEngine/archive/${version}.tar.gz";
+    sha256 = "1cd4dikzvqyj5g80rqwymvh4nwm76vsf78clb37kj6q0fig3qbjg";
   };
 
   postPatch = ''
-    substituteInPlace Makefile --replace "--static" ""
+    sed -i 's,--static,,g' Makefile
   '';
 
   installPhase = ''
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     cp build/CuraEngine $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Engine for processing 3D models into 3D printing instructions";
     homepage = "https://github.com/Ultimaker/CuraEngine";
     license = licenses.agpl3;

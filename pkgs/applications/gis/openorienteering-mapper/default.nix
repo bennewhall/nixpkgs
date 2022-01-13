@@ -1,7 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , mkDerivation
 , fetchFromGitHub
-, fetchpatch
 , substituteAll
 , gdal
 , cmake
@@ -20,7 +19,7 @@
 
 mkDerivation rec {
   pname = "OpenOrienteering-Mapper";
-  version = "0.9.5";
+  version = "0.9.4";
 
   buildInputs = [
     gdal
@@ -39,28 +38,21 @@ mkDerivation rec {
     owner = "OpenOrienteering";
     repo = "mapper";
     rev = "v${version}";
-    sha256 = "1w8ikqpgi0ksrzjal5ihfaik4grc5v3gdnnv79j20xkr2p4yn1h5";
+    sha256 = "13k9dirqm74lknhr8w121zr1hjd9gm1y73cj4rrj98rx44dzmk7b";
   };
 
-  patches = [
-    # https://github.com/NixOS/nixpkgs/issues/86054
-    (substituteAll {
-      src = ./fix-qttranslations-path.diff;
-      inherit qttranslations;
-    })
-    # https://github.com/OpenOrienteering/mapper/pull/1907
-    (fetchpatch {
-      url = "https://github.com/OpenOrienteering/mapper/commit/bc52aa567e90a58d6963b44d5ae1909f3f841508.patch";
-      sha256 = "1bkckapzccn6k0ri6bgrr0nhis9498fnwj7b32s2ysym8zcg0355";
-    })
-  ];
+  patches = (substituteAll {
+    # See https://github.com/NixOS/nixpkgs/issues/86054
+    src = ./fix-qttranslations-path.diff;
+    inherit qttranslations;
+  });
 
   cmakeFlags = [
     # Building the manual and bundling licenses fails
     # See https://github.com/NixOS/nixpkgs/issues/85306
     "-DLICENSING_PROVIDER:BOOL=OFF"
     "-DMapper_MANUAL_QTHELP:BOOL=OFF"
-  ] ++ lib.optionals stdenv.isDarwin [
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
     # FindGDAL is broken and always finds /Library/Framework unless this is
     # specified
     "-DGDAL_INCLUDE_DIR=${gdal}/include"
@@ -76,18 +68,20 @@ mkDerivation rec {
   postInstall = with stdenv; lib.optionalString isDarwin ''
     mkdir -p $out/Applications
     mv $out/Mapper.app $out/Applications
+    # Fixes "This application failed to start because it could not find or load the Qt
+    # platform plugin "cocoa"."
+    wrapQtApp $out/Applications/Mapper.app/Contents/MacOS/Mapper
     mkdir -p $out/bin
     ln -s $out/Applications/Mapper.app/Contents/MacOS/Mapper $out/bin/mapper
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       OpenOrienteering Mapper is an orienteering mapmaking program
       and provides a free alternative to the existing proprietary solution.
     '';
     homepage = "https://www.openorienteering.org/apps/mapper/";
-    changelog = "https://github.com/OpenOrienteering/mapper/releases/tag/v${version}";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     platforms = with platforms; linux ++ darwin;
     maintainers = with maintainers; [ mpickering sikmir ];
   };

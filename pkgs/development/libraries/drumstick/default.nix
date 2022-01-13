@@ -1,18 +1,19 @@
-{ lib, stdenv, fetchurl
-, cmake, docbook_xml_dtd_45, docbook_xsl, doxygen, graphviz-nox, pkg-config, qttools, wrapQtAppsHook
-, alsa-lib, fluidsynth, qtbase, qtsvg, libpulseaudio
+{ stdenv, fetchurl
+, cmake, docbook_xml_dtd_45, docbook_xsl, doxygen, pkg-config, wrapQtAppsHook
+, alsaLib, fluidsynth, qtbase, qtsvg, libpulseaudio
 }:
 
 stdenv.mkDerivation rec {
   pname = "drumstick";
-  version = "2.4.1";
+  version = "1.1.3";
 
   src = fetchurl {
     url = "mirror://sourceforge/drumstick/${version}/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-nmqgS08ZBQ2vBEDtoriNbYLaNQA1DWeDhbRo70rBOP0=";
+    sha256 = "1n9wvg79yvkygrkc8xd8pgrd3d7hqmr7gh24dccf0px23lla9b3m";
   };
 
   patches = [
+    ./drumstick-fluidsynth.patch
     ./drumstick-plugins.patch
   ];
 
@@ -22,20 +23,18 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" "man" ];
 
+  enableParallelBuilding = true;
+
   nativeBuildInputs = [
-    cmake docbook_xml_dtd_45 docbook_xml_dtd_45 docbook_xsl doxygen graphviz-nox pkg-config qttools wrapQtAppsHook
+    cmake docbook_xml_dtd_45 docbook_xml_dtd_45 docbook_xsl doxygen pkg-config wrapQtAppsHook
   ];
 
   buildInputs = [
-    alsa-lib fluidsynth libpulseaudio qtbase qtsvg
+    alsaLib fluidsynth libpulseaudio qtbase qtsvg
   ];
 
-  cmakeFlags = [
-    "-DUSE_DBUS=ON"
-  ];
-
-  meta = with lib; {
-    maintainers = [];
+  meta = with stdenv.lib; {
+    maintainers = with maintainers; [ solson ];
     description = "MIDI libraries for Qt5/C++";
     homepage = "http://drumstick.sourceforge.net/";
     license = licenses.gpl2Plus;

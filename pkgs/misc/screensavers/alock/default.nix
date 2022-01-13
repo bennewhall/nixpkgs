@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, pkg-config, autoreconfHook
+{ stdenv, fetchgit, pkgconfig, autoreconfHook
 , libX11, pam, libgcrypt, libXrender, imlib2 }:
 
 stdenv.mkDerivation rec {
@@ -20,13 +20,13 @@ stdenv.mkDerivation rec {
     "--enable-imlib2"
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     autoreconfHook libX11
     pam libgcrypt libXrender imlib2
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Arkq/alock";
     description = "Simple screen lock application for X server";
     longDescription = ''

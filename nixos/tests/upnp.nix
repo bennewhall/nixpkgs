@@ -15,7 +15,7 @@ let
 in
 {
   name = "upnp";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ bobvanderlinden ];
   };
 

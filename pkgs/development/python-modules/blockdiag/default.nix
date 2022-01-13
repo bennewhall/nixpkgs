@@ -1,62 +1,24 @@
-{ lib
-, buildPythonPackage
-, docutils
-, fetchFromGitHub
-, funcparserlib
-, nose
-, pillow
-, ephem
-, pythonOlder
-, pytestCheckHook
-, reportlab
-, setuptools
-, webcolors
-, python
+{ stdenv, buildPythonPackage, fetchFromGitHub
+, setuptools, funcparserlib, pillow, webcolors, reportlab, docutils
 }:
 
 buildPythonPackage rec {
   pname = "blockdiag";
-  version = "3.0.0";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.7";
+  version = "2.0.1";
 
   src = fetchFromGitHub {
     owner = "blockdiag";
     repo = "blockdiag";
     rev = version;
-    sha256 = "sha256-j8FoNUIJJOaahaol1MRPyY2jcPCEIlaAD4bmM2QKFFI=";
+    sha256 = "1cvcl66kf4wdh2n4fdk37zk59lp58wd2fhf84n7pbn0lilyksk5x";
   };
 
-  propagatedBuildInputs = [
-    setuptools
-    funcparserlib
-    pillow
-    webcolors
-    reportlab
-    docutils
-  ];
+  propagatedBuildInputs = [ setuptools funcparserlib pillow webcolors reportlab docutils ];
 
-  checkInputs = [
-    ephem
-    nose
-    pytestCheckHook
-  ];
+  # require network and fail
+  doCheck = false;
 
-  pytestFlagsArray = [
-    "src/blockdiag/tests/"
-  ];
-
-  disabledTests = [
-    # Test require network access
-    "test_app_cleans_up_images"
-  ];
-
-  pythonImportsCheck = [
-    "blockdiag"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Generate block-diagram image from spec-text file (similar to Graphviz)";
     homepage = "http://blockdiag.com/";
     license = licenses.asl20;

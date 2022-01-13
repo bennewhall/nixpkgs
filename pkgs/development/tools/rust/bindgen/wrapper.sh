@@ -1,4 +1,4 @@
-#!@bash@/bin/bash
+#!/usr/bin/env bash
 sep='--'   # whether to add -- before new options
 cxx=0      # whether cxx was explicitly requested
 lastWasx=0 # whether the last argument passed was -x

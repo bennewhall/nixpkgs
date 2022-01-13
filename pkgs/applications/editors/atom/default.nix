@@ -1,22 +1,21 @@
-{ lib, stdenv, pkgs, fetchurl, wrapGAppsHook, glib, gtk3, atomEnv }:
+{ stdenv, pkgs, fetchurl, wrapGAppsHook, gvfs, gtk3, atomEnv }:
 
 let
   versions = {
     atom = {
-      version = "1.58.0";
-      sha256 = "sha256-QxDhr4gwlS9O/lk0nfqsw5sFiPckSTFL15XtRpQh0tU=";
+      version = "1.48.0";
+      sha256 = "1693bxbylf6jhld9bdcr5pigk36wqlbj89praldpz9s96yxig9s1";
     };
 
     atom-beta = {
-      version = "1.59.0";
+      version = "1.49.0";
       beta = 0;
-      sha256 = "sha256-s1XHR2e4JPywdLiIcjTqMRILARDthHxBeTQOCIkhmXE=";
-      broken = true;
+      sha256 = "1fr6m4a7shdj3wpn6g4n95cqpkkg2x9srwjf7bqxv9f3d5jb1y33";
     };
   };
 
-  common = pname: {version, sha256, beta ? null, broken ? false}:
-      let fullVersion = version + lib.optionalString (beta != null) "-beta${toString beta}";
+  common = pname: {version, sha256, beta ? null}:
+      let fullVersion = version + stdenv.lib.optionalString (beta != null) "-beta${toString beta}";
       name = "${pname}-${fullVersion}";
   in stdenv.mkDerivation {
     inherit name;
@@ -55,8 +54,7 @@ let
 
     preFixup = ''
       gappsWrapperArgs+=(
-        # needed for gio executable to be able to delete files
-        --prefix "PATH" : "${glib.bin}/bin"
+        --prefix "PATH" : "${gvfs}/bin"
       )
     '';
 
@@ -83,13 +81,12 @@ let
       sed -i -e "s|Exec=.*$|Exec=$out/bin/${pname}|" $out/share/applications/${pname}.desktop
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "A hackable text editor for the 21st Century";
       homepage = "https://atom.io/";
       license = licenses.mit;
       maintainers = with maintainers; [ offline ysndr ];
       platforms = platforms.x86_64;
-      inherit broken;
     };
   };
-in lib.mapAttrs common versions
+in stdenv.lib.mapAttrs common versions

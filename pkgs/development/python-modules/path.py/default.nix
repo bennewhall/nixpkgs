@@ -1,12 +1,14 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, setuptools-scm
+, setuptools_scm
 , pytestCheckHook
 , pytest-flake8
 , glibcLocales
 , packaging
+, isPy27
 , isPy38
+, backports_os
 , importlib-metadata
 , fetchpatch
 }:
@@ -21,10 +23,11 @@ buildPythonPackage rec {
   };
 
   checkInputs = [ pytestCheckHook pytest-flake8 glibcLocales packaging ];
-  buildInputs = [ setuptools-scm ];
+  buildInputs = [ setuptools_scm ];
   propagatedBuildInputs = [
     importlib-metadata
-  ];
+  ] ++ lib.optional isPy27 backports_os
+  ;
 
   LC_ALL = "en_US.UTF-8";
 

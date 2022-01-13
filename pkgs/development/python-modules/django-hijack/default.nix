@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, python,
+{ stdenv, buildPythonPackage, fetchFromGitHub, python,
   django, django_compat, django_nose
 }:
 buildPythonPackage rec {
@@ -30,7 +30,7 @@ buildPythonPackage rec {
     runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Allows superusers to hijack (=login as) and work on behalf of another user";
     homepage = "https://github.com/arteria/django-hijack";
     license = licenses.mit;

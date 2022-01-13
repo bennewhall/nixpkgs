@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy3k
@@ -15,7 +15,7 @@ buildPythonPackage rec {
 
   disabled = !isPy3k;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://pypi.python.org/pypi/numericalunits";
     description = "A package that lets you define quantities with unit";
     license = licenses.mit;

@@ -22,9 +22,9 @@ buildGoPackage rec {
     go generate ./core/root/config
   )'';
 
-  ldflags = [
-    "-X github.com/coreos/kube-aws/core/controlplane/cluster.VERSION=v${version}"
-  ];
+  buildFlagsArray = ''
+    -ldflags=-X github.com/coreos/kube-aws/core/controlplane/cluster.VERSION=v${version}
+  '';
 
   meta = {
     description = "Tool for deploying kubernetes on aws using coreos";

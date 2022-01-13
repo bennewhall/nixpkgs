@@ -1,16 +1,15 @@
-{ lib, stdenv, fetchurl, unzip, zlib }:
+{ stdenv, fetchurl, unzip, zlib }:
 
 stdenv.mkDerivation rec {
-  pname = "uif2iso";
-  version = "0.1.7";
+  nameNoVer = "uif2iso";
+  name = "${nameNoVer}-0.1.7";
 
   src = fetchurl {
-    url = "http://aluigi.altervista.org/mytoolz/uif2iso.zip";
+    url = "http://aluigi.altervista.org/mytoolz/${nameNoVer}.zip";
     sha256 = "1v18fmlzhkkhv8xdc9dyvl8vamwg3ka4dsrg7vvmk1f2iczdx3dp";
   };
 
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [zlib];
+  buildInputs = [unzip zlib];
 
   installPhase = ''
     make -C . prefix="$out" install;
@@ -19,7 +18,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Tool for converting single/multi part UIF image files to ISO";
     homepage = "http://aluigi.org/mytoolz.htm#uif2iso";
-    license = lib.licenses.gpl1Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl1Plus;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

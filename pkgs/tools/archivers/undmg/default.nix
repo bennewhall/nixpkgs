@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, zlib, bzip2, lzfse, pkg-config }:
+{ stdenv, fetchFromGitHub, zlib, bzip2, lzfse, pkg-config }:
 
 stdenv.mkDerivation rec {
   version = "1.1.0";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/matthewbauer/undmg";
     description = "Extract a DMG file";
     license = licenses.gpl3;

@@ -1,47 +1,31 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, gnome-shell
-, gtk-engine-murrine
-, gtk_engines
-}:
+{ stdenv, fetchFromGitHub, gtk_engines, gtk-engine-murrine }:
 
 stdenv.mkDerivation rec {
   pname = "vimix-gtk-themes";
-  version = "2021-08-17";
+  version = "2020-11-28";
 
   src = fetchFromGitHub {
     owner = "vinceliuice";
     repo = pname;
     rev = version;
-    sha256 = "1pn737w99j4ij8qkgw0rrzhbcqzni73z5wnkfqgqqbhj38rafbpv";
+    sha256 = "1m84p4cs9dfwc27zfjnwgkfdnfmlzbimq3g5z4mhz23cijm178rf";
   };
 
-  nativeBuildInputs = [
-    gnome-shell  # needed to determine the gnome-shell version
-  ];
+  buildInputs = [ gtk_engines ];
 
-  buildInputs = [
-    gtk_engines
-  ];
-
-  propagatedUserEnvPkgs = [
-    gtk-engine-murrine
-  ];
+  propagatedUserEnvPkgs = [ gtk-engine-murrine ];
 
   installPhase = ''
-    runHook preInstall
     patchShebangs .
     mkdir -p $out/share/themes
-    name= ./install.sh --all --dest $out/share/themes
+    name= ./install.sh -d $out/share/themes
     rm $out/share/themes/*/{AUTHORS,LICENSE}
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Flat Material Design theme for GTK based desktop environments";
     homepage = "https://github.com/vinceliuice/vimix-gtk-themes";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     platforms = platforms.unix;
     maintainers = [ maintainers.romildo ];
   };

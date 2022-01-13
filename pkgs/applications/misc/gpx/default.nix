@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "gpx";
@@ -16,8 +16,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Gcode to x3g conversion postprocessor";
     homepage = "https://github.com/markwal/GPX/";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.leo60228 ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.leo60228 ];
   };
 }

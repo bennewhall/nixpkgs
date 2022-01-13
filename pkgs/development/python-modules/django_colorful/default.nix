@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , django
@@ -19,7 +19,7 @@ buildPythonPackage rec {
   # Requires Django >= 1.8
   buildInputs = [ django ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Django extension that provides database and form color fields";
     homepage = "https://github.com/charettes/django-colorful";
     license = licenses.mit;

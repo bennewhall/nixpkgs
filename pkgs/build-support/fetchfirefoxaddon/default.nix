@@ -1,29 +1,18 @@
 {stdenv, lib, coreutils, unzip, jq, zip, fetchurl,writeScript,  ...}:
-
-{
-  name
-, url ? null
+{ name
+, url
 , md5 ? ""
 , sha1 ? ""
 , sha256 ? ""
 , sha512 ? ""
-, fixedExtid ? null
 , hash ? ""
-, src ? ""
 }:
+stdenv.mkDerivation rec {
 
-let
-  extid = if fixedExtid == null then "nixos@${name}" else fixedExtid;
-  source = if url == null then src else fetchurl {
-    url = url;
-    inherit md5 sha1 sha256 sha512 hash;
-  };
-in
-stdenv.mkDerivation {
   inherit name;
-
+  extid = "${src.outputHash}@${name}";
   passthru = {
-    inherit extid;
+    exitd=extid;
   };
 
   builder = writeScript "xpibuilder" ''
@@ -33,12 +22,17 @@ stdenv.mkDerivation {
 
     UUID="${extid}"
     mkdir -p "$out/$UUID"
-    unzip -q ${source} -d "$out/$UUID"
+    unzip -q ${src} -d "$out/$UUID"
     NEW_MANIFEST=$(jq '. + {"applications": { "gecko": { "id": "${extid}" }}, "browser_specific_settings":{"gecko":{"id": "${extid}"}}}' "$out/$UUID/manifest.json")
     echo "$NEW_MANIFEST" > "$out/$UUID/manifest.json"
     cd "$out/$UUID"
     zip -r -q -FS "$out/$UUID.xpi" *
     rm -r "$out/$UUID"
   '';
+  src = fetchurl {
+    url = url;
+    inherit md5 sha1 sha256 sha512 hash;
+  };
   nativeBuildInputs = [ coreutils unzip zip jq  ];
 }
+

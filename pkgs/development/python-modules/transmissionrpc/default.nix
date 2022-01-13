@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , six
@@ -15,14 +15,10 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ six ];
 
-  # no tests
-  doCheck = false;
-  pythonImportsCheck = [ "transmissionrpc" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python implementation of the Transmission bittorent client RPC protocol";
     homepage = "https://pypi.python.org/pypi/transmissionrpc/";
-    license = with licenses; [ mit ];
-    maintainers = with maintainers; [ fab ];
+    license = licenses.mit;
   };
+
 }

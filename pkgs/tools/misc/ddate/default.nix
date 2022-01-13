@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{stdenv, fetchFromGitHub, cmake} :
 
 stdenv.mkDerivation rec {
   pname = "ddate";
@@ -11,13 +11,13 @@ stdenv.mkDerivation rec {
     sha256 = "1qchxnxvghbma6gp1g78wnjxsri0b72ha9axyk31cplssl7yn73f";
   };
 
-  nativeBuildInputs = [ cmake ];
+  buildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/bo0ts/ddate";
     description = "Discordian version of the date program";
-    license = licenses.publicDomain;
-    maintainers = with maintainers; [ kovirobi ];
-    platforms = platforms.all;
+    license = stdenv.lib.licenses.publicDomain;
+    maintainers = with stdenv.lib.maintainers; [ kovirobi ];
+    platforms = stdenv.lib.platforms.all;
   };
 }

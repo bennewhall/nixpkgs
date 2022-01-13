@@ -1,7 +1,7 @@
-{ lib, mkDerivation, fetchFromGitLab, cmake, luajit
-, SDL2, SDL2_image, SDL2_ttf, physfs, fetchpatch
-, openal, libmodplug, libvorbis, solarus
-, qtbase, qttools, glm }:
+{ lib, mkDerivation, fetchFromGitLab, cmake, luajit,
+  SDL2, SDL2_image, SDL2_ttf, physfs,
+  openal, libmodplug, libvorbis, solarus,
+  qtbase, qttools, glm }:
 
 mkDerivation rec {
   pname = "solarus-quest-editor";
@@ -13,18 +13,11 @@ mkDerivation rec {
     rev = "v${version}";
     sha256 = "1qbc2j9kalk7xqk9j27s7wnm5zawiyjs47xqkqphw683idmzmjzn";
   };
-
-  patches = [
-    (fetchpatch {
-      url = "https://gitlab.com/solarus-games/solarus-quest-editor/-/commit/81d5c7f1602cf355684d70a5e3449fefccfc44b8.patch";
-      sha256 = "tVUxkkDp2PcOHGy4dGvUcYj9gF7k4LN21VuxohCw9NE=";
-    })
-  ];
-
-  nativeBuildInputs = [ cmake ];
-
-  buildInputs = [ luajit SDL2 SDL2_image SDL2_ttf physfs openal
-    libmodplug libvorbis solarus qtbase qttools glm ];
+  
+  buildInputs = [ cmake luajit SDL2
+    SDL2_image SDL2_ttf physfs
+    openal libmodplug libvorbis
+    solarus qtbase qttools glm ];
 
   meta = with lib; {
     description = "The editor for the Zelda-like ARPG game engine, Solarus";
@@ -38,5 +31,5 @@ mkDerivation rec {
     maintainers = [ maintainers.Nate-Devv ];
     platforms = platforms.linux;
   };
-
+  
 }

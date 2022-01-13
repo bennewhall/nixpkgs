@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl
-, automake, autoconf, libtool, pkg-config, autoconf-archive
+{ stdenv, fetchurl
+, automake, autoconf, libtool, pkgconfig, autoconf-archive
 }:
 
 let
-  release = lib.importJSON ./release-info/LanguageMachines-frogdata.json;
+  release = builtins.fromJSON (builtins.readFile ./release-info/LanguageMachines-frogdata.json);
 in
 
 stdenv.mkDerivation {
@@ -11,7 +11,7 @@ stdenv.mkDerivation {
   version = release.version;
   src = fetchurl { inherit (release) url sha256;
                    name = "frogdata-${release.version}.tar.gz"; };
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ automake autoconf libtool autoconf-archive
                 ];
 
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
     sh bootstrap.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Data for Frog, a Tagger-Lemmatizer-Morphological-Analyzer-Dependency-Parser for Dutch";
     homepage    = "https://languagemachines.github.io/frog";
     license     = licenses.gpl3;

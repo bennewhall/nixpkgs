@@ -1,28 +1,29 @@
-{ lib, stdenv, autoreconfHook, fetchFromGitHub, nix-update-script }:
+{ stdenv, autoreconfHook, fetchFromGitHub, fetchpatch }:
 
 stdenv.mkDerivation rec {
   pname = "inotify-tools";
-  version = "3.21.9.6";
+  version = "3.20.2.2";
 
   src = fetchFromGitHub {
     repo = "inotify-tools";
-    owner = "inotify-tools";
+    owner = "rvoicilas";
     rev = version;
-    sha256 = "sha256-oKcVmF39N43g8O1S+xwUhVJryFcW+ZUteyoe3fUkRH8=";
+    sha256 = "1r12bglkb0bkqff6kgxjm81hk6z20nrxq3m7iv15d4nrqf9pm7s0";
   };
+
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/inotify-tools/inotify-tools/commit/7ddf45158af0c1e93b02181a45c5b65a0e5bed25.patch";
+      sha256 = "08imqancx8l0bg9q7xaiql1xlalmbfnpjfjshp495sjais0r6gy7";
+    })
+  ];
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = pname;
-    };
-  };
-
-  meta = with lib; {
-    homepage = "https://github.com/inotify-tools/inotify-tools/wiki";
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ marcweber pSub shamilton ];
+  meta = with stdenv.lib; {
+    homepage = "https://github.com/rvoicilas/inotify-tools/wiki";
+    license = licenses.gpl2;
+    maintainers = with maintainers; [ marcweber pSub ];
     platforms = platforms.linux;
   };
 }

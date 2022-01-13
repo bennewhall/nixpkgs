@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , ncurses
 , SDL
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     "CC=${stdenv.cc.targetPrefix}cc"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fast-paced action strategy game";
     homepage = "https://a-nikolaev.github.io/curseofwar/";
     license = licenses.gpl3;

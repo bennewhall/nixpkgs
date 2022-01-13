@@ -1,19 +1,28 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, python3Packages, fetchFromGitHub, glibcLocales }:
 
-buildGoModule rec {
+with python3Packages;
+buildPythonApplication rec {
   pname = "wakatime";
-  version = "1.18.7";
+  version = "13.0.7";
 
   src = fetchFromGitHub {
     owner = "wakatime";
-    repo = "wakatime-cli";
-    rev = "v${version}";
-    sha256 = "171x4pixmh5ni89iawdjl1fk9gr10bgp5bnslpskhspcqzyl1y5b";
+    repo = "wakatime";
+    rev = version;
+    sha256 = "1rnapzaabg962wxrmfcq9lxz0yyqd3mxqbx3dq1ih4w33lf4fi8d";
   };
 
-  vendorSha256 = "01c2vbnafhhm345nyfmvbvj5mga6laf9w46lhh0flq6kdgdw168s";
+  # needs more dependencies from https://github.com/wakatime/wakatime/blob/191b302bfb5f272ae928c6d3867d06f3dfcba4a8/dev-requirements.txt
+  # especially nose-capturestderr, which we do not package yet.
+  doCheck = false;
+  checkInputs = [ mock testfixtures pytest glibcLocales ];
 
-  meta = with lib; {
+  checkPhase = ''
+    export HOME=$(mktemp -d) LC_ALL=en_US.utf-8
+    pytest tests
+  '';
+
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "WakaTime command line interface";
     longDescription = ''

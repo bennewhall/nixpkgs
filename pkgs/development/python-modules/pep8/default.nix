@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # FAIL: test_checkers_testsuite (testsuite.test_all.Pep8TestCase)
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pep8.readthedocs.org/";
     description = "Python style guide checker";
     license = licenses.mit;

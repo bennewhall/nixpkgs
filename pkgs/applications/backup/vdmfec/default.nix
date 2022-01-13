@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "vdmfec";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0i7q4ylx2xmzzq778anpkj4nqir5gf573n1lbpxnbc10ymsjq2rm";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A program that adds error correction blocks";
     homepage = "http://members.tripod.com/professor_tom/archives/index.html";
     maintainers = [ maintainers.ar1a ];

@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, autoreconfHook, pkg-config, texinfo
+{ stdenv, lib, fetchurl, autoreconfHook, pkgconfig, texinfo
 , netcat-gnu, gnutls, gsasl, libidn2, Security
 , withKeyring ? true, libsecret ? null
 , systemd ? null }:
@@ -9,11 +9,11 @@ let
 
 in stdenv.mkDerivation rec {
   pname = "msmtp";
-  version = "1.8.19";
+  version = "1.8.13";
 
   src = fetchurl {
     url = "https://marlam.de/${pname}/releases/${pname}-${version}.tar.xz";
-    sha256 = "sha256-NKHhmBF2h02+TuZu4NkQPJCYmqTc3Ehh5N4Fzn5EUms=";
+    sha256 = "1fcv99nis7c6yc63n04cncjysv9jndrp469gcfxh54aiinmlbadd";
   };
 
   patches = [
@@ -21,13 +21,13 @@ in stdenv.mkDerivation rec {
   ];
 
   buildInputs = [ gnutls gsasl libidn2 ]
-    ++ lib.optional stdenv.isDarwin Security
-    ++ lib.optional withKeyring libsecret;
+    ++ stdenv.lib.optional stdenv.isDarwin Security
+    ++ stdenv.lib.optional withKeyring libsecret;
 
-  nativeBuildInputs = [ autoreconfHook pkg-config texinfo ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig texinfo ];
 
-  configureFlags = [ "--sysconfdir=/etc" "--with-libgsasl" ]
-    ++ lib.optional stdenv.isDarwin [ "--with-macosx-keyring" ];
+  configureFlags =
+    [ "--sysconfdir=/etc" ] ++ stdenv.lib.optional stdenv.isDarwin [ "--with-macosx-keyring" ];
 
   postInstall = ''
     install -d $out/share/doc/${pname}/scripts
@@ -49,7 +49,7 @@ in stdenv.mkDerivation rec {
     chmod +x $out/bin/*
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple and easy to use SMTP client with excellent sendmail compatibility";
     homepage = "https://marlam.de/msmtp/";
     license = licenses.gpl3Plus;

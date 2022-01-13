@@ -1,43 +1,12 @@
-{
-alsa-lib,
-at-spi2-atk,
-at-spi2-core,
-atk,
-cairo,
-cups,
-curl,
-dbus,
-dpkg,
-expat,
-fetchurl,
-fontconfig,
-freetype,
-gdk-pixbuf,
-glib,
-gnome2,
-gtk3,
-lib,
-libdrm,
-libnotify,
-libsecret,
-libuuid,
-libxcb,
-libxkbcommon,
-mesa,
-nspr,
-nss,
-pango,
-stdenv,
-systemd,
-wrapGAppsHook,
-xorg,
-}:
+{ stdenv, fetchurl, dpkg
+, alsaLib, at-spi2-atk, at-spi2-core, atk, cairo, cups, curl, dbus, expat, fontconfig, freetype, glib
+, gnome2, gdk-pixbuf, gtk3, pango, libnotify, libsecret, libuuid, libxcb, nspr, nss, systemd, xorg, wrapGAppsHook }:
 
 let
-  version = "1.29.6";
+  version = "1.23.0";
 
-  rpath = lib.makeLibraryPath [
-    alsa-lib
+  rpath = stdenv.lib.makeLibraryPath [
+    alsaLib
     at-spi2-atk
     at-spi2-core
     atk
@@ -48,24 +17,22 @@ let
     expat
     fontconfig
     freetype
-    gdk-pixbuf
     glib
     gnome2.GConf
+    gdk-pixbuf
     gtk3
-    libdrm
+    pango
     libnotify
     libsecret
     libuuid
     libxcb
-    libxkbcommon
-    mesa
     nspr
     nss
-    pango
     stdenv.cc.cc
     systemd
+
+    xorg.libxkbfile
     xorg.libX11
-    xorg.libXScrnSaver
     xorg.libXcomposite
     xorg.libXcursor
     xorg.libXdamage
@@ -75,16 +42,14 @@ let
     xorg.libXrandr
     xorg.libXrender
     xorg.libXtst
-    xorg.libxkbfile
-    xorg.libxshmfence
-    (lib.getLib stdenv.cc.cc)
-  ];
+    xorg.libXScrnSaver
+  ] + ":${stdenv.cc.cc.lib}/lib64";
 
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
       fetchurl {
         url = "https://downloads.mongodb.com/compass/mongodb-compass_${version}_amd64.deb";
-        sha256 = "sha256-yLbuHvZrI8C4X/burIo5cI+H8KEv++4FyRgtISpmPxE=";
+        sha256 = "1kmhki4kq28z8h249p4imcpb0nz2dx5bmpv8ldhhqh3rcq5vzxsv";
       }
     else
       throw "MongoDB compass is not supported on ${stdenv.hostPlatform.system}";
@@ -127,11 +92,10 @@ in stdenv.mkDerivation {
     wrapGAppsHook $out/bin/mongodb-compass
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The GUI for MongoDB";
-    maintainers = with maintainers; [ bryanasdev000 ];
     homepage = "https://www.mongodb.com/products/compass";
-    license = licenses.sspl;
+    license = licenses.unfree;
     platforms = [ "x86_64-linux" ];
   };
 }

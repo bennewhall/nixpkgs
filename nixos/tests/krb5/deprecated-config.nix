@@ -3,7 +3,7 @@
 
 import ../make-test-python.nix ({ pkgs, ...} : {
   name = "krb5-with-deprecated-config";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ eqyiel ];
   };
 

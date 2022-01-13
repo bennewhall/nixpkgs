@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 let
   version = "1.11-6";
@@ -20,7 +20,7 @@ in stdenv.mkDerivation {
 
   preferLocalBuild = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Quake 3 Arena demo content";
     license = licenses.unfreeRedistributable;
     platforms = platforms.all;

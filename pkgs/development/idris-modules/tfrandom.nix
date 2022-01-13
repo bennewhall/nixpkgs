@@ -1,8 +1,8 @@
-{ lib
+{ stdenv
 , build-idris-package
 , fetchFromGitHub
+, lib
 }:
-
 build-idris-package  {
   name = "tf-random";
   version = "2020-01-15";

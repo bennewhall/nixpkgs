@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , ply
@@ -18,7 +18,7 @@ buildPythonPackage rec {
   # Tests require pysnmp, which in turn requires pysmi => infinite recursion
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://pysmi.sf.net";
     description = "SNMP SMI/MIB Parser";
     license = licenses.bsd2;

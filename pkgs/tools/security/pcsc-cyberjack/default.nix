@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoreconfHook, pkg-config, libusb1, pcsclite }:
+{ stdenv, fetchurl, autoreconfHook, pkgconfig, libusb1, pcsclite }:
 
 let
   version = "3.99.5";
@@ -17,13 +17,11 @@ in stdenv.mkDerivation rec {
 
   outputs = [ "out" "tools" ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ libusb1 pcsclite ];
 
   enableParallelBuilding = true;
-
-  NIX_CFLAGS_COMPILE = "-Wno-error=narrowing";
 
   configureFlags = [
     "--with-usbdropdir=${placeholder "out"}/pcsc/drivers"
@@ -32,7 +30,7 @@ in stdenv.mkDerivation rec {
 
   postInstall = "make -C tools/cjflash install";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "REINER SCT cyberJack USB chipcard reader user space driver";
     homepage = "https://www.reiner-sct.com/";
     license = licenses.gpl2Plus;

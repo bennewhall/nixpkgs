@@ -1,83 +1,34 @@
-{ lib
-, argon2_cffi
-, buildPythonPackage
-, cbor
-, cbor2
-, cffi
-, cryptography
-, fetchPypi
-, flatbuffers
-, mock
-, msgpack
-, passlib
-, pynacl
-, pytest-asyncio
-, pytestCheckHook
-, pythonOlder
-, twisted
-, py-ubjson
-, txaio
-, ujson
-, zope_interface
+{ lib, buildPythonPackage, fetchPypi, isPy3k,
+  six, txaio, twisted, zope_interface, cffi, trollius, futures,
+  mock, pytest, cryptography, pynacl
 }:
-
 buildPythonPackage rec {
   pname = "autobahn";
-  version = "21.11.1";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.7";
+  version = "20.7.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-vW9GMVQZygpb5BCfc3QQIIrV8ZcY9nympKZ0zGbKmxg=";
+    sha256 = "86bbce30cdd407137c57670993a8f9bfdfe3f8e994b889181d85e844d5aa8dfb";
   };
 
-  propagatedBuildInputs = [
-    argon2_cffi
-    cbor
-    cbor2
-    cffi
-    cryptography
-    flatbuffers
-    msgpack
-    passlib
-    py-ubjson
-    pynacl
-    twisted
-    txaio
-    ujson
-    zope_interface
-  ];
+  propagatedBuildInputs = [ six txaio twisted zope_interface cffi cryptography pynacl ] ++
+    (lib.optionals (!isPy3k) [ trollius futures ]);
 
-  checkInputs = [
-    mock
-    pytest-asyncio
-    pytestCheckHook
-  ];
-
-  postPatch = ''
-    substituteInPlace setup.py \
-      --replace "pytest>=2.8.6,<3.3.0" "pytest"
+  checkInputs = [ mock pytest ];
+  checkPhase = ''
+    runHook preCheck
+    USE_TWISTED=true py.test $out
+    runHook postCheck
   '';
 
-  preCheck = ''
-    # Run asyncio tests (requires twisted)
-    export USE_ASYNCIO=1
-  '';
-
-  pytestFlagsArray = [
-    "--pyargs autobahn"
-  ];
-
-  pythonImportsCheck = [
-    "autobahn"
-  ];
+  # Tests do no seem to be compatible yet with pytest 5.1
+  # https://github.com/crossbario/autobahn-python/issues/1235
+  doCheck = false;
 
   meta = with lib; {
-    description = "WebSocket and WAMP in Python for Twisted and asyncio";
-    homepage = "https://crossbar.io/autobahn";
-    license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    description = "WebSocket and WAMP in Python for Twisted and asyncio.";
+    homepage    = "https://crossbar.io/autobahn";
+    license     = licenses.mit;
+    maintainers = with maintainers; [ nand0p ];
   };
 }

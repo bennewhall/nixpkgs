@@ -1,21 +1,20 @@
-{ lib, stdenv, appimageTools, autoPatchelfHook, desktop-file-utils
-, fetchurl, libsecret, gtk3, gsettings-desktop-schemas }:
+{ stdenv, appimageTools, autoPatchelfHook, desktop-file-utils
+  , fetchurl, runtimeShell }:
 
 let
-  version = "3.9.5";
+  version = "3.5.11";
   pname = "standardnotes";
   name = "${pname}-${version}";
-  throwSystem = throw "Unsupported system: ${stdenv.hostPlatform.system}";
 
   plat = {
-    i686-linux = "i386";
+    i386-linux = "-i386";
     x86_64-linux = "x86_64";
-  }.${stdenv.hostPlatform.system} or throwSystem;
+  }.${stdenv.hostPlatform.system};
 
   sha256 = {
-    i686-linux = "sha256-7Mo8ELFV6roZ3IYWBtB2rRDAzJrq4ht9f1v6uohsauw=";
-    x86_64-linux = "sha256-9VPYII9E8E3yL7UuU0+GmaK3qxWX4bwfACDl7F7sngo=";
-  }.${stdenv.hostPlatform.system} or throwSystem;
+    i386-linux = "009fnnd7ysxkyykkbmhvr0vn13b21j1j5mzwdvqdkhm9v3c9rbgj";
+    x86_64-linux = "1fij00d03ky57jlnhf9n2iqvfa4dgmkgawrxd773gg03hdsk7xcf";
+  }.${stdenv.hostPlatform.system};
 
   src = fetchurl {
     url = "https://github.com/standardnotes/desktop/releases/download/v${version}/standard-notes-${version}-linux-${plat}.AppImage";
@@ -31,14 +30,6 @@ let
 in appimageTools.wrapType2 rec {
   inherit name src;
 
-  profile = ''
-    export XDG_DATA_DIRS=${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS
-  '';
-
-  extraPkgs = pkgs: with pkgs; [
-    libsecret
-  ];
-
   extraInstallCommands = ''
     # directory in /nix/store so readonly
     cp -r  ${appimageContents}/* $out
@@ -53,7 +44,7 @@ in appimageTools.wrapType2 rec {
     rm usr/lib/* AppRun standard-notes.desktop .so*
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple and private notes app";
     longDescription = ''
       Standard Notes is a private notes app that features unmatched simplicity,
@@ -61,7 +52,7 @@ in appimageTools.wrapType2 rec {
     '';
     homepage = "https://standardnotes.org";
     license = licenses.agpl3;
-    maintainers = with maintainers; [ mgregoire chuangzhu ];
-    platforms = [ "i686-linux" "x86_64-linux" ];
+    maintainers = with maintainers; [ mgregoire ];
+    platforms = [ "i386-linux" "x86_64-linux" ];
   };
 }

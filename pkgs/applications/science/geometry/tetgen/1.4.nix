@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation rec {
-  pname = "tetgen";
-  version = "1.4.3";
+  name = "tetgen-1.4.3";
 
   src = fetchurl {
-    url = "${meta.homepage}/files/tetgen${version}.tar.gz";
+    url = "${meta.homepage}/files/tetgen1.4.3.tar.gz";
     sha256 = "0d70vjqdapmy1ghlsxjlvl5z9yp310zw697bapc4zxmp0sxi29wm";
   };
 
@@ -17,7 +16,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Quality Tetrahedral Mesh Generator and 3D Delaunay Triangulator";
     homepage = "http://tetgen.org/";
-    license = lib.licenses.mit;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.mit;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

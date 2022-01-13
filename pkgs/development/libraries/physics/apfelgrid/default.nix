@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, apfel, applgrid, lhapdf, root5 }:
+{ stdenv, fetchFromGitHub, autoreconfHook, apfel, applgrid, lhapdf, root5 }:
 
 stdenv.mkDerivation rec {
   pname = "apfelgrid";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Ultra-fast theory predictions for collider observables";
     license     = licenses.mit;
     homepage    = "http://nhartland.github.io/APFELgrid/";

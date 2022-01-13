@@ -5,6 +5,8 @@ with lib;
 let
   cfg = config.boot.loader.raspberryPi;
 
+  inherit (pkgs.stdenv.hostPlatform) platform;
+
   builderUboot = import ./uboot-builder.nix { inherit pkgs configTxt; inherit (cfg) version; };
   builderGeneric = import ./raspberrypi-builder.nix { inherit pkgs configTxt; };
 
@@ -18,7 +20,7 @@ let
   timeoutStr = if blCfg.timeout == null then "-1" else toString blCfg.timeout;
 
   isAarch64 = pkgs.stdenv.hostPlatform.isAarch64;
-  optional = pkgs.lib.optionalString;
+  optional = pkgs.stdenv.lib.optionalString;
 
   configTxt =
     pkgs.writeText "config.txt" (''
@@ -58,7 +60,8 @@ in
       version = mkOption {
         default = 2;
         type = types.enum [ 0 1 2 3 4 ];
-        description = "";
+        description = ''
+        '';
       };
 
       uboot = {
@@ -100,6 +103,6 @@ in
 
     system.build.installBootLoader = builder;
     system.boot.loader.id = "raspberrypi";
-    system.boot.loader.kernelFile = pkgs.stdenv.hostPlatform.linux-kernel.target;
+    system.boot.loader.kernelFile = platform.kernelTarget;
   };
 }

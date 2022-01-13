@@ -1,22 +1,17 @@
-{ lib, fetchFromGitHub }:
+{ lib, fetchzip }:
 
 let
-  version = "2021-07-29";
-in fetchFromGitHub rec {
+  version = "3.001";
+in fetchzip rec {
   name = "comfortaa-${version}";
 
-  owner = "googlefonts";
-  repo = "comfortaa";
-  rev = "2a87ac6f6ea3495150bfa00d0c0fb53dd0a2f11b";
-
+  url = "https://orig00.deviantart.net/40a3/f/2017/093/d/4/comfortaa___font_by_aajohan-d1qr019.zip";
   postFetch = ''
-    tar -xf $downloadedFile --strip=1
-    mkdir -p $out/share/fonts/truetype $out/share/doc/comfortaa
-    cp fonts/TTF/*.ttf $out/share/fonts/truetype
-    cp FONTLOG.txt README.md $out/share/doc/comfortaa
+    mkdir -p $out/share/fonts $out/share/doc
+    unzip -j $downloadedFile \*.ttf                        -d $out/share/fonts/truetype
+    unzip -j $downloadedFile \*/FONTLOG.txt \*/donate.html -d $out/share/doc/${name}
   '';
-
-  sha256 = "12ad7qy11q49iv9h3l2d7x7y7kf0hxbqhclb92bzwig8dzly9n2k";
+  sha256 = "0z7xr0cnn6ghwivrm5b5awq9bzhnay3y99qq6dkdgfkfdsaz0n9h";
 
   meta = with lib; {
     homepage = "http://aajohan.deviantart.com/art/Comfortaa-font-105395949";

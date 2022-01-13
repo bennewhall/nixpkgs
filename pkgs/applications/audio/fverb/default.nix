@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , pkg-config
 }:
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     patchShebangs ./dpf/utils/generate-ttl.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A stereo variant of the reverberator by Jon Dattorro, for lv2";
     homepage = "https://github.com/jpcima/fverb";
     license = licenses.bsd2;

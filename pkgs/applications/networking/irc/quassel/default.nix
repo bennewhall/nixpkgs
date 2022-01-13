@@ -4,7 +4,7 @@
 , tag ? "-kf5" # tag added to the package name
 , static ? false # link statically
 
-, lib, stdenv, fetchFromGitHub, cmake, makeWrapper, dconf
+, stdenv, fetchFromGitHub, cmake, makeWrapper, dconf
 , mkDerivation, qtbase, qtscript
 , phonon, libdbusmenu, qca-qt5
 
@@ -20,6 +20,7 @@
 }:
 
 let
+    inherit (stdenv) lib;
     buildClient = monolithic || client;
     buildCore = monolithic || enableDaemon;
 in
@@ -32,7 +33,7 @@ let
   edf = flag: feature: [("-D" + feature + (if flag then "=ON" else "=OFF"))];
 
 in (if !buildClient then stdenv.mkDerivation else mkDerivation) rec {
-  pname = "quassel${tag}";
+  name = "quassel${tag}-${version}";
   version = "0.13.1";
 
   src = fetchFromGitHub {
@@ -48,11 +49,13 @@ in (if !buildClient then stdenv.mkDerivation else mkDerivation) rec {
     ./0001-common-Disable-enum-type-stream-operators-for-Qt-5.1.patch
   ];
 
+  enableParallelBuilding = true;
+
   # Prevent ``undefined reference to `qt_version_tag''' in SSL check
   NIX_CFLAGS_COMPILE = "-DQT_NO_VERSION_TAGGING=1";
 
-  nativeBuildInputs = [ cmake makeWrapper ];
-  buildInputs = [ qtbase ]
+  buildInputs =
+       [ cmake makeWrapper qtbase ]
     ++ lib.optionals buildCore [qtscript qca-qt5]
     ++ lib.optionals buildClient [libdbusmenu phonon]
     ++ lib.optionals (buildClient && withKDE) [
@@ -82,7 +85,7 @@ in (if !buildClient then stdenv.mkDerivation else mkDerivation) rec {
         --prefix GIO_EXTRA_MODULES : "${dconf}/lib/gio/modules"
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://quassel-irc.org/";
     description = "Qt/KDE distributed IRC client suppporting a remote daemon";
     longDescription = ''
@@ -93,7 +96,7 @@ in (if !buildClient then stdenv.mkDerivation else mkDerivation) rec {
       as WeeChat, but graphical (based on Qt4/KDE4 or Qt5/KF5).
     '';
     license = licenses.gpl3;
-    maintainers = with maintainers; [ ttuegel ];
+    maintainers = with maintainers; [ phreedom ttuegel ];
     repositories.git = "https://github.com/quassel/quassel.git";
     inherit (qtbase.meta) platforms;
   };

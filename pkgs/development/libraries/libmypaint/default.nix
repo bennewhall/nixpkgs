@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , autoconf
 , automake
 , fetchFromGitHub
@@ -6,7 +6,7 @@
 , intltool
 , json_c
 , libtool
-, pkg-config
+, pkgconfig
 , python3
 }:
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     automake
     intltool
     libtool
-    pkg-config
+    pkgconfig
     python3
   ];
 
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
 
   preConfigure = "./autogen.sh";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://mypaint.org/";
     description = "Library for making brushstrokes which is used by MyPaint and other projects";
     license = licenses.isc;

@@ -1,6 +1,6 @@
-{ lib, buildDunePackage
-, astring, digestif, fmt, jsonm, logs, ocaml_lwt, ocamlgraph, uri
-, repr, ppx_irmin, bheap
+{ lib, fetchurl, buildDunePackage
+, astring, base64, digestif, fmt, jsonm, logs, ocaml_lwt, ocamlgraph, uri
+, alcotest, hex, ppx_irmin
 }:
 
 buildDunePackage {
@@ -11,22 +11,10 @@ buildDunePackage {
   useDune2 = true;
   minimumOCamlVersion = "4.07";
 
-  propagatedBuildInputs = [
-    astring
-    digestif
-    fmt
-    jsonm
-    logs
-    ocaml_lwt
-    ocamlgraph
-    uri
-    repr
-    bheap
-    ppx_irmin
-  ];
+  propagatedBuildInputs = [ astring base64 digestif fmt jsonm logs ocaml_lwt ocamlgraph uri ];
 
-  # circular dependency on irmin-mem
-  doCheck = false;
+  checkInputs = [ alcotest hex ppx_irmin ];
+  doCheck = true;
 
   meta = ppx_irmin.meta // {
     description = "A distributed database built on the same principles as Git";

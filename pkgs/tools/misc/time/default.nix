@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation rec {
   pname = "time";
@@ -26,8 +26,8 @@ stdenv.mkDerivation rec {
       `time' reports unavailable information as zero values.
     '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
     homepage = "https://www.gnu.org/software/time/";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

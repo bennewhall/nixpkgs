@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libcdio-paranoia, cddiscid, wget, which, vorbis-tools, id3v2, eyeD3
+{ stdenv, fetchurl, libcdio-paranoia, cddiscid, wget, which, vorbis-tools, id3v2, eyeD3
 , lame, flac, glyr
 , perlPackages
 , makeWrapper }:
@@ -38,14 +38,14 @@ in
       for cmd in abcde cddb-tool abcde-musicbrainz-tool; do
         wrapProgram "$out/bin/$cmd" \
           --prefix PERL5LIB : "$PERL5LIB" \
-          --prefix PATH ":" ${lib.makeBinPath [
+          --prefix PATH ":" ${stdenv.lib.makeBinPath [
             "$out" which libcdio-paranoia cddiscid wget
             vorbis-tools id3v2 eyeD3 lame flac glyr
           ]}
       done
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       homepage = "http://abcde.einval.com/wiki/";
       license = licenses.gpl2Plus;
       maintainers = with maintainers; [ gebner ];

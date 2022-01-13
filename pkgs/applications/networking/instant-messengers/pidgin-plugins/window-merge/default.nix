@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pidgin } :
+{ stdenv, fetchurl, pidgin } :
 
 stdenv.mkDerivation rec {
   pname = "pidgin-window-merge";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ pidgin ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/dm0-/window_merge";
     description = "Pidgin plugin that merges the Buddy List window with a conversation window";
     license = licenses.gpl3;

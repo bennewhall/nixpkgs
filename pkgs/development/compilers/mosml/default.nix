@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gmp, perl }:
+{ stdenv, fetchurl, gmp, perl }:
 
 stdenv.mkDerivation rec {
   pname = "mosml";
@@ -6,7 +6,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ gmp perl ];
 
-  makeFlags = [ "PREFIX=$(out)" "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = [ "PREFIX=$(out)" ] ++ stdenv.lib.optionals stdenv.isDarwin [ "CC=cc" ];
 
   src = fetchurl {
     url = "https://github.com/kfl/mosml/archive/ver-${version}.tar.gz";
@@ -15,11 +15,7 @@ stdenv.mkDerivation rec {
 
   setSourceRoot = ''export sourceRoot="$(echo */src)"'';
 
-  # MosML needs a specific RPATH entry pointing to $(out)/lib (added
-  # by the build system), which patchelf will remove.
-  dontPatchELF = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A light-weight implementation of Standard ML";
     longDescription = ''
       Moscow ML is a light-weight implementation of Standard ML (SML), a strict

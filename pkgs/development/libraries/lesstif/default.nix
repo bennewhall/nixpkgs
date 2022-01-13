@@ -1,10 +1,9 @@
-{lib, stdenv, fetchurl, xlibsWrapper, libXp, libXau}:
+{stdenv, fetchurl, xlibsWrapper, libXp, libXau}:
 
 stdenv.mkDerivation rec {
-  pname = "lesstif";
-  version = "0.95.2";
+  name = "lesstif-0.95.2";
   src = fetchurl {
-    url = "mirror://sourceforge/lesstif/${pname}-${version}.tar.bz2";
+    url = "mirror://sourceforge/lesstif/${name}.tar.bz2";
     sha256 = "1qzpxjjf7ri1jzv71mvq5m9g8hfaj5yzwp30rwxlm6n2b24a6jpb";
   };
   buildInputs = [xlibsWrapper];
@@ -20,7 +19,7 @@ stdenv.mkDerivation rec {
     ./c-xpmpipethrough.patch
     ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An open source clone of the Motif widget set";
     homepage = "http://lesstif.sourceforge.net";
     platforms = platforms.unix;

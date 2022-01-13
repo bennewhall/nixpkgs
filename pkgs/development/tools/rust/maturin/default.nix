@@ -1,49 +1,34 @@
-{ callPackage
-, lib
-, stdenv
-, fetchFromGitHub
-, rustPlatform
-, pkg-config
-, dbus
-, libiconv
-, Security
-}:
+{ stdenv, fetchFromGitHub, rustPlatform, dbus, gmp, openssl, pkgconfig
+, darwin }:
 
-rustPlatform.buildRustPackage rec {
-  pname = "maturin";
-  version = "0.11.3";
+let
+  inherit (darwin.apple_sdk.frameworks) Security;
+in rustPlatform.buildRustPackage rec {
+  name = "maturin-${version}";
+  version = "0.8.3";
 
   src = fetchFromGitHub {
     owner = "PyO3";
     repo = "maturin";
     rev = "v${version}";
-    hash = "sha256-jWkrjFQg0EqM+e/IT2n2E4lGL2kT/Wz7r5BLlzvWSO0=";
+    sha256 = "08l5r7d75id6qzf8xhkjv4hkdr64cq4dbcmdjywmvf9szjbnr65z";
   };
 
-  cargoHash = "sha256-+kXwMGeE2HD59EU0Dzvg8I6LcHiPV7SKSFqnCTfkKwY=";
+  cargoSha256 = "1n0sxkhcdg2rbzqd7826pa7sxlnn0c2sc8l6lc98xw21vvqisc8n";
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildInputs = lib.optionals stdenv.isLinux [ dbus ]
-    ++ lib.optionals stdenv.isDarwin [ Security libiconv ];
+  buildInputs = [ gmp openssl ]
+    ++ stdenv.lib.optional stdenv.isDarwin Security
+    ++ stdenv.lib.optional stdenv.isLinux dbus;
 
   # Requires network access, fails in sandbox.
   doCheck = false;
 
-  passthru.tests.pyo3 = callPackage ./pyo3-test {};
-
-  meta = with lib; {
-    description = "Build and publish Rust crates Python packages";
-    longDescription = ''
-      Build and publish Rust crates with PyO3, rust-cpython, and
-      cffi bindings as well as Rust binaries as Python packages.
-
-      This project is meant as a zero-configuration replacement for
-      setuptools-rust and Milksnake. It supports building wheels for
-      Python and can upload them to PyPI.
-    '';
+  meta = with stdenv.lib; {
+    description = "Build and publish crates with pyo3 bindings as python packages";
     homepage = "https://github.com/PyO3/maturin";
-    license = licenses.asl20;
-    maintainers = [ ];
+    license = licenses.mit;
+    maintainers = [ maintainers.danieldk ];
   };
 }

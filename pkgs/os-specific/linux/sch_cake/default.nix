@@ -1,10 +1,9 @@
 { stdenv, lib, fetchFromGitHub, kernel }:
 
-assert lib.versionAtLeast kernel.version "4.4";
+assert stdenv.lib.versionAtLeast kernel.version "4.4";
 
 stdenv.mkDerivation {
-  pname = "sch_cake";
-  version = "unstable-2017-07-16";
+  name = "sch_cake-2017-07-16";
 
   src = fetchFromGitHub {
     owner = "dtaht";
@@ -31,6 +30,6 @@ stdenv.mkDerivation {
     license = with licenses; [ bsd3 gpl2 ];
     maintainers = with maintainers; [ fpletz ];
     platforms = platforms.linux;
-    broken = !lib.versionOlder kernel.version "4.13";
+    broken = !stdenv.lib.versionOlder kernel.version "4.13";
   };
 }

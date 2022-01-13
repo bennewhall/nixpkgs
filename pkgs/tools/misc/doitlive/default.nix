@@ -1,4 +1,4 @@
-{ lib, python3Packages }:
+{ stdenv, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   pname = "doitlive";
@@ -14,7 +14,7 @@ python3Packages.buildPythonApplication rec {
   # disable tests (too many failures)
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for live presentations in the terminal";
     homepage = "https://pypi.python.org/pypi/doitlive";
     license = licenses.mit;

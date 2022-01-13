@@ -1,15 +1,13 @@
-{ lib, fetchFromGitHub, pythonPackages, libreoffice }:
+{ stdenv, fetchurl, pythonPackages, libreoffice }:
 
 pythonPackages.buildPythonApplication rec {
 
   pname = "odpdown";
   version = "0.4.1";
 
-  src = fetchFromGitHub {
-    owner = "thorstenb";
-    repo = "odpdown";
-    rev = "v${version}";
-    sha256 = "r2qbgD9PAalbypt+vjp2YcYggUGPQMEG2FDxMtohqG4=";
+  src = fetchurl {
+    url = "https://github.com/thorstenb/odpdown/archive/v${version}.tar.gz";
+    sha256 = "005eecc73c65b9d4c09532547940718a7b308cd565f62a213dfa040827d4d565";
   };
 
   propagatedBuildInputs = with pythonPackages; [ libreoffice lpod lxml mistune pillow pygments ];
@@ -18,7 +16,7 @@ pythonPackages.buildPythonApplication rec {
     nose
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/thorstenb/odpdown";
     repositories.git = "https://github.com/thorstenb/odpdown.git";
     description = "Create nice-looking slides from your favourite text editor";

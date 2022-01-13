@@ -1,87 +1,39 @@
-{ lib
-, stdenv
-, fetchurl
-, pkg-config
-, libdrm
-, libpciaccess
-, cairo
-, xorgproto
-, udev
-, libX11
-, libXext
-, libXv
-, libXrandr
-, glib
-, bison
-, libunwind
-, python3
-, kmod
-, procps
-, utilmacros
-, gtk-doc
-, docbook_xsl
-, openssl
-, peg
-, elfutils
-, meson
-, ninja
-, valgrind
-, xmlrpc_c
-, gsl
-, alsa-lib
-, curl
-, json_c
-, liboping
-, flex
-, docutils
+{ stdenv, fetchurl, pkgconfig, libdrm, libpciaccess, cairo, xorgproto, udev
+, libX11, libXext, libXv, libXrandr, glib, bison, libunwind, python3, kmod
+, procps, utilmacros, gtk-doc, openssl, peg, elfutils
 }:
 
 stdenv.mkDerivation rec {
   pname = "intel-gpu-tools";
-  version = "1.26";
+  version = "1.25";
 
   src = fetchurl {
     url = "https://xorg.freedesktop.org/archive/individual/app/igt-gpu-tools-${version}.tar.xz";
-    sha256 = "1dwvxh1yplsh1a7h3gpp40g91v12cfxy6yy99s1v9yr2kwxikm1n";
+    sha256 = "04fx7xclhick3k7fyk9c4mn8mxzf1253j1r0hrvj9sl40j7lsia0";
   };
 
-  nativeBuildInputs = [ pkg-config utilmacros meson ninja flex bison gtk-doc docutils docbook_xsl ];
-  buildInputs = [
-    libdrm
-    libpciaccess
-    cairo
-    xorgproto
-    udev
-    libX11
-    kmod
-    libXext
-    libXv
-    libXrandr
-    glib
-    libunwind
-    python3
-    procps
-    openssl
-    peg
-    elfutils
-    valgrind
-    xmlrpc_c
-    gsl
-    alsa-lib
-    curl
-    json_c
-    liboping
-  ];
+  nativeBuildInputs = [ pkgconfig utilmacros ];
+  buildInputs = [ libdrm libpciaccess cairo xorgproto udev libX11 kmod
+    libXext libXv libXrandr glib bison libunwind python3 procps
+    gtk-doc openssl peg elfutils ];
 
   NIX_CFLAGS_COMPILE = [ "-Wno-error=array-bounds" ];
 
   preConfigure = ''
-    patchShebangs tests man
+    ./autogen.sh
   '';
 
-  hardeningDisable = [ "bindnow" ];
+  preBuild = ''
+    patchShebangs tests
 
-  meta = with lib; {
+    patchShebangs debugger/system_routine/pre_cpp.py
+    substituteInPlace tools/Makefile.am --replace '$(CAIRO_CFLAGS)' '$(CAIRO_CFLAGS) $(GLIB_CFLAGS)'
+    substituteInPlace tests/Makefile.am --replace '$(CAIRO_CFLAGS)' '$(CAIRO_CFLAGS) $(GLIB_CFLAGS)'
+  '';
+
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     homepage = "https://01.org/linuxgraphics/";
     description = "Tools for development and testing of the Intel DRM driver";
     license = licenses.mit;

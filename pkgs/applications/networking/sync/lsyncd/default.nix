@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, cmake, lua, pkg-config, rsync,
+{ stdenv, fetchFromGitHub, fetchpatch, cmake, lua, pkgconfig, rsync,
   asciidoc, libxml2, docbook_xml_dtd_45, docbook_xsl, libxslt }:
 
 stdenv.mkDerivation rec {
@@ -25,23 +25,19 @@ stdenv.mkDerivation rec {
       --replace "/usr/bin/rsync" "${rsync}/bin/rsync"
   '';
 
-  # Special flags needed on Darwin:
-  # https://github.com/axkibe/lsyncd/blob/42413cabbedca429d55a5378f6e830f191f3cc86/INSTALL#L51
-  cmakeFlags = lib.optional stdenv.isDarwin [ "-DWITH_INOTIFY=OFF" "-DWITH_FSEVENTS=ON" ];
-
   dontUseCmakeBuildDir = true;
 
   buildInputs = [
     rsync
-    cmake lua pkg-config
+    cmake lua pkgconfig
     asciidoc libxml2 docbook_xml_dtd_45 docbook_xsl libxslt
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/axkibe/lsyncd";
     description = "A utility that synchronizes local directories with remote targets";
-    license = licenses.gpl2Plus;
-    platforms = platforms.all;
+    license = licenses.gpl2;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ bobvanderlinden ];
   };
 }

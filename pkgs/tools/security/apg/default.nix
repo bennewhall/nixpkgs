@@ -1,18 +1,23 @@
-{ lib, stdenv, fetchFromGitHub, openssl, autoreconfHook }:
+{ stdenv, fetchurl, openssl }:
 stdenv.mkDerivation rec {
-  pname = "apg";
-  version = "unstable-2015-01-29";
-
-  src = fetchFromGitHub {
-    owner = "wilx";
-    repo = "apg";
-    rev = "7ecdbac79156c8864fa3ff8d61e9f1eb264e56c2";
-    sha256 = "sha256-+7TrJACdm/i/pc0dsp8edEIOjx8cip+x0Qc2gONajSE=";
+  name = "apg-2.3.0b";
+  src = fetchurl {
+    url = "http://www.adel.nursat.kz/apg/download/${name}.tar.gz";
+    sha256 = "14lbq81xrcsmpk1b9qmqyz7n6ypf08zcxvcvp6f7ybcyf0lj1rfi";
   };
+  configurePhase = ''
+    substituteInPlace Makefile --replace /usr/local "$out"
+  '';
+  makeFlags = stdenv.lib.optionals stdenv.isDarwin ["CC=cc"];
 
-  nativeBuildInputs = [ autoreconfHook ];
+  patches = [
+    ./apg.patch
+    ./phony-install-target.patch
+  ];
 
-  buildInputs = [ openssl ];
+  postPatch = stdenv.lib.optionalString stdenv.isDarwin ''
+    sed -i -e 's|APG_CLIBS += -lcrypt|APG_CLIBS += -L${openssl.out}/lib -lcrypto|' Makefile
+  '';
 
   meta = {
     description = "Tools for random password generation";
@@ -59,9 +64,9 @@ stdenv.mkDerivation rec {
        * Ability to enforce remote users to use only allowed type of
          password generation
     '';
-    homepage = "https://github.com/wilx/apg";
-    license = lib.licenses.bsd3;
-    maintainers = with lib.maintainers; [ astsmtl ];
-    platforms = lib.platforms.unix;
+    homepage = "http://www.adel.nursat.kz/apg/";
+    license = stdenv.lib.licenses.bsd3;
+    maintainers = with stdenv.lib.maintainers; [ astsmtl ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

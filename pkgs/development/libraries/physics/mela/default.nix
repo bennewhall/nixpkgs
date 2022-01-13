@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, gfortran }:
+{ stdenv, fetchFromGitHub, gfortran }:
 
 stdenv.mkDerivation rec {
   pname = "mela";
@@ -11,11 +11,11 @@ stdenv.mkDerivation rec {
     sha256 = "01sgd4mwx4n58x95brphp4dskqkkx8434bvsr38r5drg9na5nc9y";
   };
 
-  nativeBuildInputs = [ gfortran ];
+  buildInputs = [ gfortran ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "a Mellin Evolution LibrAry";
     license     = licenses.gpl3;
     homepage    = "https://github.com/vbertone/MELA";

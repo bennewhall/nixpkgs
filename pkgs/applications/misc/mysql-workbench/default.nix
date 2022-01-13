@@ -1,9 +1,9 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , substituteAll
 , cmake
 , ninja
-, pkg-config
+, pkgconfig
 , glibc
 , gtk3
 , gtkmm3
@@ -33,7 +33,7 @@
 , proj
 , cairo
 , libxkbcommon
-, libepoxy
+, epoxy
 , wrapGAppsHook
 , at-spi2-core
 , dbus
@@ -86,7 +86,7 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [
     cmake
     ninja
-    pkg-config
+    pkgconfig
     jre
     swig
     wrapGAppsHook
@@ -126,7 +126,7 @@ in stdenv.mkDerivation rec {
     libpthreadstubs
     libXdmcp
     libxkbcommon
-    libepoxy
+    epoxy
     at-spi2-core
     dbus
   ];
@@ -172,7 +172,7 @@ in stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Visual MySQL database modeling, administration and querying tool";
     longDescription = ''
       MySQL Workbench is a modeling tool that allows you to design

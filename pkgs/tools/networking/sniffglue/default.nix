@@ -1,26 +1,26 @@
-{ lib, fetchFromGitHub, rustPlatform, libpcap, libseccomp, pkg-config }:
+{ lib, fetchFromGitHub, rustPlatform, libpcap, libseccomp, pkgconfig }:
 
 rustPlatform.buildRustPackage rec {
   pname = "sniffglue";
-  version = "0.14.0";
+  version = "0.11.1";
 
   src = fetchFromGitHub {
     owner = "kpcyrd";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-s+2YzfSy7+o0VZZ4j/Cfd6F5GvBytthmDJqrPw+7SU0=";
+    sha256 = "0lkz25z0qy1giss4rnhkx9fvsdd8ckf4z1gqw46zl664x96bb705";
   };
 
-  cargoSha256 = "sha256-4G1OGY7/vE8NKBFeuOZzqyZ0DQN4hy/HBO9qrEtBYlM=";
+  cargoSha256 = "01ya9535whi2kviw57f25n8h05ckpb4bq1h7qav6srai97rm937s";
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ libpcap libseccomp ];
 
   meta = with lib; {
     description = "Secure multithreaded packet sniffer";
     homepage = "https://github.com/kpcyrd/sniffglue";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ xrelkd ];
     platforms = platforms.linux;
   };

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , nose
@@ -22,7 +22,7 @@ buildPythonPackage rec {
   # no tests in PyPI tarball
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "HMAC-based Extract-and-Expand Key Derivation Function (HKDF)";
     homepage = "https://github.com/casebeer/python-hkdf";
     license = licenses.bsd2;

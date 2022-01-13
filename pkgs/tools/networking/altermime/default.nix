@@ -1,11 +1,12 @@
-{ lib, gccStdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
-gccStdenv.mkDerivation rec {
-  pname = "altermime";
+stdenv.mkDerivation rec {
+  baseName = "altermime";
+  name = "${baseName}-${version}";
   version = "0.3.11";
 
   src = fetchurl {
-    url = "https://pldaniels.com/${pname}/${pname}-${version}.tar.gz";
+    url = "https://pldaniels.com/${baseName}/${name}.tar.gz";
     sha256 = "15zxg6spcmd35r6xbidq2fgcg2nzyv1sbbqds08lzll70mqx4pj7";
   };
 
@@ -18,14 +19,14 @@ gccStdenv.mkDerivation rec {
   ];
 
   postPatch = ''
-    mkdir -p $out/bin
-    substituteInPlace Makefile --replace "/usr/local" "$out"
+    sed -i Makefile -e "s@/usr/local@$out@"
+    mkdir -p "$out/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "MIME alteration tool";
     maintainers = [ maintainers.raskin ];
-    platforms = platforms.all;
+    platforms = platforms.linux;
     license.fullName = "alterMIME LICENSE";
     downloadPage = "https://pldaniels.com/altermime/";
   };

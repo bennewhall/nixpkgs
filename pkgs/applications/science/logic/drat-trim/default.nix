@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "drat-trim-unstable";
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
     install -Dt $out/bin drat-trim lrat-check
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A proof checker for unSAT proofs";
     longDescription = ''
       DRAT-trim is a satisfiability proof checking and trimming

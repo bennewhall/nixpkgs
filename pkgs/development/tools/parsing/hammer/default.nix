@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, glib, pkg-config, scons }:
+{ stdenv, fetchgit, glib, pkgconfig, python, scons }:
 
 stdenv.mkDerivation {
   pname = "hammer";
@@ -10,12 +10,10 @@ stdenv.mkDerivation {
     rev = "47f34b81e4de834fd3537dd71928c4f3cdb7f533";
   };
 
-  nativeBuildInputs = [ pkg-config scons ];
-  buildInputs = [ glib ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ glib python scons ];
 
-  strictDeps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A bit-oriented parser combinator library";
     longDescription = ''
       Hammer is a parsing library. Like many modern parsing libraries,

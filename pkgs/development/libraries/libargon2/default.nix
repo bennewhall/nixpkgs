@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, fixDarwinDylibNames }:
+{ stdenv, fetchFromGitHub, fetchpatch, fixDarwinDylibNames }:
 
 stdenv.mkDerivation rec {
   pname = "libargon2";
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     "PKGCONFIG_REL=lib"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A key derivation function that was selected as the winner of the Password Hashing Competition in July 2015";
     longDescription = ''
       A password-hashing function created by by Alex Biryukov, Daniel Dinu, and

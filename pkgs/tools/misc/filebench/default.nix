@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoreconfHook, bison, flex }:
+{ stdenv, fetchurl, autoreconfHook, bison, flex }:
 
 stdenv.mkDerivation rec {
   pname = "filebench";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook bison flex ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "File system and storage benchmark that can generate both micro and macro workloads";
     homepage = "https://sourceforge.net/projects/filebench/";
     license = licenses.cddl;

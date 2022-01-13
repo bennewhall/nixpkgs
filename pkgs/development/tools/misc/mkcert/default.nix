@@ -15,9 +15,9 @@ buildGoModule rec {
 
   doCheck = false;
 
-  ldflags = [
-    "-s" "-w" "-X main.Version=v${version}"
-  ];
+  buildFlagsArray = ''
+    -ldflags=-s -w -X main.Version=v${version}
+  '';
 
   meta = with lib; {
     homepage = "https://github.com/FiloSottile/mkcert";

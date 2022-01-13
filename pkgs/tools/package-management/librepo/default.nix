@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 , python
-, pkg-config
+, pkgconfig
 , libxml2
 , glib
 , openssl
@@ -13,7 +13,7 @@
 }:
 
 stdenv.mkDerivation rec {
-  version = "1.14.2";
+  version = "1.12.1";
   pname = "librepo";
 
   outputs = [ "out" "dev" "py" ];
@@ -22,12 +22,12 @@ stdenv.mkDerivation rec {
     owner = "rpm-software-management";
     repo = "librepo";
     rev = version;
-    sha256 = "sha256-KpGbHBgywaXV7r8W5CPS2N1GohdDFiOwAJmrrjS1m5g=";
+    sha256 = "0793j35fcv6bbz2pkd5rcsmx37hb1f0y48r4758cbfnl9rbp9y4z";
   };
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -35,10 +35,10 @@ stdenv.mkDerivation rec {
     libxml2
     glib
     openssl
+    zchunk
     curl
     check
     gpgme
-    zchunk
   ];
 
   # librepo/fastestmirror.h includes curl/curl.h, and pkg-config specfile refers to others in here
@@ -48,17 +48,19 @@ stdenv.mkDerivation rec {
     libxml2
   ];
 
-  cmakeFlags = [ "-DPYTHON_DESIRED=${lib.substring 0 1 python.pythonVersion}" ];
+  cmakeFlags = [
+    "-DPYTHON_DESIRED=${stdenv.lib.substring 0 1 python.pythonVersion}"
+  ];
 
   postFixup = ''
     moveToOutput "lib/${python.libPrefix}" "$py"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library providing C and Python (libcURL like) API for downloading linux repository metadata and packages";
     homepage = "https://rpm-software-management.github.io/librepo/";
     license = licenses.lgpl2Plus;
-    platforms = platforms.linux ++ platforms.darwin;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ copumpkin ];
   };
 }

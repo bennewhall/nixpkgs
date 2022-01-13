@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, perl, dpkg }:
+{ stdenv, fetchurl, perl, dpkg }:
 
 stdenv.mkDerivation rec {
   pname = "bdf2psf";
-  version = "1.207";
+  version = "1.199";
 
   src = fetchurl {
     url = "mirror://debian/pool/main/c/console-setup/bdf2psf_${version}_all.deb";
-    sha256 = "0k9dv4s44k1khrhr6acsb2sqr5iq3d03ync82nzan5j7mckzs76v";
+    sha256 = "0qs0qrdagvnh4z20wp4v3v4ry6j5jihlpv3iqzzhdzzxjfrw9m9y";
   };
 
   nativeBuildInputs = [ dpkg ];
@@ -14,25 +14,19 @@ stdenv.mkDerivation rec {
   dontConfigure = true;
   dontBuild = true;
 
-  unpackPhase = ''
-    runHook preUnpack
-    dpkg-deb -x $src .
-    runHook postUnpack
-  '';
+  unpackPhase = "dpkg-deb -x $src .";
   installPhase = "
-    runHook preInstall
     substituteInPlace usr/bin/bdf2psf --replace /usr/bin/perl ${perl}/bin/perl
     mv usr $out
-    runHook postInstall
   ";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "BDF to PSF converter";
     homepage = "https://packages.debian.org/sid/bdf2psf";
     longDescription = ''
       Font converter to generate console fonts from BDF source fonts
     '';
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ rnhmjoj vrthra ];
     platforms = platforms.unix;
   };

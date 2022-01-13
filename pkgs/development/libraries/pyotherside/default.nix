@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , python3, qmake, qtbase, qtquickcontrols, qtsvg, ncurses }:
 
 stdenv.mkDerivation rec {
@@ -17,12 +17,10 @@ stdenv.mkDerivation rec {
     python3 qtbase qtquickcontrols qtsvg ncurses
   ];
 
-  dontWrapQtApps = true;
-
   patches = [ ./qml-path.patch ];
   installTargets = [ "sub-src-install_subtargets" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Asynchronous Python 3 Bindings for Qt 5";
     homepage = "https://thp.io/2011/pyotherside/";
     license = licenses.isc;

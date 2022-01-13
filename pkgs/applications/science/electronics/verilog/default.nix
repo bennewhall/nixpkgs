@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , autoconf
 , bison
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner  = "steveicarus";
     repo   = pname;
-    rev    = "v${lib.replaceStrings ["."] ["_"] version}";
+    rev    = "v${stdenv.lib.replaceStrings ["."] ["_"] version}";
     sha256 = "0nzcyi6l2zv9wxzsv9i963p3igyjds0n55x0ph561mc3pfbc7aqp";
   };
 
@@ -38,9 +38,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  # tests try to access /proc/ which does not exist on darwin
-  # Cannot locate IVL modules : couldn't get command path from OS.
-  doCheck = !stdenv.isDarwin;
+  doCheck = true;
 
   installCheckInputs = [ perl ];
 
@@ -60,7 +58,7 @@ stdenv.mkDerivation rec {
     popd
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Icarus Verilog compiler";
     homepage    = "http://iverilog.icarus.com/";  # https does not work
     license     = with licenses; [ gpl2Plus lgpl21Plus ];

@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildPythonApplication, pyxdg, PyGithub }:
+{ stdenv, fetchFromGitHub, buildPythonApplication, pyxdg, PyGithub }:
 
 buildPythonApplication rec {
   pname = "cligh";
@@ -15,7 +15,7 @@ buildPythonApplication rec {
 
   propagatedBuildInputs = [ pyxdg PyGithub ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://the-brannons.com/software/cligh.html";
     description = "A simple command-line interface to the facilities of Github";
     longDescription = ''

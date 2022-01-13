@@ -1,4 +1,4 @@
-{ lib, mkDerivation, fetchFromGitHub, qmake, qtbase, qttools, poppler }:
+{ stdenv, mkDerivation, fetchFromGitHub, qmake, qtbase, qttools, poppler }:
 
 mkDerivation rec {
   pname = "lumina-pdf";
@@ -10,7 +10,7 @@ mkDerivation rec {
     rev = "v${version}";
     sha256 = "08caj4nashp79fbvj94rabn0iaa1hymifqmb782x03nb2vkn38r6";
   };
-
+  
   sourceRoot = "source/src-qt5";
 
   nativeBuildInputs = [ qmake qttools ];
@@ -23,12 +23,12 @@ mkDerivation rec {
 
   qmakeFlags = [
     "CONFIG+=WITH_I18N"
-    "LRELEASE=${lib.getDev qttools}/bin/lrelease"
+    "LRELEASE=${stdenv.lib.getDev qttools}/bin/lrelease"
   ];
 
   enableParallelBuilding = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PDF viewer for the Lumina Desktop";
     homepage = "https://github.com/lumina-desktop/lumina-pdf";
     license = licenses.bsd3;

@@ -1,19 +1,19 @@
-{ lib, stdenv, fetchurl, unzip }:
+{ stdenv, fetchurl, unzip }:
 
 stdenv.mkDerivation rec {
   pname = "libxls";
-  version = "1.6.2";
+  version = "1.6.1";
 
   src = fetchurl {
     url = "https://github.com/libxls/libxls/releases/download/v${version}/libxls-${version}.tar.gz";
-    sha256 = "sha256-XazDTZS/IRWSbIDG+2nk570u1kA9Uc/0kEGpQXL143E=";
+    sha256 = "1y7wk55blk16hmvf9dz5ci84hlhv6pw6mnr1mfnibfw3gsxmzhyv";
   };
 
   nativeBuildInputs = [ unzip ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extract Cell Data From Excel xls files";
     homepage = "https://sourceforge.net/projects/libxls/";
     license = licenses.bsd2;

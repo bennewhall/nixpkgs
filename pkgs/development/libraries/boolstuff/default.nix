@@ -1,20 +1,22 @@
-{ lib, stdenv, fetchurl, pkg-config }:
+{ stdenv, fetchurl, pkgconfig }:
+
+let baseurl = "https://perso.b2b2c.ca/~sarrazip/dev"; in
+
 stdenv.mkDerivation rec {
-  pname = "boolstuff";
-  version = "0.1.16";
+  name = "boolstuff-0.1.16";
 
   src = fetchurl {
-    url = "https://perso.b2b2c.ca/~sarrazip/dev/${pname}-${version}.tar.gz";
+    url = "${baseurl}/${name}.tar.gz";
     sha256 = "10qynbyw723gz2vrvn4xk2var172kvhlz3l3l80qbdsfb3d12wn0";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   meta = {
     description = "Library for operations on boolean expression binary trees";
-    homepage = "http://perso.b2b2c.ca/~sarrazip/dev/boolstuff.html";
+    homepage = "${baseurl}/boolstuff.html";
     license = "GPL";
-    maintainers = [ lib.maintainers.marcweber ];
-    platforms = lib.platforms.all;
+    maintainers = [ stdenv.lib.maintainers.marcweber ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

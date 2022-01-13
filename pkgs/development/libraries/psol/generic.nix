@@ -1,4 +1,4 @@
-{ fetchzip, lib }:
+{ fetchzip, stdenv }:
 { version, sha256 }:
 { inherit version; } // fetchzip {
   inherit sha256;
@@ -8,9 +8,9 @@
   meta = {
     description = "PageSpeed Optimization Libraries";
     homepage    = "https://developers.google.com/speed/pagespeed/psol";
-    license     = lib.licenses.asl20;
+    license     = stdenv.lib.licenses.asl20;
     # WARNING: This only works with Linux because the pre-built PSOL binary is only supplied for Linux.
     # TODO: Build PSOL from source to support more platforms.
-    platforms   = lib.platforms.linux;
+    platforms   = stdenv.lib.platforms.linux;
   };
 }

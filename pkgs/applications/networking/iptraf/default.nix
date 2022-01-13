@@ -1,11 +1,10 @@
-{lib, stdenv, fetchurl, ncurses}:
+{stdenv, fetchurl, ncurses}:
 
-stdenv.mkDerivation rec {
-  pname = "iptraf";
-  version = "3.0.1";
+stdenv.mkDerivation {
+  name = "iptraf-3.0.1";
 
   src = fetchurl {
-    url = "ftp://iptraf.seul.org/pub/iptraf/iptraf-${version}tar.gz";
+    url = "ftp://iptraf.seul.org/pub/iptraf/iptraf-3.0.1.tar.gz";
     sha256 = "12n059j9iihhpf6spmlaspqzxz3wqan6kkpnhmlj08jdijpnk84m";
   };
 
@@ -26,9 +25,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     homepage = "http://iptraf.seul.org/";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     description = "Console-based network statistics utility for Linux";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
     broken = true; # required isdn headers have been removed from the linux kernel
   };
 }

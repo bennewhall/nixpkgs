@@ -1,4 +1,5 @@
 { atk
+, autoreconfHook
 , cacert
 , fetchpatch
 , dbus
@@ -6,7 +7,6 @@
 , cinnamon-desktop
 , cinnamon-menus
 , cinnamon-session
-, cinnamon-translations
 , cjs
 , fetchFromGitHub
 , gdk-pixbuf
@@ -20,17 +20,15 @@
 , libsoup
 , libstartup_notification
 , libXtst
-, libXdamage
 , muffin
 , networkmanager
-, pkg-config
+, pkgconfig
 , polkit
-, lib
 , stdenv
 , wrapGAppsHook
 , libxml2
 , gtk-doc
-, gnome
+, gnome3
 , python3
 , keybinder3
 , cairo
@@ -44,35 +42,37 @@
 , pciutils
 , timezonemap
 , libnma
-, meson
-, ninja
-, gst_all_1
 }:
 
+let
+  libcroco = callPackage ./libcroco.nix { };
+in
 stdenv.mkDerivation rec {
   pname = "cinnamon-common";
-  version = "5.2.0";
+  version = "4.6.1";
 
   src = fetchFromGitHub {
     owner = "linuxmint";
     repo = "cinnamon";
     rev = version;
-    hash = "sha256-B2Du2zis0xWeeyh3kSyz1doWImk9Fuk4qQ8HNZZdqdw=";
+    sha256 = "149lhg953fa0glm250f76z2jzyaabh97jxiqkjnqvsk6bjk1d0bw";
   };
 
   patches = [
-    ./use-sane-install-dir.patch
-    ./libdir.patch
-
+    # remove dbus-glib
     (fetchpatch {
-      url = "https://github.com/linuxmint/cinnamon/commit/77ed66050f7df889fcb7a10b702c7b8bcdeaa130.patch";
-      sha256 = "sha256-OegLxz6Xr/nxVwVOAd2oOY62ohZ3r6uYn1+YED5EBHQ=";
+      url = "https://github.com/linuxmint/cinnamon/commit/ce99760fa15c3de2e095b9a5372eeaca646fbed1.patch";
+      sha256 = "0p2sbdi5w7sgblqbgisb6f8lcj1syzq5vlk0ilvwaqayxjylg8gz";
+    })
+    (fetchpatch {
+      url = "https://leigh123linux.fedorapeople.org/pub/patches/new_cjs.patch";
+      sha256 = "07biv3vkbn3jzijbdrxcw73p8xz2djbsax014mlkvmryrmys0rg4";
     })
   ];
 
   buildInputs = [
     # TODO: review if we really need this all
-    (python3.withPackages (pp: with pp; [ dbus-python setproctitle pygobject3 pycairo xapp pillow pytz tinycss2 python-pam pexpect distro requests ]))
+    (python3.withPackages (pp: with pp; [ dbus-python setproctitle pygobject3 pycairo xapp pillow pytz tinycss2 pam pexpect distro ]))
     atk
     cacert
     cinnamon-control-center
@@ -84,21 +84,20 @@ stdenv.mkDerivation rec {
     glib
     gtk3
     json-glib
+    libcroco
     libsoup
     libstartup_notification
     libXtst
-    libXdamage
     muffin
     networkmanager
-    pkg-config
+    pkgconfig
     polkit
     libxml2
     libgnomekbd
-    gst_all_1.gstreamer
 
     # bindings
     cairo
-    gnome.caribou
+    gnome3.caribou
     keybinder3
     upower
     xapps
@@ -115,19 +114,23 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     gobject-introspection
-    meson
-    ninja
+    autoreconfHook
     wrapGAppsHook
     intltool
     gtk-doc
   ];
 
-  # use locales from cinnamon-translations (not using --localedir because datadir is used)
-  postInstall = ''
-    ln -s ${cinnamon-translations}/share/locale $out/share/locale
+  autoreconfPhase = ''
+    GTK_DOC_CHECK=false NOCONFIGURE=1 bash ./autogen.sh
   '';
 
+  configureFlags = [ "--disable-static" "--with-ca-certificates=${cacert}/etc/ssl/certs/ca-bundle.crt" "--with-libxml=${libxml2.dev}/include/libxml2" "--enable-gtk-doc=no" ];
+
   postPatch = ''
+    substituteInPlace src/Makefile.am \
+      --replace "\$(libdir)/muffin" "${muffin}/lib/muffin"
+    patchShebangs autogen.sh
+
     find . -type f -exec sed -i \
       -e s,/usr/share/cinnamon,$out/share/cinnamon,g \
       -e s,/usr/share/locale,/run/current-system/sw/share/locale,g \
@@ -154,10 +157,10 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    providedSessions = [ "cinnamon" "cinnamon2d" ];
+    providedSessions = ["cinnamon" "cinnamon2d"];
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/linuxmint/cinnamon";
     description = "The Cinnamon desktop environment";
     license = [ licenses.gpl2 ];

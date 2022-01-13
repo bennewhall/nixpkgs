@@ -1,4 +1,4 @@
-{ buildPythonPackage, lib, fetchPypi
+{ buildPythonPackage, stdenv, fetchPypi
 , requests
 , nose
 , responses
@@ -22,7 +22,7 @@ buildPythonPackage rec {
     nosetests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://zeevgilovitz.com/python-forecast.io/";
     description = "A thin Python Wrapper for the Dark Sky (formerly forecast.io) weather API";
     license = licenses.bsd2;

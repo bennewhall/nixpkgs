@@ -12,8 +12,6 @@
 , mimeType ? null
 , categories ? null
 , startupNotify ? null
-, noDisplay ? null
-, prefersNonDefaultGPU ? null
 , extraDesktopEntries ? { } # Extra key-value pairs to add to the [Desktop Entry] section. This may override other values
 , extraEntries ? "" # Extra configuration. Will be appended to the end of the file and may thus contain extra sections
 , fileValidation ? true # whether to validate resulting desktop file.
@@ -37,8 +35,6 @@ let
     "MimeType" = nullableToString mimeType;
     "Categories" = nullableToString categories;
     "StartupNotify" = nullableToString startupNotify;
-    "NoDisplay" = nullableToString noDisplay;
-    "PrefersNonDefaultGPU" = nullableToString prefersNonDefaultGPU;
   } // extraDesktopEntries;
 
   # Map all entries to a list of lines

@@ -1,25 +1,22 @@
-{ lib, stdenv, fetchFromGitHub, perl, libxcb }:
+{ stdenv, fetchurl, perl, libxcb }:
 
-stdenv.mkDerivation rec {
-  pname = "lemonbar";
-  version = "1.4";
-
-  src = fetchFromGitHub {
-    owner = "LemonBoy";
-    repo = "bar";
-    rev = "v${version}";
-    sha256 = "sha256-lmppcnQ8r4jEuhegpTBxYqxfTTS/IrbtQVZ44HqnoWo=";
+stdenv.mkDerivation {
+  name = "lemonbar-1.4";
+  
+  src = fetchurl {
+    url    = "https://github.com/LemonBoy/bar/archive/v1.4.tar.gz";
+    sha256 = "0fa91vb968zh6fyg97kdaix7irvqjqhpsb6ks0ggcl59lkbkdzbv";
   };
-
+  
   buildInputs = [ libxcb perl ];
-
-  installFlags = [ "DESTDIR=$(out)" "PREFIX=" ];
-
-  meta = with lib; {
+  
+  prePatch = ''sed -i "s@/usr@$out@" Makefile'';
+  
+  meta = with stdenv.lib; {
     description = "A lightweight xcb based bar";
     homepage = "https://github.com/LemonBoy/bar";
-    maintainers = with maintainers; [ meisternu fortuneteller2k ];
-    license = licenses.mit;
+    maintainers = [ maintainers.meisternu ];
+    license = "Custom";   
     platforms = platforms.linux;
   };
 }

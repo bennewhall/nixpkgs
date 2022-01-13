@@ -1,25 +1,32 @@
-{ lib, buildGoModule, fetchFromGitHub, installShellFiles, k3sVersion ? "1.22.2-k3s2" }:
+{ lib, buildGoModule, fetchFromGitHub, installShellFiles }:
 
+let
+  k3sVersion = "1.19.4-k3s1";
+in
 buildGoModule rec {
   pname = "kube3d";
-  version = "5.2.1";
+  version = "3.4.0";
+
+  excludedPackages = "tools";
 
   src = fetchFromGitHub {
     owner = "rancher";
     repo = "k3d";
     rev = "v${version}";
-    sha256 = "sha256-rKiOPpRupoCRtGJ3DVBUY9483EEBxaaECZRdWiyxaEk=";
+    sha256 = "1fisbzv786n841pagy7zbanll7k1g5ib805j9azs2s30cfhvi08b";
   };
 
   vendorSha256 = null;
 
   nativeBuildInputs = [ installShellFiles ];
 
-  excludedPackages = "\\(tools\\|docgen\\)";
-
-  ldflags =
-    let t = "github.com/rancher/k3d/v5/version"; in
-    [ "-s" "-w" "-X ${t}.Version=v${version}" "-X ${t}.K3sVersion=v${k3sVersion}" ];
+  buildFlagsArray = [
+    "-ldflags="
+    "-w"
+    "-s"
+    "-X github.com/rancher/k3d/v3/version.Version=v${version}"
+    "-X github.com/rancher/k3d/v3/version.K3sVersion=v${k3sVersion}"
+  ];
 
   doCheck = false;
 
@@ -30,17 +37,8 @@ buildGoModule rec {
       --zsh <($out/bin/k3d completion zsh)
   '';
 
-  doInstallCheck = true;
-  installCheckPhase = ''
-    runHook preInstallCheck
-    $out/bin/k3d --help
-    $out/bin/k3d --version | grep -e "k3d version v${version}" -e "k3s version v${k3sVersion}"
-    runHook postInstallCheck
-  '';
-
   meta = with lib; {
     homepage = "https://github.com/rancher/k3d";
-    changelog = "https://github.com/rancher/k3d/blob/v${version}/CHANGELOG.md";
     description = "A helper to run k3s (Lightweight Kubernetes. 5 less than k8s) in a docker container - k3d";
     longDescription = ''
       k3s is the lightweight Kubernetes distribution by Rancher: rancher/k3s
@@ -49,7 +47,7 @@ buildGoModule rec {
       multi-node k3s cluster on a single machine using docker.
     '';
     license = licenses.mit;
-    maintainers = with maintainers; [ kuznero jlesquembre ngerstle jk ];
     platforms = platforms.linux;
+    maintainers = with maintainers; [ kuznero jlesquembre ngerstle jk ];
   };
 }

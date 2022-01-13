@@ -1,22 +1,18 @@
-{ lib, stdenv, fetchurl, perl }:
+{ stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation rec {
   pname = "daemon";
-  version = "0.8";
+  version = "0.7";
 
   src = fetchurl {
     url = "http://libslack.org/daemon/download/daemon-${version}.tar.gz";
-    sha256 = "sha256-dPEubUs8hWMkib0IQx09mXvBcmS/V7cgI4Ty6AnP9ZY=";
+    sha256 = "0b17zzl7bqnkn7a4pr3l6fxqfmxfld7izphrab5nvhc4wzng4spn";
   };
 
-  makeFlags = [
-    "PREFIX=$(out)"
-    "CC=${stdenv.cc.targetPrefix}cc"
-  ];
-
+  makeFlags = [ "PREFIX=$(out)" ];
   buildInputs = [ perl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Turns other processes into daemons";
     longDescription = ''
       Daemon turns other process into daemons. There are many tasks that need

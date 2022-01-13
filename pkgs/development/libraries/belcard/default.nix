@@ -2,12 +2,12 @@
 , belr
 , cmake
 , fetchFromGitLab
-, lib, stdenv
+, stdenv
 }:
 
 stdenv.mkDerivation rec {
   pname = "belcard";
-  version = "4.5.3";
+  version = "4.4.13";
 
   src = fetchFromGitLab {
     domain = "gitlab.linphone.org";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     group = "BC";
     repo = pname;
     rev = version;
-    sha256 = "sha256-+7vqTbg1QergWPx2LQ2wkVehOma6Ix02IfwnJTJ/E5I=";
+    sha256 = "16x2xp8d0a115132zhy1kpxkyj86ia7vrsnpjdg78fnbvmvysc8m";
   };
 
   buildInputs = [ bctoolbox belr ];
@@ -24,10 +24,10 @@ stdenv.mkDerivation rec {
   # Do not build static libraries
   cmakeFlags = [ "-DENABLE_STATIC=NO" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ library to manipulate VCard standard format";
     homepage = "https://gitlab.linphone.org/BC/public/belcard";
-    license = licenses.gpl3Plus;
+    license = licenses.lgpl21;
     platforms = platforms.all;
     maintainers = with maintainers; [ jluttine ];
   };

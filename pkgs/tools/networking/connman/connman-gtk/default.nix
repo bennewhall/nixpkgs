@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, intltool, pkg-config,
+{ stdenv, fetchFromGitHub, autoconf, automake, intltool, pkgconfig,
 gtk3, connman, openconnect, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     autoconf
     automake
     intltool
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     ./autogen.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GTK GUI for Connman";
     homepage = "https://github.com/jgke/connman-gtk";
     license = licenses.gpl2Plus;

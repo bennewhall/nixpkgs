@@ -8,7 +8,7 @@
 }:
 
 mkDerivation {
-  pname = "print-manager";
+  name = "print-manager";
   meta = {
     license = [ lib.licenses.gpl2 ];
     maintainers = [ lib.maintainers.ttuegel ];

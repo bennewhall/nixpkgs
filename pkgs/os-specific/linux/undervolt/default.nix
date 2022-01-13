@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   version = "0.3.0";
@@ -11,7 +11,7 @@ python3Packages.buildPythonApplication rec {
     sha256 = "1aybk8vbb4745raz7rvpkk6b98xrdiwjhkpbv3kwsgsr9sj42lp0";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/georgewhewell/undervolt/";
     description = "A program for undervolting Intel CPUs on Linux";
 

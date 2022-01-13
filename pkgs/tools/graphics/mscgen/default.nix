@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , bison
 , fetchurl
 , flex
@@ -11,9 +11,12 @@
 , zlib
 }:
 
-stdenv.mkDerivation rec {
-  pname = "mscgen";
+let
   version = "0.20";
+in
+stdenv.mkDerivation {
+  pname = "mscgen";
+  inherit version;
 
   src = fetchurl {
     url = "http://www.mcternan.me.uk/mscgen/software/mscgen-src-${version}.tar.gz";
@@ -33,7 +36,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.mcternan.me.uk/mscgen/";
     description = "Convert Message Sequence Chart descriptions into PNG, SVG, or EPS images";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
 
     longDescription = ''
       Mscgen is a small program that parses Message Sequence Chart
@@ -48,6 +51,7 @@ stdenv.mkDerivation rec {
       printing.
     '';
 
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.peti ];
   };
 }

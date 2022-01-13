@@ -90,7 +90,19 @@ in {
 
     jvmOptions = mkOption {
       description = "Extra command line options for the JVM running Kafka.";
-      default = [];
+      default = [
+        "-server"
+        "-Xmx1G"
+        "-Xms1G"
+        "-XX:+UseCompressedOops"
+        "-XX:+UseParNewGC"
+        "-XX:+UseConcMarkSweepGC"
+        "-XX:+CMSClassUnloadingEnabled"
+        "-XX:+CMSScavengeBeforeRemark"
+        "-XX:+DisableExplicitGC"
+        "-Djava.awt.headless=true"
+        "-Djava.net.preferIPv4Stack=true"
+      ];
       type = types.listOf types.str;
       example = [
         "-Djava.net.preferIPv4Stack=true"
@@ -102,14 +114,7 @@ in {
     package = mkOption {
       description = "The kafka package to use";
       default = pkgs.apacheKafka;
-      defaultText = literalExpression "pkgs.apacheKafka";
-      type = types.package;
-    };
-
-    jre = mkOption {
-      description = "The JRE with which to run Kafka";
-      default = cfg.package.passthru.jre;
-      defaultText = literalExpression "pkgs.apacheKafka.passthru.jre";
+      defaultText = "pkgs.apacheKafka";
       type = types.package;
     };
 
@@ -120,12 +125,10 @@ in {
     environment.systemPackages = [cfg.package];
 
     users.users.apache-kafka = {
-      isSystemUser = true;
-      group = "apache-kafka";
+      uid = config.ids.uids.apache-kafka;
       description = "Apache Kafka daemon user";
       home = head cfg.logDirs;
     };
-    users.groups.apache-kafka = {};
 
     systemd.tmpfiles.rules = map (logDir: "d '${logDir}' 0700 apache-kafka - - -") cfg.logDirs;
 
@@ -135,7 +138,7 @@ in {
       after = [ "network.target" ];
       serviceConfig = {
         ExecStart = ''
-          ${cfg.jre}/bin/java \
+          ${pkgs.jre}/bin/java \
             -cp "${cfg.package}/libs/*" \
             -Dlog4j.configuration=file:${logConfig} \
             ${toString cfg.jvmOptions} \

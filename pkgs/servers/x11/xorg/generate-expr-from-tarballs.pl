@@ -1,7 +1,10 @@
-#!/usr/bin/env nix-shell
-#!nix-shell --pure --keep NIX_PATH -i perl -p cacert nix perl
+#! /usr/bin/env perl
 
-# Usage: manually update tarballs.list then run: ./generate-expr-from-tarballs.pl tarballs.list
+# Usage:
+#
+# manually update tarballs.list
+# then run: cat tarballs.list | perl ./generate-expr-from-tarballs.pl
+
 
 use strict;
 use warnings;
@@ -14,7 +17,6 @@ use File::Temp;
 my %pkgURLs;
 my %pkgHashes;
 my %pkgNames;
-my %pkgVersions;
 my %pkgRequires;
 my %pkgNativeRequires;
 
@@ -71,12 +73,8 @@ while (<>) {
         next;
     }
 
-    # split by first occurence of hyphen followd by only numbers ends line or another hyphen follows
-    my ($name, $version) = split(/-(?=[.0-9]+(?:$|-))/, $pkgName, 2);
-
     $pkgURLs{$pkg} = $tarball;
-    $pkgNames{$pkg} = $name;
-    $pkgVersions{$pkg} = $version;
+    $pkgNames{$pkg} = $pkgName;
 
     my $cachePath = catdir($downloadCache, basename($tarball));
     my $hash;
@@ -294,7 +292,7 @@ foreach my $pkg (sort (keys %pkgURLs)) {
 
     my @arguments = @buildInputs;
     push @arguments, @nativeBuildInputs;
-    unshift @arguments, "stdenv", "pkg-config", "fetchurl";
+    unshift @arguments, "stdenv", "pkgconfig", "fetchurl";
     my $argumentsStr = join ", ", @arguments;
 
     my $extraAttrsStr = "";
@@ -303,19 +301,17 @@ foreach my $pkg (sort (keys %pkgURLs)) {
     }
 
     print OUT <<EOF
-  # THIS IS A GENERATED FILE.  DO NOT EDIT!
   $pkg = callPackage ({ $argumentsStr }: stdenv.mkDerivation {
-    pname = "$pkgNames{$pkg}";
-    version = "$pkgVersions{$pkg}";
+    name = "$pkgNames{$pkg}";
     builder = ./builder.sh;
     src = fetchurl {
       url = "$pkgURLs{$pkg}";
       sha256 = "$pkgHashes{$pkg}";
     };
     hardeningDisable = [ "bindnow" "relro" ];
-    nativeBuildInputs = [ pkg-config $nativeBuildInputsStr];
+    nativeBuildInputs = [ pkgconfig $nativeBuildInputsStr];
     buildInputs = [ $buildInputsStr];$extraAttrsStr
-    meta.platforms = lib.platforms.unix;
+    meta.platforms = stdenv.lib.platforms.unix;
   }) {};
 
 EOF

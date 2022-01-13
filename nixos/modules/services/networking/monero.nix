@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg     = config.services.monero;
+  dataDir = "/var/lib/monero";
 
   listToConf = option: list:
     concatMapStrings (value: "${option}=${value}\n") list;
@@ -52,19 +53,11 @@ in
 
       enable = mkEnableOption "Monero node daemon";
 
-      dataDir = mkOption {
-        type = types.str;
-        default = "/var/lib/monero";
-        description = ''
-          The directory where Monero stores its data files.
-        '';
-      };
-
       mining.enable = mkOption {
         type = types.bool;
         default = false;
         description = ''
-          Whether to mine monero.
+          Whether to mine moneroj.
         '';
       };
 
@@ -110,7 +103,7 @@ in
       };
 
       rpc.port = mkOption {
-        type = types.port;
+        type = types.int;
         default = 18081;
         description = ''
           Port the RPC server will bind to.
@@ -205,14 +198,15 @@ in
   config = mkIf cfg.enable {
 
     users.users.monero = {
-      isSystemUser = true;
-      group = "monero";
+      uid  = config.ids.uids.monero;
       description = "Monero daemon user";
-      home = cfg.dataDir;
+      home = dataDir;
       createHome = true;
     };
 
-    users.groups.monero = { };
+    users.groups.monero = {
+      gid = config.ids.gids.monero;
+    };
 
     systemd.services.monero = {
       description = "monero daemon";
@@ -222,7 +216,7 @@ in
       serviceConfig = {
         User  = "monero";
         Group = "monero";
-        ExecStart = "${pkgs.monero-cli}/bin/monerod --config-file=${configFile} --non-interactive";
+        ExecStart = "${pkgs.monero}/bin/monerod --config-file=${configFile} --non-interactive";
         Restart = "always";
         SuccessExitStatus = [ 0 1 ];
       };

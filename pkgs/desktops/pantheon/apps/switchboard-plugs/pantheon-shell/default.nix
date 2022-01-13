@@ -1,43 +1,29 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, nix-update-script
-, meson
-, ninja
-, pkg-config
-, vala
-, glib
-, libgee
-, granite
-, gexiv2
-, gnome-settings-daemon
-, elementary-settings-daemon
-, gtk3
-, gnome-desktop
-, gala
-, wingpanel
-, elementary-dock
-, switchboard
-, gettext
-, bamf
-}:
+{ stdenv, fetchFromGitHub, nix-update-script, pantheon, meson, ninja, pkgconfig, vala, glib
+, libgee, granite, gexiv2, elementary-settings-daemon, gtk3, gnome-desktop
+, gala, wingpanel, elementary-dock, switchboard, gettext, bamf, fetchpatch }:
 
 stdenv.mkDerivation rec {
   pname = "switchboard-plug-pantheon-shell";
-  version = "6.1.0";
+  version = "2.8.4";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = pname;
     rev = version;
-    sha256 = "sha256-rwneQ1bqpWDyTHULMtGqhPdpSDa4ObnVortmL0E+gHA=";
+    sha256 = "sha256-CHl+4mVjrDg2gusrWOCfI++DZMWKLdvHxG3ZWMjZ2to=";
+  };
+
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = "pantheon.${pname}";
+    };
   };
 
   nativeBuildInputs = [
     gettext
     meson
     ninja
-    pkg-config
+    pkgconfig
     vala
   ];
 
@@ -45,7 +31,6 @@ stdenv.mkDerivation rec {
     bamf
     elementary-dock
     elementary-settings-daemon
-    gnome-settings-daemon
     gala
     gexiv2
     glib
@@ -57,17 +42,11 @@ stdenv.mkDerivation rec {
     wingpanel
   ];
 
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = "pantheon.${pname}";
-    };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Switchboard Desktop Plug";
     homepage = "https://github.com/elementary/switchboard-plug-pantheon-shell";
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
   };
 }

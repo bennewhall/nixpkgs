@@ -1,22 +1,21 @@
-{ fetchurl, lib, stdenv, ncurses
+{ fetchurl, stdenv, ncurses
 , emacsSupport ? true, emacs
 }:
 
 stdenv.mkDerivation rec {
-  pname = "cscope";
-  version = "15.9";
+  name = "cscope-15.9";
 
   src = fetchurl {
-    url = "mirror://sourceforge/${pname}/${pname}-${version}.tar.gz";
+    url = "mirror://sourceforge/cscope/${name}.tar.gz";
     sha256 = "0ngiv4aj3rr35k3q3wjx0y19gh7i1ydqa0cqip6sjwd8fph5ll65";
   };
 
   configureFlags = [ "--with-ncurses=${ncurses.dev}" ];
 
   buildInputs = [ ncurses ];
-  nativeBuildInputs = lib.optional emacsSupport emacs;
+  nativeBuildInputs = stdenv.lib.optional emacsSupport emacs;
 
-  postInstall = lib.optionalString emacsSupport ''
+  postInstall = stdenv.lib.optionalString emacsSupport ''
     cd "contrib/xcscope"
 
     sed -i "cscope-indexer" \
@@ -47,8 +46,8 @@ stdenv.mkDerivation rec {
 
     homepage = "http://cscope.sourceforge.net/";
 
-    maintainers = with lib.maintainers; [viric];
+    maintainers = with stdenv.lib.maintainers; [viric];
 
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

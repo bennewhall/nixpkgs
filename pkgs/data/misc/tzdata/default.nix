@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchurl, buildPackages }:
+{ stdenv, fetchurl, buildPackages }:
 
 stdenv.mkDerivation rec {
   pname = "tzdata";
-  version = "2021c";
+  version = "2020c";
 
   srcs =
     [ (fetchurl {
         url = "https://data.iana.org/time-zones/releases/tzdata${version}.tar.gz";
-        sha256 = "0himprzx3ahxkmg4rvp8n5lqry76qzc65j6sfq151hqirg4d3wdl";
+        sha256 = "1nab36g5ibs88wg2mzpzygi1wh5gh2al1qjvbk8sb90sbw8ar43q";
       })
       (fetchurl {
         url = "https://data.iana.org/time-zones/releases/tzcode${version}.tar.gz";
-        sha256 = "01fsa661vzdij46z286pa8q07cppqz29sr2pf0qqldqpldbb6km3";
+        sha256 = "1r5zrk1k3jhhilkhrx82fd19rvysji8jk05gq5v0rndmyx07zacs";
       })
     ];
 
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
   preInstall = ''
      mv zic.o zic.o.orig
      mv zic zic.orig
-     make $makeFlags cc=${stdenv.cc.nativePrefix}cc AR=${stdenv.cc.nativePrefix}ar zic
+     make $makeFlags cc=cc AR=ar zic
      mv zic zic-native
      mv zic.o.orig zic.o
      mv zic.orig zic
@@ -64,15 +64,10 @@ stdenv.mkDerivation rec {
 
   setupHook = ./tzdata-setup-hook.sh;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.iana.org/time-zones";
     description = "Database of current and historical time zones";
-    changelog = "https://github.com/eggert/tz/blob/${version}/NEWS";
-    license = with licenses; [
-      bsd3 # tzcode
-      publicDomain # tzdata
-    ];
     platforms = platforms.all;
-    maintainers = with maintainers; [ ajs124 fpletz ];
+    maintainers = with maintainers; [ fpletz ];
   };
 }

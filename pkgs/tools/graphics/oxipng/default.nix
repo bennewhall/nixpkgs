@@ -1,19 +1,19 @@
-{ lib, stdenv, fetchCrate, rustPlatform }:
+{ stdenv, fetchCrate, rustPlatform }:
 
 rustPlatform.buildRustPackage rec {
-  version = "5.0.1";
+  version = "4.0.2";
   pname = "oxipng";
 
   src = fetchCrate {
     inherit version pname;
-    sha256 = "1g2m6ifmppgq086w3vzdsihnba4qrzmnf5k13bgah2qasnl97qfh";
+    sha256 = "0m36af9w1l6pc71fjbgyzcsszizwayvcv5d750zz2bnj23c77m69";
   };
 
-  cargoSha256 = "1dkfplmi21wgks8pfxxc3kww89i9wq7fq5j7jm7a8zi59p3xdars";
+  cargoSha256 = "16fby8ncdq0dyg9r0glrqwi04sja34br306c5sj22cq1dm3bb64q";
 
   doCheck = !stdenv.isAarch64 && !stdenv.isDarwin;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/shssoichiro/oxipng";
     description = "A multithreaded lossless PNG compression optimizer";
     license = licenses.mit;

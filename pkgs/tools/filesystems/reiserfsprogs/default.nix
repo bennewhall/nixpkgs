@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchurl, libuuid, autoreconfHook }:
+{ stdenv, fetchurl, libuuid, autoreconfHook }:
 
+let version = "3.6.24"; in
 stdenv.mkDerivation rec {
   pname = "reiserfsprogs";
-  version = "3.6.24";
+  inherit version;
 
   src = fetchurl {
     url = "https://www.kernel.org/pub/linux/kernel/people/jeffm/reiserfsprogs/v${version}/${pname}-${version}.tar.xz";
@@ -19,7 +20,7 @@ stdenv.mkDerivation rec {
     inherit version;
     homepage = "http://www.namesys.com/";
     description = "ReiserFS utilities";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

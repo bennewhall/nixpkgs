@@ -1,16 +1,17 @@
-{ lib, skawarePackages
+{ stdenv, skawarePackages
 
 # Whether to build the TLS/SSL tools and what library to use
-# acceptable values: "bearssl", "libressl", false
-, sslSupport ? "bearssl" , libressl, bearssl
+# acceptable values: "libressl", false
+# TODO: add bearssl
+, sslSupport ? "libressl" , libressl
 }:
 
 with skawarePackages;
 let
+  inherit (stdenv) lib;
   sslSupportEnabled = sslSupport != false;
   sslLibs = {
     libressl = libressl;
-    bearssl = bearssl;
   };
 
 in
@@ -19,8 +20,8 @@ assert sslSupportEnabled -> sslLibs ? ${sslSupport};
 
 buildPackage {
   pname = "s6-networking";
-  version = "2.5.1.0";
-  sha256 = "0hgzj68bk17r1gr32ld1dm5s1x1a5x8ac03klykhfbasx8gwa1r5";
+  version = "2.3.1.2";
+  sha256 = "1029bgwfmv903y5ji93j75m7p2jgchdxya1khxzb42q2z7yxnlyr";
 
   description = "A suite of small networking utilities for Unix systems";
 
@@ -57,7 +58,8 @@ buildPackage {
   postInstall = ''
     # remove all s6 executables from build directory
     rm $(find -name "s6-*" -type f -mindepth 1 -maxdepth 1 -executable)
-    rm libs6net.* libstls.* libs6tls.* libsbearssl.*
+    rm minidentd
+    rm libs6net.* libstls.*
 
     mv doc $doc/share/doc/s6-networking/html
   '';

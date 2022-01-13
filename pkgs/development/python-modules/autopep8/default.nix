@@ -1,14 +1,14 @@
-{ lib, fetchPypi, buildPythonPackage, pycodestyle, glibcLocales
+{ stdenv, fetchPypi, buildPythonPackage, pycodestyle, glibcLocales
 , toml
 }:
 
 buildPythonPackage rec {
   pname = "autopep8";
-  version = "1.6.0";
+  version = "1.5.4";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "44f0932855039d2c15c4510d6df665e4730f2b8582704fa48f9c55bd3e17d979";
+    sha256 = "d21d3901cb0da6ebd1e83fc9b0dfbde8b46afc2ede4fe32fbda0c7c6118ca094";
   };
 
   propagatedBuildInputs = [ pycodestyle toml ];
@@ -21,7 +21,7 @@ buildPythonPackage rec {
 
   LC_ALL = "en_US.UTF-8";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool that automatically formats Python code to conform to the PEP 8 style guide";
     homepage = "https://pypi.python.org/pypi/autopep8/";
     license = licenses.mit;

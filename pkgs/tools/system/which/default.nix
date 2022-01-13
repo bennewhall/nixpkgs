@@ -1,15 +1,14 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "which";
-  version = "2.21";
+  name = "which-2.21";
 
   src = fetchurl {
-    url = "mirror://gnu/which/which-${version}.tar.gz";
+    url = "mirror://gnu/which/${name}.tar.gz";
     sha256 = "1bgafvy3ypbhhfznwjv1lxmd6mci3x1byilnnkc7gcr486wlb8pl";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.gnu.org/software/which/";
     description = "Shows the full path of (shell) commands";
     platforms = platforms.all;

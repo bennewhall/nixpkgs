@@ -3,7 +3,7 @@
 , fetchFromGitHub
 , autoreconfHook
 , patchelf
-, pkg-config
+, pkgconfig
 , libusb1
 }:
 
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ]; # get rid of propagating systemd closure
   outputBin = "dev";
 
-  nativeBuildInputs = [ autoreconfHook patchelf pkg-config ];
+  nativeBuildInputs = [ autoreconfHook patchelf pkgconfig ];
 
   buildInputs = [ libusb1 ];
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     sha256 = "1nybccgjs14b3phhaycq2jx1gym4nf6sghvnv9qdfmlqxacx0jz5";
   };
 
-  patches = lib.optional stdenv.hostPlatform.isMusl ./fix-headers.patch;
+  patches = stdenv.lib.optional stdenv.hostPlatform.isMusl ./fix-headers.patch;
 
   # without this, libusb-compat is unable to find libusb1
   postFixup = ''
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
       patchelf --set-rpath ${lib.makeLibraryPath buildInputs} {} \;
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://libusb.info/";
     repositories.git = "https://github.com/libusb/libusb-compat-0.1";
     description = "cross-platform user-mode USB device library";

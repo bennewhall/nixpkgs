@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , makeWrapper
 , coreutils
@@ -11,13 +11,13 @@
 
 stdenv.mkDerivation rec {
   pname = "git-quick-stats";
-  version = "2.3.0";
+  version = "2.1.4";
 
   src = fetchFromGitHub {
     repo = "git-quick-stats";
     owner = "arzzen";
     rev = version;
-    sha256 = "sha256-uioL4ysioxo+YMCa3VPoUMpY1cVZJ0Jljt8d9jWRT9k=";
+    sha256 = "0fg0fijghcz7hvbc9y8dfksz0qmsz700kc2mfb03y90kja99v68y";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
 
   postInstall =
     let
-      path = lib.makeBinPath [
+      path = stdenv.lib.makeBinPath [
         coreutils
         gawk
         git
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
       wrapProgram $out/bin/git-quick-stats --suffix PATH : ${path}
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/arzzen/git-quick-stats";
     description = "A simple and efficient way to access various statistics in git repository";
     platforms = platforms.all;

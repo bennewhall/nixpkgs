@@ -1,11 +1,9 @@
-args@{ pkgs, nextcloudVersion ? 22, ... }:
-
-(import ../make-test-python.nix ({ pkgs, ...}: let
+import ../make-test-python.nix ({ pkgs, ...}: let
   adminpass = "hunter2";
   adminuser = "root";
 in {
   name = "nextcloud-with-mysql-and-memcached";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ eqyiel ];
   };
 
@@ -20,7 +18,6 @@ in {
         enable = true;
         hostName = "nextcloud";
         https = true;
-        package = pkgs.${"nextcloud" + (toString nextcloudVersion)};
         caching = {
           apcu = true;
           redis = false;
@@ -32,9 +29,9 @@ in {
           dbuser = "nextcloud";
           dbhost = "127.0.0.1";
           dbport = 3306;
-          dbpassFile = "${pkgs.writeText "dbpass" "hunter2" }";
+          dbpass = "hunter2";
           # Don't inherit adminuser since "root" is supposed to be the default
-          adminpassFile = "${pkgs.writeText "adminpass" adminpass}"; # Don't try this at home!
+          inherit adminpass;
         };
       };
 
@@ -42,13 +39,6 @@ in {
         enable = true;
         bind = "127.0.0.1";
         package = pkgs.mariadb;
-
-        # FIXME(@Ma27) Nextcloud isn't compatible with mariadb 10.6,
-        # this is a workaround.
-        # See https://help.nextcloud.com/t/update-to-next-cloud-21-0-2-has-get-an-error/117028/22
-        extraOptions = ''
-          innodb_read_only_compressed=0
-        '';
         initialScript = pkgs.writeText "mysql-init" ''
           CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY 'hunter2';
           CREATE DATABASE IF NOT EXISTS nextcloud;
@@ -106,4 +96,4 @@ in {
         "${withRcloneEnv} ${diffSharedFile}"
     )
   '';
-})) args
+})

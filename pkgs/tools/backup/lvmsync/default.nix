@@ -1,4 +1,4 @@
-{ lib, stdenv, bundlerEnv, ruby, bundlerUpdateScript, makeWrapper }:
+{ stdenv, bundlerEnv, ruby, bundlerUpdateScript, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "lvmsync";
@@ -6,7 +6,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ makeWrapper ];
 
-  dontUnpack = true;
+  phases = ["installPhase"];
 
   installPhase = let
     env = bundlerEnv {
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   passthru.updateScript = bundlerUpdateScript "lvmsync";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Optimised synchronisation of LVM snapshots over a network";
     homepage = "https://theshed.hezmatt.org/lvmsync/";
     license = licenses.gpl3;

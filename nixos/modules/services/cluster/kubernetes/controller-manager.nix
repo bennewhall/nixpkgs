@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   top = config.services.kubernetes;
-  otop = options.services.kubernetes;
   cfg = top.controllerManager;
 in
 {
@@ -31,7 +30,6 @@ in
     clusterCidr = mkOption {
       description = "Kubernetes CIDR Range for Pods in cluster.";
       default = top.clusterCidr;
-      defaultText = literalExpression "config.${otop.clusterCidr}";
       type = str;
     };
 
@@ -40,13 +38,12 @@ in
     extraOpts = mkOption {
       description = "Kubernetes controller manager extra command line options.";
       default = "";
-      type = separatedString " ";
+      type = str;
     };
 
     featureGates = mkOption {
       description = "List set of feature gates";
       default = top.featureGates;
-      defaultText = literalExpression "config.${otop.featureGates}";
       type = listOf str;
     };
 
@@ -70,7 +67,6 @@ in
         service account's token secret.
       '';
       default = top.caFile;
-      defaultText = literalExpression "config.${otop.caFile}";
       type = nullOr path;
     };
 
@@ -149,9 +145,6 @@ in
         WorkingDirectory = top.dataDir;
         User = "kubernetes";
         Group = "kubernetes";
-      };
-      unitConfig = {
-        StartLimitIntervalSec = 0;
       };
       path = top.path;
     };

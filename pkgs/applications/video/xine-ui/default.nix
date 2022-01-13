@@ -1,66 +1,34 @@
-{ lib
-, stdenv
-, fetchurl
-, curl
-, libjpeg
-, libpng
-, lirc
-, ncurses
-, pkg-config
-, readline
-, shared-mime-info
-, xine-lib
-, xorg
-}:
+{stdenv, fetchurl, pkgconfig, xorg, libpng, xineLib, readline, ncurses, curl
+, lirc, shared-mime-info, libjpeg }:
 
 stdenv.mkDerivation rec {
-  pname = "xine-ui";
-  version = "0.99.13";
+  name = "xine-ui-0.99.12";
 
   src = fetchurl {
-    url = "mirror://sourceforge/xine/${pname}-${version}.tar.xz";
-    sha256 = "sha256-sjgtB1xysbEAOeDpAxDMhsjZEDWMU1We2C09WEIB9cU=";
+    url = "mirror://sourceforge/xine/${name}.tar.xz";
+    sha256 = "10zmmss3hm8gjjyra20qhdc0lb1m6sym2nb2w62bmfk8isfw9gsl";
   };
 
-  nativeBuildInputs = [
-    pkg-config
-    shared-mime-info
-  ];
-  buildInputs = [
-    curl
-    libjpeg
-    libpng
-    lirc
-    ncurses
-    readline
-    xine-lib
-  ] ++ (with xorg; [
-    libXext
-    libXft
-    libXi
-    libXinerama
-    libXtst
-    libXv
-    libXxf86vm
-    xlibsWrapper
-    xorgproto
-  ]);
+  nativeBuildInputs = [ pkgconfig shared-mime-info ];
+
+  buildInputs =
+    [ xineLib libpng readline ncurses curl lirc libjpeg
+      xorg.xlibsWrapper xorg.libXext xorg.libXv xorg.libXxf86vm xorg.libXtst xorg.xorgproto
+      xorg.libXinerama xorg.libXi xorg.libXft
+    ];
+
+  patchPhase = ''sed -e '/curl\/types\.h/d' -i src/xitk/download.c'';
 
   configureFlags = [ "--with-readline=${readline.dev}" ];
 
   LIRC_CFLAGS="-I${lirc}/include";
   LIRC_LIBS="-L ${lirc}/lib -llirc_client";
+#NIX_LDFLAGS = "-lXext -lgcc_s";
 
-  postInstall = ''
-    substituteInPlace $out/share/applications/xine.desktop \
-      --replace "MimeType=;" "MimeType="
-  '';
-
-  meta = with lib; {
-    homepage = "http://xinehq.de/";
-    description = "Xlib-based frontend for Xine video player";
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ AndersonTorres ];
+  meta = with stdenv.lib; {
+    homepage = "http://www.xine-project.org/";
+    description = "Xlib-based interface to Xine, a video player";
     platforms = platforms.linux;
+    license = licenses.gpl2;
   };
 }

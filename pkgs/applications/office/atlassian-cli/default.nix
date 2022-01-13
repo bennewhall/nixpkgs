@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchzip, jre }:
+{ stdenv, fetchzip, jre }:
 
 stdenv.mkDerivation rec {
   pname = "atlassian-cli";
-  version = "9.6.0";
+  version = "9.4.0";
 
   src = fetchzip {
     url  = "https://bobswift.atlassian.net/wiki/download/attachments/16285777/${pname}-${version}-distribution.zip";
-    sha256  = "sha256-55ydhprVC9NdDMUrKbpSAEQBb9zRYgwOc7k8aP4R89A=";
+    sha256  = "091dhjkx7fdn23cj7c4071swncsbmknpvidmmjzhc0355l3p4k2g";
   };
 
   tools = [
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An integrated family of CLI’s for various Atlassian applications";
     homepage = "https://bobswift.atlassian.net/wiki/spaces/ACLI/overview";
     license = licenses.unfreeRedistributable;

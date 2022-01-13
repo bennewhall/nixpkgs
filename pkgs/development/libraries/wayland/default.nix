@@ -2,16 +2,15 @@
 , stdenv
 , fetchurl
 , fetchpatch
-, substituteAll
 , meson
-, pkg-config
+, pkgconfig
+, substituteAll
 , ninja
-, wayland-scanner
-, expat
-, libxml2
-, withLibraries ? stdenv.isLinux
 , libffi
-, withDocumentation ? withLibraries && stdenv.hostPlatform == stdenv.buildPlatform
+, libxml2
+, wayland
+, expat ? null # Build wayland-scanner (currently cannot be disabled as of 1.7.0)
+, withDocumentation ? stdenv.hostPlatform == stdenv.buildPlatform
 , graphviz-nox
 , doxygen
 , libxslt
@@ -22,26 +21,25 @@
 , docbook_xml_dtd_42
 }:
 
-# Documentation is only built when building libraries.
-assert withDocumentation -> withLibraries;
-
+# Require the optional to be enabled until upstream fixes or removes the configure flag
+assert expat != null;
 let
   isCross = stdenv.buildPlatform != stdenv.hostPlatform;
 in
 stdenv.mkDerivation rec {
   pname = "wayland";
-  version = "1.19.0";
+  version = "1.18.0";
 
   src = fetchurl {
     url = "https://wayland.freedesktop.org/releases/${pname}-${version}.tar.xz";
-    sha256 = "05bd2vphyx8qwa1mhsj1zdaiv4m4v94wrlssrn0lad8d601dkk5s";
+    sha256 = "0k995rn96xkplrapz5k648j651wc43kq817xk1x8280h16gsfxa6";
   };
 
   patches = [
-    # Picked from upstream 'main' branch for Darwin support.
+    # Fix documentation to be reproducible.
     (fetchpatch {
-      url = "https://gitlab.freedesktop.org/wayland/wayland/-/commit/f452e41264387dee4fd737cbf1af58b34b53941b.patch";
-      sha256 = "00mk32a01vgn31sm3wk4p8mfwvqv3xv02rxvdj1ygnzgb1ac62r7";
+      url = "https://gitlab.freedesktop.org/wayland/wayland/-/commit/e53e0edf0f892670f3e8c5dd527b3bb22335d32d.patch";
+      sha256 = "15sbhi86m9k72lsj56p7zr20ph2b0y4svl639snsbafn2ir1zdb2";
     })
     (substituteAll {
       src = ./0001-add-placeholder-for-nm.patch;
@@ -49,28 +47,25 @@ stdenv.mkDerivation rec {
     })
   ];
 
+  outputs = [ "out" ] ++ lib.optionals withDocumentation [ "doc" "man" ];
+  separateDebugInfo = true;
+
+  mesonFlags = [ "-Ddocumentation=${lib.boolToString withDocumentation}" ];
+
   postPatch = lib.optionalString withDocumentation ''
     patchShebangs doc/doxygen/gen-doxygen.py
   '';
 
-  outputs = [ "out" "bin" "dev" ] ++ lib.optionals withDocumentation [ "doc" "man" ];
-  separateDebugInfo = true;
-
-  mesonFlags = [
-    "-Dlibraries=${lib.boolToString withLibraries}"
-    "-Ddocumentation=${lib.boolToString withDocumentation}"
-  ];
-
   depsBuildBuild = [
-    pkg-config
+    pkgconfig
   ];
 
   nativeBuildInputs = [
     meson
-    pkg-config
+    pkgconfig
     ninja
   ] ++ lib.optionals isCross [
-    wayland-scanner
+    wayland # For wayland-scanner during the build
   ] ++ lib.optionals withDocumentation [
     (graphviz-nox.override { pango = null; }) # To avoid an infinite recursion
     doxygen
@@ -78,33 +73,19 @@ stdenv.mkDerivation rec {
     xmlto
     python3
     docbook_xml_dtd_45
-    docbook_xsl
   ];
 
   buildInputs = [
+    libffi
     expat
     libxml2
-  ] ++ lib.optionals withLibraries [
-    libffi
   ] ++ lib.optionals withDocumentation [
     docbook_xsl
     docbook_xml_dtd_45
     docbook_xml_dtd_42
   ];
 
-  postFixup = ''
-    # The pkg-config file is required for cross-compilation:
-    mkdir -p $bin/lib/pkgconfig/
-    cat <<EOF > $bin/lib/pkgconfig/wayland-scanner.pc
-    wayland_scanner=$bin/bin/wayland-scanner
-
-    Name: Wayland Scanner
-    Description: Wayland scanner
-    Version: ${version}
-    EOF
-  '';
-
-  meta = with lib; {
+  meta = {
     description = "Core Wayland window system code and protocol";
     longDescription = ''
       Wayland is a project to define a protocol for a compositor to talk to its
@@ -115,11 +96,9 @@ stdenv.mkDerivation rec {
       rendering).
     '';
     homepage = "https://wayland.freedesktop.org/";
-    license = licenses.mit; # Expat version
-    platforms = if withLibraries then platforms.linux else platforms.unix;
-    maintainers = with maintainers; [ primeos codyopel qyliss ];
-    # big sur doesn't support gcc stdenv and wayland doesn't build with clang
-    broken = stdenv.isDarwin;
+    license = lib.licenses.mit; # Expat version
+    platforms = lib.platforms.linux;
+    maintainers = with lib.maintainers; [ primeos codyopel ];
   };
 
   passthru.version = version;

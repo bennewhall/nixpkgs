@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "mxml";
@@ -13,11 +13,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A small XML library";
     homepage = "https://www.msweet.org/mxml/";
     license = licenses.asl20;
-    platforms = platforms.all;
+    platforms = platforms.linux;
     maintainers = [ maintainers.goibhniu ];
   };
 }

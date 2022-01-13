@@ -1,10 +1,10 @@
-{ lib, stdenv, linuxPackages }:
-with lib;
+{ stdenv, linuxPackages }:
+with stdenv.lib;
 stdenv.mkDerivation {
   name = "rtl8723bs-firmware-${linuxPackages.rtl8723bs.version}";
   inherit (linuxPackages.rtl8723bs) src;
 
-  dontBuild = true;
+  phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''
     mkdir -p                "$out/lib/firmware/rtlwifi"
@@ -12,7 +12,7 @@ stdenv.mkDerivation {
     cp rtl8723bs_wowlan.bin "$out/lib/firmware/rtlwifi"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Firmware for RealTek 8723bs";
     homepage = "https://github.com/hadess/rtl8723bs";
     license = licenses.unfreeRedistributableFirmware;

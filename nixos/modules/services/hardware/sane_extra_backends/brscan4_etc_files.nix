@@ -19,16 +19,18 @@ nix-shell -E 'with import <nixpkgs> { }; brscan4-etc-files.override{netDevices=[
 
 */
 
+with lib;
+
 let
 
   addNetDev = nd: ''
     brsaneconfig4 -a \
     name="${nd.name}" \
     model="${nd.model}" \
-    ${if (lib.hasAttr "nodename" nd && nd.nodename != null) then
+    ${if (hasAttr "nodename" nd && nd.nodename != null) then
       ''nodename="${nd.nodename}"'' else
       ''ip="${nd.ip}"''}'';
-  addAllNetDev = xs: lib.concatStringsSep "\n" (map addNetDev xs);
+  addAllNetDev = xs: concatStringsSep "\n" (map addNetDev xs);
 in
 
 stdenv.mkDerivation {
@@ -54,15 +56,16 @@ stdenv.mkDerivation {
     ${addAllNetDev netDevices}
   '';
 
-  dontInstall = true;
+  installPhase = ":";
+
   dontStrip = true;
   dontPatchELF = true;
 
-  meta = with lib; {
+  meta = {
     description = "Brother brscan4 sane backend driver etc files";
     homepage = "http://www.brother.com";
-    platforms = platforms.linux;
-    license = licenses.unfree;
-    maintainers = with maintainers; [ jraygauthier ];
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.unfree;
+    maintainers = with stdenv.lib.maintainers; [ jraygauthier ];
   };
 }

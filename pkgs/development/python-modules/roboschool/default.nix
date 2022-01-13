@@ -9,7 +9,7 @@
 , assimp
 , gym
 , bullet-roboschool
-, pkg-config
+, pkgconfig
 , which
 }:
 
@@ -32,7 +32,7 @@ buildPythonPackage rec {
   ];
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     qtbase # needs the `moc` tool
     which
   ];
@@ -43,8 +43,6 @@ buildPythonPackage rec {
     qtbase
     boost
   ];
-
-  dontWrapQtApps = true;
 
   NIX_CFLAGS_COMPILE="-I ${python}/include/${python.libPrefix}";
 

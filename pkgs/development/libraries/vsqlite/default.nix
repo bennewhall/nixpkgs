@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, boost, sqlite }:
+{ stdenv, fetchurl, boost, sqlite }:
 
 stdenv.mkDerivation rec {
   pname = "vsqlite";
@@ -11,14 +11,14 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ boost sqlite ];
 
-  prePatch = lib.optionalString stdenv.isDarwin ''
+  prePatch = stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace Makefile.in \
         --replace '-Wl,--as-needed' "" \
         --replace '-Wl,-soname -Wl,libvsqlitepp.so.3' \
                   "-Wl,-install_name,$out/lib/libvsqlitepp.3.dylib"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://vsqlite.virtuosic-bytes.com/";
     description = "C++ wrapper library for sqlite";
     license = licenses.bsd3;

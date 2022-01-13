@@ -1,34 +1,42 @@
-import ./make-test-python.nix ({ pkgs, lib, ... }: let
+# Test for NixOS' container support.
 
-  customPkgs = pkgs.appendOverlays [ (self: super: {
-    hello = super.hello.overrideAttrs (old: {
-       name = "custom-hello";
+import ./make-test-python.nix ({ pkgs, lib, ...} : let
+
+  customPkgs = pkgs // {
+    hello = pkgs.hello.overrideAttrs(old: {
+      name = "custom-hello";
     });
-  }) ];
+  };
 
 in {
-  name = "containers-custom-pkgs";
-  meta = {
-    maintainers = with lib.maintainers; [ adisbladis earvstedt ];
+  name = "containers-hosts";
+  meta = with lib.maintainers; {
+    maintainers = [ adisbladis ];
   };
 
-  machine = { config, ... }: {
-    assertions = let
-      helloName = (builtins.head config.containers.test.config.system.extraDependencies).name;
-    in [ {
-      assertion = helloName == "custom-hello";
-      message = "Unexpected value: ${helloName}";
-    } ];
+  machine =
+    { ... }:
+    {
+      virtualisation.memorySize = 256;
+      virtualisation.vlans = [];
 
-    containers.test = {
-      autoStart = true;
-      config = { pkgs, config, ... }: {
-        nixpkgs.pkgs = customPkgs;
-        system.extraDependencies = [ pkgs.hello ];
+      containers.simple = {
+        autoStart = true;
+        pkgs = customPkgs;
+        config = {pkgs, config, ... }: {
+          environment.systemPackages = [
+            pkgs.hello
+          ];
+        };
       };
-    };
-  };
 
-  # This test only consists of evaluating the test machine
-  testScript = "pass";
+    };
+
+  testScript = ''
+    start_all()
+    machine.wait_for_unit("default.target")
+    machine.succeed(
+        "test $(nixos-container run simple -- readlink -f /run/current-system/sw/bin/hello) = ${customPkgs.hello}/bin/hello"
+    )
+  '';
 })

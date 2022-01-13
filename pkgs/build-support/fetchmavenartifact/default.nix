@@ -1,12 +1,12 @@
 # Adaptation of the MIT-licensed work on `sbt2nix` done by Charles O'Farrell
 
-{ lib, fetchurl, stdenv }:
+{ fetchurl, stdenv }:
 let
   defaultRepos = [
-    "https://repo1.maven.org/maven2"
-    "https://oss.sonatype.org/content/repositories/releases"
-    "https://oss.sonatype.org/content/repositories/public"
-    "https://repo.typesafe.com/typesafe/releases"
+    "http://repo1.maven.org/maven2"
+    "http://oss.sonatype.org/content/repositories/releases"
+    "http://oss.sonatype.org/content/repositories/public"
+    "http://repo.typesafe.com/typesafe/releases"
   ];
 in
 
@@ -36,20 +36,21 @@ assert (url == "") || (urls == []);
 # if repos is empty, then url or urls must be specified.
 assert (repos != []) || (url != "") || (urls != []);
 
+
 let
   name_ =
-    lib.concatStrings [
-      (lib.replaceChars ["."] ["_"] groupId) "_"
-      (lib.replaceChars ["."] ["_"] artifactId) "-"
+    with stdenv.lib; concatStrings [
+      (replaceChars ["."] ["_"] groupId) "_"
+      (replaceChars ["."] ["_"] artifactId) "-"
       version
     ];
   mkJarUrl = repoUrl:
-    lib.concatStringsSep "/" [
-      (lib.removeSuffix "/" repoUrl)
-      (lib.replaceChars ["."] ["/"] groupId)
+    with stdenv.lib; concatStringsSep "/" [
+      (removeSuffix "/" repoUrl)
+      (replaceChars ["."] ["/"] groupId)
       artifactId
       version
-      "${artifactId}-${version}${lib.optionalString (!isNull classifier) "-${classifier}"}.jar"
+      "${artifactId}-${version}-${optionalString (!isNull classifier) "-${classifier}"}.jar"
     ];
   urls_ =
     if url != "" then [url]

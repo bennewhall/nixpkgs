@@ -1,4 +1,4 @@
-{ lib, fetchurl, perlPackages }:
+{ stdenv, fetchurl, perlPackages }:
 
 perlPackages.buildPerlPackage rec {
   pname = "pflogsumm";
@@ -27,8 +27,8 @@ perlPackages.buildPerlPackage rec {
 
   meta = {
     homepage = "http://jimsun.linxnet.com/postfix_contrib.html";
-    maintainers = with lib.maintainers; [ schneefux ];
+    maintainers = with stdenv.lib.maintainers; [ schneefux ];
     description = "Postfix activity overview";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

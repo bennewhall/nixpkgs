@@ -1,99 +1,58 @@
-{ pname
-, version
-, patches
-, dart
-, src
-}:
+{ channel, pname, version, sha256Hash, patches, dart
+, filename ? "flutter_linux_${version}-${channel}.tar.xz"}:
 
-{ bash
-, buildFHSUserEnv
-, cacert
-, git
-, runCommand
-, stdenv
-, lib
-, alsa-lib
-, dbus
-, expat
-, libpulseaudio
-, libuuid
-, libX11
-, libxcb
-, libXcomposite
-, libXcursor
-, libXdamage
-, libXfixes
-, libXrender
-, libXtst
-, libXi
-, libXext
-, libGL
-, nspr
-, nss
-, systemd
-, which
-}:
+{ bash, buildFHSUserEnv, cacert, coreutils, git, makeWrapper, runCommand, stdenv
+, fetchurl, alsaLib, dbus, expat, libpulseaudio, libuuid, libX11, libxcb
+, libXcomposite, libXcursor, libXdamage, libXfixes, libGL, nspr, nss, systemd }:
+
 let
-  drvName = "flutter-${version}";
+  drvName = "flutter-${channel}-${version}";
   flutter = stdenv.mkDerivation {
     name = "${drvName}-unwrapped";
 
-    buildInputs = [ git ];
+    src = fetchurl {
+      url =
+        "https://storage.googleapis.com/flutter_infra/releases/${channel}/linux/${filename}";
+      sha256 = sha256Hash;
+    };
 
-    inherit src patches version;
+    buildInputs = [ makeWrapper git ];
+
+    inherit patches;
 
     postPatch = ''
       patchShebangs --build ./bin/
+      find ./bin/ -executable -type f -exec patchelf --set-interpreter $(cat $NIX_CC/nix-support/dynamic-linker) {} \;
     '';
 
     buildPhase = ''
-      export FLUTTER_ROOT="$(pwd)"
-      export FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
-      export SCRIPT_PATH="$FLUTTER_TOOLS_DIR/bin/flutter_tools.dart"
+      FLUTTER_ROOT=$(pwd)
+      FLUTTER_TOOLS_DIR="$FLUTTER_ROOT/packages/flutter_tools"
+      SNAPSHOT_PATH="$FLUTTER_ROOT/bin/cache/flutter_tools.snapshot"
+      STAMP_PATH="$FLUTTER_ROOT/bin/cache/flutter_tools.stamp"
+      SCRIPT_PATH="$FLUTTER_TOOLS_DIR/bin/flutter_tools.dart"
+      DART_SDK_PATH="$FLUTTER_ROOT/bin/cache/dart-sdk"
 
-      export SNAPSHOT_PATH="$FLUTTER_ROOT/bin/cache/flutter_tools.snapshot"
-      export STAMP_PATH="$FLUTTER_ROOT/bin/cache/flutter_tools.stamp"
-
-      export DART_SDK_PATH="${dart}"
+      DART="$DART_SDK_PATH/bin/dart"
+      PUB="$DART_SDK_PATH/bin/pub"
 
       HOME=../.. # required for pub upgrade --offline, ~/.pub-cache
                  # path is relative otherwise it's replaced by /build/flutter
 
-      pushd "$FLUTTER_TOOLS_DIR"
-      ${dart}/bin/pub get --offline
-      popd
+      (cd "$FLUTTER_TOOLS_DIR" && "$PUB" upgrade --offline)
 
       local revision="$(cd "$FLUTTER_ROOT"; git rev-parse HEAD)"
-      ${dart}/bin/dart --snapshot="$SNAPSHOT_PATH" --packages="$FLUTTER_TOOLS_DIR/.packages" "$SCRIPT_PATH"
+      "$DART" --snapshot="$SNAPSHOT_PATH" --packages="$FLUTTER_TOOLS_DIR/.packages" "$SCRIPT_PATH"
       echo "$revision" > "$STAMP_PATH"
       echo -n "${version}" > version
 
-      rm -r bin/cache/{artifacts,dart-sdk,downloads}
-      rm bin/cache/*.stamp
+      rm -rf bin/cache/{artifacts,downloads}
+      rm -f  bin/cache/*.stamp
     '';
 
     installPhase = ''
-      runHook preInstall
-
       mkdir -p $out
       cp -r . $out
-      mkdir -p $out/bin/cache/
-      ln -sf ${dart} $out/bin/cache/dart-sdk
-
-      runHook postInstall
-    '';
-
-    doInstallCheck = true;
-    installCheckInputs = [ which ];
-    installCheckPhase = ''
-      runHook preInstallCheck
-
-      export HOME="$(mktemp -d)"
-      $out/bin/flutter config --android-studio-dir $HOME
-      $out/bin/flutter config --android-sdk $HOME
-      $out/bin/flutter --version | fgrep -q '${version}'
-
-      runHook postInstallCheck
     '';
   };
 
@@ -123,7 +82,7 @@ let
         libGLU
 
         # for android emulator
-        alsa-lib
+        alsaLib
         dbus
         expat
         libpulseaudio
@@ -133,11 +92,7 @@ let
         libXcomposite
         libXcursor
         libXdamage
-        libXext
         libXfixes
-        libXi
-        libXrender
-        libXtst
         libGL
         nspr
         nss
@@ -145,9 +100,7 @@ let
       ];
   };
 
-in
-runCommand drvName
-{
+in runCommand drvName {
   startScript = ''
     #!${bash}/bin/bash
     export PUB_CACHE=''${PUB_CACHE:-"$HOME/.pub-cache"}
@@ -156,11 +109,8 @@ runCommand drvName
   '';
   preferLocalBuild = true;
   allowSubstitutes = false;
-  passthru = {
-    unwrapped = flutter;
-    inherit dart;
-  };
-  meta = with lib; {
+  passthru = { unwrapped = flutter; };
+  meta = with stdenv.lib; {
     description = "Flutter is Google's SDK for building mobile, web and desktop with Dart";
     longDescription = ''
       Flutter is Google’s UI toolkit for building beautiful,
@@ -176,4 +126,8 @@ runCommand drvName
 
   echo -n "$startScript" > $out/bin/${pname}
   chmod +x $out/bin/${pname}
+
+  mkdir -p $out/bin/cache/dart-sdk/
+  cp -r ${dart}/* $out/bin/cache/dart-sdk/
+  ln $out/bin/cache/dart-sdk/bin/dart $out/bin/dart
 ''

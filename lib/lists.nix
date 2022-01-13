@@ -241,7 +241,7 @@ rec {
 
   /* Return a singleton list or an empty list, depending on a boolean
      value.  Useful when building lists with optional elements
-     (e.g. `++ optional (system == "i686-linux") firefox').
+     (e.g. `++ optional (system == "i686-linux") flashplayer').
 
      Type: optional :: bool -> a -> [a]
 
@@ -629,9 +629,7 @@ rec {
       crossLists (x:y: "${toString x}${toString y}") [[1 2] [3 4]]
       => [ "13" "14" "23" "24" ]
   */
-  crossLists = builtins.trace
-    "lib.crossLists is deprecated, use lib.cartesianProductOfSets instead"
-    (f: foldl (fs: args: concatMap (f: map f args) fs) [f]);
+  crossLists = f: foldl (fs: args: concatMap (f: map f args) fs) [f];
 
 
   /* Remove duplicate elements from the list. O(n^2) complexity.
@@ -642,7 +640,7 @@ rec {
        unique [ 3 2 3 4 ]
        => [ 3 2 4 ]
    */
-  unique = foldl' (acc: e: if elem e acc then acc else acc ++ [ e ]) [];
+ unique = foldl' (acc: e: if elem e acc then acc else acc ++ [ e ]) [];
 
   /* Intersects list 'e' and another list. O(nm) complexity.
 
@@ -663,6 +661,9 @@ rec {
   /* Test if two lists have no common element.
      It should be slightly more efficient than (intersectLists a b == [])
   */
-  mutuallyExclusive = a: b: length a == 0 || !(any (x: elem x a) b);
+  mutuallyExclusive = a: b:
+    (builtins.length a) == 0 ||
+    (!(builtins.elem (builtins.head a) b) &&
+     mutuallyExclusive (builtins.tail a) b);
 
 }

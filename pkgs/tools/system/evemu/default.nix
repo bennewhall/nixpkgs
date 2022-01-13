@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, autoreconfHook, pkg-config, python3Packages
+{ stdenv, fetchgit, autoreconfHook, pkgconfig, pythonPackages
 , libevdev
 }:
 
@@ -14,13 +14,11 @@ stdenv.mkDerivation rec {
     sha256 = "1m38fxwy2s82vb2qm9aqxinws12akmqqq7q66is931lc3awqkbah";
   };
 
-  nativeBuildInputs = [ pkg-config autoreconfHook python3Packages.python ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
-  buildInputs = [ python3Packages.evdev libevdev ];
+  buildInputs = [ pythonPackages.python pythonPackages.evdev libevdev ];
 
-  strictDeps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Records and replays device descriptions and events to emulate input devices through the kernel's input system";
     homepage = "https://www.freedesktop.org/wiki/Evemu/";
     repositories.git = "git://git.freedesktop.org/git/evemu";

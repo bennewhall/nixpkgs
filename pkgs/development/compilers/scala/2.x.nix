@@ -1,5 +1,5 @@
-{ stdenv, lib, fetchurl, makeWrapper, jre, gnugrep, coreutils, writeScript
-, common-updater-scripts, git, gnused, nix, nixfmt, majorVersion }:
+{ stdenv, lib, fetchurl, makeWrapper, jre, gnugrep, coreutils, nixosTests
+, writeScript, common-updater-scripts, git, gnused, nix, nixfmt, majorVersion }:
 
 with lib;
 
@@ -10,24 +10,28 @@ let
     "2.10" = {
       version = "2.10.7";
       sha256 = "koMRmRb2u3cU4HaihAzPItWIGbNVIo7RWRrm92kp8RE=";
+      tests = [ nixosTests.scala.scala_2_10 ];
       pname = "scala_2_10";
     };
 
     "2.11" = {
       version = "2.11.12";
       sha256 = "sR19M2mcpPYLw7K2hY/ZU+PeK4UiyUP0zaS2dDFhlqg=";
+      tests = [ nixosTests.scala.scala_2_11 ];
       pname = "scala_2_11";
     };
 
     "2.12" = {
-      version = "2.12.15";
-      sha256 = "F5RePKlHjQaoQ2BWqsa5r99g3q/cPjgsbAi2A5IberY=";
+      version = "2.12.12";
+      sha256 = "NSDNHzye//YrrudfMuUtHl3BIL4szzQGSeRw5I9Sfis=";
+      tests = [ nixosTests.scala.scala_2_12 ];
       pname = "scala_2_12";
     };
 
     "2.13" = {
-      version = "2.13.7";
-      sha256 = "FO8WAIeGvHs3E1soS+YkUHcB9lE5bRb9ikijWkvOqU4=";
+      version = "2.13.4";
+      sha256 = "1alcnzmxga00nsvgy8yky91zw5b4q0xg2697vrrdgjlglpxiqwdw";
+      tests = [ nixosTests.scala.scala_2_13 ];
       pname = "scala_2_13";
     };
   };
@@ -46,40 +50,32 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ jre ];
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   installPhase = ''
-    runHook preInstall
-    mkdir -p $out
-    rm bin/*.bat
-    mv * $out
-    # put docs in correct subdirectory
-    mkdir -p $out/share/doc
-    mv $out/doc $out/share/doc/${name}
-    mv $out/man $out/share/man
+      mkdir -p $out
+      rm bin/*.bat
+      mv * $out
+      # put docs in correct subdirectory
+      mkdir -p $out/share/doc
+      mv $out/doc $out/share/doc/${name}
+      mv $out/man $out/share/man
     for p in $(ls $out/bin/) ; do
         wrapProgram $out/bin/$p \
           --prefix PATH ":" ${coreutils}/bin \
           --prefix PATH ":" ${gnugrep}/bin \
           --prefix PATH ":" ${jre}/bin \
           --set JAVA_HOME ${jre}
-    done
-    runHook postInstall
-  '';
-
-  doInstallCheck = true;
-  installCheckPhase = ''
-    $out/bin/scalac -version 2>&1 | grep '^Scala compiler version ${version}'
-
-    echo 'println("foo"*3)' | $out/bin/scala 2>/dev/null | grep "foofoofoo"
+      done
   '';
 
   passthru = {
+    inherit tests;
     updateScript = writeScript "update.sh" ''
       #!${stdenv.shell}
       set -o errexit
       PATH=${
-        lib.makeBinPath [
+        stdenv.lib.makeBinPath [
           common-updater-scripts
           coreutils
           git

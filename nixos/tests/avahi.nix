@@ -8,7 +8,7 @@
 # Test whether `avahi-daemon' and `libnss-mdns' work as expected.
 import ./make-test-python.nix {
   name = "avahi";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ eelco ];
   };
 

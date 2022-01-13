@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchFromGitHub, ncurses, uthash, pkg-config }:
+{ stdenv, fetchFromGitHub, ncurses, uthash, pkg-config }:
 
-stdenv.mkDerivation rec {
-  pname = "logtop";
-  version = "0.7";
+stdenv.mkDerivation {
+  name = "logtop-0.7";
 
   src = fetchFromGitHub {
-    rev = "logtop-${version}";
+    rev = "a0935ab2e7056feb3e8a90f5129990c9b335a587";
     owner = "JulienPalard";
     repo  ="logtop";
     sha256 = "1f8vk9gybldxvc0kwz38jxmwvzwangsvlfslpsx8zf04nvbkqi12";
@@ -14,14 +13,13 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkg-config ];
   buildInputs = [ ncurses uthash ];
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
   installFlags = [ "DESTDIR=$(out)" ];
 
   postConfigure = ''
     substituteInPlace Makefile --replace /usr ""
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Displays a real-time count of strings received from stdin";
     longDescription = ''
       logtop displays a real-time count of strings received from stdin.

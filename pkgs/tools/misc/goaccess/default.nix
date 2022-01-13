@@ -1,51 +1,38 @@
-{ lib
-, stdenv
-, autoreconfHook
-, fetchFromGitHub
-, gettext
-, libmaxminddb
-, ncurses
-, openssl
-, withGeolocation ? true
-}:
+{ stdenv, fetchurl, pkgconfig, ncurses, glib, libmaxminddb, fetchpatch }:
 
 stdenv.mkDerivation rec {
-  version = "1.5.4";
+  version = "1.4";
   pname = "goaccess";
 
-  src = fetchFromGitHub {
-    owner = "allinurl";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-KDA5R3up37DLS9YIur4IOacwOq0zed5tj58jEmE0vpE=";
+  src = fetchurl {
+    url = "https://tar.goaccess.io/goaccess-${version}.tar.gz";
+    sha256 = "1gkpjg39f3afdwm9128jqjsfap07p8s027czzlnxfmi5hpzvkyz8";
   };
 
-  nativeBuildInputs = [
-    autoreconfHook
-  ];
-
-  buildInputs = [
-    ncurses
-    openssl
-  ] ++ lib.optionals withGeolocation [
-    libmaxminddb
-  ] ++ lib.optionals stdenv.isDarwin [
-    gettext
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/allinurl/goaccess/commit/514618cdd69453497fbf67913ccb37a0a0b07391.patch";
+      sha256 = "11lp7mabfl6ibgzsd9nw10k2xvcm0hrimrwidl06r8dqn2jzjxf6";
+    })
   ];
 
   configureFlags = [
-    "--enable-utf8"
-    "--with-openssl"
-  ] ++ lib.optionals withGeolocation [
     "--enable-geoip=mmdb"
+    "--enable-utf8"
   ];
 
-  meta = with lib; {
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [
+    libmaxminddb
+    ncurses
+    glib
+  ];
+
+  meta = {
     description = "Real-time web log analyzer and interactive viewer that runs in a terminal in *nix systems";
-    homepage = "https://goaccess.io";
-    changelog = "https://github.com/allinurl/goaccess/raw/v${version}/ChangeLog";
-    license = licenses.mit;
-    maintainers = with maintainers; [ ederoyd46 ];
-    platforms = platforms.linux ++ platforms.darwin;
+    homepage    = "https://goaccess.io";
+    license     = stdenv.lib.licenses.mit;
+    platforms   = stdenv.lib.platforms.linux ++ stdenv.lib.platforms.darwin;
+    maintainers = with stdenv.lib.maintainers; [ ederoyd46 ];
   };
 }

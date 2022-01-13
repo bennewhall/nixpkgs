@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, ocamlPackages }:
+{ stdenv, fetchzip, ocamlPackages }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation rec
+{
   pname = "ocsigen-i18n";
-  version = "3.7.0";
+  version = "3.5.0";
 
   buildInputs = with ocamlPackages; [ ocaml findlib ppx_tools ];
 
@@ -13,18 +14,16 @@ stdenv.mkDerivation rec {
     make bindir=$out/bin install
   '';
 
-  src = fetchFromGitHub {
-    owner = "besport";
-    repo = "ocsigen-i18n";
-    rev = version;
-    sha256 = "sha256-PmdDyn+MUcNFrZpP/KLGQzdXUFRr+dYRAZjTZxHSeaw=";
+  src = fetchzip {
+    url = "https://github.com/besport/${pname}/archive/${version}.tar.gz";
+    sha256 = "1qsgwfl64b53w235wm7nnchqinzgsvd2gb52xm0kra2wlwp69rfq";
   };
 
   meta = {
     homepage = "https://github.com/besport/ocsigen-i18n";
     description = "I18n made easy for web sites written with eliom";
-    license = lib.licenses.lgpl21;
-    maintainers = [ lib.maintainers.gal_bolle ];
+    license = stdenv.lib.licenses.lgpl21;
+    maintainers = [ stdenv.lib.maintainers.gal_bolle ];
   };
 
 }

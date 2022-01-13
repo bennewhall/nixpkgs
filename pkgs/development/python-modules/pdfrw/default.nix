@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "pdfrw";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # tests require the extra download of github.com/pmaupin/static_pdfs
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "pdfrw is a pure Python library that reads and writes PDFs.";
     homepage = "https://github.com/pmaupin/pdfrw";
     maintainers = with maintainers; [ teto ];

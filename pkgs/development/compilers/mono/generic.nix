@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, bison, pkg-config, glib, gettext, perl, libgdiplus, libX11, callPackage, ncurses, zlib, withLLVM ? false, cacert, Foundation, libobjc, python3, version, sha256, autoconf, libtool, automake, cmake, which
+{ stdenv, fetchurl, bison, pkgconfig, glib, gettext, perl, libgdiplus, libX11, callPackage, ncurses, zlib, withLLVM ? false, cacert, Foundation, libobjc, python3, version, sha256, autoconf, libtool, automake, cmake, which
 , gnumake42
 , enableParallelBuilding ? true
 , srcArchiveSuffix ? "tar.bz2"
@@ -17,18 +17,18 @@ stdenv.mkDerivation rec {
     url = "https://download.mono-project.com/sources/mono/${pname}-${version}.${srcArchiveSuffix}";
   };
 
-  nativeBuildInputs = [ automake bison cmake pkg-config which gnumake42 ];
+  nativeBuildInputs = [ gnumake42 ];
   buildInputs =
-    [ glib gettext perl libgdiplus libX11 ncurses zlib python3 autoconf libtool
+    [ bison pkgconfig glib gettext perl libgdiplus libX11 ncurses zlib python3 autoconf libtool automake cmake which
     ]
-    ++ (lib.optionals stdenv.isDarwin [ Foundation libobjc ]);
+    ++ (stdenv.lib.optionals stdenv.isDarwin [ Foundation libobjc ]);
 
   configureFlags = [
     "--x-includes=${libX11.dev}/include"
     "--x-libraries=${libX11.out}/lib"
     "--with-libgdiplus=${libgdiplus}/lib/libgdiplus.so"
   ]
-  ++ lib.optionals withLLVM [
+  ++ stdenv.lib.optionals withLLVM [
     "--enable-llvm"
     "--with-llvm=${llvm}"
   ];
@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
   preBuild = ''
     makeFlagsArray=(INSTALL=`type -tp install`)
     substituteInPlace mcs/class/corlib/System/Environment.cs --replace /usr/share "$out/share"
-  '' + lib.optionalString withLLVM ''
+  '' + stdenv.lib.optionalString withLLVM ''
     substituteInPlace mono/mini/aot-compiler.c --replace "llvm_path = g_strdup (\"\")" "llvm_path = g_strdup (\"${llvm}/bin/\")"
   '';
 
@@ -75,7 +75,7 @@ stdenv.mkDerivation rec {
 
   inherit enableParallelBuilding;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://mono-project.com/";
     description = "Cross platform, open source .NET development framework";
     platforms = with platforms; darwin ++ linux;

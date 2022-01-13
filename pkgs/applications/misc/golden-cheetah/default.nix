@@ -1,7 +1,7 @@
-{ lib, fetchFromGitHub, fetchpatch, mkDerivation
+{ stdenv, fetchFromGitHub, fetchpatch, mkDerivation
 , qtbase, qtsvg, qtserialport, qtwebengine, qtmultimedia, qttools
-, qtconnectivity, qtcharts, libusb-compat-0_1, gsl, blas
-, bison, flex, zlib, qmake, makeDesktopItem, makeWrapper
+, qtconnectivity, qtcharts, libusb-compat-0_1
+, yacc, flex, zlib, qmake, makeDesktopItem, makeWrapper
 }:
 
 let
@@ -16,20 +16,20 @@ let
   };
 in mkDerivation rec {
   pname = "golden-cheetah";
-  version = "3.6-DEV2111";
+  version = "3.5";
 
   src = fetchFromGitHub {
     owner = "GoldenCheetah";
     repo = "GoldenCheetah";
-    rev = "v${version}";
-    sha256 = "17sk89szvaq31bcv6rgfn1bbw132k7w8zlalfb3ayflavdxbk6sa";
+    rev = "V${version}";
+    sha256 = "1lyd0b2s3s9c2ppj7l4hf3s4gfzscaaam2pbiaby714bi9nr0ka7";
   };
 
   buildInputs = [
     qtbase qtsvg qtserialport qtwebengine qtmultimedia qttools zlib
-    qtconnectivity qtcharts libusb-compat-0_1 gsl blas
+    qtconnectivity qtcharts libusb-compat-0_1
   ];
-  nativeBuildInputs = [ flex makeWrapper qmake bison ];
+  nativeBuildInputs = [ flex makeWrapper qmake yacc ];
 
   patches = [
     # allow building with bison 3.7
@@ -40,9 +40,9 @@ in mkDerivation rec {
     })
   ];
 
-  NIX_LDFLAGS = "-lz -lgsl -lblas";
+  NIX_LDFLAGS = "-lz";
 
-  qtWrapperArgs = [ "--prefix" "LD_LIBRARY_PATH" ":" "${zlib.out}/lib" ];
+  qtWrapperArgs = [ "--set LD_LIBRARY_PATH ${zlib.out}/lib" ];
 
   preConfigure = ''
     cp src/gcconfig.pri.in src/gcconfig.pri
@@ -52,6 +52,10 @@ in mkDerivation rec {
     echo 'LIBUSB_INCLUDE = ${libusb-compat-0_1.dev}/include' >> src/gcconfig.pri
     echo 'LIBUSB_LIBS = -L${libusb-compat-0_1}/lib -lusb' >> src/gcconfig.pri
     sed -i -e '21,23d' qwt/qwtconfig.pri # Removed forced installation to /usr/local
+
+    # Use qtwebengine instead of qtwebkit
+    substituteInPlace src/gcconfig.pri \
+      --replace "#DEFINES += NOWEBKIT" "DEFINES += NOWEBKIT"
   '';
 
   installPhase = ''
@@ -65,10 +69,10 @@ in mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Performance software for cyclists, runners and triathletes";
     platforms = platforms.linux;
     maintainers = [ ];
-    license = licenses.gpl2Plus;
+    license = licenses.gpl3;
   };
 }

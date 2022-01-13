@@ -1,44 +1,46 @@
 {
-  lib, mkDerivation, extra-cmake-modules, fetchurl,
+  stdenv, extra-cmake-modules, fetchurl,
 
   kconfig, kdoctools, kguiaddons, ki18n, kinit, kiconthemes, kio,
-  knewstuff, kplotting, kwidgetsaddons, kxmlgui, knotifyconfig,
+  knewstuff, kplotting, kwidgetsaddons, kxmlgui, wrapQtAppsHook,
 
-
-  qtx11extras, qtwebsockets, qtkeychain, libsecret,
+  qtx11extras, qtwebsockets,
 
   eigen, zlib,
 
-  cfitsio, indi-full, xplanet, libnova, libraw, gsl, wcslib, stellarsolver
+  cfitsio, indilib, xplanet, libnova, gsl
 }:
 
-mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "kstars";
-  version = "3.5.6";
+  version = "3.4.3";
 
   src = fetchurl {
-    url = "mirror://kde/stable/kstars/kstars-${version}.tar.xz";
-    sha256 = "sha256-n+fGYLzQAGS8828hr7XE9qiTMyg99L+W7VRjd9aEkrQ=";
+    url = "https://mirrors.mit.edu/kde/stable/kstars/kstars-${version}.tar.xz";
+    sha256 = "0j5yxg6ay6sic194skz6vjzg6yvrpb3gvypvs0frjrcjbsl1j4f8";
   };
 
-  nativeBuildInputs = [ extra-cmake-modules kdoctools ];
+  patches = [
+    ./indi-fix.patch
+  ];
+
+  nativeBuildInputs = [ extra-cmake-modules kdoctools wrapQtAppsHook ];
   buildInputs = [
     kconfig kdoctools kguiaddons ki18n kinit kiconthemes kio
-    knewstuff kplotting kwidgetsaddons kxmlgui knotifyconfig
+    knewstuff kplotting kwidgetsaddons kxmlgui
 
-    qtx11extras qtwebsockets qtkeychain libsecret
+    qtx11extras qtwebsockets
 
     eigen zlib
 
-    cfitsio indi-full xplanet libnova libraw gsl wcslib stellarsolver
+    cfitsio indilib xplanet libnova gsl
   ];
 
   cmakeFlags = [
-    "-DINDI_PREFIX=${indi-full}"
-    "-DXPLANET_PREFIX=${xplanet}"
+    "-DINDI_NIX_ROOT=${indilib}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Virtual planetarium astronomy software";
     homepage = "https://kde.org/applications/education/org.kde.kstars";
     longDescription = ''
@@ -46,8 +48,8 @@ mkDerivation rec {
       The display includes up to 100 million stars, 13.000 deep-sky objects, all 8 planets, the Sun and Moon, and thousands of comets, asteroids, supernovae, and satellites.
       For students and teachers, it supports adjustable simulation speeds in order to view phenomena that happen over long timescales, the KStars Astrocalculator to predict conjunctions, and many common astronomical calculations.
     '';
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ timput hjones2199 ];
+    maintainers = with maintainers; [ timput ];
   };
 }

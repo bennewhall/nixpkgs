@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage
+{ stdenv, fetchPypi, buildPythonPackage
 , lxml, pycryptodome, colorama }:
 
 buildPythonPackage rec {
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # No tests on PyPI
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/libkeepass/libkeepass";
     description = "A library to access KeePass 1.x/KeePassX (v3) and KeePass 2.x (v4) files";
     license = licenses.gpl2Plus;

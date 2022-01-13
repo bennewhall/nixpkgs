@@ -4,16 +4,16 @@
 , pytest
 , click
 , isPy3k
-, futures ? null
+, futures
 }:
 
 buildPythonPackage rec {
   pname = "click-threading";
-  version = "0.5.0";
+  version = "0.4.4";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-rc/mI8AqWVwQfDFAcvZ6Inj+TrQLcsDRoskDzHivNDk=";
+    sha256 = "b2b0fada5bf184b56afaccc99d0d2548d8ab07feb2e95e29e490f6b99c605de7";
   };
 
   checkInputs = [ pytest ];

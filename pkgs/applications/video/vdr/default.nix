@@ -1,16 +1,16 @@
-{ stdenv, fetchgit, fontconfig, libjpeg, libcap, freetype, fribidi, pkg-config
+{ stdenv, fetchgit, fontconfig, libjpeg, libcap, freetype, fribidi, pkgconfig
 , gettext, systemd, perl, lib
 , enableSystemd ? true
 , enableBidi ? true
 }: stdenv.mkDerivation rec {
 
   pname = "vdr";
-  version = "2.6.0";
+  version = "2.4.4";
 
   src = fetchgit {
     url = "git://git.tvdr.de/vdr.git";
-    rev = version;
-    sha256 = "sha256-TZm9pN9xtqkKhETsUhIIalK+4xQpFV3TXyWychSoyRk=";
+    rev = "V20404";
+    sha256 = "1fzghnp5mpcwn3a3fyk3w8h15z4f2cnc75247kvxj1c9069mgnwa";
   };
 
   enableParallelBuilding = true;
@@ -28,7 +28,7 @@
   nativeBuildInputs = [ perl ];
 
   # plugins uses the same build environment as vdr
-  propagatedNativeBuildInputs = [ pkg-config gettext ];
+  propagatedNativeBuildInputs = [ pkgconfig gettext ];
 
   installFlags = [
     "DESTDIR=$(out)"
@@ -51,6 +51,6 @@
     description = "Video Disc Recorder";
     maintainers = [ maintainers.ck3d ];
     platforms = [ "i686-linux" "x86_64-linux" ];
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
   };
 }

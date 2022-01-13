@@ -1,20 +1,17 @@
-{ lib, python3Packages, fetchFromGitHub, glib, wrapGAppsHook }:
+{ stdenv, python27Packages, fetchFromGitHub }:
 
-python3Packages.buildPythonApplication rec {
-  pname = "printrun";
-  version = "2.0.0rc5";
+python27Packages.buildPythonApplication rec {
+  name = "printrun-20150310";
 
   src = fetchFromGitHub {
     owner = "kliment";
     repo = "Printrun";
-    rev = "${pname}-${version}";
-    sha256 = "179x8lwrw2h7cxnkq7izny6qcb4nhjnd8zx893i77zfhzsa6kx81";
+    rev = name;
+    sha256 = "09ijv8h4k5h15swg64s7igamvynawz7gdi7hiymzrzywdvr0zwsa";
   };
 
-  nativeBuildInputs = [ glib wrapGAppsHook ];
-
-  propagatedBuildInputs = with python3Packages; [
-    appdirs cython dbus-python numpy six wxPython_4_0 psutil pyglet pyopengl pyserial
+  propagatedBuildInputs = with python27Packages; [
+    wxPython30 pyserial dbus-python psutil numpy pyopengl pyglet cython
   ];
 
   doCheck = false;
@@ -31,15 +28,7 @@ python3Packages.buildPythonApplication rec {
     done
   '';
 
-  dontWrapGApps = true;
-  # https://github.com/NixOS/nixpkgs/issues/56943
-  strictDeps = false;
-
-  preFixup = ''
-    makeWrapperArgs+=("''${gappsWrapperArgs[@]}")
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pronterface, Pronsole, and Printcore - Pure Python 3d printing host software";
     homepage = "https://github.com/kliment/Printrun";
     license = licenses.gpl3;

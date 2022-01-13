@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake }:
+{ stdenv, fetchurl, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "json-c";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A JSON implementation in C";
     homepage    = "https://github.com/json-c/json-c/wiki";
     maintainers = with maintainers; [ lovek323 ];

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, fetchFromGitHub
+{ stdenv, fetchurl, fetchFromGitHub
 , file, libxslt, docbook_xml_dtd_412, docbook_xsl, xmlto
 , w3m, gnugrep, gnused, coreutils, xset, perlPackages
 , mimiSupport ? false, gawk ? null }:
@@ -22,18 +22,17 @@ in
 
 stdenv.mkDerivation rec {
   pname = "xdg-utils";
-  version = "unstable-2020-10-21";
+  version = "1.1.3";
 
-  src = fetchgit {
-    url = "https://gitlab.freedesktop.org/xdg/${pname}.git";
-    rev = "d11b33ec7f24cfb1546f6b459611d440013bdc72";
-    sha256 = "sha256-8PtXfI8hRneEpnUvIV3M+6ACjlkx0w/NEiJFdGbbHnQ=";
+  src = fetchurl {
+    url = "https://portland.freedesktop.org/download/${pname}-${version}.tar.gz";
+    sha256 = "1nai806smz3zcb2l5iny4x7li0fak0rzmjg6vlyhdqm8z25b166p";
   };
 
   # just needed when built from git
   buildInputs = [ libxslt docbook_xml_dtd_412 docbook_xsl xmlto w3m ];
 
-  postInstall = lib.optionalString mimiSupport ''
+  postInstall = stdenv.lib.optionalString mimiSupport ''
     cp ${mimisrc}/xdg-open $out/bin/xdg-open
   '' + ''
     sed  '2s#.#\
@@ -60,7 +59,7 @@ stdenv.mkDerivation rec {
     sed 's|\bwhich\b|type -P|g' -i "$out"/bin/*
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.freedesktop.org/wiki/Software/xdg-utils/";
     description = "A set of command line tools that assist applications with a variety of desktop integration tasks";
     license = if mimiSupport then licenses.gpl2 else licenses.free;

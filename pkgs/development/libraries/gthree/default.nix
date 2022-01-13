@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , fetchpatch
 , ninja
@@ -11,7 +11,7 @@
 , glib
 , gtk3
 , graphene
-, libepoxy
+, epoxy
 , json-glib
 }:
 
@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    libepoxy
+    epoxy
     json-glib
   ];
 
@@ -63,7 +63,7 @@ stdenv.mkDerivation rec {
     "-Dexamples=false"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GObject/GTK port of three.js";
     homepage = "https://github.com/alexlarsson/gthree";
     license = licenses.mit;

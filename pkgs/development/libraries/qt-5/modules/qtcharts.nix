@@ -1,7 +1,7 @@
 { qtModule, qtbase, qtdeclarative }:
 
 qtModule {
-  pname = "qtcharts";
+  name = "qtcharts";
   qtInputs = [ qtbase qtdeclarative ];
   outputs = [ "out" "dev" "bin" ];
 }

@@ -1,19 +1,18 @@
-{ lib, stdenv, fetchurl, libogg, pkg-config }:
+{ stdenv, fetchurl, libogg, pkgconfig }:
 
 stdenv.mkDerivation rec {
-  pname = "liboggz";
-  version = "1.1.1";
+  name = "liboggz-1.1.1";
 
   src = fetchurl {
-    url = "https://downloads.xiph.org/releases/liboggz/${pname}-${version}.tar.gz";
+    url = "http://downloads.xiph.org/releases/liboggz/${name}.tar.gz";
     sha256 = "0nj17lhnsw4qbbk8jy4j6a78w6v2llhqdwq46g44mbm9w2qsvbvb";
   };
 
   propagatedBuildInputs = [ libogg ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://xiph.org/oggz/";
     description = "A C library and tools for manipulating with Ogg files and streams";
     longDescription = ''

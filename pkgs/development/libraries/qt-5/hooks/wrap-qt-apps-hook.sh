@@ -1,6 +1,3 @@
-if [[ -z "${__nix_wrapQtAppsHook-}" ]]; then
-__nix_wrapQtAppsHook=1  # Don't run this hook more than once.
-
 # Inherit arguments given in mkDerivation
 qtWrapperArgs=( ${qtWrapperArgs-} )
 
@@ -76,7 +73,7 @@ wrapQtAppsHook() {
     [ -z "$wrapQtAppsHookHasRun" ] || return 0
     wrapQtAppsHookHasRun=1
 
-    local targetDirs=( "$prefix/bin" "$prefix/sbin" "$prefix/libexec" "$prefix/Applications" "$prefix/"*.app )
+    local targetDirs=( "$prefix/bin" "$prefix/sbin" "$prefix/libexec"  )
     echo "wrapping Qt applications in ${targetDirs[@]}"
 
     for targetDir in "${targetDirs[@]}"
@@ -85,7 +82,7 @@ wrapQtAppsHook() {
 
         find "$targetDir" ! -type d -executable -print0 | while IFS= read -r -d '' file
         do
-            isELF "$file" || isMachO "$file" || continue
+            patchelf --print-interpreter "$file" >/dev/null 2>&1 || continue
 
             if [ -f "$file" ]
             then
@@ -103,5 +100,3 @@ wrapQtAppsHook() {
 }
 
 fixupOutputHooks+=(wrapQtAppsHook)
-
-fi

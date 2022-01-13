@@ -1,27 +1,25 @@
-{ lib, stdenv, fetchurl, pkg-config, gettext, gtk3, libxklavier, mateUpdateScript }:
+{ stdenv, fetchurl, pkgconfig, gettext, gtk3, libxklavier }:
 
 stdenv.mkDerivation rec {
   pname = "libmatekbd";
-  version = "1.26.0";
+  version = "1.24.1";
 
   src = fetchurl {
-    url = "https://pub.mate-desktop.org/releases/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "1b8iv2hmy8z2zzdsx8j5g583ddxh178bq8dnlqng9ifbn35fh3i2";
+    url = "https://pub.mate-desktop.org/releases/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "17mcxfkvl14p04id3n5kbhpjwjq00c8wmbyciyy2hm7kwdln6zx8";
   };
 
-  nativeBuildInputs = [ pkg-config gettext ];
+  nativeBuildInputs = [ pkgconfig gettext ];
 
   buildInputs = [ gtk3 libxklavier ];
 
   enableParallelBuilding = true;
 
-  passthru.updateScript = mateUpdateScript { inherit pname version; };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Keyboard management library for MATE";
     homepage = "https://github.com/mate-desktop/libmatekbd";
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
     platforms = platforms.unix;
-    maintainers = teams.mate.members;
+    maintainers = [ maintainers.romildo ];
   };
 }

@@ -20,8 +20,7 @@ let
 in
 
 stdenv.mkDerivation {
-  pname = "email-git";
-  version = "unstable-2016-01-31";
+  name = "email-git-2016-01-31";
   src = eMailSrc;
 
   buildInputs = [ openssl ];
@@ -36,6 +35,6 @@ stdenv.mkDerivation {
     description = "Command line SMTP client";
     license = with lib.licenses; [ gpl2 ];
     homepage = "https://deanproxy.com/code";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, SDL, SDL_ttf, SDL_gfx, SDL_mixer, autoreconfHook,
+{ stdenv, fetchFromGitHub, SDL, SDL_ttf, SDL_gfx, SDL_mixer, autoreconfHook,
   libpng, glew, makeDesktopItem }:
 
 stdenv.mkDerivation rec {
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.roguetemple.com/z/hyper/";
     description = "A roguelike game set in hyperbolic geometry";
     maintainers = with maintainers; [ rardiol ];

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, qmake4Hook, unzip, qt4 }:
+{ stdenv, fetchurl, qmake4Hook, unzip, qt4 }:
 
 stdenv.mkDerivation rec {
   name = "${project}-${version}";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://sourceforge.net/projects/qmetro/";
     description = "Worldwide transit maps viewer";
     license = licenses.gpl3;

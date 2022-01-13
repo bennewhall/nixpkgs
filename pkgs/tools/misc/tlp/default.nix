@@ -13,7 +13,6 @@
 , makeWrapper
 , pciutils
 , perl
-, perlcritic
 , shellcheck
 , smartmontools
 , systemd
@@ -24,20 +23,17 @@
 , networkmanager
 }: stdenv.mkDerivation rec {
   pname = "tlp";
-  version = "1.4.0";
+  version = "1.3.1";
 
   src = fetchFromGitHub {
     owner = "linrunner";
     repo = "TLP";
     rev = version;
-    sha256 = "sha256-Blwj4cqrrYXohnGyJYe+1NYifxqfS4DoVUHmxFf62i4=";
+    sha256 = "14fcnaz9pw534v4d8dddqq4wcvpf1kghr8zlrk62r5lrl46sp1p5";
   };
 
   # XXX: See patch files for relevant explanations.
-  patches = [
-    ./patches/0001-makefile-correctly-sed-paths.patch
-    ./patches/0002-tlp-sleep.service-reintroduce.patch
-  ];
+  patches = [ ./patches/fix-makefile-sed.patch ./patches/tlp-sleep-service.patch ];
 
   buildInputs = [ perl ];
   nativeBuildInputs = [ makeWrapper gnused ];
@@ -56,10 +52,8 @@
     "TLP_WITH_ELOGIND=0"
     "TLP_WITH_SYSTEMD=1"
 
-    "TLP_BATD=/share/tlp/bat.d"
     "TLP_BIN=/bin"
     "TLP_CONFDEF=/share/tlp/defaults.conf"
-    "TLP_CONFREN=/share/tlp/rename.conf"
     "TLP_FLIB=/share/tlp/func.d"
     "TLP_MAN=/share/man"
     "TLP_META=/share/metainfo"
@@ -71,11 +65,12 @@
   installTargets = [ "install-tlp" "install-man" ]
   ++ lib.optionals enableRDW [ "install-rdw" "install-man-rdw" ];
 
-  doCheck = true;
-  checkInputs = [ checkbashisms perlcritic shellcheck ];
+  # XXX: This is disabled because it's basically just noise since upstream
+  # itself does not seem to care about the zillion shellcheck errors.
+  doCheck = false;
+  checkInputs = [ checkbashisms shellcheck ];
   checkTarget = [ "checkall" ];
 
-  # TODO: Consider using resholve here
   postInstall = let
     paths = lib.makeBinPath (
       [
@@ -93,7 +88,7 @@
         systemd
         util-linux
       ] ++ lib.optional enableRDW networkmanager
-        ++ lib.optional (lib.meta.availableOn stdenv.hostPlatform x86_energy_perf_policy) x86_energy_perf_policy
+        ++ lib.optional (lib.any (lib.meta.platformMatch stdenv.hostPlatform) x86_energy_perf_policy.meta.platforms) x86_energy_perf_policy
     );
   in
     ''
@@ -112,16 +107,12 @@
         $out/etc/NetworkManager/dispatcher.d/*
         $out/lib/udev/tlp-*
         $out/sbin/*
-        $out/share/tlp/bat.d/*
         $out/share/tlp/func.d/*
         $out/share/tlp/tlp-func-base
       )
       for f in "''${fixup_bash[@]}"; do
         sed -i '2iexport PATH=${paths}:$PATH' "$f"
       done
-
-      rm -rf $out/var
-      rm -rf $out/share/metainfo
     '';
 
   meta = with lib; {

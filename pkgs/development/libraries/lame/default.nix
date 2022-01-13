@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , nasmSupport ? true, nasm ? null # Assembly optimizations
 , cpmlSupport ? true # Compaq's fast math library
 #, efenceSupport ? false, libefence ? null # Use ElectricFence for malloc debugging
@@ -20,7 +20,7 @@ let
   mkFlag = optSet: flag: if optSet then "--enable-${flag}" else "--disable-${flag}";
 in
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "lame";
   version = "3.100";

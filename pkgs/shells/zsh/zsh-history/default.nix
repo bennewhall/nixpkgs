@@ -28,7 +28,7 @@ buildGoModule rec {
     license = licenses.mit;
     homepage = "https://github.com/b4b4r07/history";
     platforms = platforms.unix;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ kampka ];
   };
 
   passthru.tests = {

@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, cmake, blas, lapack, superlu, hdf5 }:
+{ stdenv, fetchurl, cmake, blas, lapack, superlu, hdf5 }:
 
 stdenv.mkDerivation rec {
   pname = "armadillo";
-  version = "10.7.5";
+  version = "10.1.2";
 
   src = fetchurl {
     url = "mirror://sourceforge/arma/armadillo-${version}.tar.xz";
-    sha256 = "sha256-XQ2f1rNO/Lpqb87/VMDS0T/L6RXXr4owxecs8xfSCU8=";
+    sha256 = "0pb3ypdaiiw0895x1zzzjvkrfp39bsl3s4f6zb5bzv4wbjv7kvwn";
   };
 
   nativeBuildInputs = [ cmake ];
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   patches = [ ./use-unix-config-on-OS-X.patch ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ linear algebra library";
     homepage = "http://arma.sourceforge.net";
     license = licenses.asl20;

@@ -54,7 +54,7 @@ in
           <citerefentry><refentrytitle>ssmtp</refentrytitle><manvolnum>5</manvolnum></citerefentry> configuration. Refer
           to <link xlink:href="https://linux.die.net/man/5/ssmtp.conf"/> for details on supported values.
         '';
-        example = literalExpression ''
+        example = literalExample ''
           {
             Debug = true;
             FromLineOverride = false;
@@ -124,8 +124,7 @@ in
         example = "/run/keys/ssmtp-authpass";
         description = ''
           Path to a file that contains the password used for SMTP auth. The file
-          should not contain a trailing newline, if the password does not contain one
-          (e.g. use <command>echo -n "password" > file</command>).
+          should not contain a trailing newline, if the password does not contain one.
           This file should be readable by the users that need to execute ssmtp.
         '';
       };
@@ -163,16 +162,15 @@ in
       (mkIf (cfg.authPassFile != null) { AuthPassFile = cfg.authPassFile; })
     ];
 
-    # careful here: ssmtp REQUIRES all config lines to end with a newline char!
-    environment.etc."ssmtp/ssmtp.conf".text = with generators; toKeyValue {
-      mkKeyValue = mkKeyValueDefault {
-        mkValueString = value:
+    environment.etc."ssmtp/ssmtp.conf".source =
+      let
+        toStr = value:
           if value == true then "YES"
           else if value == false then "NO"
-          else mkValueStringDefault {} value
+          else builtins.toString value
         ;
-      } "=";
-    } cfg.settings;
+      in
+        pkgs.writeText "ssmtp.conf" (concatStringsSep "\n" (mapAttrsToList (key: value: "${key}=${toStr value}") cfg.settings));
 
     environment.systemPackages = [pkgs.ssmtp];
 
@@ -181,8 +179,6 @@ in
       source = "${pkgs.ssmtp}/bin/sendmail";
       setuid = false;
       setgid = false;
-      owner = "root";
-      group = "root";
     };
 
   };

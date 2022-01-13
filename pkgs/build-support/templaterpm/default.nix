@@ -1,13 +1,12 @@
-{lib, stdenv, makeWrapper, python, toposort, rpm}:
+{stdenv, makeWrapper, python, toposort, rpm}:
 
 stdenv.mkDerivation {
   pname = "nix-template-rpm";
   version = "0.1";
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ python toposort rpm ];
+  buildInputs = [ makeWrapper python toposort rpm ];
 
-  dontUnpack = true;
+  phases = [ "installPhase" "fixupPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -16,10 +15,10 @@ stdenv.mkDerivation {
       --set PYTHONPATH "${rpm}/lib/${python.libPrefix}/site-packages":"${toposort}/lib/${python.libPrefix}/site-packages"
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Create templates of nix expressions from RPM .spec files";
     maintainers = with maintainers; [ tstrobel ];
-    platforms = platforms.unix;
+    platforms = with stdenv.lib.platforms; unix;
     hydraPlatforms = [];
   };
 }

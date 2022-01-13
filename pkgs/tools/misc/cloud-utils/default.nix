@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, makeWrapper
+{ stdenv, fetchurl, makeWrapper
 , gawk, gnused, util-linux, file
-, wget, python3, qemu-utils
+, wget, python3, qemu-utils, euca2ools
 , e2fsprogs, cdrkit
 , gptfdisk }:
 
@@ -37,18 +37,18 @@ in stdenv.mkDerivation rec {
     moveToOutput bin/vcs-run $guest
 
     for i in $out/bin/*; do
-      wrapProgram $i --prefix PATH : "${lib.makeBinPath binDeps}:$out/bin"
+      wrapProgram $i --prefix PATH : "${stdenv.lib.makeBinPath binDeps}:$out/bin"
     done
 
     for i in $guest/bin/*; do
-      wrapProgram $i --prefix PATH : "${lib.makeBinPath guestDeps}:$guest/bin"
+      wrapProgram $i --prefix PATH : "${stdenv.lib.makeBinPath guestDeps}:$guest/bin"
       ln -s $i $out/bin
     done
   '';
 
   dontBuild = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     platforms = platforms.unix;
     license = licenses.gpl3;
   };

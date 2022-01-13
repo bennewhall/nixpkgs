@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libiconv }:
+{ stdenv, fetchurl, libiconv }:
 
 stdenv.mkDerivation rec {
   pname = "idnkit";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libiconv ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.nic.ad.jp/ja/idn/idnkit";
     description = "Provides functionalities about i18n domain name processing";
     license = "idnkit-2 license";

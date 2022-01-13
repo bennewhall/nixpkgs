@@ -2,15 +2,13 @@
 
 buildPythonPackage rec {
   pname = "pycmarkgfm";
-  version = "1.1.0";
+  version = "1.0.1";
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "694cb242f4961437c30b5b015dfbce9d1a1fa48305c2e39f902ce7c65b4cbe0e";
+    sha256 = "0wkbbma214f927ikn3cijxsrzkmm5cqz1x4fimrwx9s2wfphj250";
   };
-
-  propagatedNativeBuildInputs = [ cffi ];
 
   propagatedBuildInputs = [ cffi ];
 

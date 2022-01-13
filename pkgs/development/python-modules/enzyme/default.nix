@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage }:
+{ stdenv, fetchPypi, buildPythonPackage }:
 
 buildPythonPackage rec {
   pname = "enzyme";
@@ -12,9 +12,9 @@ buildPythonPackage rec {
     sha256 = "1fv2kh2v4lwj0hhrhj9pib1pdjh01yr4xgyljhx11l94gjlpy5pj";
   };
 
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/Diaoul/enzyme";
-    license = licenses.asl20;
+    license = with stdenv.lib; licenses.asl20;
     description = "Python video metadata parser";
   };
 }

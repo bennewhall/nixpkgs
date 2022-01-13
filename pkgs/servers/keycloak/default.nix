@@ -18,11 +18,11 @@ let
 in
 stdenv.mkDerivation rec {
   pname   = "keycloak";
-  version = "15.1.0";
+  version = "11.0.3";
 
   src = fetchzip {
-    url    = "https://github.com/keycloak/keycloak/releases/download/${version}/keycloak-${version}.zip";
-    sha256 = "0s8nvp1ca30569k1a7glbn2zvvchz35s2r8d08fbs5zjngnz3276";
+    url    = "https://downloads.jboss.org/keycloak/${version}/keycloak-${version}.zip";
+    sha256 = "15fw49rhnjky108hh71dkdlafd0ajr1n13vhivqcw6c18zvyan35";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -57,7 +57,7 @@ stdenv.mkDerivation rec {
 
   passthru.tests = nixosTests.keycloak;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "https://www.keycloak.org/";
     description = "Identity and access management for modern applications and services";
     license     = licenses.asl20;

@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchurl, makeWrapper, jre
+{ stdenv, fetchurl, makeWrapper, jre
 , htmlunit-driver, chromedriver, chromeSupport ? true }:
 
-with lib;
+with stdenv.lib;
 
 let
   minorVersion = "3.141";
@@ -18,15 +18,14 @@ in stdenv.mkDerivation rec {
 
   dontUnpack = true;
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jre ];
+  buildInputs = [ jre makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/share/lib/${pname}-${version}
     cp $src $out/share/lib/${pname}-${version}/${pname}-${version}.jar
     makeWrapper ${jre}/bin/java $out/bin/selenium-server \
       --add-flags "-cp $out/share/lib/${pname}-${version}/${pname}-${version}.jar:${htmlunit-driver}/share/lib/${htmlunit-driver.name}/${htmlunit-driver.name}.jar" \
-      ${optionalString chromeSupport "--add-flags -Dwebdriver.chrome.driver=${chromedriver}/bin/chromedriver"} \
+      --add-flags ${optionalString chromeSupport "-Dwebdriver.chrome.driver=${chromedriver}/bin/chromedriver"} \
       --add-flags "org.openqa.grid.selenium.GridLauncherV3"
   '';
 

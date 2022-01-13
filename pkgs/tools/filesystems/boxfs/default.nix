@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, curl, fuse, libxml2, pkg-config }:
+{ stdenv, fetchFromGitHub, curl, fuse, libxml2, pkgconfig }:
 
 let
   srcs = {
@@ -35,19 +35,16 @@ in stdenv.mkDerivation {
   patches = [ ./work-around-API-borkage.patch ];
 
   buildInputs = [ curl fuse libxml2 ];
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildFlags = [
-    "static"
-    "CC=${stdenv.cc.targetPrefix}cc"
-  ] ++ lib.optional stdenv.isDarwin "CFLAGS=-D_BSD_SOURCE";
+  buildFlags = [ "static" ];
 
   installPhase = ''
     mkdir -p $out/bin
     install boxfs boxfs-init $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "FUSE file system for box.com accounts";
     longDescription = ''
       Store files on box.com (an account is required). The first time you run
@@ -58,6 +55,6 @@ in stdenv.mkDerivation {
     '';
     homepage = "https://github.com/drotiro/boxfs2";
     license = licenses.gpl3;
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

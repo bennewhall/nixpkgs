@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, glib, pkg-config, libfm-extra }:
+{ stdenv, fetchurl, glib, pkgconfig, libfm-extra }:
 
 let name = "menu-cache-1.1.0";
 in
@@ -9,11 +9,11 @@ stdenv.mkDerivation {
     sha256 = "1iry4zlpppww8qai2cw4zid4081hh7fz8nzsp5lqyffbkm2yn0pd";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ glib libfm-extra ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library to read freedesktop.org menu files";
     homepage = "https://blog.lxde.org/tag/menu-cache/";
     license = licenses.gpl2Plus;

@@ -6,7 +6,7 @@
 }:
 
 { swingSupport ? true
-, lib, stdenv
+, stdenv
 , requireFile
 , makeWrapper
 , unzip
@@ -18,7 +18,8 @@
 , config
 , glib
 , libxml2
-, ffmpeg
+, libav_0_8
+, ffmpeg_3
 , libxslt
 , libGL
 , freetype
@@ -26,7 +27,7 @@
 , gtk2
 , pango
 , cairo
-, alsa-lib
+, alsaLib
 , atk
 , gdk-pixbuf
 , setJavaClassPath
@@ -75,7 +76,7 @@ let result = stdenv.mkDerivation rec {
         i686-linux    = "linux-i586";
         x86_64-linux  = "linux-x64";
         armv7l-linux  = "linux-arm32-vfp-hflt";
-        aarch64-linux = "linux-aarch64";
+        aarch64-linux = "linux-arm64-vfp-hflt";
       }.${stdenv.hostPlatform.system} or (throw "unsupported system ${stdenv.hostPlatform.system}");
     in requireFile {
       name = "jdk-${productVersion}u${patchVersion}-${platformName}.tar.gz";
@@ -83,8 +84,10 @@ let result = stdenv.mkDerivation rec {
       sha256 = sha256.${stdenv.hostPlatform.system};
     };
 
-  nativeBuildInputs = [ file makeWrapper ]
-    ++ lib.optional installjce unzip;
+  nativeBuildInputs = [ file ]
+    ++ stdenv.lib.optional installjce unzip;
+
+  buildInputs = [ makeWrapper ];
 
   # See: https://github.com/NixOS/patchelf/issues/10
   dontStrip = 1;
@@ -146,7 +149,7 @@ let result = stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    rpath+="''${rpath:+:}${lib.concatStringsSep ":" (map (a: "$jrePath/${a}") rSubPaths)}"
+    rpath+="''${rpath:+:}${stdenv.lib.concatStringsSep ":" (map (a: "$jrePath/${a}") rSubPaths)}"
 
     # set all the dynamic linkers
     find $out -type f -perm -0100 \
@@ -168,10 +171,10 @@ let result = stdenv.mkDerivation rec {
    * libXt is only needed on amd64
    */
   libraries =
-    [stdenv.cc.libc glib libxml2 ffmpeg libxslt libGL xorg.libXxf86vm alsa-lib fontconfig freetype pango gtk2 cairo gdk-pixbuf atk] ++
-    lib.optionals swingSupport [xorg.libX11 xorg.libXext xorg.libXtst xorg.libXi xorg.libXp xorg.libXt xorg.libXrender stdenv.cc.cc];
+    [stdenv.cc.libc glib libxml2 libav_0_8 ffmpeg_3 libxslt libGL xorg.libXxf86vm alsaLib fontconfig freetype pango gtk2 cairo gdk-pixbuf atk] ++
+    (if swingSupport then [xorg.libX11 xorg.libXext xorg.libXtst xorg.libXi xorg.libXp xorg.libXt xorg.libXrender stdenv.cc.cc] else []);
 
-  rpath = lib.strings.makeLibraryPath libraries;
+  rpath = stdenv.lib.strings.makeLibraryPath libraries;
 
   passthru.mozillaPlugin = if installjdk then "/jre/lib/${architecture}/plugins" else "/lib/${architecture}/plugins";
 
@@ -181,10 +184,9 @@ let result = stdenv.mkDerivation rec {
 
   passthru.architecture = architecture;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.unfree;
     platforms = [ "i686-linux" "x86_64-linux" "armv7l-linux" "aarch64-linux" ]; # some inherit jre.meta.platforms
-    mainProgram = "java";
   };
 
 }; in result

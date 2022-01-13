@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchurl
 , sphinx
@@ -18,7 +18,7 @@ buildPythonPackage rec {
   # error: invalid command 'test'
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://liw.fi/tracing/";
     description = "Python debug logging helper";
     license = licenses.gpl3;

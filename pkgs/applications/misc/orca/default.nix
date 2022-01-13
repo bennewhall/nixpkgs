@@ -1,5 +1,5 @@
-{ lib
-, pkg-config
+{ stdenv
+, pkgconfig
 , fetchurl
 , buildPythonApplication
 , autoreconfHook
@@ -8,10 +8,11 @@
 , gettext
 , yelp-tools
 , itstool
+, libxmlxx3
 , python
 , pygobject3
 , gtk3
-, gnome
+, gnome3
 , substituteAll
 , at-spi2-atk
 , at-spi2-core
@@ -34,13 +35,13 @@
 
 buildPythonApplication rec {
   pname = "orca";
-  version = "41.1";
+  version = "3.38.1";
 
   format = "other";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.major version}/${pname}-${version}.tar.xz";
-    sha256 = "H9ArmQlPCfbnLfd54actzkFCfsguJFpOqDIzqX7tonE=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1sqmq9xhcm3rc3mbhj1bdn55bkpzbk72xhmgka75syxh77gzz0ld";
   };
 
   patches = [
@@ -56,14 +57,15 @@ buildPythonApplication rec {
   nativeBuildInputs = [
     autoreconfHook
     wrapGAppsHook
-    pkg-config
+    pkgconfig
+    libxmlxx3
     gettext
     yelp-tools
     itstool
     gobject-introspection
   ];
 
-  pythonPath = [
+  propagatedBuildInputs = [
     pygobject3
     pyatspi
     dbus-python
@@ -90,12 +92,12 @@ buildPythonApplication rec {
   ];
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Projects/Orca";
     description = "Screen reader";
     longDescription = ''
@@ -106,7 +108,7 @@ buildPythonApplication rec {
       GTK toolkit, the Java platform's Swing toolkit, LibreOffice, Gecko, and
       WebKitGtk. AT-SPI support for the KDE Qt toolkit is being pursued.
 
-      Needs `services.gnome.at-spi2-core.enable = true;` in `configuration.nix`.
+      Needs `services.gnome3.at-spi2-core.enable = true;` in `configuration.nix`.
     '';
     maintainers = with maintainers; [ berce ] ++ teams.gnome.members;
     license = licenses.lgpl21;

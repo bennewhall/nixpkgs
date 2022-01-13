@@ -24,9 +24,7 @@ buildPythonPackage rec {
     # disabled tests access the network
     py.test tests -k "not test_no_content_length_header \
                   and not test_read_file \
-                  and not test_reads_file_from_url_wrapper \
-                  and not test_x509_der \
-                  and not test_x509_pem"
+                  and not test_reads_file_from_url_wrapper"
   '';
 
   meta = {

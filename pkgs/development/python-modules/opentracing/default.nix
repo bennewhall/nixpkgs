@@ -2,7 +2,7 @@
 , buildPythonPackage
 , fetchPypi
 , isPy27
-, futures ? null
+, futures
 , gevent
 , mock
 , pytest

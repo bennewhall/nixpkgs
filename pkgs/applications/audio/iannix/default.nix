@@ -1,23 +1,25 @@
-{ mkDerivation, lib, fetchFromGitHub, alsa-lib, pkg-config, qtbase, qtscript, qmake
+{ mkDerivation, lib, fetchFromGitHub, alsaLib, pkgconfig, qtbase, qtscript, qmake
 }:
 
 mkDerivation rec {
   pname = "iannix";
-  version = "unstable-2020-12-09";
+  version = "0.9.20-b";
 
   src = fetchFromGitHub {
     owner = "iannix";
     repo = "IanniX";
-    rev = "287b51d9b90b3e16ae206c0c4292599619f7b159";
-    sha256 = "AhoP+Ok78Vk8Aee/RP572hJeM8O7v2ZTvFalOZZqRy8=";
+    rev = "v${version}";
+    sha256 = "6jjgMvD2VkR3ztU5LguqhtNd+4/ZqRy5pVW5xQ6K20Q=";
   };
 
-  nativeBuildInputs = [ pkg-config qmake ];
-  buildInputs = [ alsa-lib qtbase qtscript ];
+  nativeBuildInputs = [ pkgconfig qmake ];
+  buildInputs = [ alsaLib qtbase qtscript ];
 
   qmakeFlags = [ "PREFIX=/" ];
 
   installFlags = [ "INSTALL_ROOT=$(out)" ];
+
+  enableParallelBuilding = true;
 
   meta = with lib; {
     description = "Graphical open-source sequencer";

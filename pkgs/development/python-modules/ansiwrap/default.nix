@@ -1,10 +1,11 @@
 { lib
-, ansicolors
 , buildPythonPackage
-, coverage
 , fetchPypi
-, pytest-cov
-, pytestCheckHook
+, tox
+, pytest
+, ansicolors
+, coverage
+, pytestcov
 , textwrap3
 }:
 
@@ -19,15 +20,20 @@ buildPythonPackage rec {
   };
 
   checkInputs = [
+    tox
+    pytest
     ansicolors
     coverage
-    pytest-cov
-    pytestCheckHook
+    pytestcov
   ];
 
-  propagatedBuildInputs = [ textwrap3 ];
+  propagatedBuildInputs = [
+    textwrap3
+  ];
 
-  pythonImportsCheck = [ "ansiwrap" ];
+  checkPhase = ''
+    pytest
+  '';
 
   meta = with lib; {
     description = "Textwrap, but savvy to ANSI colors and styles";

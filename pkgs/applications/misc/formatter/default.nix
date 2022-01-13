@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , meson
 , ninja
 , vala
-, pkg-config
+, pkgconfig
 , pantheon
 , python3
 , substituteAll
@@ -21,13 +21,13 @@
 
 stdenv.mkDerivation rec {
   pname = "formatter";
-  version = "0.4.0";
+  version = "0.3.2";
 
   src = fetchFromGitHub {
     owner = "Djaler";
     repo = "Formatter";
     rev = version;
-    sha256 = "sha256-8lZ0jUwHuc3Kntz73Btj6dJvkW2bvShu2KWTSQszbJo=";
+    sha256 = "0da1dvzsvbwg1ys19yf0n080xc0hjwin9zacjndb24jvphy3bxql";
   };
 
   patches = [
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     vala
-    pkg-config
+    pkgconfig
     python3
     wrapGAppsHook
   ];
@@ -68,12 +68,11 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple formatter designed for elementary OS";
     homepage = "https://github.com/Djaler/Formatter";
-    maintainers = with maintainers; [ xiorcale ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [ xiorcale ] ++ pantheon.maintainers;
     platforms = platforms.linux;
     license = licenses.lgpl2Plus;
-    mainProgram = "com.github.djaler.formatter";
   };
 }

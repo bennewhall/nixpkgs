@@ -4,24 +4,19 @@
 , nose
 , coverage
 , isPy27
-, wrapt
 }:
 
 buildPythonPackage rec {
   pname = "aiounittest";
-  version = "1.4.1";
+  version = "1.3.1";
   disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "kwarunek";
     repo = pname;
     rev = version;
-    sha256 = "sha256-FixGF1JLJVqTgLaWugbeu8f+SDjpHSdSLoGklYBup4M=";
+    sha256 = "0mlic2q49cb0vv62mixy4i4x8c91qb6jlji7khiamcxcg676nasl";
   };
-
-  propagatedBuildInputs = [
-    wrapt
-  ];
 
   checkInputs = [
     nose
@@ -31,8 +26,6 @@ buildPythonPackage rec {
   checkPhase = ''
     nosetests
   '';
-
-  pythonImportsCheck = [ "aiounittest" ];
 
   meta = with lib; {
     description = "Test asyncio code more easily";

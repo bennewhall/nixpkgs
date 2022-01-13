@@ -1,19 +1,19 @@
 {
-  mkDerivation, lib, kdepimTeam, fetchpatch,
+  mkDerivation, lib, kdepimTeam,
   extra-cmake-modules, kdoctools,
-  akonadi, akonadi-calendar, akonadi-mime, akonadi-notes, kcalutils,
+  akonadi, akonadi-calendar, akonadi-mime, akonadi-notes, kcalutils, kdepim-apps-libs,
   kholidays, kidentitymanagement, kmime, pimcommon, qttools,
 }:
 
 mkDerivation {
-  pname = "calendarsupport";
+  name = "calendarsupport";
   meta = {
     license = with lib.licenses; [ gpl2 lgpl21 fdl12 ];
     maintainers = kdepimTeam;
   };
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
   buildInputs = [
-    akonadi akonadi-mime akonadi-notes kcalutils kholidays pimcommon qttools
+    akonadi akonadi-mime akonadi-notes kcalutils kdepim-apps-libs kholidays pimcommon qttools
   ];
   propagatedBuildInputs = [ akonadi-calendar kidentitymanagement kmime ];
   outputs = [ "out" "dev" ];

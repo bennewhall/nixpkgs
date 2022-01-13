@@ -1,6 +1,6 @@
-{stdenv, lib, fetchurl, ocaml, findlib}:
+{stdenv, fetchurl, ocaml, findlib}:
 
-if lib.versionAtLeast ocaml.version "4.06"
+if stdenv.lib.versionAtLeast ocaml.version "4.06"
 then throw "cryptgps is not available for OCaml ${ocaml.version}"
 else
 
@@ -28,10 +28,10 @@ stdenv.mkDerivation {
       i.e. this is not a binding to some C library, but the implementation
       itself.
     '';
-    license = lib.licenses.mit;
+    license = stdenv.lib.licenses.mit;
     platforms = ocaml.meta.platforms or [];
     maintainers = [
-      lib.maintainers.maggesi
+      stdenv.lib.maintainers.maggesi
     ];
   };
 }

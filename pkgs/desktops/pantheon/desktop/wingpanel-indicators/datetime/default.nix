@@ -1,9 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, substituteAll
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , python3
 , ninja
@@ -14,36 +13,33 @@
 , evolution-data-server
 , libical
 , libgee
-, libhandy
 , libxml2
 , libsoup
-, libgdata
 , elementary-calendar
 }:
 
 stdenv.mkDerivation rec {
   pname = "wingpanel-indicator-datetime";
-  version = "2.4.0";
+  version = "2.2.5";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = pname;
     rev = version;
-    sha256 = "sha256-GxlnzLDrZmDDAGlUMoM4k4SkbCqra3Th6ugRAj3Wse4=";
+    sha256 = "sha256-rZzZIh4bwZfwQFDbfPDKQtfLMJQ2IdykH1yiV6ckqnw=";
   };
 
-  patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      elementary_calendar = elementary-calendar;
-    })
-  ];
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = "pantheon.${pname}";
+    };
+  };
 
   nativeBuildInputs = [
     libxml2
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
   ];
@@ -53,11 +49,9 @@ stdenv.mkDerivation rec {
     granite
     gtk3
     libgee
-    libhandy
     libical
     libsoup
     wingpanel
-    libgdata # required by some dependency transitively
   ];
 
   postPatch = ''
@@ -65,17 +59,11 @@ stdenv.mkDerivation rec {
     patchShebangs meson/post_install.py
   '';
 
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = "pantheon.${pname}";
-    };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Date & Time Indicator for Wingpanel";
     homepage = "https://github.com/elementary/wingpanel-indicator-datetime";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
   };
 }

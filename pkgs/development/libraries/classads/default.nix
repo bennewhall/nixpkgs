@@ -1,8 +1,10 @@
-{ lib, stdenv, fetchurl, pcre }:
+{ stdenv, fetchurl, pcre }:
 
-stdenv.mkDerivation rec {
+let version = "1.0.10"; in
+
+stdenv.mkDerivation {
   pname = "classads";
-  version = "1.0.10";
+  inherit version;
 
   src = fetchurl {
     url = "ftp://ftp.cs.wisc.edu/condor/classad/c++/classads-${version}.tar.gz";
@@ -14,11 +16,11 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--enable-namespace" "--enable-flexible-member"
   ];
-
+  
   meta = {
     homepage = "http://www.cs.wisc.edu/condor/classad/";
     description = "The Classified Advertisements library provides a generic means for matching resources";
-    license = lib.licenses.asl20;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.asl20;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

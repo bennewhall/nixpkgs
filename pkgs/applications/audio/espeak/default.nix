@@ -1,16 +1,14 @@
-{ lib, stdenv, fetchurl, unzip, portaudio }:
+{ stdenv, fetchurl, unzip, portaudio }:
 
 stdenv.mkDerivation rec {
-  pname = "espeak";
-  version = "1.48.04";
+  name = "espeak-1.48.04";
 
   src = fetchurl {
-    url = "mirror://sourceforge/espeak/espeak-${version}-source.zip";
+    url = "mirror://sourceforge/espeak/${name}-source.zip";
     sha256 = "0n86gwh9pw0jqqpdz7mxggllfr8k0r7pc67ayy7w5z6z79kig6mz";
   };
 
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [ portaudio ];
+  buildInputs = [ unzip portaudio ];
 
   patches = [
     ./gcc6.patch
@@ -28,7 +26,7 @@ stdenv.mkDerivation rec {
     makeFlags="PREFIX=$out DATADIR=$out/share/espeak-data"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Compact open source software speech synthesizer";
     homepage = "http://espeak.sourceforge.net/";
     license = licenses.gpl3Plus;

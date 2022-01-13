@@ -69,14 +69,9 @@
    </arg>
 
    <arg>
-    <group choice='req'>
-     <arg choice='plain'>
-      <option>--no-root-password</option>
-     </arg>
-     <arg choice='plain'>
-      <option>--no-root-passwd</option>
-     </arg>
-    </group>
+    <arg choice='plain'>
+     <option>--no-root-passwd</option>
+    </arg>
    </arg>
 
    <arg>
@@ -162,7 +157,7 @@
     <listitem>
      <para>
       It prompts you for a password for the root account (unless
-      <option>--no-root-password</option> is specified).
+      <option>--no-root-passwd</option> is specified).
      </para>
     </listitem>
    </itemizedlist>

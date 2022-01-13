@@ -1,7 +1,7 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
-, pytest-runner
+, pytestrunner
 , pytest
 , pytest-asyncio
 , contextvars
@@ -23,7 +23,7 @@ buildPythonPackage rec {
   };
 
   buildInputs = [
-    pytest-runner
+    pytestrunner
   ];
 
   checkInputs = [

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, systemd }:
+{ stdenv, fetchFromGitHub, pkg-config, systemd }:
 
 stdenv.mkDerivation rec {
   pname = "brightnessctl";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkg-config ];
   buildInputs = [ systemd ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Hummer12007/brightnessctl";
     description = "This program allows you read and control device brightness";
     license = licenses.mit;

@@ -1,38 +1,25 @@
-{ lib
+{ stdenv
 , buildPythonPackage
-, fetchFromGitHub
+, fetchhg
 , isPyPy
-, docutils
-, pygments
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
-  version = "2.0.1";
+  version = "1.8.6";
   pname = "smartypants";
   disabled = isPyPy;
 
-  src = fetchFromGitHub {
-    owner = "leohemsted";
-    repo = "smartypants.py";
+  src = fetchhg {
+    url = "https://bitbucket.org/livibetter/smartypants.py";
     rev = "v${version}";
-    sha256 = "00p1gnb9pzb3svdq3c5b9b332gsp50wrqqa39gj00m133zadanjp";
+    sha256 = "1cmzz44d2hm6y8jj2xcq1wfr26760gi7iq92ha8xbhb1axzd7nq6";
   };
 
-  checkInputs = [
-    docutils
-    pygments
-    pytestCheckHook
-  ];
-
-  preCheck = ''
-    patchShebangs smartypants
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python with the SmartyPants";
-    homepage = "https://github.com/leohemsted/smartypants.py";
+    homepage = "https://bitbucket.org/livibetter/smartypants.py";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ dotlambda ];
+    maintainers = with maintainers; [ ];
   };
+
 }

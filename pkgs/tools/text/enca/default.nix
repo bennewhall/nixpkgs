@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libiconv, recode }:
+{ stdenv, fetchurl, libiconv, recode }:
 
 stdenv.mkDerivation rec {
   pname = "enca";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ recode libiconv ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Detects the encoding of text files and reencodes them";
 
     longDescription = ''
@@ -23,6 +23,6 @@ stdenv.mkDerivation rec {
     '';
 
     license = licenses.gpl2;
-
+   
   };
 }

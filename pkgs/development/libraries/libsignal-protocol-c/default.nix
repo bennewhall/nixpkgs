@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, openssl }:
+{ stdenv, fetchFromGitHub, cmake, openssl }:
 
 stdenv.mkDerivation rec {
   pname = "libsignal-protocol-c";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Signal Protocol C Library";
     homepage = "https://github.com/signalapp/libsignal-protocol-c";
     license = licenses.gpl3;

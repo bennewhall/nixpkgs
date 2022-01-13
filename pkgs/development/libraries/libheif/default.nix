@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, dav1d, rav1e, libde265, x265, libpng,
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, libde265, x265, libpng,
   libjpeg, libaom }:
 
 stdenv.mkDerivation rec {
   pname = "libheif";
-  version = "1.12.0";
+  version = "1.9.1";
 
   outputs = [ "bin" "out" "dev" "man" ];
 
@@ -11,19 +11,21 @@ stdenv.mkDerivation rec {
     owner = "strukturag";
     repo = "libheif";
     rev = "v${version}";
-    sha256 = "sha256-RjGLaDSBO8T7ijRb5a16aUlkCy5vdFPs4O9caIJo4jI=";
+    sha256 = "0hjs1i076jmy4ryj8y2zs293wx53kzg38y8i42cbcsqydvsdp6hz";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
-  buildInputs = [ dav1d rav1e libde265 x265 libpng libjpeg libaom ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
+  buildInputs = [ libde265 x265 libpng libjpeg libaom ];
+  # TODO: enable dav1d and rav1e codecs when libheif can find them via pkg-config
 
   enableParallelBuilding = true;
 
   meta = {
     homepage = "http://www.libheif.org/";
     description = "ISO/IEC 23008-12:2017 HEIF image file format decoder and encoder";
-    license = lib.licenses.lgpl3Plus;
-    platforms = lib.platforms.unix;
-    maintainers = with lib.maintainers; [ gebner ];
+    license = stdenv.lib.licenses.lgpl3;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = with stdenv.lib.maintainers; [ gebner ];
   };
+
 }

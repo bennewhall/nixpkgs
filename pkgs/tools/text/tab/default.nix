@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromBitbucket, python3 }:
+{ stdenv, fetchFromBitbucket, python3 }:
 
 stdenv.mkDerivation rec {
-  version = "8.0";
+  version = "7.2";
   pname = "tab";
 
   src = fetchFromBitbucket {
     owner = "tkatchev";
     repo = pname;
     rev = version;
-    sha256 = "sha256-RcDvghTiqIdH79khwDIo8PhvmcObmix8WBrHToLwcw4=";
+    sha256 = "1bm15lw0vp901dj2vsqx6yixmn7ls3brrzh1w6zgd1ksjzlm5aax";
   };
 
   checkInputs = [ python3 ];
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Programming language/shell calculator";
     homepage    = "https://tkatchev.bitbucket.io/tab/";
     license     = licenses.boost;

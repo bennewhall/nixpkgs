@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, zlib }:
+{ stdenv, fetchFromGitHub, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "simg2img";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool to convert Android sparse images to raw images";
     homepage = "https://github.com/anestisb/android-simg2img";
     license = licenses.asl20;

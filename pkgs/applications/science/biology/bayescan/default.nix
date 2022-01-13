@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip, llvmPackages }:
+{ stdenv, fetchurl, unzip, llvmPackages }:
 
 stdenv.mkDerivation rec {
   pname = "bayescan";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ unzip ];
-  buildInputs = lib.optional stdenv.cc.isClang llvmPackages.openmp;
+  buildInputs = stdenv.lib.optional stdenv.cc.isClang llvmPackages.openmp;
 
   # Disable FORTIFY_SOURCE or the binary fails with "buffer overflow"
   hardeningDisable = [ "fortify" ];
@@ -29,11 +29,11 @@ stdenv.mkDerivation rec {
     cp -r ../*pdf ../input_examples ../"R functions" $out/share/doc/bayescan
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Detecting natural selection from population-based genetic data";
     homepage = "http://cmpg.unibe.ch/software/BayeScan";
     license = licenses.gpl3;
     maintainers = [ maintainers.bzizou ];
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

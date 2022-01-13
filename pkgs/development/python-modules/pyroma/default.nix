@@ -1,43 +1,21 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, docutils
-, python
-, pygments
-, setuptools
-, requests
+{ stdenv, buildPythonPackage, fetchPypi
+, docutils, pygments, setuptools
 }:
 
 buildPythonPackage rec {
   pname = "pyroma";
-  version = "3.2";
+  version = "2.6";
 
-  src = fetchFromGitHub {
-    owner = "regebro";
-    repo = pname;
-    rev = version;
-    sha256 = "0ln9w984n48nyxwzd1y48l6b18lnv52radcyizaw56lapcgxrzdr";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "00j1j81kiipi5yppmk385cbfccf2ih0xyapl7pw6nqhrf8vh1764";
   };
 
-  propagatedBuildInputs = [
-    docutils
-    pygments
-    setuptools
-    requests
-  ];
+  propagatedBuildInputs = [ docutils pygments setuptools ];
 
-  # https://github.com/regebro/pyroma/blob/3.2/Makefile#L23
-  # PyPITest requires network access
-  checkPhase = ''
-    ${python.interpreter} -m unittest -k 'not PyPITest' pyroma.tests
-  '';
-
-  pythonImportsCheck = [ "pyroma" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Test your project's packaging friendliness";
     homepage = "https://github.com/regebro/pyroma";
     license = licenses.mit;
-    maintainers = with maintainers; [ kamadorueda ];
   };
 }

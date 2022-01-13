@@ -1,27 +1,15 @@
-{ mkDerivation
-, lib
-, fetchFromGitHub
-, pkg-config
-, makeDesktopItem
-, qtbase
-, qttools
-, qtmultimedia
-, qtquick1
-, qtquickcontrols
-, openssl
-, protobuf
-, qmake
+{ mkDerivation, stdenv, fetchurl, pkgconfig, makeDesktopItem
+, qtbase, qttools, qtmultimedia, qtquick1, qtquickcontrols
+, openssl, protobuf, qmake
 }:
 
 mkDerivation rec {
   pname = "ricochet";
   version = "1.1.4";
 
-  src = fetchFromGitHub {
-    owner = "ricochet-im";
-    repo = "ricochet";
-    rev = "v${version}";
-    sha256 = "sha256-CGVTHa0Hqj90WvB6ZbA156DVgzv/R7blsU550y2Ai9c=";
+  src = fetchurl {
+    url = "https://github.com/ricochet-im/ricochet/archive/v${version}.tar.gz";
+    sha256 = "1kfj42ksvj7axc809lb8siqzj5hck2pib427b63a3ipnqc5h1faf";
   };
 
   desktopItem = makeDesktopItem {
@@ -35,16 +23,11 @@ mkDerivation rec {
   };
 
   buildInputs = [
-    qtbase
-    qttools
-    qtmultimedia
-    qtquick1
-    qtquickcontrols
-    openssl
-    protobuf
+    qtbase qttools qtmultimedia qtquick1 qtquickcontrols
+    openssl protobuf
   ];
 
-  nativeBuildInputs = [ pkg-config qmake ];
+  nativeBuildInputs = [ pkgconfig qmake ];
 
   preConfigure = ''
     export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE $(pkg-config --cflags openssl)"
@@ -66,7 +49,7 @@ mkDerivation rec {
   # RCC: Error in 'translation/embedded.qrc': Cannot find file 'ricochet_en.qm'
   enableParallelBuilding = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Anonymous peer-to-peer instant messaging";
     homepage = "https://ricochet.im";
     license = licenses.bsd3;

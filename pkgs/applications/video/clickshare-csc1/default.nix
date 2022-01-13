@@ -1,7 +1,7 @@
 { lib
 , stdenv
 , fetchurl
-, alsa-lib
+, alsaLib
 , autoPatchelfHook
 , binutils-unwrapped
 , gnutar
@@ -40,7 +40,7 @@ stdenv.mkDerivation rec {
     unzip
   ];
   buildInputs = [
-    alsa-lib
+    alsaLib
     libav_0_8
     libnotify
     libresample

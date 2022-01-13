@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , autoPatchelfHook
 , fetchurl
 , glibc
@@ -21,15 +20,15 @@ let
     categories = "Office;";
   };
 
-  runtimeLibs = lib.makeLibraryPath [ gtk3 webkitgtk ];
+  runtimeLibs = stdenv.lib.makeLibraryPath [ gtk3 webkitgtk ];
 in
 stdenv.mkDerivation rec {
   pname = "PortfolioPerformance";
-  version = "0.56.2";
+  version = "0.49.3";
 
   src = fetchurl {
     url = "https://github.com/buchen/portfolio/releases/download/${version}/PortfolioPerformance-${version}-linux.gtk.x86_64.tar.gz";
-    sha256 = "sha256-4iMLn0KTrH7MOlNduSl7BMOZKPakHhhQdR3NQXV2ZZU=";
+    sha256 = "1j8d3bih2hs1c1a6pjqpmdlh2hbj76s00srl0f850d06jhldg3p6";
   };
 
   nativeBuildInputs = [
@@ -58,7 +57,7 @@ stdenv.mkDerivation rec {
     ln -s $out/portfolio/icon.xpm $out/share/pixmaps/portfolio.xpm
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple tool to calculate the overall performance of an investment portfolio";
     homepage = "https://www.portfolio-performance.info/";
     license = licenses.epl10;

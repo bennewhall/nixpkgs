@@ -7,6 +7,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ maven ] ++ lib.optional stdenv.isLinux autoPatchelfHook;
 
+  doBuild = false;
+
   installPhase = ''
     mkdir -p $out
 

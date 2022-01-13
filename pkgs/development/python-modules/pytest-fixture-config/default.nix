@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , setuptools-git, pytest }:
 
 buildPythonPackage rec {
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple configuration objects for Py.test fixtures. Allows you to skip tests when their required config variables aren’t set.";
     homepage = "https://github.com/manahl/pytest-plugins";
     license = licenses.mit;

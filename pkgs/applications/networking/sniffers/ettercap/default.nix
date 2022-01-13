@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, cmake, libpcap, libnet, zlib, curl, pcre
+{ stdenv, fetchFromGitHub, cmake, libpcap, libnet, zlib, curl, pcre
 , openssl, ncurses, glib, gtk3, atk, pango, flex, bison, geoip, harfbuzz
-, pkg-config }:
+, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "ettercap";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   };
 
   strictDeps = true;
-  nativeBuildInputs = [ cmake flex bison pkg-config ];
+  nativeBuildInputs = [ cmake flex bison pkgconfig ];
   buildInputs = [
     libpcap libnet zlib curl pcre openssl ncurses
     glib gtk3 atk pango geoip harfbuzz
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
   # TODO: Remove after the next release (0.8.4 should work without this):
   NIX_CFLAGS_COMPILE = [ "-I${harfbuzz.dev}/include/harfbuzz" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Comprehensive suite for man in the middle attacks";
     longDescription = ''
       Ettercap is a comprehensive suite for man in the middle attacks. It

@@ -3,12 +3,12 @@
 # files were either discarded or moved to outputs.
 # This ensures nothing is forgotten and new files
 # are correctly handled on update.
-{ lib, stdenv, file, writeScript }:
+{ stdenv, file, writeScript }:
 
 let
-  globWith = lib.concatMapStringsSep "\n";
+  globWith = stdenv.lib.concatMapStringsSep "\n";
   rmNoise = noiseGlobs: globWith (f:
-    "rm -rf ${f}") noiseGlobs;
+    ''rm -rf ${f}'') noiseGlobs;
   mvDoc = docGlobs: globWith
     (f: ''mv ${f} "$DOCDIR" 2>/dev/null || true'')
     docGlobs;

@@ -1,53 +1,35 @@
-{ config, pkgs, lib, gnome }:
+{ config, pkgs, lib, gnome3 }:
 
 
 lib.makeScope pkgs.newScope (self: with self; {
 
   switchboardPlugs = [
-    switchboard-plug-a11y
-    switchboard-plug-about
-    switchboard-plug-applications
-    switchboard-plug-bluetooth
-    switchboard-plug-datetime
-    switchboard-plug-display
-    switchboard-plug-keyboard
-    switchboard-plug-mouse-touchpad
-    switchboard-plug-network
-    switchboard-plug-notifications
-    switchboard-plug-onlineaccounts
-    switchboard-plug-pantheon-shell
-    switchboard-plug-power
-    switchboard-plug-printers
-    switchboard-plug-security-privacy
-    switchboard-plug-sharing
+    switchboard-plug-a11y switchboard-plug-about
+    switchboard-plug-applications switchboard-plug-bluetooth
+    switchboard-plug-datetime switchboard-plug-display
+    switchboard-plug-keyboard switchboard-plug-mouse-touchpad
+    switchboard-plug-network switchboard-plug-notifications
+    switchboard-plug-onlineaccounts switchboard-plug-pantheon-shell
+    switchboard-plug-power switchboard-plug-printers
+    switchboard-plug-security-privacy switchboard-plug-sharing
     switchboard-plug-sound
-    switchboard-plug-wacom
   ];
 
   wingpanelIndicators = [
-    wingpanel-applications-menu
-    wingpanel-indicator-a11y
-    wingpanel-indicator-bluetooth
-    wingpanel-indicator-datetime
-    wingpanel-indicator-keyboard
-    wingpanel-indicator-network
-    wingpanel-indicator-nightlight
-    wingpanel-indicator-notifications
-    wingpanel-indicator-power
-    wingpanel-indicator-session
-    wingpanel-indicator-sound
+    wingpanel-applications-menu wingpanel-indicator-bluetooth
+    wingpanel-indicator-datetime wingpanel-indicator-keyboard
+    wingpanel-indicator-network wingpanel-indicator-nightlight
+    wingpanel-indicator-notifications wingpanel-indicator-power
+    wingpanel-indicator-session wingpanel-indicator-sound
   ];
 
-  maintainers = lib.teams.pantheon.members;
+  maintainers = with pkgs.stdenv.lib.maintainers; [ worldofpeace ];
 
-  mutter = pkgs.gnome.mutter338;
-
-  # Using 3.38 to match Mutter used in Pantheon
-  gnome-settings-daemon = pkgs.gnome.gnome-settings-daemon338;
+  mutter = pkgs.gnome3.mutter334;
 
   elementary-gsettings-schemas = callPackage ./desktop/elementary-gsettings-schemas { };
 
-  touchegg = pkgs.touchegg.override { withPantheon = true; };
+  notes-up = pkgs.notes-up.override { withPantheon = true; };
 
   #### APPS
 
@@ -67,25 +49,15 @@ lib.makeScope pkgs.newScope (self: with self; {
 
   elementary-feedback = callPackage ./apps/elementary-feedback { };
 
-  elementary-mail = callPackage ./apps/elementary-mail { };
-
   elementary-music = callPackage ./apps/elementary-music { };
 
   elementary-photos = callPackage ./apps/elementary-photos { };
 
-  elementary-screenshot = callPackage ./apps/elementary-screenshot { };
-
-  elementary-tasks = callPackage ./apps/elementary-tasks { };
+  elementary-screenshot-tool = callPackage ./apps/elementary-screenshot-tool { };
 
   elementary-terminal = callPackage ./apps/elementary-terminal { };
 
   elementary-videos = callPackage ./apps/elementary-videos { };
-
-  epiphany = pkgs.epiphany.override { withPantheon = true; };
-
-  evince = pkgs.evince.override { withPantheon = true; };
-
-  file-roller = pkgs.gnome.file-roller.override { withPantheon = true; };
 
   sideload = callPackage ./apps/sideload { };
 
@@ -100,21 +72,17 @@ lib.makeScope pkgs.newScope (self: with self; {
   elementary-print-shim = callPackage ./desktop/elementary-print-shim { };
 
   elementary-session-settings = callPackage ./desktop/elementary-session-settings {
-    inherit (gnome) gnome-session gnome-keyring;
+    inherit (gnome3) gnome-session gnome-keyring;
   };
 
   elementary-shortcut-overlay = callPackage ./desktop/elementary-shortcut-overlay { };
 
-  file-roller-contract = callPackage ./desktop/file-roller-contract {
-    inherit (gnome) file-roller;
+  extra-elementary-contracts = callPackage ./desktop/extra-elementary-contracts {
+    inherit (gnome3) file-roller gnome-bluetooth;
   };
 
   gala = callPackage ./desktop/gala {
-    inherit (gnome) gnome-desktop;
-  };
-
-  gnome-bluetooth-contract = callPackage ./desktop/gnome-bluetooth-contract {
-    inherit (gnome) gnome-bluetooth;
+    inherit (gnome3) gnome-desktop;
   };
 
   wingpanel = callPackage ./desktop/wingpanel { };
@@ -133,21 +101,24 @@ lib.makeScope pkgs.newScope (self: with self; {
 
   elementary-capnet-assist = callPackage ./services/elementary-capnet-assist { };
 
+  elementary-dpms-helper = callPackage ./services/elementary-dpms-helper { };
+
   elementary-notifications = callPackage ./services/elementary-notifications { };
 
-  elementary-settings-daemon = callPackage ./services/elementary-settings-daemon { };
+  # We're using ubuntu and elementary's patchset due to reasons
+  # explained here -> https://github.com/elementary/greeter/issues/92#issuecomment-376215614
+  # Take note of "I am holding off on "fixing" this bug for as long as possible."
+  elementary-settings-daemon = callPackage ./services/elementary-settings-daemon {
+    inherit (gnome3) gnome-desktop;
+  };
 
   pantheon-agent-geoclue2 = callPackage ./services/pantheon-agent-geoclue2 { };
 
   pantheon-agent-polkit = callPackage ./services/pantheon-agent-polkit { };
 
-  xdg-desktop-portal-pantheon = callPackage ./services/xdg-desktop-portal-pantheon { };
-
   #### WINGPANEL INDICATORS
 
   wingpanel-applications-menu = callPackage ./desktop/wingpanel-indicators/applications-menu { };
-
-  wingpanel-indicator-a11y = callPackage ./desktop/wingpanel-indicators/a11y { };
 
   wingpanel-indicator-bluetooth = callPackage ./desktop/wingpanel-indicators/bluetooth { };
 
@@ -198,7 +169,7 @@ lib.makeScope pkgs.newScope (self: with self; {
   switchboard-plug-onlineaccounts = callPackage ./apps/switchboard-plugs/onlineaccounts { };
 
   switchboard-plug-pantheon-shell = callPackage ./apps/switchboard-plugs/pantheon-shell {
-    inherit (gnome) gnome-desktop;
+    inherit (gnome3) gnome-desktop;
   };
 
   switchboard-plug-power = callPackage ./apps/switchboard-plugs/power { };
@@ -210,8 +181,6 @@ lib.makeScope pkgs.newScope (self: with self; {
   switchboard-plug-sharing = callPackage ./apps/switchboard-plugs/sharing { };
 
   switchboard-plug-sound = callPackage ./apps/switchboard-plugs/sound { };
-
-  switchboard-plug-wacom = callPackage ./apps/switchboard-plugs/wacom { };
 
   ### ARTWORK
 
@@ -225,13 +194,6 @@ lib.makeScope pkgs.newScope (self: with self; {
 
   elementary-wallpapers = callPackage ./artwork/elementary-wallpapers { };
 
-  ### THIRD-PARTY
-
-  # Put packages that ONLY works with Pantheon in pkgs/desktops/pantheon/third-party,
-  # specifically third party switchboard plugins and wingpanel indicators.
-  # Please call these packages in pkgs/top-level/all-packages.nix instead of this file.
-  # https://github.com/NixOS/nixpkgs/issues/115222#issuecomment-906868654
-
 } // lib.optionalAttrs (config.allowAliases or true) {
 
   ### ALIASES
@@ -239,11 +201,5 @@ lib.makeScope pkgs.newScope (self: with self; {
   inherit (pkgs) vala; # added 2019-10-10
 
   cerbere = throw "Cerbere is now obsolete https://github.com/elementary/cerbere/releases/tag/2.5.1.";
-
-  elementary-screenshot-tool = elementary-screenshot; # added 2021-07-21
-
-  extra-elementary-contracts = throw "extra-elementary-contracts has been removed as all contracts have been upstreamed."; # added 2021-12-01
-
-  inherit (pkgs) notes-up; # added 2021-12-18
 
 })

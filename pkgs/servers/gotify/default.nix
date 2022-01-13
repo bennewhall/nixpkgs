@@ -1,5 +1,6 @@
-{ lib
+{ stdenv
 , buildGoPackage
+, lib
 , fetchFromGitHub
 , buildGoModule
 , sqlite
@@ -45,11 +46,11 @@ buildGoModule rec {
   # produce binaries which panic when executed and are not interesting at all
   subPackages = [ "." ];
 
-  ldflags = [
-    "-X main.Version=${version}" "-X main.Mode=prod"
+  buildFlagsArray = [
+    "-ldflags=-X main.Version=${version} -X main.Mode=prod"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple server for sending and receiving messages in real-time per WebSocket";
     homepage = "https://gotify.net";
     license = licenses.mit;

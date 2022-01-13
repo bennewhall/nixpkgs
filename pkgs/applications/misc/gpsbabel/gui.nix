@@ -1,4 +1,4 @@
-{ lib, mkDerivation, qmake, qttools, qtwebkit, qttranslations, gpsbabel }:
+{ stdenv, mkDerivation, qmake, qttools, qtwebkit, qttranslations, gpsbabel }:
 
 mkDerivation {
   pname = "gpsbabel-gui";
@@ -9,8 +9,6 @@ mkDerivation {
 
   nativeBuildInputs = [ qmake qttools ];
   buildInputs = [ qtwebkit ];
-
-  dontWrapQtApps = true;
 
   postPatch = ''
     substituteInPlace mainwindow.cc \
@@ -31,7 +29,7 @@ mkDerivation {
   '';
 
   qtWrapperArgs = [
-    "--prefix PATH : ${lib.makeBinPath [ gpsbabel ]}"
+    "--prefix PATH : ${stdenv.lib.makeBinPath [ gpsbabel ]}"
   ];
 
   postInstall = ''
@@ -41,7 +39,7 @@ mkDerivation {
     install -Dm644 *.qm coretool/*.qm -t $out/share/gpsbabel/translations
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Qt-based GUI for gpsbabel";
     homepage = "http://www.gpsbabel.org/";
     license = licenses.gpl2;

@@ -1,11 +1,9 @@
-{fetchurl, lib, stdenv}:
+{fetchurl, stdenv}:
 
 stdenv.mkDerivation rec {
-  pname = "dbacl";
-  version = "1.14";
-
+  name = "dbacl-1.14";
   src = fetchurl {
-    url = "https://www.lbreyer.com/gpl/dbacl-${version}.tar.gz";
+    url = "https://www.lbreyer.com/gpl/${name}.tar.gz";
     sha256 = "0224g6x71hyvy7jikfxmgcwww1r5lvk0jx36cva319cb9nmrbrq7";
   };
 
@@ -13,7 +11,7 @@ stdenv.mkDerivation rec {
     homepage = "http://dbacl.sourceforge.net/";
     longDescription = "a digramic Bayesian classifier for text recognition.";
     maintainers = [];
-    license = lib.licenses.gpl3;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl3;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

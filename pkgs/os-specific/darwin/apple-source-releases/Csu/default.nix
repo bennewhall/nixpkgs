@@ -1,14 +1,13 @@
-{ lib, appleDerivation', stdenv }:
+{ stdenv, appleDerivation }:
 
-appleDerivation' stdenv {
-
+appleDerivation {
   prePatch = ''
     substituteInPlace Makefile \
       --replace /usr/lib /lib \
       --replace /usr/local/lib /lib \
       --replace /usr/bin "" \
       --replace /bin/ "" \
-      --replace "CC = " "#" \
+      --replace "CC = " "CC = cc #" \
       --replace "SDK_DIR = " "SDK_DIR = . #" \
 
     # Mac OS didn't support rpaths back before 10.5, but we don't care about it.
@@ -19,7 +18,7 @@ appleDerivation' stdenv {
 
   installFlags = [ "DSTROOT=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Apple's common startup stubs for darwin";
     maintainers = with maintainers; [ copumpkin ];
     platforms   = platforms.darwin;

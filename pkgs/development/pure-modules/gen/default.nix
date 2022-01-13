@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl,
-  pkg-config, pure, haskellPackages }:
+{ stdenv, fetchurl,
+  pkgconfig, pure, haskellPackages }:
 
 stdenv.mkDerivation rec {
   baseName = "gen";
@@ -12,16 +12,16 @@ stdenv.mkDerivation rec {
   };
 
   hsEnv = haskellPackages.ghcWithPackages (hsPkgs : [hsPkgs.language-c]);
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ hsEnv pure ];
   makeFlags = [ "libdir=$(out)/lib" "prefix=$(out)/" ];
 
   meta = {
     description = "Pure interface generator";
     homepage = "http://puredocs.bitbucket.org/pure-gen.html";
-    license = lib.licenses.free;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.free;
+    platforms = stdenv.lib.platforms.linux;
     hydraPlatforms = [];
-    maintainers = with lib.maintainers; [ asppsa ];
+    maintainers = with stdenv.lib.maintainers; [ asppsa ];
   };
 }

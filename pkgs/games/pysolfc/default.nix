@@ -1,4 +1,4 @@
-{ lib, fetchzip, buildPythonApplication, python3Packages
+{ stdenv, fetchzip, buildPythonApplication, python3Packages
   , desktop-file-utils, freecell-solver }:
 
 buildPythonApplication rec {
@@ -39,7 +39,7 @@ buildPythonApplication rec {
   # No tests in archive
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A collection of more than 1000 solitaire card games";
     homepage = "https://pysolfc.sourceforge.io";
     license = licenses.gpl3;

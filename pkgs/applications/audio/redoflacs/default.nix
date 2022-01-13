@@ -5,6 +5,8 @@
 , installShellFiles
 , flac
 , sox
+, withAucdtect ? false
+, aucdtect ? null
 }:
 
 stdenv.mkDerivation rec {
@@ -34,7 +36,7 @@ stdenv.mkDerivation rec {
 
   postFixup = ''
     wrapProgram $out/bin/redoflacs \
-      --prefix PATH : ${lib.makeBinPath ([ flac sox ])}
+      --prefix PATH : ${stdenv.lib.makeBinPath ([ flac sox ] ++ lib.optional withAucdtect aucdtect)}
   '';
 
   meta = with lib; {

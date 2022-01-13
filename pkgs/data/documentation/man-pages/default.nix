@@ -1,15 +1,15 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "man-pages";
-  version = "5.13";
+  version = "5.09";
 
   src = fetchurl {
     url = "mirror://kernel/linux/docs/man-pages/${pname}-${version}.tar.xz";
-    sha256 = "sha256-YU2uPv59/UgJhnY6KiqBeSFQMqWkUmwL5eiZol8Ja4s=";
+    sha256 = "1whbxim4diyan97y9pz9k4ck16rmjalw5i1m0dg6ycv3pxv386nz";
   };
 
-  makeFlags = [ "prefix=$(out)" ];
+  makeFlags = [ "MANDIR=$(out)/share/man" ];
   postInstall = ''
     # conflict with shadow-utils
     rm $out/share/man/man5/passwd.5 \
@@ -21,10 +21,10 @@ stdenv.mkDerivation rec {
   '';
   outputDocdev = "out";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Linux development manual pages";
     homepage = "https://www.kernel.org/doc/man-pages/";
-    repositories.git = "https://git.kernel.org/pub/scm/docs/man-pages/man-pages";
+    repositories.git = "http://git.kernel.org/pub/scm/docs/man-pages/man-pages";
     license = licenses.gpl2Plus;
     platforms = with platforms; unix;
     priority = 30; # if a package comes with its own man page, prefer it

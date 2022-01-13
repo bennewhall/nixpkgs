@@ -4,8 +4,8 @@ with lib;
 
 {
   name = "yabar";
-  meta = with pkgs.lib.maintainers; {
-    maintainers = [ ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ ma27 ];
   };
 
   machine = {

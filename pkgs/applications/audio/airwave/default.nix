@@ -1,4 +1,4 @@
-{ lib, stdenv, multiStdenv, cmake, fetchFromGitHub, file, libX11, makeWrapper
+{ stdenv, multiStdenv, cmake, fetchFromGitHub, file, libX11, makeWrapper
 , qt5, requireFile, unzip, wine
 }:
 
@@ -22,7 +22,7 @@ let
     };
     nativeBuildInputs = [ unzip ];
     installPhase = "cp -r . $out";
-    meta.license = lib.licenses.unfree;
+    meta.license = stdenv.lib.licenses.unfree;
   };
 
   wine-wow64 = wine.override {
@@ -73,7 +73,7 @@ multiStdenv.mkDerivation {
     wrapProgram $out/libexec/airwave-host-64.exe --set WINELOADER ${wine-xembed}/bin/wine64
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "WINE-based VST bridge for Linux VST hosts";
     longDescription = ''
       Airwave is a wine based VST bridge, that allows for the use of

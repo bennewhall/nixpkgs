@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ncurses }:
+{ stdenv, fetchFromGitHub, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "pagemon";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     "MANDIR=$(out)/share/man/man8"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Interactive memory/page monitor for Linux";
     longDescription = ''

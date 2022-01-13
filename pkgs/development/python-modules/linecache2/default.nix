@@ -1,7 +1,8 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pbr
+, isPy3k
 }:
 
 buildPythonPackage rec {
@@ -17,7 +18,7 @@ buildPythonPackage rec {
   # circular dependencies for tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A backport of linecache to older supported Pythons";
     homepage = "https://github.com/testing-cabal/linecache2";
     license = licenses.psfl;

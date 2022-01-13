@@ -1,4 +1,4 @@
-{ lib, stdenv, buildPythonPackage, fetchPypi, isPy27, pythonAtLeast
+{ stdenv, buildPythonPackage, fetchPypi, isPy27, pythonAtLeast
 , nose, six, colorama, termstyle }:
 
 buildPythonPackage rec {
@@ -22,7 +22,7 @@ buildPythonPackage rec {
   checkInputs = [ six ];
   propagatedBuildInputs = [ nose colorama termstyle ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A python nose plugin adding color to console results";
     homepage = "https://github.com/JBKahn/rednose";
     license = licenses.mit;

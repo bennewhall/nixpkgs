@@ -1,26 +1,25 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "xlrd";
-  version = "2.0.1";
+  version = "1.2.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "f72f148f54442c6b056bf931dbc34f986fd0c3b0b6b5a58d013c9aef274d0c88";
+    sha256 = "546eb36cee8db40c3eaa46c351e67ffee6eeb5fa2650b71bc4c758a29a1b29b2";
   };
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  checkInputs = [ pytest ];
 
-  # No tests in archive
-  doCheck = false;
+  checkPhase = ''
+    py.test -k "not test_tilde_path_expansion"
+  '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.python-excel.org/";
     description = "Library for developers to extract data from Microsoft Excel (tm) spreadsheet files";
     license = licenses.bsd0;

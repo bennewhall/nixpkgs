@@ -1,18 +1,18 @@
-{lib, stdenv, fetchurl, ncurses, tcl, openssl, pam, libkrb5
+{stdenv, fetchurl, ncurses, tcl, openssl, pam, kerberos
 , openldap
 }:
 
 stdenv.mkDerivation rec {
   pname = "alpine";
-  version = "2.25";
+  version = "2.24";
 
   src = fetchurl {
     url = "http://alpine.x10host.com/alpine/release/src/${pname}-${version}.tar.xz";
-    sha256 = "0xppxhcbafq9qa1rns5zl0n238gai08xhvcf2as0nx7nh84ib2k5";
+    sha256 = "1vxw19nx10y7nx01d9i6gah2f3y5r2idbq56l13bdqi91bx9y6k5";
   };
 
   buildInputs = [
-    ncurses tcl openssl pam libkrb5 openldap
+    ncurses tcl openssl pam kerberos openldap
   ];
 
   hardeningDisable = [ "format" ];
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     "--with-c-client-target=slx"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Console mail reader";
     license = licenses.asl20;
     maintainers = with maintainers; [ raskin ];

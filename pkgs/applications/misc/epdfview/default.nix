@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, pkg-config, gtk2, poppler }:
+{ stdenv, fetchurl, fetchpatch, pkgconfig, gtk2, poppler }:
 
 stdenv.mkDerivation rec {
   pname = "epdfview";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0ibyb60a0b4n34bsjgvhdw8yf24463ky0hpmf6a2jjqsbm5g4v64";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ gtk2 poppler ];
 
   hardeningDisable = [ "format" ];
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
               })
             ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://packages.debian.org/wheezy/epdfview";
     description = "A lightweight PDF document viewer using Poppler and GTK";
     longDescription = ''

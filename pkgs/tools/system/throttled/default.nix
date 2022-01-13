@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python3Packages }:
 
 stdenv.mkDerivation rec {
   pname = "throttled";
-  version = "0.9.2";
+  version = "0.8";
 
   src = fetchFromGitHub {
     owner = "erpalma";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-4aDa6REDHO7gr1czIv6NlepeMVJI93agxJjE2vHiEmk=";
+    sha256 = "0qw124gdgjqij3xhgg8j1mdsg6j0xg340as5qf8hd3gwc38sqi9x";
   };
 
   nativeBuildInputs = [ python3Packages.wrapPython ];
@@ -31,9 +31,9 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  postFixup = "wrapPythonPrograms";
+  postFixup = ''wrapPythonPrograms'';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fix for Intel CPU throttling issues";
     homepage = "https://github.com/erpalma/throttled";
     license = licenses.mit;

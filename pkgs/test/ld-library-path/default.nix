@@ -1,4 +1,4 @@
-{ lib, stdenv }:
+{ stdenv }:
 
 # This tests that libraries listed in LD_LIBRARY_PATH take precedence over those listed in RPATH.
 
@@ -84,5 +84,5 @@ in stdenv.mkDerivation {
     touch $out
   '';
 
-  meta.platforms = lib.platforms.linux;
+  meta.platforms = stdenv.lib.platforms.linux;
 }

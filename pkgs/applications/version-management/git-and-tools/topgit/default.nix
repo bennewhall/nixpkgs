@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, git, perl }:
+{ stdenv, fetchFromGitHub, git, perl }:
 
 stdenv.mkDerivation rec {
   pname = "topgit";
-  version = "0.19.13";
+  version = "0.19.12";
 
   src = fetchFromGitHub {
     owner = "mackyle";
     repo = "topgit";
     rev = "${pname}-${version}";
-    sha256 = "sha256-K0X1DGc1LQsoteUhoHLxVJRrZaaPLKSSF61OKyGB5Qg=";
+    sha256 = "1wvf8hmwwl7a2fr17cfs3pbxjccdsjw9ngzivxlgja0gvfz4hjd5";
   };
 
   makeFlags = [ "prefix=${placeholder "out"}" ];
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     install -Dm755 contrib/tg-completion.bash -t "$out/share/bash-completion/completions/"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "TopGit manages large amount of interdependent topic branches";
     homepage = "https://github.com/mackyle/topgit";
     license = licenses.gpl2;

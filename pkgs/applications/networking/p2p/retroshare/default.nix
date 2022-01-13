@@ -1,53 +1,59 @@
-{ lib, mkDerivation, fetchFromGitHub, qmake, cmake, pkg-config, miniupnpc, bzip2
-, speex, libmicrohttpd, libxml2, libxslt, sqlcipher, rapidjson, libXScrnSaver
-, qtbase, qtx11extras, qtmultimedia, libgnome-keyring3
-}:
+{ stdenv, fetchFromGitHub, libupnp, gpgme, gnome3, glib, libssh, pkgconfig, protobuf, bzip2
+, libXScrnSaver, speex, curl, libxml2, libxslt, sqlcipher, libmicrohttpd, opencv, qmake, ffmpeg_3
+, qtmultimedia, qtx11extras, qttools }:
 
-mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "retroshare";
-  version = "0.6.6";
+  version = "0.6.2";
 
   src = fetchFromGitHub {
     owner = "RetroShare";
     repo = "RetroShare";
     rev = "v${version}";
-    sha256 = "1hsymbhsfgycj39mdkrdp2hgq8irmvxa4a6jx2gg339m1fgf2xmh";
-    fetchSubmodules = true;
+    sha256 = "0hly2x87wdvqzzwf3wjzi7092bj8fk4xs6302rkm8gp9bkkmiiw8";
   };
 
-  patches = [
-    # The build normally tries to get git sub-modules during build
-    # but we already have them checked out
-    ./no-submodules.patch
-  ];
+  # NIX_CFLAGS_COMPILE = [ "-I${glib.dev}/include/glib-2.0" "-I${glib.dev}/lib/glib-2.0/include" "-I${libxml2.dev}/include/libxml2" "-I${sqlcipher}/include/sqlcipher" ];
 
-  nativeBuildInputs = [ pkg-config qmake cmake ];
+  patchPhase = ''
+    # Fix build error
+    sed -i 's/UpnpString_get_String(es_event->PublisherUrl)/es_event->PublisherUrl/' \
+      libretroshare/src/upnp/UPnPBase.cpp
+  '';
+
+  nativeBuildInputs = [ pkgconfig qmake ];
   buildInputs = [
-    speex miniupnpc qtmultimedia qtx11extras qtbase libgnome-keyring3
-    bzip2 libXScrnSaver libxml2 libxslt sqlcipher libmicrohttpd rapidjson
+    speex libupnp gpgme gnome3.libgnome-keyring glib libssh qtmultimedia qtx11extras qttools
+    protobuf bzip2 libXScrnSaver curl libxml2 libxslt sqlcipher libmicrohttpd opencv ffmpeg_3
   ];
 
-  qmakeFlags = [
-    # Upnp library autodetection doesn't work
-    "RS_UPNP_LIB=miniupnpc"
+  preConfigure = ''
+    qmakeFlags="$qmakeFlags DESTDIR=$out"
+  '';
 
-    # These values are normally found from the .git folder
-    "RS_MAJOR_VERSION=${lib.versions.major version}"
-    "RS_MINOR_VERSION=${lib.versions.minor version}"
-    "RS_MINI_VERSION=${lib.versions.patch version}"
-    "RS_EXTRA_VERSION="
-  ];
+  # gui/settings/PluginsPage.h:25:28: fatal error: ui_PluginsPage.h: No such file or directory
+  enableParallelBuilding = false;
 
   postInstall = ''
+    mkdir -p $out/bin
+    mv $out/RetroShare06-nogui $out/bin/RetroShare-nogui
+    mv $out/RetroShare06 $out/bin/Retroshare
+    ln -s $out/bin/RetroShare-nogui $out/bin/retroshare-nogui
+
+    # plugins
+    mkdir -p $out/share/retroshare
+    mv $out/lib* $out/share/retroshare
+
     # BT DHT bootstrap
     cp libbitdht/src/bitdht/bdboot.txt $out/share/retroshare
   '';
 
-  meta = with lib; {
-    description = "Decentralized peer to peer chat application.";
-    homepage = "https://retroshare.cc/";
+  meta = with stdenv.lib; {
+    description = "";
+    homepage = "http://retroshare.sourceforge.net/";
     license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ StijnDW ];
+    maintainers = [ maintainers.domenkozar ];
+    broken = true; # broken by libupnp: 1.6.21 -> 1.8.3 (#41684)
   };
 }

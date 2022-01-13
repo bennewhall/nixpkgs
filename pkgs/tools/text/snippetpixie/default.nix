@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , meson
 , ninja
 , vala
-, pkg-config
+, pkgconfig
 , wrapGAppsHook
 , appstream
 , desktop-file-utils
@@ -24,20 +24,20 @@
 
 stdenv.mkDerivation rec {
   pname = "snippetpixie";
-  version = "1.5.3";
+  version = "1.5.0";
 
   src = fetchFromGitHub {
     owner = "bytepixie";
     repo = pname;
     rev = version;
-    sha256 = "0gs3d9hdywg4vcfbp4qfcagfjqalfgw9xpvywg4pw1cm3rzbdqmz";
+    sha256 = "1cb76kzw34yr1r135lyd75ddm9v99m7i3lyirm353cdch8qspfmv";
   };
 
   nativeBuildInputs = [
     meson
     ninja
     vala
-    pkg-config
+    pkgconfig
     wrapGAppsHook
     appstream
     desktop-file-utils
@@ -73,7 +73,7 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Your little expandable text snippet helper";
     longDescription = ''
       Your little expandable text snippet helper.
@@ -86,8 +86,9 @@ stdenv.mkDerivation rec {
     '';
     homepage = "https://www.snippetpixie.com";
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ianmjones ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [
+      ianmjones
+    ] ++ pantheon.maintainers;
     platforms = platforms.linux;
-    mainProgram = "com.github.bytepixie.snippetpixie";
   };
 }

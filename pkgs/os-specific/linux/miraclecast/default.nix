@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, pkg-config
+{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig
 , glib, readline, pcre, systemd, udev }:
 
 stdenv.mkDerivation {
@@ -12,16 +12,18 @@ stdenv.mkDerivation {
     sha256 = "05afqi33rv7k6pbkkw4mynj6p97vkzhhh13y5nh0yxkyhcgf45pm";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
 
   buildInputs = [ glib pcre readline systemd udev ];
+
+  enableParallelBuilding = true;
 
   mesonFlags = [
     "-Drely-udev=true"
     "-Dbuild-tests=true"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Connect external monitors via Wi-Fi";
     homepage    = "https://github.com/albfan/miraclecast";
     license     = licenses.lgpl21Plus;

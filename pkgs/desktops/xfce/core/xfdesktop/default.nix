@@ -1,26 +1,25 @@
-{ lib, mkXfceDerivation, exo, gtk3, libxfce4ui, libxfce4util, libwnck, xfconf, libnotify, garcon, thunar }:
+{ mkXfceDerivation, exo, gtk3, libxfce4ui, libxfce4util, libwnck3, xfconf, libnotify, garcon, thunar }:
 
 mkXfceDerivation {
   category = "xfce";
   pname = "xfdesktop";
-  version = "4.16.0";
+  version = "4.14.2";
 
-  sha256 = "sha256-w/JNjyAlxZqfVpm8EBt+ieHhUziOtfd//XHzIjJjy/4=";
+  sha256 = "04fhm1pf9290sy3ymrmnfnm2x6fq5ldzvj5bjd9kz6zkx0nsq1za";
 
   buildInputs = [
     exo
     gtk3
     libxfce4ui
     libxfce4util
-    libwnck
+    libwnck3
     xfconf
     libnotify
     garcon
     thunar
   ];
 
-  meta = with lib; {
+  meta = {
     description = "Xfce's desktop manager";
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
   };
 }

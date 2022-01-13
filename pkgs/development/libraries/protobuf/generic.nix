@@ -1,4 +1,4 @@
-{ lib, stdenv, version, src
+{ stdenv, version, src
 , autoreconfHook, zlib, gtest
 , ...
 }:
@@ -13,7 +13,7 @@ stdenv.mkDerivation {
     rm -rf gtest
     cp -r ${gtest.src}/googletest gtest
     chmod -R a+w gtest
-  '' + lib.optionalString stdenv.isDarwin ''
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace src/google/protobuf/testing/googletest.cc \
       --replace 'tmpnam(b)' '"'$TMPDIR'/foo"'
   '';
@@ -54,7 +54,7 @@ stdenv.mkDerivation {
       '';
     license = "mBSD";
     homepage = "https://developers.google.com/protocol-buffers/";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 
   passthru.version = version;

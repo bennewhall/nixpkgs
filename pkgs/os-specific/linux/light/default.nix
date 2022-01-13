@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, coreutils }:
+{ stdenv, fetchFromGitHub, autoreconfHook, coreutils }:
 
 stdenv.mkDerivation rec {
   version = "1.2.2";
@@ -24,8 +24,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "GNU/Linux application to control backlights";
     homepage = "https://haikarainen.github.io/light/";
-    license = lib.licenses.gpl3;
-    maintainers = with lib.maintainers; [ puffnfresh dtzWill ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3;
+    maintainers = with stdenv.lib.maintainers; [ puffnfresh dtzWill ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

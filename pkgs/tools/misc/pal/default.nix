@@ -1,10 +1,9 @@
-{lib, stdenv, fetchurl, glib, gettext, readline, pkg-config }:
+{stdenv, fetchurl, glib, gettext, readline, pkgconfig }:
 
 stdenv.mkDerivation rec {
-  pname = "pal";
-  version = "0.4.3";
+  name = "pal-0.4.3";
   src = fetchurl {
-    url = "mirror://sourceforge/palcal/pal-${version}.tgz";
+    url = "mirror://sourceforge/palcal/${name}.tgz";
     sha256 = "072mahxvd7lcvrayl32y589w4v3vh7bmlcnhiksjylknpsvhqiyf";
   };
 
@@ -15,7 +14,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "prefix=$(out)" ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ glib gettext readline ];
 
   hardeningDisable = [ "format" ];
@@ -23,8 +22,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://palcal.sourceforge.net/";
     description = "Command-line calendar program that can keep track of events";
-    license = lib.licenses.gpl2;
-    maintainers = with lib.maintainers; [viric];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [viric];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

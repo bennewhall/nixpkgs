@@ -1,26 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, zlib }:
+{ fetchFromGitHub, zlib, stdenv }:
 let
   libs-src = fetchFromGitHub {
     owner = "megatokio";
     repo = "Libraries";
-    # 2021-02-02
-    rev = "c5cb3ed512c677db6f33e2d3539dfbb6e547030b";
-    sha256 = "sha256-GiplhZf640uScVdKL6E/fegOgtC9SE1xgBqcX86XADk=";
+    rev = "97ea480051b106e83a086dd42583dfd3e9d458a1";
+    sha256 = "1kqmjb9660mnb0r18s1grrrisx6b73ijsinlyr97vz6992jd5dzh";
   };
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "zasm";
-  version = "4.4.7";
-
+  version = "4.2.6";
   src = fetchFromGitHub {
     owner = "megatokio";
     repo = "zasm";
-    rev = version;
-    sha256 = "sha256-Zbno8kmzss1H2FjwzHB4U7UXxa6oDfsPV80MVVFfM68=";
-    extraPostFetch = ''
-      # remove folder containing files with weird names (causes the hash to turn out differently under macOS vs. Linux)
-      rm -rv $out/Test
-    '';
+    rev = "f1424add17a5514895a598d6b5e3982579961519";
+    sha256 = "1kqnqdqp2bfsazs6vfx2aiqanxxagn8plx8g6rc11vmr8yqnnpks";
   };
 
   buildInputs = [ zlib ];
@@ -29,23 +23,22 @@ stdenv.mkDerivation rec {
     ln -sf ${libs-src} Libraries
   '';
 
-  makeFlags = [
-    "CC=${stdenv.cc.targetPrefix}cc"
-    "CXX=${stdenv.cc.targetPrefix}c++"
-    "LINK=${stdenv.cc.targetPrefix}c++"
-    "STRIP=${stdenv.cc.targetPrefix}strip"
-  ];
-
-  installPhase = ''
-    install -Dm755 -t $out/bin zasm
+  buildPhase = ''
+    cd Linux
+    make
   '';
 
-  meta = with lib; {
-    description = "Z80 / 8080 / Z180 assembler (for unix-style OS)";
+  installPhase = ''
+    mkdir -p $out/bin
+    mv zasm $out/bin
+  '';
+
+  meta = with stdenv.lib; {
+    description = "Z80 / 8080 assembler (for unix-style OS)";
     homepage = "https://k1.spdns.de/Develop/Projects/zasm/Distributions/";
     license = licenses.bsd2;
     maintainers = [ maintainers.turbomack ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
     badPlatforms = platforms.aarch64;
   };
 }

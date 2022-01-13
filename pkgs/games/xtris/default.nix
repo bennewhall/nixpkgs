@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip, xorg }:
+{ stdenv, fetchzip, xorg }:
 stdenv.mkDerivation rec {
   pname = "xtris";
   version = "1.15";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   '';
   buildInputs = [ xorg.libX11 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A multi-player version of the classical game of Tetris, for the X Window system";
     homepage = "https://web.archive.org/web/20120315061213/http://www.iagora.com/~espel/xtris/xtris.html";
     license = licenses.gpl2;

@@ -2,7 +2,7 @@
 , mkDerivation
 , fetchFromGitHub
 , cmake
-, pkg-config
+, pkgconfig
 , pcre
 , qtbase
 , qttools
@@ -15,18 +15,18 @@
 
 mkDerivation rec {
   pname = "obconf-qt";
-  version = "0.16.1";
+  version = "0.15.0";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "1nw2r3h7ynmygpslnzjn40vvickd988nm31wy2b645xcck89q4rm";
+    sha256 = "13bah70k78kscrr01z7dwdzwhay8mz0f7gfsg2a6w113mgqkn7ib";
   };
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
     lxqt-build-tools
   ];
 
@@ -44,9 +44,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/obconf-qt";
     description = "The Qt port of obconf, the Openbox configuration tool";
-    license = licenses.gpl2Plus;
+    homepage = "https://github.com/lxqt/obconf-qt";
+    license = licenses.gpl2;
     platforms = with platforms; unix;
     maintainers = with maintainers; [ romildo ];
   };

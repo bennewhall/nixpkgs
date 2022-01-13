@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, fetchpatch, alsa-lib, AudioUnit, CoreServices }:
+{ stdenv, lib, fetchurl, fetchpatch, alsaLib, AudioUnit, CoreServices }:
 
 let
 
@@ -11,18 +11,17 @@ let
 in
 
 stdenv.mkDerivation rec {
-  pname = "audiofile";
-  version = "0.3.6";
+  name = "audiofile-0.3.6";
 
   buildInputs =
-    lib.optionals stdenv.isLinux [
-      alsa-lib
-    ] ++ lib.optionals stdenv.isDarwin [
+    stdenv.lib.optionals stdenv.isLinux [
+      alsaLib
+    ] ++ stdenv.lib.optionals stdenv.isDarwin [
       CoreServices AudioUnit
     ];
 
   src = fetchurl {
-    url = "https://audiofile.68k.org/audiofile-${version}.tar.gz";
+    url = "https://audiofile.68k.org/${name}.tar.gz";
     sha256 = "0rb927zknk9kmhprd8rdr4azql4gn2dp75a36iazx2xhkbqhvind";
   };
 
@@ -39,7 +38,7 @@ stdenv.mkDerivation rec {
   #
   # There might be a more sensible way to do this with autotools, but I am not
   # smart enough to discover it.
-  preBuild = lib.optionalString stdenv.hostPlatform.isStatic ''
+  preBuild = lib.optionalString stdenv.targetPlatform.isStatic ''
     make -C libaudiofile $makeFlags
     sed -i "s/dependency_libs=.*/dependency_libs=' -lstdc++'/" libaudiofile/libaudiofile.la
   '';
@@ -85,7 +84,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library for reading and writing audio files in various formats";
     homepage    = "http://www.68k.org/~michael/audiofile/";
     license     = licenses.lgpl21Plus;

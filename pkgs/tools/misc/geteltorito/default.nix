@@ -1,4 +1,4 @@
-{ lib, stdenv, perl, ronn, fetchurl }:
+{ stdenv, perl, ronn, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "geteltorito";
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     install -vD geteltorito $out/bin/geteltorito
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extract the initial/default boot image from a CD image if existent";
     homepage = "https://userpages.uni-koblenz.de/~krienke/ftp/noarch/geteltorito/";
     maintainers = [ maintainers.Profpatsch ];

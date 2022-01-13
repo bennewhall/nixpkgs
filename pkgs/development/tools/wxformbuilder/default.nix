@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , wxGTK31
 , meson
@@ -26,7 +26,7 @@ stdenv.mkDerivation {
     wxGTK31
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "RAD tool for wxWidgets GUI design";
     homepage = "https://github.com/wxFormBuilder/wxFormBuilder";
     license = licenses.gpl2;

@@ -1,11 +1,15 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, intltool, file,
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, intltool, file,
   desktop-file-utils, enchant, gtk3, gtkmm3, gst_all_1, hicolor-icon-theme,
-  libsigcxx, libxmlxx, xdg-utils, isocodes, wrapGAppsHook
+  libsigcxx, libxmlxx, xdg_utils, isocodes, wrapGAppsHook
 }:
 
-stdenv.mkDerivation rec {
-  pname = "subtitleeditor";
+let
   version = "0.54.0";
+in
+
+stdenv.mkDerivation {
+  pname = "subtitleeditor";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "kitone";
@@ -16,7 +20,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs =  [
     autoreconfHook
-    pkg-config
+    pkgconfig
     intltool
     file
     wrapGAppsHook
@@ -31,13 +35,10 @@ stdenv.mkDerivation rec {
     gst_all_1.gstreamermm
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-good
-    gst_all_1.gst-plugins-bad
-    gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-libav
     hicolor-icon-theme
     libsigcxx
     libxmlxx
-    xdg-utils
+    xdg_utils
     isocodes
   ];
 
@@ -56,8 +57,8 @@ stdenv.mkDerivation rec {
       makes it easier to synchronise subtitles to voices.
       '';
     homepage = "http://kitone.github.io/subtitleeditor/";
-    license = lib.licenses.gpl3Plus;
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.plcplc ];
+    license = stdenv.lib.licenses.gpl3Plus;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.plcplc ];
   };
 }

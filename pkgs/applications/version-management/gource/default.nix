@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, SDL2, ftgl, pkg-config, libpng, libjpeg, pcre
+{ stdenv, fetchurl, SDL2, ftgl, pkgconfig, libpng, libjpeg, pcre
 , SDL2_image, freetype, glew, libGLU, libGL, boost, glm
 }:
 
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "16p7b1x4r0915w883lp374jcdqqja37fnb7m8vnsfnl2n64gi8qr";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     glew SDL2 ftgl libpng libjpeg pcre SDL2_image libGLU libGL
     boost glm freetype
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gource.io/";
     description = "A Software version control visualization tool";
     license = licenses.gpl3Plus;

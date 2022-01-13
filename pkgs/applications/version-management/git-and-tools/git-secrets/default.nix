@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, git, coreutils }:
+{ stdenv, fetchFromGitHub, makeWrapper, git, coreutils }:
 
 stdenv.mkDerivation rec {
   pname = "git-secrets";
@@ -20,10 +20,10 @@ stdenv.mkDerivation rec {
     install -m444 -Dt $out/share/man/man1 git-secrets.1
 
     wrapProgram $out/bin/git-secrets \
-      --prefix PATH : "${lib.makeBinPath [ git coreutils ]}"
+      --prefix PATH : "${stdenv.lib.makeBinPath [ git coreutils ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Prevents you from committing secrets and credentials into git repositories";
     homepage = "https://github.com/awslabs/git-secrets";
     license = licenses.asl20;

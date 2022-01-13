@@ -1,49 +1,47 @@
-{
-  stdenv, lib, fetchFromGitHub,
-  cmake, expat, libyamlcpp, ilmbase, pystring, # Base dependencies
-
-  glew, freeglut, # Only required on Linux
-  Carbon, GLUT, Cocoa, # Only required on Darwin
-
-  pythonBindings ? true, # Python bindings
-  python3Packages,
-
-  buildApps ? true, # Utility applications
-  lcms2, openimageio2, openexr,
-}:
+{ stdenv, lib, fetchFromGitHub, cmake, boost, pkgconfig, lcms2, tinyxml, git }:
 
 with lib;
 
 stdenv.mkDerivation rec {
   pname = "opencolorio";
-  version = "2.0.2";
+  version = "1.1.1";
 
   src = fetchFromGitHub {
-    owner = "AcademySoftwareFoundation";
+    owner = "imageworks";
     repo = "OpenColorIO";
     rev = "v${version}";
-    sha256 = "sha256-Yr7yypXxf3ZvQVsDxVuKTN/DGPaLkIWli26RRoEDMdA=";
+    sha256 = "12srvxca51czpfjl0gabpidj9n84mw78ivxy5w75qhq2mmc798sb";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ expat libyamlcpp ilmbase pystring ]
-    ++ lib.optionals stdenv.hostPlatform.isLinux [ glew freeglut ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [ Carbon GLUT Cocoa ]
-    ++ lib.optionals pythonBindings [ python3Packages.python python3Packages.pybind11 ]
-    ++ lib.optionals buildApps [ lcms2 openimageio2 openexr ];
+  outputs = [ "bin" "out" "dev" ];
 
-    cmakeFlags = [ "-DOCIO_INSTALL_EXT_PACKAGES=NONE" ]
-    ++ lib.optional (!pythonBindings) "-DOCIO_BUILD_PYTHON=OFF"
-    ++ lib.optional (!buildApps) "-DOCIO_BUILD_APPS=OFF";
+  # TODO: Investigate whether git can be dropped: It's only used to apply patches
+  nativeBuildInputs = [ cmake pkgconfig git ];
 
-  # TODO Investigate this: Python and GPU tests fail to load libOpenColorIO.so.2.0
-  # doCheck = true;
+  buildInputs = [ lcms2 tinyxml ] ++ optional stdenv.isDarwin boost;
 
-  meta = with lib; {
+  postPatch = ''
+    substituteInPlace src/core/CMakeLists.txt --replace "-Werror" ""
+    substituteInPlace src/pyglue/CMakeLists.txt --replace "-Werror" ""
+  '';
+
+  cmakeFlags = [
+    "-DUSE_EXTERNAL_LCMS=ON"
+    "-DUSE_EXTERNAL_TINYXML=ON"
+    # External libyamlcpp 0.6.* not compatible: https://github.com/imageworks/OpenColorIO/issues/517
+    "-DUSE_EXTERNAL_YAML=OFF"
+  ] ++ optional stdenv.isDarwin "-DOCIO_USE_BOOST_PTR=ON"
+    ++ optional (!stdenv.hostPlatform.isi686 && !stdenv.hostPlatform.isx86_64) "-DOCIO_USE_SSE=OFF";
+
+  postInstall = ''
+    mkdir -p $bin/bin; mv $out/bin $bin/
+  '';
+
+  meta = with stdenv.lib; {
     homepage = "https://opencolorio.org";
     description = "A color management framework for visual effects and animation";
     license = licenses.bsd3;
-    maintainers = [ maintainers.rytone ];
+    maintainers = [ maintainers.goibhniu ];
     platforms = platforms.unix;
   };
 }

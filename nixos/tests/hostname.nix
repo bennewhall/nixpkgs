@@ -7,16 +7,13 @@ with import ../lib/testing-python.nix { inherit system pkgs; };
 with pkgs.lib;
 
 let
-  makeHostNameTest = hostName: domain: fqdnOrNull:
+  makeHostNameTest = hostName: domain:
     let
       fqdn = hostName + (optionalString (domain != null) ".${domain}");
-      getStr = str: # maybeString2String
-        let res = builtins.tryEval str;
-        in if (res.success && res.value != null) then res.value else "null";
     in
       makeTest {
         name = "hostname-${fqdn}";
-        meta = with pkgs.lib.maintainers; {
+        meta = with pkgs.stdenv.lib.maintainers; {
           maintainers = [ primeos blitz ];
         };
 
@@ -29,15 +26,12 @@ let
           ];
         };
 
-        testScript = { nodes, ... }: ''
+        testScript = ''
           start_all()
 
           machine = ${hostName}
 
           machine.wait_for_unit("network-online.target")
-
-          # Test if NixOS computes the correct FQDN (either a FQDN or an error/null):
-          assert "${getStr nodes.machine.config.networking.fqdn}" == "${getStr fqdnOrNull}"
 
           # The FQDN, domain name, and hostname detection should work as expected:
           assert "${fqdn}" == machine.succeed("hostname --fqdn").strip()
@@ -66,7 +60,7 @@ let
 
 in
 {
-  noExplicitDomain = makeHostNameTest "ahost" null null;
+  noExplicitDomain = makeHostNameTest "ahost" null;
 
-  explicitDomain = makeHostNameTest "ahost" "adomain" "ahost.adomain";
+  explicitDomain = makeHostNameTest "ahost" "adomain";
 }

@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchpatch, fetchFromGitHub, pkg-config, autoreconfHook, wrapGAppsHook
-, gnome, avahi, gtk3, libayatana-appindicator-gtk3, libnotify, libpulseaudio
+{ stdenv, fetchpatch, fetchFromGitHub, pkgconfig, autoreconfHook, wrapGAppsHook
+, gnome3, avahi, gtk3, libayatana-appindicator-gtk3, libnotify, libpulseaudio
 , xlibsWrapper, gsettings-desktop-schemas
 }:
 
@@ -25,14 +25,14 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ pkg-config autoreconfHook wrapGAppsHook ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook wrapGAppsHook ];
   buildInputs = [
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
     avahi gtk3 libayatana-appindicator-gtk3 libnotify libpulseaudio xlibsWrapper
     gsettings-desktop-schemas
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PulseAudio system tray";
     homepage = "https://github.com/christophgysin/pasystray";
     license = licenses.lgpl21Plus;

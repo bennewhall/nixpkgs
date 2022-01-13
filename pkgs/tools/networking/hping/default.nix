@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libpcap, withTcl ? true, tcl }:
+{ stdenv, fetchFromGitHub, libpcap, withTcl ? true, tcl }:
 
 stdenv.mkDerivation rec {
   pname = "hping";
@@ -11,12 +11,12 @@ stdenv.mkDerivation rec {
     sha256 = "0y0n1ybij3yg9lfgzcwfmjz1sjg913zcqrv391xx83dm0j80sdpb";
   };
 
-  buildInputs = [ libpcap ] ++ lib.optional withTcl tcl;
+  buildInputs = [ libpcap ] ++ stdenv.lib.optional withTcl tcl;
 
   postPatch = ''
     substituteInPlace Makefile.in --replace "gcc" "$CC"
     substituteInPlace version.c --replace "RELEASE_DATE" "\"$version\""
-  '' + lib.optionalString stdenv.isLinux ''
+  '' + stdenv.lib.optionalString stdenv.isLinux ''
     sed -i -e 's|#include <net/bpf.h>|#include <pcap/bpf.h>|' \
       libpcap_stuff.c script.c
   '';
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     ln -s hping3.8.gz $out/share/man/man8/hping2.8.gz
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A command-line oriented TCP/IP packet assembler/analyzer";
     homepage = "http://www.hping.org/";
     license = licenses.gpl2Only;

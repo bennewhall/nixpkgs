@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , jack2
 , cairo
 , liblo
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -37,7 +37,7 @@ stdenv.mkDerivation rec {
     ntk
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://openavproductions.com/luppp/";  # https does not work
     description = "A music creation tool, intended for live use";
     license = licenses.gpl3Plus;

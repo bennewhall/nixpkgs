@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gmp
+{ stdenv, fetchurl, gmp
 , withEmacsSupport ? true
 , withContrib ? true }:
 
@@ -10,14 +10,14 @@ let
     sha256 = "184m4hz2xszhcfc6w9fw9qibhmcvgjmikwfwkb345xypr59jm93d";
   };
 
-  postInstallContrib = lib.optionalString withContrib
+  postInstallContrib = stdenv.lib.optionalString withContrib
   ''
     local contribDir=$out/lib/ats2-postiats-*/ ;
     mkdir -p $contribDir ;
     tar -xzf "${contrib}" --strip-components 1 -C $contribDir ;
   '';
 
-  postInstallEmacs = lib.optionalString withEmacsSupport
+  postInstallEmacs = stdenv.lib.optionalString withEmacsSupport
   ''
     local siteLispDir=$out/share/emacs/site-lisp/ats2 ;
     mkdir -p $siteLispDir ;
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ gmp ];
 
-  setupHook = with lib;
+  setupHook = with stdenv.lib;
     let
       hookFiles =
         [ ./setup-hook.sh ]
@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
 
   postInstall = postInstallContrib + postInstallEmacs;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Functional programming language with dependent types";
     homepage    = "http://www.ats-lang.org";
     license     = licenses.gpl3Plus;

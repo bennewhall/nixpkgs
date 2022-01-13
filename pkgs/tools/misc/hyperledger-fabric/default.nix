@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "hyperledger-fabric";
@@ -26,7 +26,7 @@ buildGoPackage rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An implementation of blockchain technology, leveraging familiar and proven technologies";
     homepage = "https://wiki.hyperledger.org/projects/Fabric";
     license = licenses.asl20;

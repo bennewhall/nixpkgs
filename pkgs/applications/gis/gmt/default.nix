@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, curl, Accelerate, CoreGraphics, CoreVideo
+{ stdenv, fetchurl, cmake, curl, Accelerate, CoreGraphics, CoreVideo
 , fftwSinglePrec, netcdf, pcre, gdal, blas, lapack, glibc, ghostscript, dcw-gmt
 , gshhg-gmt }:
 
@@ -9,10 +9,10 @@
 
 stdenv.mkDerivation rec {
   pname = "gmt";
-  version = "6.2.0";
+  version = "6.1.1";
   src = fetchurl {
     url = "https://github.com/GenericMappingTools/gmt/releases/download/${version}/gmt-${version}-src.tar.gz";
-    sha256 = "sha256-q3BikSrurRAhdw+tR1bgqZhg/ejqm0KPsAwi+hWju/w=";
+    sha256 = "04mdxxcild56jhg9ax522xh78v1wl1x8iqv2f6wv32x9b2lgy1lp";
   };
 
   nativeBuildInputs = [ cmake ];
@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
       "-DBLAS_LIBRARY=${blas}/lib/libblas.so"
     ]);
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.generic-mapping-tools.org";
     description = "Tools for manipulating geographic and cartesian data sets";
     longDescription = ''

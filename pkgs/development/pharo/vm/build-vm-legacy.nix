@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , cmake
 , bash
@@ -10,10 +10,9 @@
 , libGL
 , freetype
 , xorg
-, alsa-lib
+, alsaLib
 , cairo
 , libuuid
-, libnsl
 , makeWrapper
 , ... }:
 
@@ -23,17 +22,17 @@ stdenv.mkDerivation rec {
 
   inherit name src;
 
-  pharo-share = import ./share.nix { inherit lib stdenv fetchurl unzip; };
+  pharo-share = import ./share.nix { inherit stdenv fetchurl unzip; };
 
   hardeningDisable = [ "format" "pic" ];
 
   nativeBuildInputs = [ unzip cmake gcc makeWrapper ];
 
   buildInputs = [ bash glibc openssl libGLU libGL freetype
-                  xorg.libX11 xorg.libICE xorg.libSM alsa-lib cairo pharo-share libnsl ];
+                  xorg.libX11 xorg.libICE xorg.libSM alsaLib cairo pharo-share ];
 
-  LD_LIBRARY_PATH = lib.makeLibraryPath
-    [ cairo libGLU libGL freetype openssl libuuid alsa-lib
+  LD_LIBRARY_PATH = stdenv.lib.makeLibraryPath
+    [ cairo libGLU libGL freetype openssl libuuid alsaLib
       xorg.libICE xorg.libSM ];
 
   preConfigure = ''
@@ -71,7 +70,7 @@ stdenv.mkDerivation rec {
     ln -s "${pharo-share}/lib/"*.sources $prefix/lib/$name
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Clean and innovative Smalltalk-inspired environment";
     homepage = "https://pharo.org";
     longDescription = ''
@@ -90,9 +89,9 @@ stdenv.mkDerivation rec {
     license = licenses.mit;
     maintainers = [ maintainers.lukego ];
     # Pharo VM sources are packaged separately for darwin (OS X)
-    platforms = lib.filter
-      (system: with lib.systems.elaborate { inherit system; };
+    platforms = stdenv.lib.filter
+      (system: with stdenv.lib.systems.elaborate { inherit system; };
          isUnix && !isDarwin)
-      lib.platforms.mesaPlatforms;
+      stdenv.lib.platforms.mesaPlatforms;
   };
 }

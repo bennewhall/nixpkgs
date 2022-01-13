@@ -1,4 +1,4 @@
-{ lib, stdenv, patchelf, fetchurl, p7zip
+{ stdenv, patchelf, fetchurl, p7zip
 , nss, nspr, libusb1
 , qtbase, qtmultimedia, qtserialport
 , autoPatchelfHook, wrapQtAppsHook
@@ -6,7 +6,7 @@
 
 stdenv.mkDerivation rec {
   pname = "lightburn";
-  version = "1.0.06";
+  version = "0.9.19";
 
   nativeBuildInputs = [
     p7zip
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/LightBurnSoftware/deployment/releases/download/${version}/LightBurn-Linux64-v${version}.7z";
-    sha256 = "sha256-2Wlyt9Xw/FNaFkN1Q6utXdGzp42piebESQARhfpvRhM=";
+    sha256 = "0j3ydivd666fphmgi3ar48xabgi2dcky7p2fyfl7ghxjplflqs9q";
   };
 
   buildInputs = [
@@ -42,8 +42,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Layout, editing, and control software for your laser cutter";
     homepage = "https://lightburnsoftware.com/";
-    license = lib.licenses.unfree;
-    maintainers = with lib.maintainers; [ q3k ];
+    license = stdenv.lib.licenses.unfree;
+    maintainers = with stdenv.lib.maintainers; [ q3k ];
     platforms = [ "x86_64-linux" ];
   };
 }

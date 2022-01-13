@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation {
 
@@ -32,11 +32,11 @@ stdenv.mkDerivation {
     cp doc/man/fpupdate.8 $out/share/man/man8
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.f-prot.com";
     description = "A popular proprietary antivirus program";
     license = licenses.unfree;
-    maintainers = [ ];
+    maintainers = [ maintainers.phreedom ];
     platforms = platforms.linux;
   };
 }

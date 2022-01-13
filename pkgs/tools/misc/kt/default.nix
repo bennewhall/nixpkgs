@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildGoPackage }:
+{ stdenv, fetchFromGitHub, buildGoPackage }:
 
 buildGoPackage rec {
   pname = "kt";
@@ -13,7 +13,7 @@ buildGoPackage rec {
 
   goPackagePath = "github.com/fgeller/kt";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Kafka command line tool";
     homepage = "https://github.com/fgeller/kt";
     maintainers = with maintainers; [ utdemir ];

@@ -1,33 +1,25 @@
 { lib
-, stdenv
 , buildPythonPackage
-, fetchFromGitHub
-, filelock
+, fetchPypi
 , flit-core
-, importlib-metadata
-, packaging
-, pep517
-, pytest-mock
-, pytest-rerunfailures
-, pytest-xdist
-, pytestCheckHook
-, pythonOlder
 , toml
-, tomli
+, pep517
+, packaging
+, isPy3k
+, typing
+, pythonOlder
+, importlib-metadata
 }:
 
 buildPythonPackage rec {
   pname = "build";
-  version = "0.7.0";
+  version = "0.0.3.1";
+
   format = "pyproject";
 
-  disabled = pythonOlder "3.6";
-
-  src = fetchFromGitHub {
-    owner = "pypa";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-kT3Gax/ZCeV8Kb7CBArGWn/qzVSVdMRUoid/8cAovnE=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "757b5542168326b6f1898a1ce1131bb2cf306ee4c7e54e39c815c5be217ff87d";
   };
 
   nativeBuildInputs = [
@@ -35,53 +27,20 @@ buildPythonPackage rec {
   ];
 
   propagatedBuildInputs = [
-    packaging
+    toml
     pep517
-    tomli
+    packaging
+  ] ++ lib.optionals (!isPy3k) [
+    typing
   ] ++ lib.optionals (pythonOlder "3.8") [
     importlib-metadata
   ];
 
-  checkInputs = [
-    filelock
-    toml
-    pytest-mock
-    pytest-rerunfailures
-    pytest-xdist
-    pytestCheckHook
-  ];
+  # No tests in archive
+  doCheck = false;
 
-  pytestFlagsArray = [
-    "-n"
-    "$NIX_BUILD_CORES"
-  ];
-
-  disabledTests = [
-    # Tests often fail with StopIteration
-    "test_isolat"
-    "test_default_pip_is_never_too_old"
-    "test_build"
-    "test_with_get_requires"
-    "test_init"
-    "test_output"
-    "test_wheel_metadata"
-  ] ++ lib.optionals stdenv.isDarwin [
-    # Expects Apple's Python and its quirks
-    "test_can_get_venv_paths_with_conflicting_default_scheme"
-  ];
-
-  pythonImportsCheck = [
-    "build"
-  ];
-
-  meta = with lib; {
-    description = "Simple, correct PEP517 package builder";
-    longDescription = ''
-      build will invoke the PEP 517 hooks to build a distribution package. It
-      is a simple build tool and does not perform any dependency management.
-    '';
-    homepage = "https://github.com/pypa/build";
-    license = licenses.mit;
-    maintainers = with maintainers; [ fab ];
+  meta = {
+    description = "A simple, correct PEP517 package builder";
+    license = lib.licenses.mit;
   };
 }

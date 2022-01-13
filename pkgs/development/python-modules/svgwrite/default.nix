@@ -1,19 +1,20 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
+, isPy3k
 , pythonOlder
 , pytest
 }:
 
 buildPythonPackage rec {
   pname = "svgwrite";
-  version = "1.4.1";
+  version = "1.4";
 
   src = fetchFromGitHub {
     owner = "mozman";
     repo = "svgwrite";
     rev = "v${version}";
-    sha256 = "sha256-d//ZUFb5yj51uD1fb6yJJROaQ2MLyfA3Pa84TblqLNk=";
+    sha256 = "15xjz5b4dw1sg3a5k4wmzky4h5v1n937id8vl6hha1a2xj42z2s5";
   };
 
   # svgwrite requires Python 3.6 or newer

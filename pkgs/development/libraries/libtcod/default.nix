@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromBitbucket, cmake, SDL, libGLU, libGL, upx, zlib }:
+{ stdenv, fetchFromBitbucket, cmake, SDL, libGLU, libGL, upx, zlib }:
 
 stdenv.mkDerivation {
 
@@ -21,14 +21,13 @@ stdenv.mkDerivation {
 
   cmakeFlags = [ "-DLIBTCOD_SAMPLES=OFF" ];
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ SDL libGLU libGL upx zlib ];
+  buildInputs = [ cmake SDL libGLU libGL upx zlib ];
 
   meta = {
     description = "API for roguelike games";
     homepage = "http://roguecentral.org/doryen/libtcod/";
-    license = lib.licenses.bsd3;
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.skeidel ];
+    license = stdenv.lib.licenses.bsd3;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.skeidel ];
   };
 }

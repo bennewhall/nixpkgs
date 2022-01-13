@@ -1,5 +1,5 @@
 { lib
-, pythonOlder
+, isPy27
 , fetchFromGitHub
 , buildPythonPackage
 , pytestCheckHook
@@ -8,7 +8,7 @@
 buildPythonPackage rec {
   pname = "tls-parser";
   version = "1.2.2";
-  disabled = pythonOlder "3.7";
+  disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "nabla-c0d3";
@@ -18,8 +18,6 @@ buildPythonPackage rec {
   };
 
   checkInputs = [ pytestCheckHook ];
-
-  pythonImportsCheck = [ "tls_parser" ];
 
   meta = with lib; {
     homepage = "https://github.com/nabla-c0d3/tls_parser";

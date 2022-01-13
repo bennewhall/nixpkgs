@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, boost, curl, ffmpeg, icoutils, libGLU, libmad, libogg
-, libpng, libsndfile, libvorbis, lua, pkg-config, SDL2, SDL2_image, SDL2_net
+{ stdenv, fetchurl, boost, curl, ffmpeg, icoutils, libGLU, libmad, libogg
+, libpng, libsndfile, libvorbis, lua, pkgconfig, SDL2, SDL2_image, SDL2_net
 , SDL2_ttf, smpeg, speex, zziplib, zlib, makeWrapper, makeDesktopItem, unzip
 , alephone }:
 
@@ -7,15 +7,15 @@ let
   self = stdenv.mkDerivation rec {
     outputs = [ "out" "icons" ];
     pname = "alephone";
-    version = "1.4";
+    version = "1.3.1";
 
     src = fetchurl {
-      url = let date = "20210408";
+      url = let date = "20200904";
       in "https://github.com/Aleph-One-Marathon/alephone/releases/download/release-${date}/AlephOne-${date}.tar.bz2";
-      sha256 = "sha256-tMwATUhUpo8W2oSWxGSZcAHVkj1PWEvUR/rpMZwWCWA=";
+      sha256 = "13ck3mp9qd5pkiq6zwvr744bwvmnqkgj5vpf325sz1mcvnv7l8lh";
     };
 
-    nativeBuildInputs = [ pkg-config icoutils ];
+    nativeBuildInputs = [ pkgconfig icoutils ];
 
     buildInputs = [
       boost
@@ -52,7 +52,7 @@ let
       popd
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description =
         "Aleph One is the open source continuation of Bungie’s Marathon 2 game engine";
       homepage = "https://alephone.lhowon.org/";
@@ -93,8 +93,8 @@ in self // {
       '';
 
       meta = alephone.meta // {
-        license = lib.licenses.free;
+        license = stdenv.lib.licenses.free;
         hydraPlatforms = [ ];
       } // meta;
-    } // extraArgs);
+    });
 }

@@ -1,5 +1,5 @@
-{ lib, stdenv
-, python3
+{ stdenv
+, python
 , libffi
 , git
 , cmake
@@ -7,9 +7,9 @@
 , fetchgit
 , makeWrapper
 , runCommand
+, runCommandNoCC
 , llvmPackages_5
 , glibc
-, ncurses
 }:
 
 let
@@ -38,10 +38,8 @@ let
       chmod -R a+w ./tools/cling
     '';
 
-    nativeBuildInputs = [ python3 git cmake llvmPackages_5.llvm.dev ];
-    buildInputs = [ libffi llvmPackages_5.llvm zlib ncurses ];
-
-    strictDeps = true;
+    nativeBuildInputs = [ python git cmake ];
+    buildInputs = [ libffi llvmPackages_5.llvm zlib ];
 
     cmakeFlags = [
       "-DLLVM_TARGETS_TO_BUILD=host;NVPTX"
@@ -52,7 +50,7 @@ let
       "-DCLING_INCLUDE_TESTS=ON"
     ];
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "The Interactive C++ Interpreter";
       homepage = "https://root.cern/cling/";
       license = with licenses; [ lgpl21 ncsa ];
@@ -75,16 +73,16 @@ let
   flags = [
     "-nostdinc"
     "-nostdinc++"
-    "-isystem" "${lib.getDev stdenv.cc.libc}/include"
-    "-I" "${lib.getDev unwrapped}/include"
-    "-I" "${lib.getLib unwrapped}/lib/clang/5.0.2/include"
+    "-isystem" "${glibc.dev}/include"
+    "-I" "${unwrapped}/include"
+    "-I" "${unwrapped}/lib/clang/5.0.2/include"
   ];
 
   # Autodetect the include paths for the compiler used to build Cling, in the same way Cling does at
   # https://github.com/root-project/cling/blob/v0.7/lib/Interpreter/CIFactory.cpp#L107:L111
   # Note: it would be nice to just put the compiler in Cling's PATH and let it do this by itself, but
   # unfortunately passing -nostdinc/-nostdinc++ disables Cling's autodetection logic.
-  compilerIncludeFlags = runCommand "compiler-include-flags.txt" {} ''
+  compilerIncludeFlags = runCommandNoCC "compiler-include-flags.txt" {} ''
     export LC_ALL=C
     ${stdenv.cc}/bin/c++ -xc++ -E -v /dev/null 2>&1 | sed -n -e '/^.include/,''${' -e '/^ \/.*++/p' -e '}' > tmp
     sed -e 's/^/-isystem /' -i tmp

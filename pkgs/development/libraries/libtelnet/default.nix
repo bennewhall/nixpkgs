@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, autoreconfHook, zlib }:
+{ stdenv, fetchFromGitHub, pkgconfig, autoreconfHook, zlib }:
 
 stdenv.mkDerivation {
   pname = "libtelnet";
@@ -11,14 +11,14 @@ stdenv.mkDerivation {
     sha256 = "1lp6gdbndsp2w8mhy88c2jknxj2klvnggvq04ln7qjg8407ifpda";
   };
 
-  nativeBuildInputs = [ pkg-config autoreconfHook ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook ];
   buildInputs = [ zlib ];
 
   meta = {
     description = "Simple RFC-complient TELNET implementation as a C library";
     homepage = "https://github.com/seanmiddleditch/libtelnet";
-    license = lib.licenses.publicDomain;
-    maintainers = [ lib.maintainers.tomberek ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.publicDomain;
+    maintainers = [ stdenv.lib.maintainers.tomberek ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

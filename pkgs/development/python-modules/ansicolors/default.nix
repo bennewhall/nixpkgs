@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pytest }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest }:
 
 buildPythonPackage rec {
   pname = "ansicolors";
@@ -16,7 +16,7 @@ buildPythonPackage rec {
     py.test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/verigak/colors/";
     description = "ANSI colors for Python";
     license = licenses.isc;

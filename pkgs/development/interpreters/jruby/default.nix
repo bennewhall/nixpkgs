@@ -1,4 +1,4 @@
-{ lib, stdenv, callPackage, fetchurl, makeWrapper, jre }:
+{ stdenv, callPackage, fetchurl, makeWrapper, jre }:
 
 let
 # The version number here is whatever is reported by the RUBY_VERSION string
@@ -6,14 +6,14 @@ rubyVersion = callPackage ../ruby/ruby-version.nix {} "2" "5" "7" "";
 jruby = stdenv.mkDerivation rec {
   pname = "jruby";
 
-  version = "9.3.2.0";
+  version = "9.2.13.0";
 
   src = fetchurl {
     url = "https://s3.amazonaws.com/jruby.org/downloads/${version}/jruby-bin-${version}.tar.gz";
-    sha256 = "sha256-JmmcoCvur6gyZXPBElxXpZcbqLlNFfhOazuvJZQkTzM=";
+    sha256 = "0n5glz6xm3skrfihzn3g5awdxpjsqn2k8k46gv449rk2l50w5a3k";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   installPhase = ''
      mkdir -pv $out/docs
@@ -23,7 +23,7 @@ jruby = stdenv.mkDerivation rec {
 
      for i in $out/bin/jruby{,.bash}; do
        wrapProgram $i \
-         --set JAVA_HOME ${jre.home}
+         --set JAVA_HOME ${jre}
      done
 
      ln -s $out/bin/jruby $out/bin/ruby
@@ -50,7 +50,7 @@ jruby = stdenv.mkDerivation rec {
     libPath = "lib/${rubyEngine}/${rubyVersion.libDir}";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Ruby interpreter written in Java";
     homepage = "http://jruby.org/";
     license = with licenses; [ cpl10 gpl2 lgpl21 ];

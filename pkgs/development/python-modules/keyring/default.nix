@@ -1,62 +1,43 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, fetchPypi
-, pythonOlder
-, setuptools-scm
-, importlib-metadata
+{ lib, stdenv, buildPythonPackage, fetchPypi, isPy27, pythonOlder
 , dbus-python
-, jeepney
+, entrypoints
+, importlib-metadata
+, pytest
+, pytest-flake8
 , secretstorage
-, pytestCheckHook
+, setuptools_scm
+, toml
 }:
 
 buildPythonPackage rec {
   pname = "keyring";
-  version = "23.4.0";
-  disabled = pythonOlder "3.6";
+  version = "21.5.0";
+  disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-iPIGAkKV48b7FrsKYPtLt+wRhWKdxacp8SqnwjbQE4c=";
+    sha256 = "207bd66f2a9881c835dad653da04e196c678bf104f8252141d2d3c4f31051579";
   };
 
   nativeBuildInputs = [
-    setuptools-scm
+    setuptools_scm
+    toml
   ];
 
-  propagatedBuildInputs = [
-    # this should be optional, however, it has a different API
-    importlib-metadata # see https://github.com/jaraco/keyring/issues/503#issuecomment-798973205
+  checkInputs = [ pytest pytest-flake8 ];
 
-    dbus-python
-    jeepney
-    secretstorage
-  ];
+  propagatedBuildInputs = [ dbus-python entrypoints ]
+  ++ lib.optional stdenv.isLinux secretstorage
+  ++ lib.optionals (pythonOlder "3.8") [ importlib-metadata ];
 
-  pythonImportsCheck = [
-    "keyring"
-    "keyring.backend"
-  ];
-
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  disabledTests = [
-    # E       ValueError: too many values to unpack (expected 1)
-    "test_entry_point"
-  ];
-
-  disabledTestPaths = [
-    "tests/backends/test_macOS.py"
-  ];
+  # checks try to access a darwin path on linux
+  doCheck = false;
 
   meta = with lib; {
     description = "Store and access your passwords safely";
-    homepage    = "https://github.com/jaraco/keyring";
-    license     = licenses.mit;
-    maintainers = with maintainers; [ lovek323 dotlambda ];
+    homepage    = "https://pypi.python.org/pypi/keyring";
+    license     = licenses.psfl;
+    maintainers = with maintainers; [ lovek323 ];
     platforms   = platforms.unix;
   };
 }

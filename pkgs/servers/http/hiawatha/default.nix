@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 
 , cmake
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ cmake ninja ];
-  buildInputs = [ mbedtls ] ++ lib.optionals enableXslt [ libxslt libxml2 ];
+  buildInputs = [ mbedtls ] ++ stdenv.lib.optionals enableXslt [ libxslt libxml2 ];
 
   prePatch = ''
     substituteInPlace CMakeLists.txt --replace SETUID ""
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
     ( if enableToolkit   then "-DENABLE_TOOLKIT=on"     else "-DENABLE_TOOLKIT=off"     )
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.hiawatha-webserver.org";
     description = "An advanced and secure webserver";
     license = licenses.gpl2;

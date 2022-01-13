@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config }:
+{ stdenv, fetchFromGitHub, cmake, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "msgpuck";
@@ -13,13 +13,13 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
-  meta = with lib; {
-     description = "A simple and efficient MsgPack binary serialization library in a self-contained header file";
+  meta = with stdenv.lib; {
+     description = ''A simple and efficient MsgPack binary serialization library in a self-contained header file'';
      homepage = "https://github.com/rtsisyk/msgpuck";
      license = licenses.bsd2;
-     platforms = platforms.all;
+     platforms = platforms.linux;
      maintainers = with maintainers; [ izorkin ];
  };
 }

@@ -1,35 +1,34 @@
-{ lib, stdenv, fetchFromGitHub, cmake, gtest, boost, pkg-config, protobuf, icu, Foundation }:
+{ stdenv, fetchFromGitHub, cmake, gmock, boost, pkgconfig, protobuf, icu }:
 
 stdenv.mkDerivation rec {
   pname = "phonenumber";
-  version = "8.12.37";
+  version = "8.11.3";
 
   src = fetchFromGitHub {
     owner = "googlei18n";
     repo = "libphonenumber";
     rev = "v${version}";
-    sha256 = "sha256-xLxadSxVY3DjFDQrqj3BuOvdMaKdFSLjocfzovJCBB0=";
+    sha256 = "06y3mh1d1mks6d0ynxp3980g712nkf8l5nyljpybsk326b246hg9";
   };
 
   nativeBuildInputs = [
     cmake
-    gtest
-    pkg-config
+    gmock
+    pkgconfig
   ];
 
   buildInputs = [
     boost
     protobuf
     icu
-  ] ++ lib.optional stdenv.isDarwin Foundation;
+  ];
 
   cmakeDir = "../cpp";
 
   checkPhase = "./libphonenumber_test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Google's i18n library for parsing and using phone numbers";
-    homepage = "https://github.com/google/libphonenumber";
     license = licenses.asl20;
     maintainers = with maintainers; [ illegalprime ];
   };

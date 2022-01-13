@@ -1,9 +1,10 @@
 { buildPythonPackage
 , isPy27
 , fetchPypi
-, pytest-runner
-, setuptools-scm
-, pytestCheckHook
+, pytestrunner
+, setuptools_scm
+, singledispatch
+, pytest
 , lib
 }:
 
@@ -17,13 +18,13 @@ buildPythonPackage rec {
   };
 
   nativeBuildInputs = [
-    pytest-runner
-    setuptools-scm
+    pytestrunner
+    setuptools_scm
   ];
 
   checkInputs = [
-    pytestCheckHook
-  ];
+    pytest
+  ] ++ lib.optionals isPy27 [ singledispatch ];
 
   meta = with lib; {
     description = "Library providing syntactic sugar for creating variant forms of a canonical function";

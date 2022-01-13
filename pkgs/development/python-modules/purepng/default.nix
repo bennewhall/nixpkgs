@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , python
 , fetchFromGitHub
@@ -38,7 +38,7 @@ buildPythonPackage {
     ${python.interpreter} code/test_png.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pure Python library for PNG image encoding/decoding";
     homepage    = "https://github.com/scondo/purepng";
     license     = licenses.mit;

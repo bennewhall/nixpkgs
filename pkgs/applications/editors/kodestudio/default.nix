@@ -1,6 +1,6 @@
 { stdenv, lib, fetchurl, makeDesktopItem, makeWrapper
 , # Patchelf dependencies:
-  alsa-lib, atomEnv, boehmgc, flac, libogg, libvorbis, libXScrnSaver, libGLU, libGL
+  alsaLib, atomEnv, boehmgc, flac, libogg, libvorbis, libXScrnSaver, libGLU, libGL
 , openssl, xorg, zlib
 }:
 
@@ -29,8 +29,7 @@ in
         inherit sha256;
     };
 
-    nativeBuildInputs = [ makeWrapper ];
-    buildInputs = [ libXScrnSaver ];
+    buildInputs = [ makeWrapper libXScrnSaver ];
 
     desktopItem = makeDesktopItem {
       name = "kodestudio";
@@ -57,7 +56,7 @@ in
           $out/kodestudio
       patchelf \
           --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-          --set-rpath ".:${stdenv.cc.libc}/lib:${xorg.libXinerama}/lib:${xorg.libX11}/lib:${alsa-lib}/lib:${libGL}/lib:${libGLU}/lib:${openssl.out}/lib" \
+          --set-rpath ".:${stdenv.cc.libc}/lib:${xorg.libXinerama}/lib:${xorg.libX11}/lib:${alsaLib}/lib:${libGL}/lib:${libGLU}/lib:${openssl.out}/lib" \
           $out/resources/app/extensions/krom/Krom/linux/Krom
       patchelf \
           --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
@@ -112,10 +111,10 @@ in
 
       # Wrap preload libXss
       wrapProgram $out/bin/kodestudio \
-          --prefix LD_PRELOAD : ${lib.makeLibraryPath [ libXScrnSaver ]}/libXss.so.1
+          --prefix LD_PRELOAD : ${stdenv.lib.makeLibraryPath [ libXScrnSaver ]}/libXss.so.1
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = ''
         An IDE for Kha based on Visual Studio Code
       '';

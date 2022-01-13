@@ -1,26 +1,23 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, gnugrep
-, nix
-, enableFlakes ? null # deprecated
-}:
+{ lib, stdenv, fetchFromGitHub, gnugrep, nix }:
+
 stdenv.mkDerivation rec {
   pname = "nix-direnv";
-  version = "1.5.1";
+  version = "1.1";
 
   src = fetchFromGitHub {
     owner = "nix-community";
     repo = "nix-direnv";
     rev = version;
-    sha256 = "sha256-/V2v4dF3DEvsrJRbHD3wF5ZByek26NjphmaPG8FU9lI=";
+    sha256 = "sha256-xMz6e0OLeB3eltGrLV3Hew0lMjH5LSgqJ1l7JT2Ho/M=";
   };
 
   # Substitute instead of wrapping because the resulting file is
   # getting sourced, not executed:
   postPatch = ''
-    sed -i "1a NIX_BIN_PREFIX=${nix}/bin/" direnvrc
-    substituteInPlace direnvrc --replace "grep" "${gnugrep}/bin/grep"
+    substituteInPlace direnvrc \
+      --replace "grep" "${gnugrep}/bin/grep" \
+      --replace "nix-shell" "${nix}/bin/nix-shell" \
+      --replace "nix-instantiate" "${nix}/bin/nix-instantiate"
   '';
 
   installPhase = ''
@@ -29,7 +26,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fast, persistent use_nix implementation for direnv";
     homepage    = "https://github.com/nix-community/nix-direnv";
     license     = licenses.mit;

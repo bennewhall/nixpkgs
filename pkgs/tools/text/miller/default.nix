@@ -1,20 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, flex, libtool }:
+{ stdenv, fetchFromGitHub, autoreconfHook, flex, libtool }:
 
 stdenv.mkDerivation rec {
   pname = "miller";
 
-  version = "5.10.3";
+  version = "5.10.0";
 
   src = fetchFromGitHub {
     owner = "johnkerl";
     repo = "miller";
     rev = "v${version}";
-    sha256 = "sha256-Mag7bIfZNdp+sM54yKp8HdH3kWjwWRfyPBGthej2jd8=";
+    sha256 = "02jqbxnchljyqnmlbxjaf5zpdi03gxapfy38dfikl5j4f7yyxvjs";
   };
 
   nativeBuildInputs = [ autoreconfHook flex libtool ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Like awk, sed, cut, join, and sort for name-indexed data such as CSV, TSV, and tabular JSON";
     homepage    = "http://johnkerl.org/miller/";
     license     = licenses.bsd2;

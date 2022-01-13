@@ -1,37 +1,42 @@
 { lib
-, stdenv
-, fetchPypi
+, fetchFromGitHub
 , buildPythonPackage
 , aplpy
-, joblib
 , astropy
-, casa-formats-io
 , radio_beam
-, six
-, dask
-, pytestCheckHook
+, pytest
 , pytest-astropy
 , astropy-helpers
 }:
 
 buildPythonPackage rec {
   pname = "spectral-cube";
-  version = "0.6.0";
-  format = "pyproject";
+  version = "0.4.5";
 
-  src = fetchPypi {
-    inherit pname version;
-    sha256 = "1c0pp82wgl680w2vcwlrrz46sy83z1qs74w5bd691wg0512hv2jx";
+  # Fetch from GitHub instead of PyPi, as 0.4.5 isn't available in PyPi
+  src = fetchFromGitHub {
+    owner = "radio-astro-tools";
+    repo = pname;
+    rev = "v${version}";
+    sha256 = "1xc1m6vpl0bm600fx9vypa7zcvwg7yvhgn0w89y6v9d1vl0qcs7z";
   };
 
-  propagatedBuildInputs = [ astropy casa-formats-io radio_beam joblib six dask ];
-  checkInputs = [ pytestCheckHook aplpy pytest-astropy ];
+  propagatedBuildInputs = [ astropy radio_beam ];
 
-  # On x86_darwin, this test fails with "Fatal Python error: Aborted"
-  # when sandbox = true.
-  disabledTestPaths = lib.optionals stdenv.isDarwin [
-    "spectral_cube/tests/test_visualization.py"
-  ];
+  nativeBuildInputs = [ astropy-helpers ];
+
+  checkInputs = [ aplpy pytest pytest-astropy ];
+
+  # Disable automatic update of the astropy-helper module
+  postPatch = ''
+    substituteInPlace setup.cfg --replace "auto_use = True" "auto_use = False"
+  '';
+
+  # Tests must be run in the build directory
+  checkPhase = ''
+    cd build/lib
+    pytest
+  '';
 
   meta = {
     description = "Library for reading and analyzing astrophysical spectral data cubes";

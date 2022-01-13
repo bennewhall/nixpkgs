@@ -1,12 +1,10 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, pytestCheckHook
+{ lib, buildPythonPackage, fetchPypi
+, pytest
 }:
 
 buildPythonPackage rec {
-  pname = "biplist";
   version = "1.0.3";
+  pname = "biplist";
 
   src = fetchPypi {
     inherit pname version;
@@ -14,18 +12,12 @@ buildPythonPackage rec {
   };
 
   checkInputs = [
-    pytestCheckHook
+    pytest
   ];
 
-  disabledTests = [
-    # Failing tests
-    "testConvertToXMLPlistWithData"
-    "testWriteToFile"
-    "testXMLPlist"
-    "testXMLPlistWithData"
-  ];
-
-  pythonImportsCheck = [ "biplist" ];
+  checkPhase = ''
+    pytest
+  '';
 
   meta = with lib; {
     homepage = "https://bitbucket.org/wooster/biplist/src/master/";

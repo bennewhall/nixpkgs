@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, perl, gmp, mpfr, ppl, ocaml, findlib, camlidl, mlgmpidl }:
+{ stdenv, fetchFromGitHub, perl, gmp, mpfr, ppl, ocaml, findlib, camlidl, mlgmpidl }:
 
 stdenv.mkDerivation rec {
   name = "ocaml${ocaml.version}-apron-${version}";
@@ -30,9 +30,9 @@ stdenv.mkDerivation rec {
   '';
 
   meta = {
-    license = lib.licenses.lgpl21;
+    license = stdenv.lib.licenses.lgpl21;
     homepage = "http://apron.cri.ensmp.fr/library/";
-    maintainers = [ lib.maintainers.vbgl ];
+    maintainers = [ stdenv.lib.maintainers.vbgl ];
     description = "Numerical abstract domain library";
     inherit (ocaml.meta) platforms;
   };

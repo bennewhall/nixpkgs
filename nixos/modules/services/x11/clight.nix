@@ -11,21 +11,14 @@ let
     else if isBool v      then boolToString v
     else if isString v    then ''"${escape [''"''] v}"''
     else if isList v      then "[ " + concatMapStringsSep ", " toConf v + " ]"
-    else if isAttrs v     then "\n{\n" + convertAttrs v + "\n}"
     else abort "clight.toConf: unexpected type (v = ${v})";
 
-  getSep = v:
-    if isAttrs v then ":"
-    else "=";
-
-  convertAttrs = attrs: concatStringsSep "\n" (mapAttrsToList
-    (name: value: "${toString name} ${getSep value} ${toConf value};")
-    attrs);
-
-  clightConf = pkgs.writeText "clight.conf" (convertAttrs
-    (filterAttrs
-      (_: value: value != null)
-      cfg.settings));
+  clightConf = pkgs.writeText "clight.conf"
+    (concatStringsSep "\n" (mapAttrsToList
+      (name: value: "${toString name} = ${toConf value};")
+      (filterAttrs
+        (_: value: value != null)
+        cfg.settings)));
 in {
   options.services.clight = {
     enable = mkOption {
@@ -56,10 +49,9 @@ in {
     };
 
     settings = let
-      validConfigTypes = with types; oneOf [ int str bool float ];
-      collectionTypes = with types; oneOf [ validConfigTypes (listOf validConfigTypes) ];
+      validConfigTypes = with types; either int (either str (either bool float));
     in mkOption {
-      type = with types; attrsOf (nullOr (either collectionTypes (attrsOf collectionTypes)));
+      type = with types; attrsOf (nullOr (either validConfigTypes (listOf validConfigTypes)));
       default = {};
       example = { captures = 20; gamma_long_transition = true; ac_capture_timeouts = [ 120 300 60 ]; };
       description = ''
@@ -71,24 +63,16 @@ in {
   };
 
   config = mkIf cfg.enable {
-    assertions = let
-      inRange = v: l: r: v >= l && v <= r;
-    in [
-      { assertion = config.location.provider == "manual" ->
-          inRange config.location.latitude (-90) 90 && inRange config.location.longitude (-180) 180;
-        message = "You must specify a valid latitude and longitude if manually providing location"; }
-    ];
-
     boot.kernelModules = [ "i2c_dev" ];
     environment.systemPackages = with pkgs; [ clight clightd ];
     services.dbus.packages = with pkgs; [ clight clightd ];
     services.upower.enable = true;
 
     services.clight.settings = {
-      gamma.temp = with cfg.temperature; mkDefault [ day night ];
+      gamma_temp = with cfg.temperature; mkDefault [ day night ];
     } // (optionalAttrs (config.location.provider == "manual") {
-      daytime.latitude = mkDefault config.location.latitude;
-      daytime.longitude = mkDefault config.location.longitude;
+      latitude = mkDefault config.location.latitude;
+      longitude = mkDefault config.location.longitude;
     });
 
     services.geoclue2.appConfig.clightc = {

@@ -8,22 +8,24 @@
 , sqlcipher
 
 # Needed for running tests:
-, qtbase, xvfb-run
+, qtbase, xvfb_run
 
 , python2, python3Packages
 }:
 
 stdenv.mkDerivation rec {
   pname = "kmymoney";
-  version = "5.1.1";
+  version = "5.1.0";
 
   src = fetchurl {
     url = "mirror://kde/stable/kmymoney/${version}/src/${pname}-${version}.tar.xz";
-    sha256 = "sha256-33ufeOhZb5nSgpXKc4cI8GVe4Fd4nf2SHHsbq5ZXgpg=";
+    sha256 = "0l8kywq77yaf1bqgdqswrai9ws6a2l11drg0wgyi7f8js7qnif9d";
   };
 
   # Hidden dependency that wasn't included in CMakeLists.txt:
   NIX_CFLAGS_COMPILE = "-I${kitemmodels.dev}/include/KF5";
+
+  enableParallelBuilding = true;
 
   nativeBuildInputs = [
     doxygen extra-cmake-modules graphviz kdoctools python2
@@ -55,7 +57,7 @@ stdenv.mkDerivation rec {
   '';
 
   doInstallCheck = stdenv.hostPlatform == stdenv.buildPlatform;
-  installCheckInputs = [ xvfb-run ];
+  installCheckInputs = [ xvfb_run ];
   installCheckPhase =
     lib.optionalString doInstallCheck ''
       xvfb-run -s '-screen 0 1024x768x24' make test \

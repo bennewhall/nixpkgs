@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, coreutils, findutils, git }:
+{ stdenv, fetchFromGitHub, coreutils, findutils, git }:
 
 stdenv.mkDerivation rec {
   pname = "gibo";
@@ -10,6 +10,8 @@ stdenv.mkDerivation rec {
     rev = version;
     sha256 = "07j3sv9ar9l074krajw8nfmsfmdp836irsbd053dbqk2v880gfm6";
   };
+
+  phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin $out/share/bash-completion/completions
@@ -25,8 +27,8 @@ stdenv.mkDerivation rec {
 
   meta = {
     homepage = "https://github.com/simonwhitaker/gibo";
-    license = lib.licenses.publicDomain;
+    license = stdenv.lib.licenses.publicDomain;
     description = "A shell script for easily accessing gitignore boilerplates";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

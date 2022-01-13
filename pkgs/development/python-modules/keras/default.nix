@@ -1,23 +1,23 @@
-{ lib, buildPythonPackage, fetchPypi
-, pytest, pytest-cov, pytest-xdist
+{ stdenv, buildPythonPackage, fetchPypi
+, pytest, pytestcov, pytestpep8, pytest_xdist
 , six, numpy, scipy, pyyaml, h5py
 , keras-applications, keras-preprocessing
 }:
 
 buildPythonPackage rec {
-  pname = "keras";
-  version = "2.7.0";
-  format = "wheel";
+  pname = "Keras";
+  version = "2.4.3";
 
   src = fetchPypi {
-    inherit format pname version;
-    sha256 = "0c33ae1f728064ca0d35dfba999e9c316f03623bf5688c82fb83cc74a80ea248";
+    inherit pname version;
+    sha256 = "fedd729b52572fb108a98e3d97e1bac10a81d3917d2103cc20ab2a5f03beb973";
   };
 
   checkInputs = [
     pytest
-    pytest-cov
-    pytest-xdist
+    pytestcov
+    pytestpep8
+    pytest_xdist
   ];
 
   propagatedBuildInputs = [
@@ -28,7 +28,7 @@ buildPythonPackage rec {
   # Couldn't get tests working
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Deep Learning library for Theano and TensorFlow";
     homepage = "https://keras.io";
     license = licenses.mit;

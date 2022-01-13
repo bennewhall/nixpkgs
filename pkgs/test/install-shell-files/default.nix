@@ -1,10 +1,10 @@
-{ lib, runCommandLocal, recurseIntoAttrs, installShellFiles }:
+{ stdenv, runCommandLocal, recurseIntoAttrs, installShellFiles }:
 
 let
   runTest = name: env: buildCommand:
     runCommandLocal "install-shell-files--${name}" ({
       nativeBuildInputs = [ installShellFiles ];
-      meta.platforms = lib.platforms.all;
+      meta.platforms = stdenv.lib.platforms.all;
     } // env) buildCommand;
 in
 

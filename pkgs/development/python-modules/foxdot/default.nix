@@ -1,29 +1,20 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, fetchPypi
-, tkinter
-, supercollider
-}:
+{ stdenv, buildPythonPackage, fetchPypi, tkinter, supercollider }:
 
 buildPythonPackage rec {
   pname = "FoxDot";
-  version = "0.8.12";
+  version = "0.8.11";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "528999da55ad630e540a39c0eaeacd19c58c36f49d65d24ea9704d0781e18c90";
+    sha256 = "00yqpkv7cxwk301cyiwjzr9yfq8hpnhqyspw3z874ydrl3cmssdb";
   };
 
-  propagatedBuildInputs = [ tkinter ]
-    # we currently build SuperCollider only on Linux
-    # but FoxDot is totally usable on macOS with the official SuperCollider binary
-    ++ lib.optionals stdenv.isLinux [ supercollider ];
+  propagatedBuildInputs = [ tkinter supercollider ];
 
   # Requires a running SuperCollider instance
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Live coding music with SuperCollider";
     homepage = "https://foxdot.org/";
     license = licenses.cc-by-sa-40;

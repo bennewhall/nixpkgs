@@ -1,5 +1,5 @@
-{ lib, buildPythonPackage, fetchPypi
-, betamax, requests-toolbelt }:
+{ stdenv, buildPythonPackage, fetchPypi
+, betamax, requests_toolbelt }:
 
 buildPythonPackage rec {
   pname = "betamax-matchers";
@@ -10,9 +10,9 @@ buildPythonPackage rec {
     sha256 = "07qpwjyq2i2aqhz5iwghnj4pqr2ys5n45v1vmpcfx9r5mhwrsq43";
   };
 
-  buildInputs = [ betamax requests-toolbelt ];
+  buildInputs = [ betamax requests_toolbelt ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/sigmavirus24/betamax_matchers";
     description = "A group of experimental matchers for Betamax";
     license = licenses.asl20;

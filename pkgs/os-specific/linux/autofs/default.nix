@@ -1,12 +1,14 @@
-{ lib, stdenv, fetchurl, flex, bison, linuxHeaders, libtirpc, mount, umount, nfs-utils, e2fsprogs
-, libxml2, libkrb5, kmod, openldap, sssd, cyrus_sasl, openssl, rpcsvc-proto }:
+{ stdenv, fetchurl, flex, bison, linuxHeaders, libtirpc, mount, umount, nfs-utils, e2fsprogs
+, libxml2, kerberos, kmod, openldap, sssd, cyrus_sasl, openssl, rpcsvc-proto }:
 
-stdenv.mkDerivation rec {
+let
   version = "5.1.6";
-  pname = "autofs";
+  name = "autofs-${version}";
+in stdenv.mkDerivation {
+  inherit name;
 
   src = fetchurl {
-    url = "mirror://kernel/linux/daemons/autofs/v5/autofs-${version}.tar.xz";
+    url = "mirror://kernel/linux/daemons/autofs/v5/${name}.tar.xz";
     sha256 = "1vya21mb4izj3khcr3flibv7xc15vvx2v0rjfk5yd31qnzcy7pnx";
   };
 
@@ -34,7 +36,7 @@ stdenv.mkDerivation rec {
     #make install SUBDIRS="samples" # impure!
   '';
 
-  buildInputs = [ linuxHeaders libtirpc libxml2 libkrb5 kmod openldap sssd
+  buildInputs = [ linuxHeaders libtirpc libxml2 kerberos kmod openldap sssd
                   openssl cyrus_sasl rpcsvc-proto ];
 
   nativeBuildInputs = [ flex bison ];
@@ -42,8 +44,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Kernel-based automounter";
     homepage = "https://www.kernel.org/pub/linux/daemons/autofs/";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     executables = [ "automount" ];
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

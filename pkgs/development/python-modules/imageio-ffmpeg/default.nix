@@ -1,42 +1,22 @@
 { lib
 , buildPythonPackage
-, isPy3k
 , fetchPypi
-, substituteAll
-, ffmpeg
-, python
+, isPy3k
 }:
 
 buildPythonPackage rec {
   pname = "imageio-ffmpeg";
-  version = "0.4.5";
+  version = "0.4.2";
+
+  src = fetchPypi {
+    sha256 = "13b05b17a941a9f4a90b16910b1ffac159448cff051a153da8ba4b4343ffa195";
+    inherit pname version;
+  };
 
   disabled = !isPy3k;
 
-  src = fetchPypi {
-    inherit pname version;
-    sha256 = "f2ea4245a2adad25dedf98d343159579167e549ac8c4691cef5eff980e20c139";
-  };
-
-  patches = [
-    (substituteAll {
-      src = ./ffmpeg-path.patch;
-      ffmpeg = "${ffmpeg}/bin/ffmpeg";
-    })
-  ];
-
-  checkPhase = ''
-    runHook preCheck
-
-    ${python.interpreter} << EOF
-    from imageio_ffmpeg import get_ffmpeg_version
-    assert get_ffmpeg_version() == '${ffmpeg.version}'
-    EOF
-
-    runHook postCheck
-  '';
-
-  pythonImportsCheck = [ "imageio_ffmpeg" ];
+  # No test infrastructure in repository.
+  doCheck = false;
 
   meta = with lib; {
     description = "FFMPEG wrapper for Python";

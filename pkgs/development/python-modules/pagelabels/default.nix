@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pdfrw }:
+{ stdenv, buildPythonPackage, fetchPypi, pdfrw }:
 
 buildPythonPackage rec {
   pname = "pagelabels";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
   # upstream doesn't contain tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python library to manipulate PDF page labels.";
     homepage = "https://github.com/lovasoa/pagelabels-py";
     maintainers = with maintainers; [ teto ];

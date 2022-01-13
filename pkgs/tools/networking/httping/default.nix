@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, gettext, libintl, ncurses, openssl
+{ stdenv, fetchurl, gettext, libintl, ncurses, openssl
 , fftw ? null }:
 
 stdenv.mkDerivation rec {
@@ -10,15 +10,6 @@ stdenv.mkDerivation rec {
     sha256 = "1y7sbgkhgadmd93x1zafqc4yp26ssiv16ni5bbi9vmvvdl55m29y";
   };
 
-  patches = [
-    # Upstream fix for ncurses-6.3.
-    (fetchpatch {
-      name = "ncurses-6.3.patch";
-      url = "https://github.com/folkertvanheusden/HTTPing/commit/4ea9d5b78540c972e3fe1bf44db9f7b3f87c0ad0.patch";
-      sha256 = "0w3kdkq6c6hz1d9jjnw0ldvd6dy39yamj8haf0hvcyb1sb67qjmp";
-    })
-  ];
-
   buildInputs = [ fftw libintl ncurses openssl ];
   nativeBuildInputs = [ gettext ];
 
@@ -27,7 +18,7 @@ stdenv.mkDerivation rec {
     "PREFIX="
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://vanheusden.com/httping";
     description = "ping with HTTP requests";
     longDescription = ''

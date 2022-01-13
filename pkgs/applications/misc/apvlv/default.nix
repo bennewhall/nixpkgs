@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, cmake, pkg-config, pcre, libxkbcommon, libepoxy
+{ stdenv, fetchFromGitHub, fetchpatch, cmake, pkgconfig, pcre, libxkbcommon, epoxy
 , gtk3, poppler, freetype, libpthreadstubs, libXdmcp, libxshmfence, wrapGAppsHook
 }:
 
@@ -16,13 +16,13 @@ stdenv.mkDerivation rec {
   NIX_CFLAGS_COMPILE = "-I${poppler.dev}/include/poppler";
 
   nativeBuildInputs = [
-    cmake
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
   buildInputs = [
-    poppler pcre libxkbcommon libepoxy
+    cmake
+    poppler pcre libxkbcommon epoxy
     freetype gtk3
     libpthreadstubs libXdmcp libxshmfence # otherwise warnings in compilation
   ];
@@ -54,11 +54,11 @@ stdenv.mkDerivation rec {
     cp ../Startup.pdf $out/share/doc/apvlv/Startup.pdf
     cp ../main_menubar.glade $out/share/doc/apvlv/main_menubar.glade
   ''
-  + lib.optionalString (!stdenv.isDarwin) ''
+  + stdenv.lib.optionalString (!stdenv.isDarwin) ''
     install -D ../apvlv.desktop $out/share/applications/apvlv.desktop
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://naihe2010.github.io/apvlv/";
     description = "PDF viewer with Vim-like behaviour";
     longDescription = ''

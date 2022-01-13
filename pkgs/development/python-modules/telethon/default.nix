@@ -1,19 +1,14 @@
-{ lib, buildPythonPackage, fetchPypi, openssl, rsa, pyaes, pythonOlder }:
+{ lib, buildPythonPackage, fetchPypi, async_generator, rsa, pyaes, pythonOlder }:
 
 buildPythonPackage rec {
   pname = "telethon";
-  version = "1.24.0";
+  version = "1.17.5";
 
   src = fetchPypi {
     inherit version;
     pname = "Telethon";
-    sha256 = "818cb61281ed3f75ba4da9b68cb69486bed9474d2db4e0aa16e482053117452c";
+    sha256 = "1v1rgr030z8s1ldv5lm1811znyd568c22pmlrzzf3ls972xk514m";
   };
-
-  patchPhase = ''
-    substituteInPlace telethon/crypto/libssl.py --replace \
-      "ctypes.util.find_library('ssl')" "'${openssl.out}/lib/libssl.so'"
-  '';
 
   propagatedBuildInputs = [
     rsa

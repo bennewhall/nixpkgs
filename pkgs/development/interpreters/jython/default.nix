@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, jre }:
+{ stdenv, fetchurl, makeWrapper, jre }:
 
 stdenv.mkDerivation rec {
   pname = "jython";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "142285hd9mx0nx5zw0jvkpqkb4kbhgyyy52p5bj061ya8bg5jizy";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   dontUnpack = true;
 
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Python interpreter written in Java";
     homepage = "https://jython.org/";
-    license = lib.licenses.psfl;
+    license = stdenv.lib.licenses.psfl;
     platforms = jre.meta.platforms;
   };
 }

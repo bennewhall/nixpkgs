@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , netcdf, xlibsWrapper, xorg, udunits, expat
 }:
 
@@ -16,7 +16,7 @@ in stdenv.mkDerivation {
 
   buildInputs = [ netcdf xlibsWrapper xorg.libXaw udunits expat ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Visual browser for netCDF format files";
     homepage    = "http://meteora.ucsd.edu/~pierce/ncview_home_page.html";
     license = licenses.gpl3;

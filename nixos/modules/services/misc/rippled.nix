@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.rippled;
-  opt = options.services.rippled;
 
   b2i = val: if val then "1" else "0";
 
@@ -166,7 +165,6 @@ let
         description = "Location to store the database.";
         type = types.path;
         default = cfg.databasePath;
-        defaultText = literalExpression "config.${opt.databasePath}";
       };
 
       compression = mkOption {
@@ -179,7 +177,6 @@ let
         description = "Enable automatic purging of older ledger information.";
         type = types.nullOr (types.addCheck types.int (v: v > 256));
         default = cfg.ledgerHistory;
-        defaultText = literalExpression "config.${opt.ledgerHistory}";
       };
 
       advisoryDelete = mkOption {
@@ -213,7 +210,7 @@ in
         description = "Which rippled package to use.";
         type = types.package;
         default = pkgs.rippled;
-        defaultText = literalExpression "pkgs.rippled";
+        defaultText = "pkgs.rippled";
       };
 
       ports = mkOption {
@@ -392,7 +389,6 @@ in
 
       extraConfig = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Extra lines to be added verbatim to the rippled.cfg configuration file.
         '';
@@ -401,7 +397,6 @@ in
       config = mkOption {
         internal = true;
         default = pkgs.writeText "rippled.conf" rippledCfg;
-        defaultText = literalDocBook "generated config file";
       };
     };
   };
@@ -411,14 +406,12 @@ in
 
   config = mkIf cfg.enable {
 
-    users.users.rippled = {
-        description = "Ripple server user";
-        isSystemUser = true;
-        group = "rippled";
+    users.users.rippled =
+      { description = "Ripple server user";
+        uid = config.ids.uids.rippled;
         home = cfg.databasePath;
         createHome = true;
       };
-    users.groups.rippled = {};
 
     systemd.services.rippled = {
       after = [ "network.target" ];

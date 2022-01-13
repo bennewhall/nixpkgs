@@ -1,14 +1,14 @@
-{ fetchurl, lib, stdenv, jre, makeWrapper, coreutils }:
+{ fetchurl, stdenv, jre, makeWrapper, coreutils }:
 
 stdenv.mkDerivation rec {
   pname = "jmeter";
-  version = "5.4.3";
+  version = "5.1.1";
   src = fetchurl {
     url = "https://archive.apache.org/dist/jmeter/binaries/apache-${pname}-${version}.tgz";
-    sha256 = "sha256-clISFMDLh9rFuXTBxug6F6AJx/03e1W/I1JcckA7He4=";
+    sha256 = "1bmlxnlcias781mwf3wzpd4935awswbq3w8ijck65bsaw07m2kc4";
   };
 
-  nativeBuildInputs = [ makeWrapper jre ];
+  nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
     mkdir $out
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     wrapProgram $out/bin/jmeter.sh --set JAVA_HOME "${jre}"
   '';
 
-  doInstallCheck = false; #NoClassDefFoundError: org/apache/logging/log4j/Level for tests
+  doInstallCheck = true;
 
   checkInputs = [ coreutils ];
 
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
     timeout --kill=1s 1s $out/bin/jmeter-mirror-server.sh || test "$?" = "124"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A 100% pure Java desktop application designed to load test functional behavior and measure performance";
     longDescription = ''
       The Apache JMeter desktop application is open source software, a 100%
@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
       Applications but has since expanded to other test functions.
     '';
     license = licenses.asl20;
-    maintainers = [ maintainers.bryanasdev000 ];
+    maintainers = [ ];
     priority = 1;
     platforms = platforms.unix;
   };

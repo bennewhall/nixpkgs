@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchFromGitHub, ocaml, findlib, which, sedlex_2, easy-format, xmlm, base64 }:
+{ stdenv, fetchFromGitHub, ocaml, findlib, which, sedlex_2, easy-format, xmlm, base64 }:
 
 stdenv.mkDerivation rec {
   version = "0.6.15";
   pname = "piqi";
   name = "ocaml${ocaml.version}-${pname}-${version}";
-
+ 
   src = fetchFromGitHub {
     owner = "alavrik";
     repo = pname;
@@ -29,8 +29,8 @@ stdenv.mkDerivation rec {
     make ocaml-install;
   '';
 
-  meta = with lib; {
-    homepage = "https://piqi.org";
+  meta = with stdenv.lib; {
+    homepage = "http://piqi.org";
     description = "Universal schema language and a collection of tools built around it";
     license = licenses.asl20;
     maintainers = [ maintainers.maurer ];

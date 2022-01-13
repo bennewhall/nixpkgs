@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   pname = "peru";
@@ -18,7 +18,7 @@ python3Packages.buildPythonApplication rec {
   # No tests in archive
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/buildinspace/peru";
     description = "A tool for including other people's code in your projects";
     license = licenses.mit;

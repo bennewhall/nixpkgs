@@ -1,7 +1,7 @@
-{ lib, stdenv, config, fetchurl, libX11, libXext, libXinerama, libXrandr
+{ stdenv, config, fetchurl, libX11, libXext, libXinerama, libXrandr
 , libXrender, fontconfig, freetype, openal, runtimeShell }:
 
-let inherit (lib) makeLibraryPath; in
+let inherit (stdenv.lib) makeLibraryPath; in
 
 stdenv.mkDerivation {
   name = "oilrush";
@@ -69,9 +69,9 @@ stdenv.mkDerivation {
       of Tower Defense.
     '';
     homepage = "http://oilrush-game.com/";
-    license = lib.licenses.unfree;
-    #maintainers = with lib.maintainers; [ astsmtl ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.unfree;
+    #maintainers = with stdenv.lib.maintainers; [ astsmtl ];
+    platforms = stdenv.lib.platforms.linux;
     hydraPlatforms = [];
   };
 

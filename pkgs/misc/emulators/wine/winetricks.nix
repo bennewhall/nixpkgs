@@ -1,4 +1,4 @@
-{ lib, stdenv, callPackage, perl, which, coreutils, zenity, curl
+{ stdenv, callPackage, wine, perl, which, coreutils, zenity, curl
 , cabextract, unzip, p7zip, gnused, gnugrep, bash } :
 
 stdenv.mkDerivation rec {
@@ -9,9 +9,8 @@ stdenv.mkDerivation rec {
   buildInputs = [ perl which ];
 
   # coreutils is for sha1sum
-  pathAdd = lib.makeBinPath [
-    perl which coreutils zenity curl cabextract unzip p7zip gnused gnugrep bash
-  ];
+  pathAdd = stdenv.lib.concatMapStringsSep ":" (x: x + "/bin")
+    [ wine perl which coreutils zenity curl cabextract unzip p7zip gnused gnugrep bash ];
 
   makeFlags = [ "PREFIX=$(out)" ];
 
@@ -25,8 +24,8 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "A script to install DLLs needed to work around problems in Wine";
-    license = lib.licenses.lgpl21;
+    license = stdenv.lib.licenses.lgpl21;
     homepage = "https://github.com/Winetricks/winetricks";
-    platforms = with lib.platforms; linux;
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

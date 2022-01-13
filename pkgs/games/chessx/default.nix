@@ -1,6 +1,6 @@
 { mkDerivation
-, lib
-, pkg-config
+, stdenv
+, pkgconfig
 , zlib
 , qtbase
 , qtsvg
@@ -12,15 +12,15 @@
 
 mkDerivation rec {
   pname = "chessx";
-  version = "1.5.6";
+  version = "1.5.0";
 
   src = fetchurl {
     url = "mirror://sourceforge/chessx/chessx-${version}.tgz";
-    sha256 = "sha256-0JpLU0qQnF8aOYxkBlBJov3zBJe8gcy98NlAQSNk0gU=";
+    sha256 = "09rqyra28w3z9ldw8sx07k5ap3sjlli848p737maj7c240rasc6i";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     qmake
   ];
 
@@ -46,7 +46,7 @@ mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://chessx.sourceforge.net/";
     description = "Browse and analyse chess games";
     license = licenses.gpl2;

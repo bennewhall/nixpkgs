@@ -1,21 +1,21 @@
 { buildPythonPackage, lib, fetchFromGitHub
-, requests, tqdm
+, requests
 , nose, vcrpy
 }:
 
 buildPythonPackage rec {
   pname = "habanero";
-  version = "0.7.4";
+  version = "0.6.0";
 
   # Install from Pypi is failing because of a missing file (Changelog.rst)
   src = fetchFromGitHub {
     owner = "sckott";
     repo = pname;
     rev = "v${version}";
-    sha256 = "1d8yj9xz5qabcj57rpjzvg0jcscvzrpb0739mll29nijbsaimfr1";
+    sha256 = "1l2cgl6iiq8jff2w2pib6w8dwaj8344crhwsni2zzq0p44dwi13d";
   };
 
-  propagatedBuildInputs = [ requests tqdm ];
+  propagatedBuildInputs = [ requests ];
 
   checkInputs = [ nose vcrpy ];
   checkPhase = "make test";

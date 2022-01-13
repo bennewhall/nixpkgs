@@ -1,8 +1,7 @@
-{lib, stdenv, fetchurl, unzip}:
+{stdenv, fetchurl, unzip}:
 
 stdenv.mkDerivation {
-  pname = "ent";
-  version = "1.1";
+  name = "ent-1.1";
 
   src = fetchurl {
     url = "https://www.fourmilab.ch/random/random.zip";
@@ -13,16 +12,16 @@ stdenv.mkDerivation {
   # case that happens when the archive doesn't have a subdirectory.
   setSourceRoot = "sourceRoot=`pwd`";
 
-  nativeBuildInputs = [ unzip ];
+  buildInputs = [ unzip ];
 
-  buildFlags = lib.optional stdenv.cc.isClang "CC=clang";
+  buildFlags = stdenv.lib.optional stdenv.cc.isClang "CC=clang";
 
   installPhase = ''
     mkdir -p $out/bin
     cp ent $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pseudorandom Number Sequence Test Program";
     homepage = "http://www.fourmilab.ch/random/";
     platforms = platforms.all;

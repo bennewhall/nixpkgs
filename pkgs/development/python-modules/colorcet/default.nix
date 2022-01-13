@@ -1,19 +1,21 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , param
 , pyct
+, nbsmoke
+, flake8
+, pytest
 , pytest-mpl
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "colorcet";
-  version = "3.0.0";
+  version = "2.0.2";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "21c522346a7aa81a603729f2996c22ac3f7822f4c8c303c59761e27d2dfcf3db";
+    sha256 = "1vkx00im4s6zhr2m1j9r0a5vmhkl488b4xpzxb1pidbl19wi6j2i";
   };
 
   propagatedBuildInputs = [
@@ -22,29 +24,26 @@ buildPythonPackage rec {
   ];
 
   checkInputs = [
+    nbsmoke
+    pytest
+    flake8
     pytest-mpl
-    pytestCheckHook
   ];
 
-  preCheck = ''
+  checkPhase = ''
     export HOME=$(mktemp -d)
     mkdir -p $HOME/.config/matplotlib
     echo "backend: ps" > $HOME/.config/matplotlib/matplotlibrc
     ln -s $HOME/.config/matplotlib $HOME/.matplotlib
+
+    # requires other backends to be available
+    pytest colorcet -k 'not matplotlib_default_colormap_plot'
   '';
 
-  disabledTests = [
-    "matplotlib_default_colormap_plot"
-  ];
-
-  pythonImportsCheck = [
-    "colorcet"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Collection of perceptually uniform colormaps";
     homepage = "https://colorcet.pyviz.org";
     license = licenses.cc-by-40;
-    maintainers = with maintainers; [ costrouc ];
+    maintainers = [ maintainers.costrouc ];
   };
 }

@@ -1,25 +1,21 @@
-{ lib, stdenv, fetchurl, perl, zlib, bzip2, xz, zstd
-, makeWrapper, coreutils, autoreconfHook, pkg-config
-}:
+{ stdenv, fetchurl, perl, zlib, bzip2, xz, makeWrapper, coreutils }:
 
 stdenv.mkDerivation rec {
   pname = "dpkg";
-  version = "1.20.9ubuntu2";
+  version = "1.20.5";
 
   src = fetchurl {
-    url = "mirror://ubuntu/pool/main/d/dpkg/dpkg_${version}.tar.xz";
-    sha256 = "sha256-BuCofGpi9R0cyhvkZqu9IxupqZvZhbE2J/B4wgUqMQw=";
+    url = "mirror://debian/pool/main/d/dpkg/dpkg_${version}.tar.xz";
+    sha256 = "1pg0yd1q9l5cx7pr0853yds1n3mh5b28zkw79gjqjzcmjwqkzwpj";
   };
 
   configureFlags = [
     "--disable-dselect"
     "--with-admindir=/var/lib/dpkg"
     "PERL_LIBDIR=$(out)/${perl.libPrefix}"
-    (lib.optionalString stdenv.isDarwin "--disable-linker-optimisations")
-    (lib.optionalString stdenv.isDarwin "--disable-start-stop-daemon")
+    (stdenv.lib.optionalString stdenv.isDarwin "--disable-linker-optimisations")
+    (stdenv.lib.optionalString stdenv.isDarwin "--disable-start-stop-daemon")
   ];
-
-  enableParallelBuilding = true;
 
   preConfigure = ''
     # Nice: dpkg has a circular dependency on itself. Its configure
@@ -53,15 +49,14 @@ stdenv.mkDerivation rec {
        --replace '"diff"' \"${coreutils}/bin/diff\"
   '';
 
-  buildInputs = [ perl zlib bzip2 xz zstd ];
-  nativeBuildInputs = [ makeWrapper perl autoreconfHook pkg-config ];
+  buildInputs = [ perl zlib bzip2 xz ];
+  nativeBuildInputs = [ makeWrapper perl ];
 
   postInstall =
     ''
       for i in $out/bin/*; do
         if head -n 1 $i | grep -q perl; then
-          substituteInPlace $i --replace \
-            "${perl}/bin/perl" "${perl}/bin/perl -I $out/${perl.libPrefix}"
+          wrapProgram $i --prefix PERL5LIB : $out/${perl.libPrefix}
         fi
       done
 
@@ -69,7 +64,7 @@ stdenv.mkDerivation rec {
       cp -r scripts/t/origins $out/etc/dpkg
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The Debian package manager";
     homepage = "https://wiki.debian.org/Teams/Dpkg";
     license = licenses.gpl2Plus;

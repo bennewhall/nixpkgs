@@ -1,10 +1,10 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
+, pantheon
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , vala
 , gtk3
 }:
@@ -31,18 +31,17 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
     vala
   ];
 
   buildInputs = [ gtk3 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple shim for printing support via Contractor";
     homepage = "https://github.com/elementary/print";
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
-    mainProgram = "io.elementary.print";
+    maintainers = pantheon.maintainers;
   };
 }

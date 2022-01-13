@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pyopenssl
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
   doCheck = false; #no tests were included
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/LLNL/certipy";
     description = "wrapper for pyOpenSSL";
     license = licenses.bsd3;

@@ -1,12 +1,11 @@
-{ lib, mkXfceDerivation, gettext, gtk3, glib, cmake, exo, garcon, libxfce4ui, libxfce4util, xfce4-panel, xfconf }:
+{ mkXfceDerivation, gettext, gtk3, glib, cmake, exo, garcon, libxfce4ui, libxfce4util, xfce4-panel, xfconf }:
 
 mkXfceDerivation {
   category = "panel-plugins";
   pname = "xfce4-whiskermenu-plugin";
-  version = "2.7.1";
+  version = "2.4.6";
   rev-prefix = "v";
-  odd-unstable = false;
-  sha256 = "sha256-aN8PwH5YIbjiyS5tTcU2AU4LAYC2tBStDxhCXi/dvkQ=";
+  sha256 = "03asfaxqbhawzb3870az7qgid5y7cg3ip8h6r4z8kavcd0b7x4ii";
 
   nativeBuildInputs = [ cmake ];
 
@@ -22,8 +21,7 @@ mkXfceDerivation {
       --replace $out/bin/xfce4-panel ${xfce4-panel.out}/bin/xfce4-panel
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Alternate application launcher for Xfce";
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
   };
 }

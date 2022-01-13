@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 let version = "0.2"; in
 stdenv.mkDerivation {
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
     install -Dm644 {.,$out/share/man/man8}/regionset.8
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit version;
     homepage = "http://linvdr.org/projects/regionset/";
     description = "Tool for changing the region code setting of DVD players";

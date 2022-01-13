@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoreconfHook }:
+{ stdenv, fetchurl, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "cudd";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://davidkebo.com/cudd";
     description = "Binary Decision Diagram (BDD) library";
     license = licenses.bsd3;

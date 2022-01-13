@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv }:
+{ fetchurl, stdenv }:
 
 stdenv.mkDerivation rec {
   pname = "paperkey";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Store OpenPGP or GnuPG on paper";
     longDescription = ''
       A reasonable way to achieve a long term backup of OpenPGP (GnuPG, PGP, etc)

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , fetchpatch
 , appstream-glib
@@ -11,7 +11,7 @@
 , libxmlb
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , systemd
 , help2man
 , wrapGAppsHook
@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
     help2man
     meson
     ninja
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -65,7 +65,7 @@ stdenv.mkDerivation rec {
     "-Dconsolekit=false"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gitlab.gnome.org/hughsie/gnome-firmware-updater";
     description = "Tool for installing firmware on devices";
     license = licenses.gpl2Plus;

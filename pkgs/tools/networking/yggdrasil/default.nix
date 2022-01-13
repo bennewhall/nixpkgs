@@ -2,29 +2,32 @@
 
 buildGoModule rec {
   pname = "yggdrasil";
-  version = "0.4.2";
+  version = "0.3.15";
 
   src = fetchFromGitHub {
     owner = "yggdrasil-network";
     repo = "yggdrasil-go";
     rev = "v${version}";
-    sha256 = "sha256-5bx9KGZD7m+FX9hWU1pu8uJ2FU+P/TetRS3kJL5jhhI=";
+    sha256 = "1nf00ygp55l01c0gdkw15f08p3hmn6s2r99lgf2xpq8jn75qra4i";
   };
 
-  vendorSha256 = "sha256-QQN8ePOQ7DT9KeuY4ohFuPtocuinh3Y3us6QMnCQ4gc=";
+  vendorSha256 = "1zk6h1isxyml9asyb7g4scbhnfwghqwnv40a5f5j7z0s0s4nybdp";
+
+  doCheck = false;
 
   # Change the default location of the management socket on Linux
   # systems so that the yggdrasil system service unit does not have to
   # be granted write permission to /run.
   patches = [ ./change-runtime-dir.patch ];
 
-  subPackages = [ "cmd/genkeys" "cmd/yggdrasil" "cmd/yggdrasilctl" ];
+  subPackages = [ "cmd/yggdrasil" "cmd/yggdrasilctl" ];
 
-  ldflags = [
-    "-X github.com/yggdrasil-network/yggdrasil-go/src/version.buildVersion=${version}"
-    "-X github.com/yggdrasil-network/yggdrasil-go/src/version.buildName=${pname}"
-    "-s" "-w"
-  ];
+  buildFlagsArray = ''
+    -ldflags=
+      -X github.com/yggdrasil-network/yggdrasil-go/src/version.buildVersion=${version}
+      -X github.com/yggdrasil-network/yggdrasil-go/src/version.buildName=${pname}
+      -s -w
+  '';
 
   passthru.tests.basic = nixosTests.yggdrasil;
 
@@ -33,6 +36,6 @@ buildGoModule rec {
       "An experiment in scalable routing as an encrypted IPv6 overlay network";
     homepage = "https://yggdrasil-network.github.io/";
     license = licenses.lgpl3;
-    maintainers = with maintainers; [ bbigras ehmry gazally lassulus ];
+    maintainers = with maintainers; [ ehmry gazally lassulus ];
   };
 }

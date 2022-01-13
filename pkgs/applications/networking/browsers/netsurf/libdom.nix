@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, expat
+{ stdenv, fetchurl, pkgconfig, expat
 , buildsystem
 , libparserutils
 , libwapcaplet
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-mO4HJHHlXiCMmHjlFcQQrUYso2+HtK/L7K0CPzos70o=";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     expat
     libhubbub
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     "NSSHARED=${buildsystem}/share/netsurf-buildsystem"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/projects/${libname}/";
     description = "Document Object Model library for netsurf browser";
     longDescription = ''

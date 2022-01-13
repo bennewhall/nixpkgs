@@ -1,12 +1,12 @@
-{ buildPecl, lib, php, pkg-config, openssl, libevent }:
+{ buildPecl, lib, pkgs, php }:
 buildPecl {
   pname = "event";
 
-  version = "3.0.6";
-  sha256 = "sha256-BN43wydPQBCVla29YoPqKSVihSZCkLAIgDZb+CNQecw=";
+  version = "3.0.1";
+  sha256 = "12629hi2ddyavzgl5ala53fi8m55l0xsmqsywy040f0grzp9r6rc";
 
   configureFlags = [
-    "--with-event-libevent-dir=${libevent.dev}"
+    "--with-event-libevent-dir=${pkgs.libevent.dev}"
     "--with-event-core"
     "--with-event-extra"
     "--with-event-pthreads"
@@ -18,11 +18,11 @@ buildPecl {
       ':'
   '';
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ openssl libevent ];
+  nativeBuildInputs = [ pkgs.pkgconfig ];
+  buildInputs = with pkgs; [ openssl libevent ];
   internalDeps = [ php.extensions.sockets ];
 
-  meta = with lib; {
+  meta = with pkgs.lib; {
     description = ''
       This is an extension to efficiently schedule I/O, time and signal based
       events using the best I/O notification mechanism available for specific platform.

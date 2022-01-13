@@ -1,22 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, installShellFiles, cmake }:
+{ stdenv, fetchFromGitHub, installShellFiles, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "doctest";
-  version = "2.4.7";
+  version = "2.4.1";
 
   src = fetchFromGitHub {
     owner = "onqtam";
     repo = "doctest";
     rev = version;
-    sha256 = "sha256-pXUg+NHSCKOudkmDCU3ePZrvs8DlM/CEZntEd78oTJ0=";
+    sha256 = "17g7n6rjs90i0b231x5s934qnr8m80ga2yg1z344bnsdiqcjd63w";
   };
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     homepage = "https://github.com/onqtam/doctest";
     description = "The fastest feature-rich C++11/14/17/20 single-header testing framework";
-    platforms = platforms.all;
+    platforms = platforms.linux;
     license = licenses.mit;
     maintainers = with maintainers; [ davidtwco ];
   };

@@ -11,10 +11,9 @@ stdenv.mkDerivation rec {
     gemset = ./gemset.nix;
   };
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ env ];
+  buildInputs = [ env makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/bin

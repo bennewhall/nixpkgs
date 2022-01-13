@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, bison, flex, autoconf, automake, openssl }:
+{ stdenv, fetchurl, fetchpatch, bison, flex, autoconf, automake, openssl }:
 
 stdenv.mkDerivation rec {
   pname = "bip";
@@ -42,8 +42,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "An IRC proxy (bouncer)";
     homepage = "http://bip.milkypond.org/";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     downloadPage = "https://projects.duckcorp.org/projects/bip/files";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

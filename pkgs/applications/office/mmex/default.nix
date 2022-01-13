@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, sqlite, wxGTK30, gettext, wrapGAppsHook }:
+{ stdenv, fetchgit, sqlite, wxGTK30, gettext, wrapGAppsHook }:
 
 
 let
@@ -28,8 +28,8 @@ in
     meta = {
       description = "Easy-to-use personal finance software";
       homepage = "https://www.moneymanagerex.org/";
-      license = lib.licenses.gpl2Plus;
-      maintainers = with lib.maintainers; [viric];
-      platforms = with lib.platforms; linux;
+      license = stdenv.lib.licenses.gpl2Plus;
+      maintainers = with stdenv.lib.maintainers; [viric];
+      platforms = with stdenv.lib.platforms; linux;
     };
   }

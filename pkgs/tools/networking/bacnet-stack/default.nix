@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
-  pname = "bacnet-stack";
+  name = "bacnet-stack";
   version = "1.0.0";
 
   src = fetchFromGitHub {
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     cp -r bin $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "BACnet open source protocol stack for embedded systems, Linux, and Windows";
     platforms = platforms.linux;
     license = licenses.gpl2;

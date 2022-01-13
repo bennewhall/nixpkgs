@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, freetype, lcms, libtiff, libxml2
+{ stdenv, fetchurl, pkgconfig, freetype, lcms, libtiff, libxml2
 , libart_lgpl, qt4, python2, cups, fontconfig, libjpeg
 , zlib, libpng, xorg, cairo, podofo, hunspell, boost, cmake, imagemagick, ghostscript }:
 
@@ -18,7 +18,9 @@ in stdenv.mkDerivation rec {
     sha256 = "0bq433myw6h1siqlsakxv6ghb002rp3mfz5k12bg68s0k6skn992";
   };
 
-  nativeBuildInputs = [ pkg-config cmake ];
+  enableParallelBuilding = true;
+
+  nativeBuildInputs = [ pkgconfig cmake ];
   buildInputs = with xorg;
     [ freetype lcms libtiff libxml2 libart_lgpl qt4
       pythonEnv cups fontconfig
@@ -43,10 +45,10 @@ in stdenv.mkDerivation rec {
   '';
 
   meta = {
-    maintainers = [ lib.maintainers.marcweber ];
-    platforms = lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.marcweber ];
+    platforms = stdenv.lib.platforms.linux;
     description = "Desktop Publishing (DTP) and Layout program for Linux";
     homepage = "https://www.scribus.net";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

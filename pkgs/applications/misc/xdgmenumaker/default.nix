@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, txt2tags, python3Packages, glib, gobject-introspection, wrapGAppsHook }:
+{ stdenv, fetchFromGitHub, txt2tags, python3Packages, glib, gobject-introspection, wrapGAppsHook }:
 
 python3Packages.buildPythonApplication rec {
   pname = "xdgmenumaker";
@@ -38,7 +38,7 @@ python3Packages.buildPythonApplication rec {
     "DESTDIR="
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Command line tool that generates XDG menus for several window managers";
     homepage = "https://github.com/gapan/xdgmenumaker";
     license = licenses.gpl2Plus;

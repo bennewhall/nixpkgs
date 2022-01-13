@@ -1,4 +1,4 @@
-{ lib, stdenv, python3, fetchFromGitHub }:
+{ stdenv, python3, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "vcs_query";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     patchPythonScript $out/bin/vcs_query
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/mageta/vcs_query";
     description = "eMail query-command to use vCards in mutt and Vim";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, bison, flex
+{ stdenv, fetchurl, pkgconfig, bison, flex
 , buildsystem
 }:
 
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-/JjcqdfvpnCWRwpdlsAjFG4lv97AjA23RmHHtNsEU9A=";
   };
 
-  nativeBuildInputs = [ pkg-config bison flex ];
+  nativeBuildInputs = [ pkgconfig bison flex ];
   buildInputs = [ buildsystem ];
 
   makeFlags = [
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     "NSSHARED=${buildsystem}/share/netsurf-buildsystem"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/";
     description = "NetSurf Parametric Logging Library";
     license = licenses.isc;

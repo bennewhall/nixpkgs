@@ -1,13 +1,13 @@
 # Builder for Agda packages.
 
-{ stdenv, lib, self, Agda, runCommand, makeWrapper, writeText, ghcWithPackages, nixosTests }:
+{ stdenv, lib, self, Agda, runCommandNoCC, makeWrapper, writeText, mkShell, ghcWithPackages }:
 
 with lib.strings;
 
 let
   withPackages' = {
     pkgs,
-    ghc ? ghcWithPackages (p: with p; [ ieee754 ])
+    ghc ? ghcWithPackages (p: with p; [ ieee ])
   }: let
     pkgs' = if builtins.isList pkgs then pkgs else pkgs self;
     library-file = writeText "libraries" ''
@@ -15,13 +15,10 @@ let
     '';
     pname = "agdaWithPackages";
     version = Agda.version;
-  in runCommand "${pname}-${version}" {
+  in runCommandNoCC "${pname}-${version}" {
     inherit pname version;
     nativeBuildInputs = [ makeWrapper ];
-    passthru = {
-      unwrapped = Agda;
-      tests = { inherit (nixosTests) agda; };
-    };
+    passthru.unwrapped = Agda;
   } ''
     mkdir -p $out/bin
     makeWrapper ${Agda}/bin/agda $out/bin/agda \
@@ -46,10 +43,8 @@ let
 
   defaults =
     { pname
-    , meta
     , buildInputs ? []
     , everythingFile ? "./Everything.agda"
-    , includePaths ? []
     , libraryName ? pname
     , libraryFile ? "${libraryName}.agda-lib"
     , buildPhase ? null
@@ -58,7 +53,6 @@ let
     , ...
     }: let
       agdaWithArgs = withPackages (builtins.filter (p: p ? isAgdaDerivation) buildInputs);
-      includePathArgs = concatMapStrings (path: "-i" + path + " ") (includePaths ++ [(dirOf everythingFile)]);
     in
       {
         inherit libraryName libraryFile;
@@ -69,22 +63,16 @@ let
 
         buildPhase = if buildPhase != null then buildPhase else ''
           runHook preBuild
-          agda ${includePathArgs} ${everythingFile}
+          agda -i ${dirOf everythingFile} ${everythingFile}
           runHook postBuild
         '';
 
         installPhase = if installPhase != null then installPhase else ''
           runHook preInstall
           mkdir -p $out
-          find -not \( -path ${everythingFile} -or -path ${lib.interfaceFile everythingFile} \) -and \( ${concatMapStringsSep " -or " (p: "-name '*.${p}'") (extensions ++ extraExtensions)} \) -exec cp -p --parents -t "$out" {} +
+          find \( ${concatMapStringsSep " -or " (p: "-name '*.${p}'") (extensions ++ extraExtensions)} \) -exec cp -p --parents -t "$out" {} +
           runHook postInstall
         '';
-
-        meta = if meta.broken or false then meta // { hydraPlatforms = lib.platforms.none; } else meta;
-
-        # Retrieve all packages from the finished package set that have the current package as a dependency and build them
-        passthru.tests = with builtins;
-          lib.filterAttrs (name: pkg: self.lib.isUnbrokenAgdaPackage pkg && elem pname (map (pkg: pkg.pname) pkg.buildInputs)) self;
       };
 in
 {

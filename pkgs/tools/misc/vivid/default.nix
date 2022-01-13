@@ -1,19 +1,19 @@
-{ lib, fetchFromGitHub, rustPlatform }:
+{ stdenv, fetchFromGitHub, rustPlatform }:
 
 rustPlatform.buildRustPackage rec {
   pname = "vivid";
-  version = "0.7.0";
+  version = "0.6.0";
 
   src = fetchFromGitHub {
     owner = "sharkdp";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-2rdNjpJrBuj6toLFzFJScNh6od5qUhkSaZF+NbPBlQA=";
+    sha256 = "0m928hy2q8byfpm55nziiz86gcnhdnw3zpj78d8wx0pp318zjbla";
   };
 
-  cargoSha256 = "sha256-1aox1eiF3hu5guBjRcM3qb6mHJOutI+yargW7X4cFfg=";
+  cargoSha256 = "10xddr5cccc5cmhn4kwi27h3krmgapd7bqcp4rhjlbhdhsw7qxkx";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A generator for LS_COLORS with support for multiple color themes";
     homepage = "https://github.com/sharkdp/vivid";
     license = with licenses; [ asl20 /* or */ mit ];

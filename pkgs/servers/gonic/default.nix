@@ -1,6 +1,5 @@
-{ lib, stdenv, buildGoModule, fetchFromGitHub
-, pkg-config, taglib, alsa-lib
-, zlib, AudioToolbox, AppKit
+{ lib, buildGoPackage, fetchFromGitHub
+, pkg-config, taglib, alsaLib
 
 # Disable on-the-fly transcoding,
 # removing the dependency on ffmpeg.
@@ -8,38 +7,53 @@
 # to the original file, but if transcoding is configured
 # that takes a while. So best to disable all transcoding
 # in the configuration if you disable transcodingSupport.
-, transcodingSupport ? true, ffmpeg }:
+, transcodingSupport ? true, ffmpeg
 
-buildGoModule rec {
-  pname = "gonic";
-  version = "0.14.0";
+# udpater
+, writers, vgo2nix }:
+
+assert transcodingSupport -> ffmpeg != null;
+
+let
+  # update these, then run `updateScript` to update dependencies
+  version = "0.11.0";
+  rev = "056fb54a703ef5b5194ce112cbbdd8fb53dbb1ea";
+  sha256 = "0hd794wrz29nh89lfnq67w1rc23sg085rqf1agwlgpqycns2djl9";
+
   src = fetchFromGitHub {
     owner = "sentriz";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-wX97HtvHgHpKTDwZl/wHQRpiyDJ7U38CpdzWu/CYizQ=";
+    repo = "gonic";
+    inherit rev sha256;
   };
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ taglib zlib ]
-    ++ lib.optionals stdenv.isLinux [ alsa-lib ]
-    ++ lib.optionals stdenv.isDarwin [ AudioToolbox AppKit ];
-  vendorSha256 = "sha256-oTuaA5ZsZ7zMcjzGh37zO/1XyOfj6xjfNr6A7ecrOiA=";
+in
+buildGoPackage {
+  pname = "gonic-${version}";
+  inherit version src;
+  goPackagePath = "go.senan.xyz/gonic";
+  goDeps = ./deps.nix;
 
-  # TODO(Profpatsch): write a test for transcoding support,
-  # since it is prone to break
+  nativeBuildInputs = [ pkg-config ];
+  buildInputs = [ taglib alsaLib ];
+
   postPatch = lib.optionalString transcodingSupport ''
     substituteInPlace \
-      server/encode/encode.go \
+       server/encode/encode.go \
       --replace \
-        '"ffmpeg"' \
-        '"${lib.getBin ffmpeg}/bin/ffmpeg"'
+        'ffmpegPath = "/usr/bin/ffmpeg"' \
+        'ffmpegPath = "${ffmpeg}/bin/ffmpeg"' \
+  '';
+
+  passthru.updateScript = writers.writeDash "update-gonic" ''
+    ${vgo2nix}/bin/vgo2nix \
+      -dir ${src} \
+      -outfile ${lib.escapeShellArg (toString ./deps.nix)}
   '';
 
   meta = {
     homepage = "https://github.com/sentriz/gonic";
     description = "Music streaming server / subsonic server API implementation";
-    license = lib.licenses.gpl3Plus;
+    license = lib.licenses.gpl3;
     maintainers = with lib.maintainers; [ Profpatsch ];
   };
 }

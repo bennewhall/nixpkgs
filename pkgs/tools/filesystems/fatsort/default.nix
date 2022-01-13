@@ -1,12 +1,12 @@
-{lib, stdenv, fetchurl, help2man}:
+{stdenv, fetchurl, help2man}:
 
 stdenv.mkDerivation rec {
-  version = "1.6.4.625";
+  version = "1.6.3.622";
   pname = "fatsort";
 
   src = fetchurl {
     url = "mirror://sourceforge/fatsort/${pname}-${version}.tar.xz";
-    sha256 = "sha256-mm+JoGQLt4LYL/I6eAyfCuw9++RoLAqO2hV+CBBkLq0=";
+    sha256 = "1z2nabm38lg56h05yx3jjsndbqxk1zbjcisrczzamypn13m98728";
   };
 
   patches = [ ./fatsort-Makefiles.patch ];
@@ -15,11 +15,12 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "PREFIX=${placeholder "out"}" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://fatsort.sourceforge.net/";
     description = "Sorts FAT partition table, for devices that don't do sorting of files";
     maintainers = [ maintainers.kovirobi ];
     license = licenses.gpl2;
+    inherit version;
     platforms = platforms.linux;
   };
 }

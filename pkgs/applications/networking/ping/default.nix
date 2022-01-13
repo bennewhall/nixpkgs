@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , meson
 , ninja
 , vala
-, pkg-config
+, pkgconfig
 , pantheon
 , python3
 , glib
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     vala_0_40
-    pkg-config
+    pkgconfig
     python3
     wrapGAppsHook
   ];
@@ -58,12 +58,11 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A helpful tool that lets you debug what part of your API is causing you issues";
     homepage = "https://github.com/jeremyvaartjes/ping";
-    maintainers = with maintainers; [ xiorcale ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [ xiorcale ] ++ pantheon.maintainers;
     platforms = platforms.linux;
     license = licenses.gpl3;
-    mainProgram = "com.github.jeremyvaartjes.ping";
   };
 }

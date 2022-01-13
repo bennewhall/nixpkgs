@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "guff";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib;  {
+  meta = with stdenv.lib;  {
     description = "A plot device";
     homepage = "https://github.com/silentbicycle/guff";
     license = licenses.isc;

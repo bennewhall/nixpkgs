@@ -1,12 +1,12 @@
-{ config, lib, stdenv, fetchFromGitHub, runCommand, ncurses, pkg-config
-, libiconv, CoreAudio, AudioUnit
+{ config, stdenv, fetchFromGitHub, runCommand, ncurses, pkgconfig
+, libiconv, CoreAudio
 
-, alsaSupport ? stdenv.isLinux, alsa-lib ? null
+, alsaSupport ? stdenv.isLinux, alsaLib ? null
 # simple fallback for everyone else
 , aoSupport ? !stdenv.isLinux, libao ? null
 , jackSupport ? false, libjack ? null
 , samplerateSupport ? jackSupport, libsamplerate ? null
-, ossSupport ? false, alsa-oss ? null
+, ossSupport ? false, alsaOss ? null
 , pulseaudioSupport ? config.pulseaudio or false, libpulseaudio ? null
 , mprisSupport ? stdenv.isLinux, systemd ? null
 
@@ -39,7 +39,7 @@
 #, vtxSupport ? true, libayemu ? null
 }:
 
-with lib;
+with stdenv.lib;
 
 assert samplerateSupport -> jackSupport;
 
@@ -55,11 +55,11 @@ let
 
   opts = [
     # Audio output
-    (mkFlag alsaSupport       "CONFIG_ALSA=y"       alsa-lib)
+    (mkFlag alsaSupport       "CONFIG_ALSA=y"       alsaLib)
     (mkFlag aoSupport         "CONFIG_AO=y"         libao)
     (mkFlag jackSupport       "CONFIG_JACK=y"       libjack)
     (mkFlag samplerateSupport "CONFIG_SAMPLERATE=y" libsamplerate)
-    (mkFlag ossSupport        "CONFIG_OSS=y"        alsa-oss)
+    (mkFlag ossSupport        "CONFIG_OSS=y"        alsaOss)
     (mkFlag pulseaudioSupport "CONFIG_PULSE=y"      libpulseaudio)
     (mkFlag mprisSupport      "CONFIG_MPRIS=y"      systemd)
 
@@ -102,13 +102,13 @@ in
 
 stdenv.mkDerivation rec {
   pname = "cmus";
-  version = "2.9.1";
+  version = "2.8.0";
 
   src = fetchFromGitHub {
     owner  = "cmus";
     repo   = "cmus";
     rev    = "v${version}";
-    sha256 = "sha256-HEiEnEWf/MzhPO19VKTLYzhylpEvyzy1Jxs6EW2NU34=";
+    sha256 = "1ydnvq13ay8b8mfmmgwi5qsgyf220yi1d01acbnxqn775dghmwar";
   };
 
   patches = [ ./option-debugging.patch ];
@@ -118,15 +118,15 @@ stdenv.mkDerivation rec {
     "CONFIG_WAV=y"
   ] ++ concatMap (a: a.flags) opts);
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ ncurses ]
-    ++ lib.optional stdenv.cc.isClang clangGCC
-    ++ lib.optionals stdenv.isDarwin [ libiconv CoreAudio AudioUnit ]
+    ++ stdenv.lib.optional stdenv.cc.isClang clangGCC
+    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv CoreAudio ]
     ++ flatten (concatMap (a: a.deps) opts);
 
   makeFlags = [ "LD=$(CC)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Small, fast and powerful console music player for Linux and *BSD";
     homepage = "https://cmus.github.io/";
     license = licenses.gpl2;

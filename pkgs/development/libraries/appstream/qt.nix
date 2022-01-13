@@ -1,10 +1,10 @@
-{ mkDerivation, appstream, qtbase, qttools }:
+{ stdenv, mkDerivation, appstream, qtbase, qttools }:
 
 # TODO: look into using the libraries from the regular appstream derivation as we keep duplicates here
 
 mkDerivation {
   pname = "appstream-qt";
-  inherit (appstream) version src patches;
+  inherit (appstream) version src prePatch;
 
   outputs = [ "out" "dev" ];
 

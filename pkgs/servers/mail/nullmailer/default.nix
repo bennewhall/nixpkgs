@@ -12,12 +12,12 @@ stdenv.mkDerivation rec {
     sha256 = "0md8cf90fl2yf3zh9njjy42a673v4j4ygyq95xg7fzkygdigm1lq";
   };
 
-  buildInputs = lib.optional tls gnutls;
+  buildInputs = stdenv.lib.optional tls gnutls;
 
   configureFlags = [
     "--sysconfdir=/etc"
     "--localstatedir=/var"
-  ] ++ lib.optional tls "--enable-tls";
+  ] ++ stdenv.lib.optional tls "--enable-tls";
 
   installFlags = [ "DESTDIR=$(out)" ];
 

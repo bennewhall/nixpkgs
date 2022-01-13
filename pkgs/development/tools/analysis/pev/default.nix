@@ -1,4 +1,4 @@
-{ lib, stdenv, openssl, fetchFromGitHub }:
+{ stdenv, openssl, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "pev";
@@ -20,7 +20,7 @@ stdenv.mkDerivation {
 
   installFlags = [ "prefix=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A full-featured, open source, multiplatform command line toolkit to work with PE (Portable Executables) binaries";
     homepage = "https://pev.sourceforge.net/";
     license = licenses.gpl2;

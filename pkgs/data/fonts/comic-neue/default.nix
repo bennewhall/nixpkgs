@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip }:
+{ stdenv, fetchzip }:
 
 stdenv.mkDerivation rec {
   pname = "comic-neue";
@@ -9,6 +9,8 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-DjRZtFnJOtZnxhfpgU5ihZFAonRK608/BQztCAExIU0=";
     stripRoot = false; # because it comes with a __MACOSX directory
   };
+
+  phases = [ "unpackPhase" "installPhase" ];
 
   installPhase = ''
     mkdir -pv $out/share/{doc/${pname}-${version},fonts/{opentype,truetype,WOFF,WOFF2}}
@@ -22,7 +24,7 @@ stdenv.mkDerivation rec {
     cp -v ${pname}-${version}/WebFonts/*.woff2 $out/share/fonts/WOFF2
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://comicneue.com/";
     description = "A casual type face: Make your lemonade stand look like a fortune 500 company";
     longDescription = ''

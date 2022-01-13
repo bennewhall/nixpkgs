@@ -1,4 +1,4 @@
-{ lib, multiStdenv, fetchurl }:
+{ multiStdenv, fetchurl }:
 
 let version = "1.7.4"; in
 multiStdenv.mkDerivation {
@@ -16,7 +16,7 @@ multiStdenv.mkDerivation {
     sed -e s@/bin/bash@"${multiStdenv.shell}"@g -i src/*.sh
   '';
 
-  meta = with lib; {
+  meta = with multiStdenv.lib; {
     description = "Tool for creating static Linux binaries";
     platforms = platforms.linux;
     license = licenses.gpl2;

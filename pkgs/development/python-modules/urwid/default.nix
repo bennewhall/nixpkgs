@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k, isPy27, glibcLocales }:
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k, isPy27, glibcLocales }:
 
 buildPythonPackage rec {
   pname = "urwid";
@@ -19,9 +19,9 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "urwid" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A full-featured console (xterm et al.) user interface library";
-    homepage = "https://excess.org/urwid";
+    homepage = "http://excess.org/urwid";
     repositories.git = "git://github.com/wardi/urwid.git";
     license = licenses.lgpl21;
     maintainers = with maintainers; [ ];

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "validate-email";
@@ -13,7 +13,7 @@ buildPythonPackage rec {
   # No tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/syrusakbary/validate_email";
     description = "Verify if an email address is valid and really exists";
     license = licenses.lgpl3Plus;

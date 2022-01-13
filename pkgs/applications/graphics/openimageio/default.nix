@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, boost, cmake, ilmbase, libjpeg, libpng, libtiff
-, opencolorio_1, openexr, unzip
+{ stdenv, fetchFromGitHub, boost, cmake, ilmbase, libjpeg, libpng, libtiff
+, opencolorio, openexr, unzip
 }:
 
 stdenv.mkDerivation rec {
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake unzip ];
   buildInputs = [
     boost ilmbase libjpeg libpng
-    libtiff opencolorio_1 openexr
+    libtiff opencolorio openexr
   ];
 
   cmakeFlags = [
@@ -33,12 +33,7 @@ stdenv.mkDerivation rec {
     "dist_dir="
   ];
 
-  patches = [
-    # Backported from https://github.com/OpenImageIO/oiio/pull/2539 for 1.8.17
-    ./2539_backport.patch
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.openimageio.org";
     description = "A library and tools for reading and writing images";
     license = licenses.bsd3;

@@ -1,7 +1,7 @@
 { faust
 , gtk2
-, jack2
-, alsa-lib
+, jack2Full
+, alsaLib
 , opencv
 , libsndfile
 , which
@@ -18,8 +18,8 @@ faust.wrapWithBuildEnv {
 
   propagatedBuildInputs = [
     gtk2
-    jack2
-    alsa-lib
+    jack2Full
+    alsaLib
     opencv
     libsndfile
     which

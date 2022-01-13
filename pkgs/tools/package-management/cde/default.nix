@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "cde";
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
     install -t $out/bin cde cde-exec
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pg.ucsd.edu/cde/manual/";
     description = "A packaging tool for building portable packages";
     license = licenses.gpl3Plus;

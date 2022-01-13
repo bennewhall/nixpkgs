@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -19,10 +19,10 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Minimal mDNS resolver library, used by VLC";
     homepage = "https://github.com/videolabs/libmicrodns";
     license = licenses.lgpl21;

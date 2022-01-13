@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.system.nixos;
-  opt = options.system.nixos;
 in
 
 {
@@ -54,7 +53,6 @@ in
     stateVersion = mkOption {
       type = types.str;
       default = cfg.release;
-      defaultText = literalExpression "config.${opt.release}";
       description = ''
         Every once in a while, a new NixOS release may change
         configuration defaults in a way incompatible with stateful
@@ -105,10 +103,9 @@ in
       ''
         NAME=NixOS
         ID=nixos
-        VERSION="${cfg.release} (${cfg.codeName})"
+        VERSION="${cfg.version} (${cfg.codeName})"
         VERSION_CODENAME=${toLower cfg.codeName}
-        VERSION_ID="${cfg.release}"
-        BUILD_ID="${cfg.version}"
+        VERSION_ID="${cfg.version}"
         PRETTY_NAME="NixOS ${cfg.release} (${cfg.codeName})"
         LOGO="nix-snowflake"
         HOME_URL="https://nixos.org/"

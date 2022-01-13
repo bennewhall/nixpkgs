@@ -1,6 +1,6 @@
 import ./make-test-python.nix ({ pkgs, ...} : {
   name = "postgis";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ lsix ];
   };
 

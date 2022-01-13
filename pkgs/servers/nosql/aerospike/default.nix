@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, libtool, openssl, zlib }:
+{ stdenv, fetchFromGitHub, autoconf, automake, libtool, openssl, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "aerospike-server";
@@ -15,12 +15,16 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoconf automake libtool ];
   buildInputs = [ openssl zlib ];
 
+  NIX_CFLAGS_COMPILE = [
+    "-Wno-error=format-truncation"
+    "-Wno-error=address-of-packed-member"
+    "-Wno-error=format-overflow"
+    "-Wno-error=stringop-truncation"
+  ];
+
   preBuild = ''
     patchShebangs build/gen_version
     substituteInPlace build/gen_version --replace 'git describe' 'echo ${version}'
-
-    # drop blanket -Werror
-    substituteInPlace make_in/Makefile.in --replace '-Werror' ""
   '';
 
   installPhase = ''
@@ -29,9 +33,9 @@ stdenv.mkDerivation rec {
     cp -dpR modules/lua-core/src        $out/share/udf/lua
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Flash-optimized, in-memory, NoSQL database";
-    homepage = "https://aerospike.com/";
+    homepage = "http://aerospike.com/";
     license = licenses.agpl3;
     platforms = [ "x86_64-linux" ];
     maintainers = with maintainers; [ kalbasit ];

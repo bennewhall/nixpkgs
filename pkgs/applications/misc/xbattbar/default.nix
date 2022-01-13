@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, libX11, perl, ... }:
+{ stdenv, fetchgit, libX11, perl, ... }:
 
 stdenv.mkDerivation rec {
   pname = "xbattbar";
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     install -m 0755 xbattbar-check-sys $out/libexec/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Display battery status in X11";
     homepage = "https://salsa.debian.org/debian/xbattbar";
     license = licenses.gpl2Plus;

@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, gmp, gwenhywfar, libtool, libxml2, libxslt
-, pkg-config, gettext, xmlsec, zlib
+{ stdenv, fetchurl, gmp, gwenhywfar, libtool, libxml2, libxslt
+, pkgconfig, gettext, xmlsec, zlib
 }:
 
 let
@@ -25,9 +25,9 @@ in stdenv.mkDerivation rec {
 
   buildInputs = [ gmp gwenhywfar libtool libxml2 libxslt xmlsec zlib ];
 
-  nativeBuildInputs = [ pkg-config gettext ];
+  nativeBuildInputs = [ pkgconfig gettext ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An interface to banking tasks, file formats and country information";
     homepage = "https://www.aquamaniac.de/";
     hydraPlatforms = [];

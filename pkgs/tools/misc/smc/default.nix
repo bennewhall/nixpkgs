@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, jre, runtimeShell }:
+{ stdenv, fetchurl, jre, runtimeShell }:
 
-stdenv.mkDerivation rec {
-  pname = "smc";
-  version = "6.6.3";
+stdenv.mkDerivation {
+  name = "smc-6.6.3";
 
   src = fetchurl {
-    url = "mirror://sourceforge/project/smc/smc/${lib.replaceStrings ["."] ["_"] version}/smc_${lib.replaceStrings ["."] ["_"] version}.tgz";
+    url = "mirror://sourceforge/project/smc/smc/6_6_3/smc_6_6_3.tgz";
     sha256 = "1gv0hrgdl4wp562virpf9sib6pdhapwv4zvwbl0d5f5xyx04il11";
   };
 
@@ -29,7 +28,7 @@ stdenv.mkDerivation rec {
     chmod a+x "$out/bin/smc"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Generate state machine code from text input (state diagram)";
     longDescription = ''
       SMC (State Machine Compiler) takes a text input file describing states,

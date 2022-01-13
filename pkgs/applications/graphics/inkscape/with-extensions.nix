@@ -2,21 +2,15 @@
 , inkscape
 , symlinkJoin
 , makeWrapper
-, inkscapeExtensions ? [ ]
-, inkscape-extensions
+, inkscapeExtensions ? []
 }:
-
-let
-  allExtensions = lib.filter (pkg: lib.isDerivation pkg && !pkg.meta.broken or false) (lib.attrValues inkscape-extensions);
-  selectedExtensions = if inkscapeExtensions == null then allExtensions else inkscapeExtensions;
-in
 
 symlinkJoin {
   name = "inkscape-with-extensions-${lib.getVersion inkscape}";
 
-  paths = [ inkscape ] ++ selectedExtensions;
+  paths = [ inkscape ] ++ inkscapeExtensions;
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   postBuild = ''
     rm -f $out/bin/inkscape

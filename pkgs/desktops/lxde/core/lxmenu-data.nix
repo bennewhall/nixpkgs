@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, intltool }:
+{ stdenv, fetchurl, intltool }:
 
 stdenv.mkDerivation rec {
   pname = "lxmenu-data";
@@ -13,8 +13,8 @@ stdenv.mkDerivation rec {
 
   meta = {
     homepage = "https://lxde.org/";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     description = "Freedesktop.org desktop menus for LXDE";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

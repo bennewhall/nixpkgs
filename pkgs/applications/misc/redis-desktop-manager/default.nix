@@ -1,5 +1,5 @@
-{ mkDerivation, lib, fetchFromGitHub, fetchFromGitiles, pkg-config, libssh2
-, qtbase, qtdeclarative, qtgraphicaleffects, qtimageformats, qtquickcontrols2
+{ stdenv, lib, fetchFromGitHub, fetchFromGitiles, pkgconfig, libssh2
+, qtbase, qtdeclarative, qtgraphicaleffects, qtimageformats, qtquickcontrols
 , qtsvg, qttools, qtquick1, qtcharts
 , qmake
 }:
@@ -13,7 +13,7 @@ let
 
 in
 
-mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "redis-desktop-manager";
   version = "0.9.1";
 
@@ -25,14 +25,13 @@ mkDerivation rec {
     sha256 = "0yd4i944d4blw8jky0nxl7sfkkj975q4d328rdcbhizwvf6dx81f";
   };
 
-  nativeBuildInputs = [ pkg-config qmake ];
+  nativeBuildInputs = [ pkgconfig qmake ];
   buildInputs = [
     libssh2 qtbase qtdeclarative qtgraphicaleffects qtimageformats
-    qtquick1 qtquickcontrols2 qtsvg qttools qtcharts
+    qtquick1 qtquickcontrols qtsvg qttools qtcharts
   ];
 
   dontUseQmakeConfigure = true;
-  dontWrapQtApps = true;
 
   NIX_CFLAGS_COMPILE = [ "-Wno-error=deprecated" ];
 
@@ -77,7 +76,7 @@ EOF
   meta = with lib; {
     description = "Cross-platform open source Redis DB management tool";
     homepage = "https://redisdesktop.com/";
-    license = licenses.gpl3Only;
+    license = licenses.lgpl21;
     platforms = platforms.linux;
     maintainers = with maintainers; [ cstrahan ];
   };

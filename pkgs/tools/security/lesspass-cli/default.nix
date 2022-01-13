@@ -1,4 +1,4 @@
-{ lib, python3, fetchFromGitHub }:
+{ stdenv, python3, fetchFromGitHub }:
 
 let
   inherit (python3.pkgs) buildPythonApplication pytest mock pexpect;
@@ -30,7 +30,7 @@ buildPythonApplication rec {
     pytest tests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Stateless password manager";
     homepage = "https://lesspass.com";
     maintainers = with maintainers; [ jasoncarr ];

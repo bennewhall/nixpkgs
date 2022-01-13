@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "prodigal";
@@ -12,11 +12,11 @@ stdenv.mkDerivation rec {
   };
 
   makeFlags = [
-    "CC=${stdenv.cc.targetPrefix}cc"
+    "CC=cc"
     "INSTALLDIR=$(out)/bin"
   ];
-
-  meta = with lib; {
+  
+  meta = with stdenv.lib; {
     description = "Fast, reliable protein-coding gene prediction for prokaryotic genomes";
     homepage = "https://github.com/hyattpd/Prodigal";
     license = licenses.gpl3;

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pytest, unzip }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest, unzip }:
 
 buildPythonPackage rec {
   pname = "pytest-catchlog";
@@ -10,14 +10,13 @@ buildPythonPackage rec {
     extension = "zip";
   };
 
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [ pytest ];
+  buildInputs = [ pytest unzip ];
   checkPhase = "make test";
 
   # Requires pytest < 3.1
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.mit;
     homepage = "https://pypi.python.org/pypi/pytest-catchlog/";
     description = "py.test plugin to catch log messages. This is a fork of pytest-capturelog.";

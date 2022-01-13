@@ -1,48 +1,42 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, pythonOlder
-, setuptools-scm
-, typing-extensions
-, toml
+, setuptools_scm
 , zipp
+, pathlib2
+, contextlib2
+, configparser
+, isPy3k
+, importlib-resources
+, packaging
 }:
 
 buildPythonPackage rec {
   pname = "importlib-metadata";
-  version = "4.8.2";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
+  version = "1.7.0";
 
   src = fetchPypi {
     pname = "importlib_metadata";
     inherit version;
-    sha256 = "sha256-db3sFMOX9ShyTBv9lwnWYLM6TS53OHozWPILhIu15fs=";
+    sha256 = "10vz0ydrzspdhdbxrzwr9vhs693hzh4ff71lnqsifvdzvf66bfwh";
   };
 
-  nativeBuildInputs = [
-    setuptools-scm
-  ];
+  nativeBuildInputs = [ setuptools_scm ];
 
-  propagatedBuildInputs = [
-    toml
-    zipp
-  ] ++ lib.optionals (pythonOlder "3.8") [
-    typing-extensions
-  ];
+  propagatedBuildInputs = [ zipp ]
+    ++ lib.optionals (!isPy3k) [ pathlib2 contextlib2 configparser ];
 
-  # Cyclic dependencies due to pyflakefs
-  doCheck = false;
+  doCheck = false; # Cyclic dependencies.
 
-  pythonImportsCheck = [
-    "importlib_metadata"
-  ];
+  # removing test_main.py - it requires 'pyflakefs'
+  # and adding `pyflakefs` to `checkInputs` causes infinite recursion.
+  preCheck = ''
+    rm importlib_metadata/tests/test_main.py
+  '';
 
   meta = with lib; {
     description = "Read metadata from Python packages";
     homepage = "https://importlib-metadata.readthedocs.io/";
     license = licenses.asl20;
-    maintainers = with maintainers; [ fab ];
   };
 }

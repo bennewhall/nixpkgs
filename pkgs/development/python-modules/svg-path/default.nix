@@ -1,14 +1,14 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 buildPythonPackage rec {
   pname = "svg.path";
-  version = "4.1";
+  version = "4.0.2";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "7e6847ba690ff620e20f152818d52e1685b993aacbc41b321f8fee3d1cb427db";
+    sha256 = "4bd627ec6526cd5da14f3c6a51205d930187db2d8992aed626825492c033b195";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "SVG path objects and parser";
     homepage = "https://github.com/regebro/svg.path";
     license = licenses.mit;

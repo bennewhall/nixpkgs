@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl }:
+{ stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation rec {
   version = "6.0.1";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     mv -v $out/share/man/man1/coan.1.{1,gz}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The C preprocessor chainsaw";
     longDescription = ''
       A software engineering tool for analysing preprocessor-based
@@ -28,6 +28,6 @@ stdenv.mkDerivation rec {
     '';
     homepage = "http://coan2.sourceforge.net/";
     license = licenses.bsd3;
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }

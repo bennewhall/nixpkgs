@@ -12,7 +12,7 @@ with import ./release-lib.nix { inherit supportedSystems nixpkgsArgs; };
 {
 
   tarball = import ./make-tarball.nix {
-    inherit nixpkgs supportedSystems;
+    inherit nixpkgs;
     officialRelease = false;
   };
 
@@ -93,7 +93,7 @@ with import ./release-lib.nix { inherit supportedSystems nixpkgsArgs; };
   ltrace = linux;
   lvm2 = linux;
   lynx = linux;
-  xz = linux;
+  lzma = linux;
   man = linux;
   man-pages = linux;
   mc = all;
@@ -126,7 +126,7 @@ with import ./release-lib.nix { inherit supportedSystems nixpkgsArgs; };
   pciutils = linux;
   pdf2xml = all;
   perl = all;
-  pkg-config = all;
+  pkgconfig = all;
   pmccabe = linux;
   procps = linux;
   python = unix; # Cygwin builds fail
@@ -166,6 +166,7 @@ with import ./release-lib.nix { inherit supportedSystems nixpkgsArgs; };
   webkitgtk = linux;
   wget = all;
   which = all;
+  wicd = linux;
   wireshark = linux;
   wirelesstools = linux;
   wpa_supplicant = linux;

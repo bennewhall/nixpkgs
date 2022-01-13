@@ -1,24 +1,6 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
-, pkg-config
-, lv2
-, alsa-lib
-, libjack2
-, freetype
-, libX11
-, gtk3
-, pcre
-, libpthreadstubs
-, libXdmcp
-, libxkbcommon
-, libepoxy
-, at-spi2-core
-, dbus
-, curl
-, fftwFloat
-}:
+{ stdenv, fetchFromGitHub, fetchzip, cmake, pkgconfig, lv2, alsaLib, libjack2,
+  freetype, libX11, gtk3, pcre, libpthreadstubs, libXdmcp, libxkbcommon,
+  epoxy, at-spi2-core, dbus, curl, fftwFloat }:
 
 let
   pname = "HybridReverb2";
@@ -28,13 +10,11 @@ let
 in
 
 stdenv.mkDerivation rec {
-  inherit pname version;
+  name = "${pname}-${version}";
 
-  impulseDB = fetchFromGitHub {
-    inherit owner;
-    repo = "HybridReverb2-impulse-response-database";
-    rev = "v${DBversion}";
-    sha256 = "sha256-PyGrMNhrL2cRjb2UPPwEaJ6vZBV2sDG1mKFCNdfqjsI=";
+  impulseDB = fetchzip {
+    url = "https://github.com/${owner}/${pname}-impulse-response-database/archive/v${DBversion}.zip";
+    sha256 = "1hlfxbbkahm1k2sk3c3n2mjaz7k80ky3r55xil8nfbvbv0qan89z";
   };
 
   src = fetchFromGitHub {
@@ -45,24 +25,9 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ pkg-config cmake ];
-  buildInputs = [
-    lv2
-    alsa-lib
-    libjack2
-    freetype
-    libX11
-    gtk3
-    pcre
-    libpthreadstubs
-    libXdmcp
-    libxkbcommon
-    libepoxy
-    at-spi2-core
-    dbus
-    curl
-    fftwFloat
-  ];
+  nativeBuildInputs = [ pkgconfig cmake ];
+  buildInputs = [ lv2 alsaLib libjack2 freetype libX11 gtk3 pcre
+    libpthreadstubs libXdmcp libxkbcommon epoxy at-spi2-core dbus curl fftwFloat ];
 
   cmakeFlags = [
     "-DHybridReverb2_AdvancedJackStandalone=ON"
@@ -74,7 +39,7 @@ stdenv.mkDerivation rec {
     cp  -r ${impulseDB}/* $out/share/${pname}/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www2.ika.ruhr-uni-bochum.de/HybridReverb2";
     description = "Reverb effect using hybrid impulse convolution";
     license = licenses.gpl2Plus;

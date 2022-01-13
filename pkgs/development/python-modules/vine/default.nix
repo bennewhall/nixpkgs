@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , case, pytest, pythonOlder }:
 
 buildPythonPackage rec {
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   buildInputs = [ case pytest ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python promises";
     homepage = "https://github.com/celery/vine";
     license = licenses.bsd3;

@@ -1,13 +1,13 @@
 { fetchFromGitHub, lib, buildPythonPackage, pythonOlder
 , afdko, appdirs, attrs, black, booleanoperations, brotlipy, click
-, defcon, fontmath, fontparts, fontpens, fonttools, lxml
+, defcon, fontmath, fontparts, fontpens, fonttools, fs, lxml
 , mutatormath, pathspec, psautohint, pyclipper, pytz, regex, scour
 , toml, typed-ast, ufonormalizer, ufoprocessor, unicodedata2, zopfli
-, pillow, six, bash, setuptools-scm }:
+, pillow, six, bash, setuptools_scm }:
 
 buildPythonPackage rec {
   pname = "nototools";
-  version = "0.2.16";
+  version = "0.2.13";
 
   disabled = pythonOlder "3.6";
 
@@ -15,14 +15,14 @@ buildPythonPackage rec {
     owner = "googlefonts";
     repo = "nototools";
     rev = "v${version}";
-    sha256 = "14rrdamkmhrykff8ln07fq9cm8zwj3k113lzwjcy0lgz23g51jyl";
+    sha256 = "0ggp65xgkf9y7jamncm65lkm84wapsa47abf133pcb702875v8jz";
   };
 
   postPatch = ''
     sed -i 's/use_scm_version=.*,/version="${version}",/' setup.py
   '';
 
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools_scm ];
 
   propagatedBuildInputs = [
     afdko

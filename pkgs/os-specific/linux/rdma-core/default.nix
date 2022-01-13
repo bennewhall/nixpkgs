@@ -1,22 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, docutils
-, pandoc, ethtool, iproute2, libnl, udev, python3, perl
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, docutils
+, pandoc, ethtool, iproute, libnl, udev, python, perl
+, makeWrapper
 } :
 
+let
+  version = "31.2";
 
-stdenv.mkDerivation rec {
+in stdenv.mkDerivation {
   pname = "rdma-core";
-  version = "38.0";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "linux-rdma";
     repo = "rdma-core";
     rev = "v${version}";
-    sha256 = "1z9yrkqdknzidg4g1g5rqrs7i0325nmzzw0nf2ki1nzlfwqxy9qv";
+    sha256 = "0njfn8ziip57a2s435d4s0p3yylb85y7hdgbq660vwpsia9fb4sq";
   };
 
-  strictDeps = true;
-  nativeBuildInputs = [ cmake pkg-config pandoc docutils python3 ];
-  buildInputs = [ libnl ethtool iproute2 udev perl ];
+  nativeBuildInputs = [ cmake pkgconfig pandoc docutils makeWrapper ];
+  buildInputs = [ libnl ethtool iproute udev python perl ];
 
   cmakeFlags = [
     "-DCMAKE_INSTALL_RUNDIR=/run"
@@ -37,15 +39,14 @@ stdenv.mkDerivation rec {
   postFixup = ''
     for pls in $out/bin/{ibfindnodesusing.pl,ibidsverify.pl}; do
       echo "wrapping $pls"
-      substituteInPlace $pls --replace \
-        "${perl}/bin/perl" "${perl}/bin/perl -I $out/${perl.libPrefix}"
+      wrapProgram $pls --prefix PERL5LIB : "$out/${perl.libPrefix}"
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "RDMA Core Userspace Libraries and Daemons";
     homepage = "https://github.com/linux-rdma/rdma-core";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.linux;
     maintainers = with maintainers; [ markuskowa ];
   };

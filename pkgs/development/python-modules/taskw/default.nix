@@ -1,22 +1,22 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , nose
 , tox
 , six
-, python-dateutil
+, dateutil
 , kitchen
 , pytz
 , pkgs
 }:
 
 buildPythonPackage rec {
-  version = "1.3.1";
+  version = "1.2.0";
   pname = "taskw";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1a68e49cac2d4f6da73c0ce554fd6f94932d95e20596f2ee44a769a28c12ba7d";
+    sha256 = "fadd8afc12df026c3c2d39b633c55d3337f7dca95602fce2239455a048bc85fe";
   };
 
   patches = [ ./use-template-for-taskwarrior-install-path.patch ];
@@ -29,9 +29,9 @@ buildPythonPackage rec {
   doCheck = false;
 
   buildInputs = [ nose pkgs.taskwarrior tox ];
-  propagatedBuildInputs = [ six python-dateutil kitchen pytz ];
+  propagatedBuildInputs = [ six dateutil kitchen pytz ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage =  "https://github.com/ralphbean/taskw";
     description = "Python bindings for your taskwarrior database";
     license = licenses.gpl3Plus;

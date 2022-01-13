@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl, which
+{ stdenv, fetchFromGitHub, perl, which
 # Most packages depending on openblas expect integer width to match
 # pointer width, but some expect to use 32-bit integers always
 # (for compatibility with reference BLAS).
@@ -15,67 +15,51 @@
 # Select a specific optimization target (other than the default)
 # See https://github.com/xianyi/OpenBLAS/blob/develop/TargetList.txt
 , target ? null
-# Select whether DYNAMIC_ARCH is enabled or not.
-, dynamicArch ? null
-# enable AVX512 optimized kernels.
-# These kernels have been a source of trouble in the past.
-# Use with caution.
-, enableAVX512 ? false
-, enableStatic ? stdenv.hostPlatform.isStatic
-, enableShared ? !stdenv.hostPlatform.isStatic
+, enableStatic ? false
+, enableShared ? true
 }:
 
-with lib;
+with stdenv.lib;
 
 let blas64_ = blas64; in
 
 let
   setTarget = x: if target == null then x else target;
-  setDynamicArch = x: if dynamicArch == null then x else dynamicArch;
 
   # To add support for a new platform, add an element to this set.
   configs = {
     armv6l-linux = {
       BINARY = 32;
       TARGET = setTarget "ARMV6";
-      DYNAMIC_ARCH = setDynamicArch false;
+      DYNAMIC_ARCH = false;
       USE_OPENMP = true;
     };
 
     armv7l-linux = {
       BINARY = 32;
       TARGET = setTarget "ARMV7";
-      DYNAMIC_ARCH = setDynamicArch false;
+      DYNAMIC_ARCH = false;
       USE_OPENMP = true;
-    };
-
-    aarch64-darwin = {
-      BINARY = 64;
-      TARGET = setTarget "VORTEX";
-      DYNAMIC_ARCH = setDynamicArch true;
-      USE_OPENMP = false;
-      MACOSX_DEPLOYMENT_TARGET = "11.0";
     };
 
     aarch64-linux = {
       BINARY = 64;
       TARGET = setTarget "ARMV8";
-      DYNAMIC_ARCH = setDynamicArch true;
+      DYNAMIC_ARCH = true;
       USE_OPENMP = true;
     };
 
     i686-linux = {
       BINARY = 32;
       TARGET = setTarget "P2";
-      DYNAMIC_ARCH = setDynamicArch true;
+      DYNAMIC_ARCH = true;
       USE_OPENMP = true;
     };
 
     x86_64-darwin = {
       BINARY = 64;
       TARGET = setTarget "ATHLON";
-      DYNAMIC_ARCH = setDynamicArch true;
-      NO_AVX512 = !enableAVX512;
+      DYNAMIC_ARCH = true;
       USE_OPENMP = false;
       MACOSX_DEPLOYMENT_TARGET = "10.7";
     };
@@ -83,23 +67,16 @@ let
     x86_64-linux = {
       BINARY = 64;
       TARGET = setTarget "ATHLON";
-      DYNAMIC_ARCH = setDynamicArch true;
-      NO_AVX512 = !enableAVX512;
+      DYNAMIC_ARCH = true;
+      NO_AVX512 = true;
       USE_OPENMP = !stdenv.hostPlatform.isMusl;
     };
 
     powerpc64le-linux = {
       BINARY = 64;
       TARGET = setTarget "POWER5";
-      DYNAMIC_ARCH = setDynamicArch true;
+      DYNAMIC_ARCH = true;
       USE_OPENMP = !stdenv.hostPlatform.isMusl;
-    };
-
-    riscv64-linux = {
-      BINARY = 64;
-      TARGET = setTarget "RISCV64_GENERIC";
-      DYNAMIC_ARCH = setDynamicArch false;
-      USE_OPENMP = true;
     };
   };
 in
@@ -129,7 +106,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "openblas";
-  version = "0.3.18";
+  version = "0.3.12";
 
   outputs = [ "out" "dev" ];
 
@@ -137,7 +114,7 @@ stdenv.mkDerivation rec {
     owner = "xianyi";
     repo = "OpenBLAS";
     rev = "v${version}";
-    sha256 = "sha256-b5i52rjsH65qAIlYGXQrzVxChi8/fwbD4eJTrxVq7Z8=";
+    sha256 = "0mk1kjkr96bvvcq2zigzjrs0cnhwsf6gfi0855mp9yifn8lvp20y";
   };
 
   inherit blas64;
@@ -184,7 +161,7 @@ stdenv.mkDerivation rec {
     NO_BINARY_MODE = if stdenv.isx86_64
         then toString (stdenv.hostPlatform != stdenv.buildPlatform)
         else stdenv.hostPlatform != stdenv.buildPlatform;
-  } // (lib.optionalAttrs singleThreaded {
+  } // (stdenv.lib.optionalAttrs singleThreaded {
     # As described on https://github.com/xianyi/OpenBLAS/wiki/Faq/4bded95e8dc8aadc70ce65267d1093ca7bdefc4c#multi-threaded
     USE_THREAD = false;
     USE_LOCKING = true; # available with openblas >= 0.3.7
@@ -212,14 +189,14 @@ EOF
     ln -s $out/lib/libopenblas${shlibExt} $out/lib/libcblas${shlibExt}
     ln -s $out/lib/libopenblas${shlibExt} $out/lib/liblapack${shlibExt}
     ln -s $out/lib/libopenblas${shlibExt} $out/lib/liblapacke${shlibExt}
-  '' + lib.optionalString stdenv.hostPlatform.isLinux ''
+  '' + stdenv.lib.optionalString stdenv.hostPlatform.isLinux ''
     ln -s $out/lib/libopenblas${shlibExt} $out/lib/libblas${shlibExt}.3
     ln -s $out/lib/libopenblas${shlibExt} $out/lib/libcblas${shlibExt}.3
     ln -s $out/lib/libopenblas${shlibExt} $out/lib/liblapack${shlibExt}.3
     ln -s $out/lib/libopenblas${shlibExt} $out/lib/liblapacke${shlibExt}.3
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Basic Linear Algebra Subprograms";
     license = licenses.bsd3;
     homepage = "https://github.com/xianyi/OpenBLAS";

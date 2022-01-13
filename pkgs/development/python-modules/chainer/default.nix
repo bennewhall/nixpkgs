@@ -1,11 +1,11 @@
 { lib, buildPythonPackage, fetchFromGitHub, isPy3k
-, filelock, protobuf, numpy, pytestCheckHook, mock, typing-extensions
+, filelock, protobuf, numpy, pytest, mock, typing-extensions
 , cupy, cudaSupport ? false
 }:
 
 buildPythonPackage rec {
   pname = "chainer";
-  version = "7.8.0";
+  version = "6.5.0";
   disabled = !isPy3k; # python2.7 abandoned upstream
 
   # no tests in Pypi tarball
@@ -13,11 +13,16 @@ buildPythonPackage rec {
     owner = "chainer";
     repo = "chainer";
     rev = "v${version}";
-    sha256 = "1zfj3pk54gzxd4nid0qjx4kw1wdngwscvn4hk4cijxvwqi4a5zxj";
+    sha256 = "0ha9fbl6sa3fbnsz3y1pg335iiskdbxw838m5j06zgzy156zna1x";
   };
 
+  # remove on 7.0 or 6.6 release
+  postPatch = ''
+    sed -i '/typing/d' setup.py
+  '';
+
   checkInputs = [
-    pytestCheckHook
+    pytest
     mock
   ];
 
@@ -28,13 +33,10 @@ buildPythonPackage rec {
     typing-extensions
   ] ++ lib.optionals cudaSupport [ cupy ];
 
-  pytestFlagsArray = [ "tests/chainer_tests/utils_tests" ];
-
-  disabledTests = [
-    "gpu"
-    "cupy"
-    "ideep"
-  ];
+  # avoid gpu tests
+  checkPhase = ''
+    pytest tests/chainer_tests/utils_tests -k 'not gpu and not cupy'
+  '';
 
   meta = with lib; {
     description = "A flexible framework of neural networks for deep learning";

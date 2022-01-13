@@ -1,33 +1,25 @@
-{ stdenv, lib, darwin, fetchFromGitHub, tbb, gtk3, glfw, pkg-config, freetype, Carbon, AppKit, capstone }:
+{ stdenv, lib, darwin, fetchFromGitHub, tbb, gtk3, glfw, pkgconfig, freetype, Carbon, AppKit, capstone }:
 
-let
-  disableLTO = stdenv.cc.isClang && stdenv.isDarwin;  # workaround issue #19098
-in stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "tracy";
-  version = "0.7.8";
+  version = "0.7.4";
 
   src = fetchFromGitHub {
     owner = "wolfpld";
     repo = "tracy";
     rev = "v${version}";
-    sha256 = "sha256-hOeanY170vvn5W68cCDRUFApia/PW3ymPIgdWx3gwVw=";
+    sha256 = "0s39kimpc03x48kh7lyhblfs8y4mdzcz3g7f806h90x7zndsmfxj";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ glfw capstone ]
     ++ lib.optionals stdenv.isDarwin [ Carbon AppKit freetype ]
     ++ lib.optionals stdenv.isLinux [ gtk3 tbb ];
 
   NIX_CFLAGS_COMPILE = [ ]
-    # Apple's compiler finds a format string security error on
-    # ../../../server/TracyView.cpp:649:34, preventing building.
-    ++ lib.optional stdenv.isDarwin "-Wno-format-security"
     ++ lib.optional stdenv.isLinux "-ltbb"
-    ++ lib.optional stdenv.cc.isClang "-faligned-allocation"
-    ++ lib.optional disableLTO "-fno-lto";
-
-  NIX_CFLAGS_LINK = lib.optional disableLTO "-fno-lto";
+    ++ lib.optional stdenv.cc.isClang "-faligned-allocation";
 
   buildPhase = ''
     make -j $NIX_BUILD_CORES -C profiler/build/unix release
@@ -43,11 +35,11 @@ in stdenv.mkDerivation rec {
     install -D ./update/build/unix/update-release $out/bin/update
   '';
 
-  postFixup = lib.optionalString stdenv.isDarwin ''
+  fixupPhase = lib.optionalString stdenv.isDarwin ''
     install_name_tool -change libcapstone.4.dylib ${capstone}/lib/libcapstone.4.dylib $out/bin/Tracy
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A real time, nanosecond resolution, remote telemetry frame profiler for games and other applications";
     homepage = "https://github.com/wolfpld/tracy";
     platforms = platforms.linux ++ platforms.darwin;

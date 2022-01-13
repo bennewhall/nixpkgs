@@ -1,71 +1,71 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
-, appstream-glib
-, desktop-file-utils
-, libepoxy
-, glib
-, gtk4
-, wayland
-, meson
-, mpv
-, ninja
 , nix-update-script
-, pkg-config
+, meson
+, ninja
 , python3
-, wrapGAppsHook4
+, gettext
+, pkgconfig
+, desktop-file-utils
+, wrapGAppsHook
+, appstream-glib
+, epoxy
+, glib
+, gtk3
+, mpv
 }:
 
 stdenv.mkDerivation rec {
   pname = "celluloid";
-  version = "0.22";
+  version = "0.20";
 
   src = fetchFromGitHub {
     owner = "celluloid-player";
     repo = "celluloid";
     rev = "v${version}";
-    hash = "sha256-QGN8YLtyb9YVNDK2ZDQwHJVg6UTIQssfNK9lQqxMNKQ=";
+    hash = "sha256-fEZnH8EqU6CykgKINXnKChuBUlisroa97B1vjcx2cWA=";
   };
 
   nativeBuildInputs = [
-    appstream-glib
-    desktop-file-utils
     meson
     ninja
-    pkg-config
     python3
-    wrapGAppsHook4
+    appstream-glib
+    gettext
+    pkgconfig
+    desktop-file-utils
+    wrapGAppsHook
   ];
+
   buildInputs = [
-    libepoxy
+    epoxy
     glib
-    gtk4
-    wayland
+    gtk3
     mpv
   ];
 
   postPatch = ''
     patchShebangs meson-post-install.py src/generate-authors.py
-    # Remove this for next release
-    substituteInPlace meson-post-install.py --replace "gtk-update-icon-cache" "gtk4-update-icon-cache"
   '';
 
   doCheck = true;
 
-  meta = with lib; {
-    homepage = "https://github.com/celluloid-player/celluloid";
-    description = "Simple GTK frontend for the mpv video player";
-    longDescription = ''
-      Celluloid (formerly GNOME MPV) is a simple GTK+ frontend for mpv.
-      Celluloid interacts with mpv via the client API exported by libmpv,
-      allowing access to mpv's powerful playback capabilities.
-    '';
-    license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ AndersonTorres ];
-    platforms = platforms.linux;
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = pname;
+    };
   };
 
-  passthru.updateScript = nix-update-script {
-    attrPath = pname;
+  meta = with stdenv.lib; {
+    description = "Simple GTK frontend for the mpv video player";
+    longDescription = ''
+      GNOME MPV interacts with mpv via the client API exported by libmpv,
+      allowing access to mpv's powerful playback capabilities through an
+      easy-to-use user interface.
+    '';
+    homepage = "https://github.com/celluloid-player/celluloid";
+    license = licenses.gpl3Plus;
+    maintainers = with maintainers; [ worldofpeace ];
+    platforms = platforms.linux;
   };
 }

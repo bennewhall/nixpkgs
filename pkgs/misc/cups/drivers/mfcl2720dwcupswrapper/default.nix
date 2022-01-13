@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, dpkg, makeWrapper, coreutils, gnugrep, gnused, perl, mfcl2720dwlpr }:
+{ stdenv, fetchurl, dpkg, makeWrapper, coreutils, gnugrep, gnused, perl, mfcl2720dwlpr }:
 
 stdenv.mkDerivation rec {
   pname = "mfcl2720dwcupswrapper";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ dpkg makeWrapper ];
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
     dpkg-deb -x $src $out
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
       --replace /usr/bin/perl ${perl}/bin/perl
 
     wrapProgram $dir/cupswrapper/brother_lpdwrapper_MFCL2720DW \
-      --prefix PATH : ${lib.makeBinPath [ coreutils gnugrep gnused ]}
+      --prefix PATH : ${stdenv.lib.makeBinPath [ coreutils gnugrep gnused ]}
 
     mkdir -p $out/lib/cups/filter
     mkdir -p $out/share/cups/model
@@ -40,8 +40,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Brother MFC-L2720DW CUPS wrapper driver";
     homepage = "http://www.brother.com/";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     platforms = [ "x86_64-linux" "i686-linux" ];
-    maintainers = [ lib.maintainers.xeji ];
+    maintainers = [ stdenv.lib.maintainers.xeji ];
   };
 }

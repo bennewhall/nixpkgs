@@ -1,21 +1,20 @@
-{ buildPecl, lib, rdkafka, pcre2 }:
+{ buildPecl, lib, pkgs, pcre' }:
 
 buildPecl {
   pname = "rdkafka";
 
-  version = "5.0.2";
-  sha256 = "sha256-slCwtt8ySE5Zk2tnaYO6E0N20VZS8CVSsr8EgqssvOk=";
+  version = "4.0.4";
+  sha256 = "18a8p43i2g93fv7qzvk2hk66z5iv0mk1rqn097x49bjigliv60mn";
 
-  buildInputs = [ rdkafka pcre2 ];
+  buildInputs = [ pkgs.rdkafka pcre' ];
 
   postPhpize = ''
     substituteInPlace configure \
-      --replace 'SEARCH_PATH="/usr/local /usr"' 'SEARCH_PATH=${rdkafka}'
+      --replace 'SEARCH_PATH="/usr/local /usr"' 'SEARCH_PATH=${pkgs.rdkafka}'
   '';
 
   meta = with lib; {
     description = "Kafka client based on librdkafka";
-    license = licenses.mit;
     homepage = "https://github.com/arnaud-lb/php-rdkafka";
     maintainers = teams.php.members;
   };

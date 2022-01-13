@@ -10,37 +10,39 @@ let
     paths = map (p: "${p}/pcsc/drivers") config.services.pcscd.plugins;
   };
 
-in
-{
+in {
 
   ###### interface
 
-  options.services.pcscd = {
-    enable = mkEnableOption "PCSC-Lite daemon";
+  options = {
 
-    plugins = mkOption {
-      type = types.listOf types.package;
-      default = [ pkgs.ccid ];
-      defaultText = literalExpression "[ pkgs.ccid ]";
-      example = literalExpression "[ pkgs.pcsc-cyberjack ]";
-      description = "Plugin packages to be used for PCSC-Lite.";
-    };
+    services.pcscd = {
+      enable = mkEnableOption "PCSC-Lite daemon";
 
-    readerConfig = mkOption {
-      type = types.lines;
-      default = "";
-      example = ''
-        FRIENDLYNAME      "Some serial reader"
-        DEVICENAME        /dev/ttyS0
-        LIBPATH           /path/to/serial_reader.so
-        CHANNELID         1
-      '';
-      description = ''
-        Configuration for devices that aren't hotpluggable.
+      plugins = mkOption {
+        type = types.listOf types.package;
+        default = [ pkgs.ccid ];
+        defaultText = "[ pkgs.ccid ]";
+        example = literalExample "[ pkgs.pcsc-cyberjack ]";
+        description = "Plugin packages to be used for PCSC-Lite.";
+      };
 
-        See <citerefentry><refentrytitle>reader.conf</refentrytitle>
-        <manvolnum>5</manvolnum></citerefentry> for valid options.
-      '';
+      readerConfig = mkOption {
+        type = types.lines;
+        default = "";
+        example = ''
+          FRIENDLYNAME      "Some serial reader"
+          DEVICENAME        /dev/ttyS0
+          LIBPATH           /path/to/serial_reader.so
+          CHANNELID         1
+        '';
+        description = ''
+          Configuration for devices that aren't hotpluggable.
+
+          See <citerefentry><refentrytitle>reader.conf</refentrytitle>
+          <manvolnum>5</manvolnum></citerefentry> for valid options.
+        '';
+      };
     };
   };
 
@@ -48,26 +50,20 @@ in
 
   config = mkIf config.services.pcscd.enable {
 
-    environment.etc."reader.conf".source = cfgFile;
-
-    environment.systemPackages = [ pkgs.pcsclite ];
-    systemd.packages = [ (getBin pkgs.pcsclite) ];
-
-    systemd.sockets.pcscd.wantedBy = [ "sockets.target" ];
+    systemd.sockets.pcscd = {
+      description = "PCSC-Lite Socket";
+      wantedBy = [ "sockets.target" ];
+      before = [ "multi-user.target" ];
+      socketConfig.ListenStream = "/run/pcscd/pcscd.comm";
+    };
 
     systemd.services.pcscd = {
+      description = "PCSC-Lite daemon";
       environment.PCSCLITE_HP_DROPDIR = pluginEnv;
-      restartTriggers = [ "/etc/reader.conf" ];
-
-      # If the cfgFile is empty and not specified (in which case the default
-      # /etc/reader.conf is assumed), pcscd will happily start going through the
-      # entire confdir (/etc in our case) looking for a config file and try to
-      # parse everything it finds. Doesn't take a lot of imagination to see how
-      # well that works. It really shouldn't do that to begin with, but to work
-      # around it, we force the path to the cfgFile.
-      #
-      # https://github.com/NixOS/nixpkgs/issues/121088
-      serviceConfig.ExecStart = [ "" "${getBin pkgs.pcsclite}/bin/pcscd -f -x -c ${cfgFile}" ];
+      serviceConfig = {
+        ExecStart = "${getBin pkgs.pcsclite}/sbin/pcscd -f -x -c ${cfgFile}";
+        ExecReload = "${getBin pkgs.pcsclite}/sbin/pcscd -H";
+      };
     };
   };
 }

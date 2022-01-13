@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, libvirt, autoreconfHook, pkg-config, ocaml, findlib, perl }:
+{ stdenv, fetchFromGitLab, libvirt, autoreconfHook, pkg-config, ocaml, findlib, perl }:
 
 stdenv.mkDerivation rec {
   pname = "ocaml-libvirt";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   installPhase = "make install-opt";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "OCaml bindings for libvirt";
     homepage = "https://libvirt.org/ocaml/";
     license = licenses.gpl2;

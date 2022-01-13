@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , pantheon
@@ -16,13 +16,13 @@
 
 stdenv.mkDerivation rec {
   pname = "agenda";
-  version = "1.1.2";
+  version = "1.1.0";
 
   src = fetchFromGitHub {
     owner = "dahenson";
     repo = pname;
     rev = version;
-    sha256 = "sha256-tzGcqCxIkoBNskpadEqv289Sj5bij9u+LdYySiGdop8=";
+    sha256 = "0yfapapsanqacaa83iagar88i335yy2jvay8y6z7gkri7avbs4am";
   };
 
   nativeBuildInputs = [
@@ -56,13 +56,12 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple, fast, no-nonsense to-do (task) list designed for elementary OS";
     homepage = "https://github.com/dahenson/agenda";
-    maintainers = with maintainers; [ xiorcale ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [ xiorcale ] ++ pantheon.maintainers;
     platforms = platforms.linux;
     license = licenses.gpl3;
-    mainProgram = "com.github.dahenson.agenda";
   };
 }
 

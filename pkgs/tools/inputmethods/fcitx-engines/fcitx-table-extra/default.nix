@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, fcitx, gettext }:
+{ stdenv, fetchurl, cmake, fcitx, gettext }:
 
 stdenv.mkDerivation rec {
   pname = "fcitx-table-extra";
@@ -9,15 +9,14 @@ stdenv.mkDerivation rec {
     sha256 = "c91bb19c1a7b53c5339bf2f75ae83839020d337990f237a8b9bc0f4416c120ef";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ fcitx gettext ];
+  buildInputs = [ cmake fcitx gettext ];
 
   preInstall = ''
    substituteInPlace tables/cmake_install.cmake \
       --replace ${fcitx} $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     isFcitxEngine = true;
     homepage      = "https://github.com/fcitx/fcitx-table-extra";
     downloadPage  = "http://download.fcitx-im.org/fcitx-table-extra/";

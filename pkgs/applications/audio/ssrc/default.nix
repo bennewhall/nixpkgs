@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "ssrc";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     cp ssrc ssrc_hp $out/bin
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A high quality audio sampling rate converter";
     longDescription = ''
       This program converts sampling rates of PCM wav files. This

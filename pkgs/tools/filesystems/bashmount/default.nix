@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub}:
+{stdenv, fetchFromGitHub}:
 
 stdenv.mkDerivation rec {
   pname = "bashmount";
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     cp NEWS    $out/share/doc/bashmount
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jamielinux/bashmount";
     description = "A menu-driven bash script for the management of removable media with udisks";
     maintainers = [ maintainers.koral ];

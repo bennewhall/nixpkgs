@@ -1,4 +1,4 @@
-{ mkDerivation, fetchurl, makeWrapper, lib, php }:
+{ mkDerivation, fetchurl, pkgs, lib, php }:
 let
   pname = "box";
   version = "2.7.5";
@@ -11,9 +11,8 @@ mkDerivation {
     sha256 = "1zmxdadrv0i2l8cz7xb38gnfmfyljpsaz2nnkjzqzksdmncbgd18";
   };
 
-  dontUnpack = true;
-
-  nativeBuildInputs = [ makeWrapper ];
+  phases = [ "installPhase" ];
+  nativeBuildInputs = [ pkgs.makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/bin

@@ -1,15 +1,15 @@
 {
   mkDerivation, lib, kdoctools, extra-cmake-modules,
   karchive, kcrash, kdbusaddons, ki18n, kiconthemes, knewstuff, knotifications,
-  knotifyconfig, konsole, kparts, kwayland, kwindowsystem, qtx11extras
+  knotifyconfig, konsole, kparts, kwindowsystem, qtx11extras
 }:
 
 mkDerivation {
-  pname = "yakuake";
+  name = "yakuake";
 
   buildInputs = [
     karchive kcrash kdbusaddons ki18n kiconthemes knewstuff knotifications
-    knotifyconfig kparts kwayland kwindowsystem qtx11extras
+    knotifyconfig kparts kwindowsystem qtx11extras
   ];
 
   propagatedBuildInputs = [

@@ -1,60 +1,37 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, rustPlatform
-, cmake
-, pkg-config
-, openssl
-, oniguruma
-, CoreServices
-, installShellFiles
-, libsass
-, zola
-, testVersion
-}:
+{ stdenv, fetchFromGitHub, rustPlatform, cmake, pkg-config, openssl, oniguruma, CoreServices }:
 
 rustPlatform.buildRustPackage rec {
   pname = "zola";
-  version = "0.15.2";
+  version = "0.12.2";
 
   src = fetchFromGitHub {
     owner = "getzola";
-    repo = "zola";
+    repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-X4J3T/ob0NfCFxddadBtsPsDhfvesg6/sBJybWeubMM=";
+    sha256 = "sha256:0fb227kgani32ljnw73a0h5zn5361z5lraf79y34a0chcby2qv35";
   };
 
-  cargoSha256 = "sha256-0tynm/DTX2oiqZOdWjRBGPk8IPIN07x2+FCXQmQ4Fzo=";
+  cargoSha256 = "sha256:0ilfr32zcajag05qcpwi5ixz250s427i4xrjf4wrk7qy32bblnr5";
 
-  nativeBuildInputs = [
-    cmake
-    pkg-config
-    installShellFiles
-  ];
-  buildInputs = [
-    openssl
-    oniguruma
-    libsass
-  ] ++ lib.optionals stdenv.isDarwin [
-    CoreServices
-  ];
+  nativeBuildInputs = [ cmake pkg-config ];
+  buildInputs = [ openssl oniguruma ]
+    ++ stdenv.lib.optional stdenv.isDarwin CoreServices;
 
   RUSTONIG_SYSTEM_LIBONIG = true;
 
   postInstall = ''
-    installShellCompletion --cmd zola \
-      --fish completions/zola.fish \
-      --zsh completions/_zola \
-      --bash completions/zola.bash
+    install -D -m 444 completions/zola.bash \
+      -t $out/share/bash-completion/completions
+    install -D -m 444 completions/_zola \
+      -t $out/share/zsh/site-functions
+    install -D -m 444 completions/zola.fish \
+      -t $out/share/fish/vendor_completions.d
   '';
 
-  passthru.tests.version = testVersion { package = zola; };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fast static site generator with everything built-in";
     homepage = "https://www.getzola.org/";
-    changelog = "https://github.com/getzola/zola/raw/v${version}/CHANGELOG.md";
     license = licenses.mit;
-    maintainers = with maintainers; [ dandellion dywedir _0x4A6F ];
+    maintainers = with maintainers; [ dywedir _0x4A6F ];
   };
 }

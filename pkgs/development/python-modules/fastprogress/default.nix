@@ -1,7 +1,8 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , numpy
+, pytest
 , pythonOlder
 }:
 
@@ -21,7 +22,7 @@ buildPythonPackage rec {
   doCheck = false;
   pythonImportsCheck = [ "fastprogress" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/fastai/fastprogress";
     description = "Simple and flexible progress bar for Jupyter Notebook and console";
     license = licenses.asl20;

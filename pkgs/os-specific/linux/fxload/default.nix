@@ -1,11 +1,10 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
-stdenv.mkDerivation rec {
-  pname = "fxload";
-  version = "2002.04.11";
+stdenv.mkDerivation {
+  name = "fxload-2002_04_11";
 
   src = fetchurl {
-    url = "mirror://sourceforge/linux-hotplug/fxload-${lib.replaceStrings ["."] ["_"] version}.tar.gz";
+    url = "mirror://sourceforge/linux-hotplug/fxload-2002_04_11.tar.gz";
     sha256 = "1hql93bp3dxrv1p67nc63xsbqwljyynm997ysldrc3n9ifi6s48m";
   };
 
@@ -28,7 +27,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/share/usb
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://linux-hotplug.sourceforge.net/?selected=usb";
     description = "Tool to upload firmware to Cypress EZ-USB microcontrollers";
     license = licenses.gpl2;

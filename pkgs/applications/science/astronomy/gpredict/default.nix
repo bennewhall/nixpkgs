@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, intltool
+{ stdenv, fetchurl, pkgconfig, intltool
 , gtk3, glib, curl, goocanvas2, gpsd
 , hamlib, wrapGAppsHook
 }:
@@ -14,10 +14,10 @@ in stdenv.mkDerivation {
     sha256 = "0hwf97kng1zy8rxyglw04x89p0bg07zq30hgghm20yxiw2xc8ng7";
   };
 
-  nativeBuildInputs = [ pkg-config intltool wrapGAppsHook ];
+  nativeBuildInputs = [ pkgconfig intltool wrapGAppsHook ];
   buildInputs = [ curl glib gtk3 goocanvas2 gpsd hamlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Real time satellite tracking and orbit prediction";
     longDescription = ''
       Gpredict is a real time satellite tracking and orbit prediction program
@@ -26,7 +26,7 @@ in stdenv.mkDerivation {
       well. Gpredict uses the SGP4/SDP4 algorithms, which are compatible with the
       NORAD Keplerian elements.
     '';
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.linux;
     homepage = "http://gpredict.oz9aec.net/";
     maintainers = [ maintainers.markuskowa maintainers.cmcdragonkai ];

@@ -1,9 +1,9 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
 , amtk
-, gnome
+, gnome3
 , gobject-introspection
 , gtk3
 , gtksourceview4
@@ -13,13 +13,13 @@
 
 stdenv.mkDerivation rec {
   pname = "tepl";
-  version = "6.00.0";
+  version = "5.0.0";
 
   outputs = [ "out" "dev" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "0qvs7s86gqyyrzi0r5fbrj8zczlgv8xhdjswgbgc1afwjnl9fqx8";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0x2s0ks575b57jdqnp9r9miz40pm705n2dlj2k8bfj1hyl22kgf6";
   };
 
   nativeBuildInputs = [
@@ -46,12 +46,9 @@ stdenv.mkDerivation rec {
   # correctly installed or GVfs metadata are not supported on this platform. In
   # the latter case, you should configure Tepl with --disable-gvfs-metadata.
 
-  passthru.updateScript = gnome.updateScript {
-    packageName = pname;
-    versionPolicy = "odd-unstable";
-  };
+  passthru.updateScript = gnome3.updateScript { packageName = pname; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Projects/Tepl";
     description = "Text editor product line";
     maintainers = teams.gnome.members ++ [ maintainers.manveru ];

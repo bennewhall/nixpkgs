@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "hactool";
@@ -11,20 +11,17 @@ stdenv.mkDerivation rec {
     sha256 = "0305ngsnwm8npzgyhyifasi4l802xnfz19r0kbzzniirmcn4082d";
   };
 
-  patches = [ ./musl-compat.patch ];
-
   preBuild = ''
     mv config.mk.template config.mk
   '';
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
-  enableParallelBuilding = true;
+  makeFlags = stdenv.lib.optionals stdenv.isDarwin [ "CC=cc" ];
 
   installPhase = ''
     install -D hactool $out/bin/hactool
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/SciresM/hactool";
     description = "A tool to manipulate common file formats for the Nintendo Switch";
     longDescription = "A tool to view information about, decrypt, and extract common file formats for the Nintendo Switch, especially Nintendo Content Archives";

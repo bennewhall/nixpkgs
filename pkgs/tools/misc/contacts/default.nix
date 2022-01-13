@@ -1,14 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, xcbuildHook, Foundation, AddressBook }:
+{ stdenv, fetchurl, xcbuildHook, Foundation, AddressBook }:
 
 stdenv.mkDerivation {
   version = "1.1a-3";
   pname = "contacts";
 
-  src = fetchFromGitHub {
-    owner = "dhess";
-    repo = "contacts";
-    rev = "4092a3c6615d7a22852a3bafc44e4aeeb698aa8f";
-    hash = "sha256-Li/c5uf9rfpuU+hduuSm7EmhVwIIkS72dqzmN+0cE3A=";
+  src = fetchurl {
+    url = "https://github.com/dhess/contacts/archive/4092a3c6615d7a22852a3bafc44e4aeeb698aa8f.tar.gz";
+    sha256 = "0wdqc1ndgrdhqapvvgx5xihc750szv08lp91x4l6n0gh59cpxpg3";
   };
 
   nativeBuildInputs = [ xcbuildHook ];
@@ -19,12 +17,12 @@ stdenv.mkDerivation {
     cp Products/Default/contacts $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Access contacts from the Mac address book from command-line";
-    homepage = "http://www.gnufoo.org/contacts/contacts.html";
-    license = licenses.gpl2;
+    homepage    = "http://www.gnufoo.org/contacts/contacts.html";
+    license     = licenses.gpl2;
     maintainers = with maintainers; [ jwiegley ];
-    platforms = platforms.darwin;
-    hydraPlatforms = platforms.darwin;
+    platforms   = stdenv.lib.platforms.darwin;
+    hydraPlatforms = stdenv.lib.platforms.darwin;
   };
 }

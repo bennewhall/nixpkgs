@@ -1,18 +1,17 @@
-{ lib, stdenv, fetchurl, pkg-config, glib, gtk2, popt, babeltrace }:
+{ stdenv, fetchurl, pkgconfig, glib, gtk2, popt, babeltrace }:
 
 stdenv.mkDerivation rec {
-  pname = "lttv";
-  version = "1.5";
+  name = "lttv-1.5";
 
   src = fetchurl {
-    url = "https://lttng.org/files/packages/${pname}-${version}.tar.bz2";
+    url = "https://lttng.org/files/packages/${name}.tar.bz2";
     sha256 = "1faldxnh9dld5k0vxckwpqw241ya1r2zv286l6rpgqr500zqw7r1";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ glib gtk2 popt babeltrace ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graphical trace viewer for LTTng trace files";
     homepage = "https://lttng.org/";
     # liblttvtraceread (ltt/ directory) is distributed under the GNU LGPL v2.1.

@@ -3,8 +3,8 @@
 , lib
 , fetchFromGitHub
 , cmake
-, pkg-config
-, alsa-lib
+, pkgconfig
+, alsaLib
 , boost
 , chromaprint
 , fftw
@@ -19,34 +19,33 @@
 , protobuf
 , sqlite
 , taglib
-, libpulseaudio
-, libselinux
-, libsepol
-, p11-kit
-, util-linux
+, libpulseaudio ? null
+, libselinux ? null
+, libsepol ? null
+, p11-kit ? null
+, util-linux ? null
 , qtbase
 , qtx11extras
 , qttools
 , withGstreamer ? true
-, glib-networking
-, gst_all_1
+, gst_all_1 ? null
 , withVlc ? true
-, libvlc
+, libvlc ? null
 }:
 
 mkDerivation rec {
   pname = "strawberry";
-  version = "1.0.0";
+  version = "0.8.4";
 
   src = fetchFromGitHub {
     owner = "jonaski";
     repo = pname;
     rev = version;
-    sha256 = "sha256-m1BB5OIeCIQuJpxEO1xmb/Z8tzeHF31jYg67OpVWWRM=";
+    sha256 = "145djlfvbkx2b1wqipk51mz82dhm27vmh9x00lkn24q1xz1y6h5n";
   };
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     boost
     chromaprint
     fftw
@@ -62,40 +61,37 @@ mkDerivation rec {
     taglib
     qtbase
     qtx11extras
-  ] ++ lib.optionals stdenv.isLinux [
+  ]
+  ++ lib.optionals stdenv.isLinux [
     libpulseaudio
     libselinux
     libsepol
     p11-kit
-  ] ++ lib.optionals withGstreamer (with gst_all_1; [
-    glib-networking
+    util-linux
+  ]
+  ++ lib.optionals withGstreamer (with gst_all_1; [
     gstreamer
     gst-plugins-base
     gst-plugins-good
     gst-plugins-ugly
-  ]) ++ lib.optional withVlc libvlc;
+  ])
+  ++ lib.optional withVlc libvlc;
 
-  nativeBuildInputs = [
-    cmake
-    ninja
-    pkg-config
-    qttools
-  ] ++ lib.optionals stdenv.isLinux [
-    util-linux
+  nativeBuildInputs = [ cmake ninja pkgconfig qttools ];
+
+  cmakeFlags = [
+    "-DUSE_SYSTEM_TAGLIB=ON"
   ];
 
-  postInstall = lib.optionalString withGstreamer ''
-    qtWrapperArgs+=(
-      --prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "$GST_PLUGIN_SYSTEM_PATH_1_0"
-      --prefix GIO_EXTRA_MODULES : "${glib-networking.out}/lib/gio/modules"
-    )
+  postInstall = ''
+    qtWrapperArgs+=(--prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "$GST_PLUGIN_SYSTEM_PATH_1_0")
   '';
 
   meta = with lib; {
     description = "Music player and music collection organizer";
     homepage = "https://www.strawberrymusicplayer.org/";
     changelog = "https://raw.githubusercontent.com/jonaski/strawberry/${version}/Changelog";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ peterhoeg ];
     # upstream says darwin should work but they lack maintainers as of 0.6.6
     platforms = platforms.linux;

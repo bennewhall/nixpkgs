@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, boltons, pytest }:
+{ stdenv, buildPythonPackage, fetchPypi, boltons, pytest }:
 
 buildPythonPackage rec {
   pname = "face";
@@ -18,7 +18,7 @@ buildPythonPackage rec {
   # reporting
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/mahmoud/face";
     description = "A command-line interface parser and framework";
     longDescription = ''

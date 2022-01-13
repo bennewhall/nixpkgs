@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPyPy, isPy3k, click, gmpy2, numpy } :
+{ stdenv, buildPythonPackage, fetchPypi, isPyPy, isPy3k, click, gmpy2, numpy } :
 
 let
   pname = "phe";
@@ -21,7 +21,7 @@ buildPythonPackage {
   # 29/233 tests fail
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for Partially Homomorphic Encryption in Python";
     homepage = "https://github.com/n1analytics/python-paillier";
     license = licenses.gpl3;

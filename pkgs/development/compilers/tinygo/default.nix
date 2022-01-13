@@ -6,14 +6,13 @@ let main = ./main.go;
 in
 buildGoModule rec {
   pname = "tinygo";
-  version = "0.16.0";
+  version = "0.13.1";
 
   src = fetchFromGitHub {
     owner = "tinygo-org";
     repo = "tinygo";
     rev = "v${version}";
-    sha256 = "063aszbsnr0myq56kms1slmrfs7m4nmg0zgh2p66lxdsifrfly7j";
-    fetchSubmodules = true;
+    sha256 = "0das5z5y2x1970yi9c4yssxvwrrjhdmsj495q0r5mb02amvc954v";
   };
 
   overrideModAttrs = (_: {
@@ -22,36 +21,23 @@ buildGoModule rec {
       rm -rf *
       cp ${main} main.go
       cp ${gomod} go.mod
-      chmod +w go.mod
       '';
   });
 
   preBuild = "cp ${gomod} go.mod";
 
-  postBuild = "make gen-device";
-
-  vendorSha256 = "12k2gin0v7aqz5543m12yhifc0xsz26qyqra5l4c68xizvzcvkxb";
+  vendorSha256 = "19194dlzpl6zzw2gqybma5pwip71rw8z937f104k6c158qzzgy62";
 
   doCheck = false;
 
-  prePatch = ''
-    sed -i s/', "-nostdlibinc"'// builder/builtins.go
-    sed -i s/'"-nostdlibinc", '// compileopts/config.go builder/picolibc.go
-  '';
-
   subPackages = [ "." ];
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ llvm clang-unwrapped ];
+  buildInputs = [ llvm clang-unwrapped makeWrapper ];
   propagatedBuildInputs = [ lld avrgcc avrdude openocd gcc-arm-embedded ];
 
   postInstall = ''
     mkdir -p $out/share/tinygo
     cp -a lib src targets $out/share/tinygo
-    wrapProgram $out/bin/tinygo --prefix "TINYGOROOT" : "$out/share/tinygo" \
-      --prefix "PATH" : "$out/libexec/tinygo"
-    mkdir -p $out/libexec/tinygo
-    ln -s ${clang-unwrapped}/bin/clang $out/libexec/tinygo/clang-10
-    ln -s ${lld}/bin/lld $out/libexec/tinygo/ld.lld-10
+    wrapProgram $out/bin/tinygo --prefix "TINYGOROOT" : "$out/share/tinygo"
     ln -sf $out/bin $out/share/tinygo
   '';
 

@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchurl, jre, makeDesktopItem, makeWrapper, unzip, language ? "en_US" }:
+{ stdenv, fetchurl, jre, makeDesktopItem, makeWrapper, unzip, language ? "en_US" }:
 let
   pname = "geogebra";
-  version = "5-0-680-0";
+  version = "5-0-609-0";
 
   srcIcon = fetchurl {
     url = "http://static.geogebra.org/images/geogebra-logo.svg";
@@ -19,7 +19,7 @@ let
     mimeType = "application/vnd.geogebra.file;application/vnd.geogebra.tool;";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Dynamic mathematics software with graphics, algebra and spreadsheets";
     longDescription = ''
       Dynamic mathematics software for all levels of education that brings
@@ -27,7 +27,7 @@ let
       calculus in one easy-to-use package.
     '';
     homepage = "https://www.geogebra.org/";
-    maintainers = with maintainers; [ sikmir ];
+    maintainers = with maintainers; [ ma27 ];
     license = with licenses; [ gpl3 cc-by-nc-sa-30 geogebra ];
     platforms = with platforms; linux ++ darwin;
     hydraPlatforms = [];
@@ -41,9 +41,9 @@ let
     src = fetchurl {
       urls = [
         "https://download.geogebra.org/installers/5.0/GeoGebra-Linux-Portable-${version}.tar.bz2"
-        "https://web.archive.org/web/20210910014320/https://download.geogebra.org/installers/5.0/GeoGebra-Linux-Portable-${version}.tar.bz2"
+        "http://web.archive.org/web/20201022200454/https://download.geogebra.org/installers/5.0/GeoGebra-Linux-Portable-${version}.tar.bz2"
       ];
-      sha256 = "0gdvajf220pm1w3nxi2fymxjx2vl978pz7ffn5gr72cx8f2956lm";
+      sha256 = "0xbhg8hm3dqm3qkraj48pqwslrnjyxpq9mcgylr2m8i1gmqw7xwf";
     };
 
     nativeBuildInputs = [ makeWrapper ];
@@ -70,11 +70,8 @@ let
     preferLocalBuild = true;
 
     src = fetchurl {
-      urls = [
-        "https://download.geogebra.org/installers/5.0/GeoGebra-MacOS-Installer-withJava-${version}.zip"
-        "https://web.archive.org/web/20210101213641/https://download.geogebra.org/installers/5.0/GeoGebra-MacOS-Installer-withJava-${version}.zip"
-      ];
-      sha256 = "02sbxrns9zvhcfrr68ygv766and6f6b2a3dfarljxszwsviv6ljf";
+      url = "https://download.geogebra.org/installers/5.0/GeoGebra-MacOS-Installer-withJava-${version}.zip";
+      sha256 = "16fgqwxz31cfmia0pyzpk05aqzrqr11sjbw37q9zb3xfh3p1r4gz";
     };
 
     dontUnpack = true;

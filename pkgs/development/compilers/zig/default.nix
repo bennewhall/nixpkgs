@@ -1,56 +1,45 @@
-{ lib
-, fetchFromGitHub
-, cmake
-, llvmPackages
-, libxml2
-, zlib
-}:
+{ stdenv, fetchFromGitHub, cmake, llvmPackages, libxml2, zlib, substituteAll }:
 
-let
-  inherit (llvmPackages) stdenv;
-in
-stdenv.mkDerivation rec {
+llvmPackages.stdenv.mkDerivation rec {
+  version = "0.6.0";
   pname = "zig";
-  version = "0.9.0";
 
   src = fetchFromGitHub {
     owner = "ziglang";
     repo = pname;
     rev = version;
-    hash = "sha256-Hfl1KKtGcopMrn+U9r0/qr/wReWJIgb8+IgwMoguv/0=";
+    sha256 = "13dwm2zpscn4n0p5x8ggs9n7mwmq9cgip383i3qqphg7m3pkls8z";
   };
 
-  nativeBuildInputs = [
-    cmake
-    llvmPackages.llvm.dev
-  ];
+  nativeBuildInputs = [ cmake ];
   buildInputs = [
+    llvmPackages.clang-unwrapped
+    llvmPackages.llvm
+    llvmPackages.lld
     libxml2
     zlib
-  ] ++ (with llvmPackages; [
-    libclang
-    lld
-    llvm
-  ]);
+  ];
 
   preBuild = ''
     export HOME=$TMPDIR;
   '';
 
-  doCheck = true;
   checkPhase = ''
     runHook preCheck
-    ./zig test --cache-dir "$TMPDIR" -I $src/test $src/test/behavior.zig
+    ./zig test $src/test/stage1/behavior.zig
     runHook postCheck
   '';
 
-  meta = with lib; {
-    homepage = "https://ziglang.org/";
+  doCheck = true;
+
+  meta = with stdenv.lib; {
     description =
       "General-purpose programming language and toolchain for maintaining robust, optimal, and reusable software";
+    homepage = "https://ziglang.org/";
     license = licenses.mit;
-    maintainers = with maintainers; [ andrewrk AndersonTorres ];
     platforms = platforms.unix;
-    broken = stdenv.isDarwin; # See https://github.com/NixOS/nixpkgs/issues/86299
+    maintainers = [ maintainers.andrewrk ];
+    # See https://github.com/NixOS/nixpkgs/issues/86299
+    broken = stdenv.isDarwin;
   };
 }

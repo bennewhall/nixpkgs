@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, z3, zlib }:
+{ stdenv, fetchFromGitHub, fetchpatch, z3, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "vampire";
-  version = "4.6.1";
+  version = "4.5.1";
 
   src = fetchFromGitHub {
     owner = "vprover";
     repo = "vampire";
-    rev = "v${version}";
-    sha256 = "0z71nxjak3ibp842r8iv37w1x3cbkrmjs88lpvxqb4sgrbyk38zd";
+    rev = version;
+    sha256 = "0q9gqyq96amdnhxgwjyv0r2sxakikp3jvmizgj2h0spfz643p8db";
   };
 
   buildInputs = [ z3 zlib ];
@@ -46,11 +46,11 @@ stdenv.mkDerivation rec {
     install -m0755 -D vampire_z3_rel* $out/bin/vampire
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://vprover.github.io/";
     description = "The Vampire Theorem Prover";
     platforms = platforms.unix;
-    license = licenses.bsd3;
+    license = licenses.unfree;
     maintainers = with maintainers; [ gebner ];
   };
 }

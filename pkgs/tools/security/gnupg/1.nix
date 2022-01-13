@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, readline, bzip2 }:
+{ stdenv, fetchurl, readline, bzip2 }:
 
 stdenv.mkDerivation rec {
-  pname = "gnupg";
-  version = "1.4.23";
+  name = "gnupg-1.4.23";
 
   src = fetchurl {
-    url = "mirror://gnupg/gnupg/gnupg-${version}.tar.bz2";
+    url = "mirror://gnupg/gnupg/${name}.tar.bz2";
     sha256 = "1fkq4sqldvf6a25mm2qz95swv1qjg464736091w51djiwqbjyin9";
   };
 
@@ -13,7 +12,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gnupg.org";
     description = "Classic (1.4) release of the GNU Privacy Guard, a GPL OpenPGP implementation";
     license = licenses.gpl3Plus;

@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchurl, cmake
+{ stdenv, fetchurl, cmake
 , curl, openssl, zlib
 , libiconv
 , version, sha256, ...
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation {
   pname = "mariadb-connector-c";
@@ -29,15 +29,8 @@ stdenv.mkDerivation {
 
   postPatch = ''
     substituteInPlace mariadb_config/mariadb_config.c.in \
-      --replace '-I%s/@INSTALL_INCLUDEDIR@' "-I$dev/include" \
-      --replace '-L%s/@INSTALL_LIBDIR@' "-L$out/lib/mariadb"
-  '' + lib.optionalString stdenv.hostPlatform.isStatic ''
-    # Disables all dynamic plugins
-    substituteInPlace cmake/plugins.cmake \
-      --replace 'if(''${CC_PLUGIN_DEFAULT} STREQUAL "DYNAMIC")' 'if(''${CC_PLUGIN_DEFAULT} STREQUAL "INVALID")'
-    # Force building static libraries
-    substituteInPlace libmariadb/CMakeLists.txt \
-      --replace 'libmariadb SHARED' 'libmariadb STATIC'
+      --replace '@CMAKE_SYSROOT@@CMAKE_INSTALL_PREFIX@/@INSTALL_INCLUDEDIR@' "$dev/include" \
+      --replace '@CMAKE_SYSROOT@@CMAKE_INSTALL_PREFIX@/@INSTALL_LIBDIR@' "$out/lib/mariadb"
   '';
 
   # The cmake setup-hook uses $out/lib by default, this is not the case here.
@@ -49,6 +42,8 @@ stdenv.mkDerivation {
   propagatedBuildInputs = [ curl openssl zlib ];
   buildInputs = [ libiconv ];
 
+  enableParallelBuilding = true;
+
   postInstall = ''
     moveToOutput bin/mariadb_config "$dev"
   '';
@@ -59,12 +54,11 @@ stdenv.mkDerivation {
     ln -sv mariadb $dev/include/mysql
     ln -sv mariadb_version.h $dev/include/mariadb/mysql_version.h
     ln -sv libmariadb.pc $dev/lib/pkgconfig/mysqlclient.pc
-    install -Dm644 include/ma_config.h $dev/include/mariadb/my_config.h
   '';
 
   meta = {
     description = "Client library that can be used to connect to MySQL or MariaDB";
-    license = licenses.lgpl21Plus;
+    license = licenses.lgpl21;
     maintainers = with maintainers; [ globin ];
     platforms = platforms.all;
   };

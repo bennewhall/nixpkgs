@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libxml2, gdk-pixbuf, librsvg, gtk-engine-murrine }:
+{ stdenv, fetchFromGitHub, libxml2, gdk-pixbuf, librsvg, gtk-engine-murrine }:
 
 stdenv.mkDerivation rec {
   pname = "sierra-gtk-theme";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     name= ./install.sh --dest $out/share/themes
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Mac OSX like theme for GTK based desktop environments";
     homepage = "https://github.com/vinceliuice/Sierra-gtk-theme";
     license = licenses.gpl3;

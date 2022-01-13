@@ -1,6 +1,6 @@
-{ lib, stdenv, writeText, ocaml, findlib, ocamlbuild, camlp4 }:
+{ stdenv, writeText, ocaml, findlib, ocamlbuild, camlp4 }:
 
-{ pname ? args.name, version, nativeBuildInputs ? [],
+{ name, version, buildInputs ? [],
   createFindlibDestdir ?  true,
   dontStrip ? true,
   minimumSupportedOcamlVersion ? null,
@@ -14,16 +14,16 @@ let
   };
 in
   assert minimumSupportedOcamlVersion != null ->
-          lib.versionOlder minimumSupportedOcamlVersion ocaml.version;
+          stdenv.lib.versionOlder minimumSupportedOcamlVersion ocaml.version;
 
 stdenv.mkDerivation (args // {
-  name = "ocaml-${pname}-${version}";
+  name = "ocaml-${name}-${version}";
 
-  nativeBuildInputs = [ ocaml findlib ocamlbuild camlp4 ] ++ nativeBuildInputs;
+  buildInputs = [ ocaml findlib ocamlbuild camlp4 ] ++ buildInputs;
 
   setupHook = if setupHook == null && hasSharedObjects
   then writeText "setupHook.sh" ''
-    export CAML_LD_LIBRARY_PATH="''${CAML_LD_LIBRARY_PATH-}''${CAML_LD_LIBRARY_PATH:+:}''$1/lib/ocaml/${ocaml.version}/site-lib/${pname}/"
+    export CAML_LD_LIBRARY_PATH="''${CAML_LD_LIBRARY_PATH-}''${CAML_LD_LIBRARY_PATH:+:}''$1/lib/ocaml/${ocaml.version}/site-lib/${name}/"
     ''
   else setupHook;
 

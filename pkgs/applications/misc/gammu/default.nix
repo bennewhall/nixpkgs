@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, cmake, bluez, libusb1, curl
+{ stdenv, fetchFromGitHub, python, pkgconfig, cmake, bluez, libusb1, curl
 , libiconv, gettext, sqlite
 , dbiSupport ? false, libdbi ? null, libdbiDrivers ? null
 , postgresSupport ? false, postgresql ? null
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "gammu";
@@ -19,13 +19,13 @@ stdenv.mkDerivation rec {
 
   patches = [ ./bashcomp-dir.patch ./systemd.patch ];
 
-  nativeBuildInputs = [ pkg-config cmake ];
+  nativeBuildInputs = [ pkgconfig cmake ];
 
-  strictDeps = true;
-
-  buildInputs = [ bluez libusb1 curl gettext sqlite libiconv ]
+  buildInputs = [ python bluez libusb1 curl gettext sqlite libiconv ]
   ++ optionals dbiSupport [ libdbi libdbiDrivers ]
   ++ optionals postgresSupport [ postgresql ];
+
+  enableParallelBuilding = true;
 
   meta = {
     homepage = "https://wammu.eu/gammu/";

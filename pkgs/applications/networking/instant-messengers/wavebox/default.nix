@@ -1,9 +1,9 @@
-{ alsa-lib, autoPatchelfHook, fetchurl, gtk3, libnotify
-, makeDesktopItem, makeWrapper, nss, lib, stdenv, udev, xdg-utils
+{ alsaLib, autoPatchelfHook, fetchurl, gtk3, libnotify
+, makeDesktopItem, makeWrapper, nss, stdenv, udev, xdg_utils
 , xorg
 }:
 
-with lib;
+with stdenv.lib;
 
 let
   bits = "x86_64";
@@ -37,7 +37,7 @@ in stdenv.mkDerivation {
   buildInputs = with xorg; [
     libXdmcp libXScrnSaver libXtst
   ] ++ [
-    alsa-lib gtk3 nss
+    alsaLib gtk3 nss
   ];
 
   runtimeDependencies = [ (getLib udev) libnotify ];
@@ -54,10 +54,10 @@ in stdenv.mkDerivation {
 
   postFixup = ''
     makeWrapper $out/opt/wavebox/Wavebox $out/bin/wavebox \
-      --prefix PATH : ${xdg-utils}/bin
+      --prefix PATH : ${xdg_utils}/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Wavebox messaging application";
     homepage = "https://wavebox.io";
     license = licenses.mpl20;

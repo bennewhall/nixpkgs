@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub, go-bindata, pkg-config, makeWrapper
+{ lib, buildGoPackage, fetchFromGitHub, go-bindata, pkgconfig, makeWrapper
 , glib, gtk3, libappindicator-gtk3, gpgme, openshift, ostree, libselinux, btrfs-progs
 , lvm2, docker-machine-kvm
 }:
@@ -21,7 +21,7 @@ in buildGoPackage rec {
     sha256 = "0yhln3kyc0098hbnjyxhbd915g6j7s692c0z8yrhh9gdpc5cr2aa";
   };
 
-  nativeBuildInputs = [ pkg-config go-bindata makeWrapper ];
+  nativeBuildInputs = [ pkgconfig go-bindata makeWrapper ];
   buildInputs = [ glib gtk3 libappindicator-gtk3 gpgme ostree libselinux btrfs-progs lvm2 ];
 
   goPackagePath = "github.com/minishift/minishift";
@@ -34,11 +34,12 @@ in buildGoPackage rec {
       --replace '"runtime"' ""
   '';
 
-  ldflags = [
-    "-X ${goPackagePath}/pkg/version.minishiftVersion=${version}"
-    "-X ${goPackagePath}/pkg/version.centOsIsoVersion=${centOsIsoVersion}"
-    "-X ${goPackagePath}/pkg/version.openshiftVersion=${openshiftVersion}"
-  ];
+  buildFlagsArray = ''
+    -ldflags=
+      -X ${goPackagePath}/pkg/version.minishiftVersion=${version}
+      -X ${goPackagePath}/pkg/version.centOsIsoVersion=${centOsIsoVersion}
+      -X ${goPackagePath}/pkg/version.openshiftVersion=${openshiftVersion}
+  '';
 
   preBuild = ''
     (cd go/src/github.com/minishift/minishift

@@ -1,4 +1,4 @@
-{ lib, rustPlatform, fetchFromGitHub }:
+{ stdenv, rustPlatform, fetchFromGitHub }:
 
 rustPlatform.buildRustPackage rec {
   pname = "todiff";
@@ -11,11 +11,11 @@ rustPlatform.buildRustPackage rec {
     sha256 = "1y0v8nkaqb8kn61xwarpbyrq019gxx1f5f5p1hzw73nqxadc1rcm";
   };
 
-  cargoSha256 = "0vrn1vc3rwabv6l2r1qb7mkcxbp75q79bfl3rxhyi51ra3ij507r";
+  cargoSha256 = "1vyc230a2b0dry2057mkdkrjb7s9d0p43fnz4q67aqrpyr4jxwx2";
 
-  checkFeatures = [ "integration_tests" ];
+  checkPhase = "cargo test --features=integration_tests";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Human-readable diff for todo.txt files";
     homepage = "https://github.com/Ekleog/todiff";
     maintainers = with maintainers; [ ekleog ];

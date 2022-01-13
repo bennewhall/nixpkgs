@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "EasyProcess";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # No tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Easy to use python subprocess interface";
     homepage = "https://github.com/ponty/EasyProcess";
     license = licenses.bsdOriginal;

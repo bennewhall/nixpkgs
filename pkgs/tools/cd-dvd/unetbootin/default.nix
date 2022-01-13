@@ -1,40 +1,24 @@
-{ lib
-, stdenv
-, coreutils
-, fetchFromGitHub
-, mtools
-, p7zip
-, wrapQtAppsHook
-, qtbase
-, qttools
-, qmake
-, syslinux
-, util-linux
-, which
-}:
+{ stdenv, fetchFromGitHub, makeWrapper, qt4, util-linux, coreutils, which, qmake4Hook
+, p7zip, mtools, syslinux }:
 
 stdenv.mkDerivation rec {
   pname = "unetbootin";
-  version = "702";
+  version = "681";
 
   src = fetchFromGitHub {
-    owner = pname;
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-psX15XicPXAsd36BhuvK0G3GQS8hV/hazzO0HByCqV4=";
+    owner  = "unetbootin";
+    repo   = "unetbootin";
+    rev    = version;
+    sha256 = "0ppqb7ywh4cpcjr5nw6f65dx4s8kx09gnhihnby3zjhxdf4l99fm";
   };
 
   setSourceRoot = ''
     sourceRoot=$(echo */src/unetbootin)
   '';
 
-  buildInputs = [
-    qtbase
-    qttools
-    qmake
-  ];
-
-  nativeBuildInputs = [ wrapQtAppsHook ];
+  buildInputs = [ qt4 ];
+  nativeBuildInputs = [ makeWrapper qmake4Hook ];
+  enableParallelBuilding = true;
 
   # Lots of nice hard-coded paths...
   postPatch = ''
@@ -66,19 +50,18 @@ stdenv.mkDerivation rec {
     install -Dm644 -t $out/share/unetbootin   unetbootin_*.qm
     install -Dm644 -t $out/share/applications unetbootin.desktop
 
+    wrapProgram $out/bin/unetbootin \
+      --prefix PATH : ${stdenv.lib.makeBinPath [ mtools p7zip which ]} \
+      --set QT_X11_NO_MITSHM 1
+
     runHook postInstall
   '';
 
-  qtWrapperArgs = [
-    "--prefix PATH : ${lib.makeBinPath [ mtools p7zip which ]}"
-    "--set QT_X11_NO_MITSHM 1"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
+    homepage    = "http://unetbootin.sourceforge.net/";
     description = "A tool to create bootable live USB drives from ISO images";
-    homepage = "https://unetbootin.github.io/";
-    license = licenses.gpl2Plus;
+    license     = licenses.gpl2Plus;
+    platforms   = platforms.linux;
     maintainers = with maintainers; [ ebzzry ];
-    platforms = platforms.linux;
   };
 }

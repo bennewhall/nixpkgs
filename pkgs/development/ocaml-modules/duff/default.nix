@@ -1,29 +1,24 @@
-{ lib, fetchurl, buildDunePackage, fetchpatch
-, stdlib-shims, bigarray-compat, fmt
-, alcotest, hxd, crowbar, bigstringaf
+{ lib, fetchurl, buildDunePackage
+, cstruct, fmt
+, bos, cmdliner, fpath, logs
+, alcotest
 }:
 
 buildDunePackage rec {
   pname = "duff";
-  version = "0.4";
+  version = "0.2";
 
   useDune2 = true;
 
   src = fetchurl {
     url = "https://github.com/mirage/duff/releases/download/v${version}/duff-v${version}.tbz";
-    sha256 = "4795e8344a2c2562e0ef6c44ab742334b5cd807637354715889741b20a461da4";
+    sha256 = "0bi081w4349cqc1n9jsjh1lrcqlnv3nycmvh9fniscv8lz1c0gjq";
   };
 
-  propagatedBuildInputs = [ stdlib-shims bigarray-compat fmt ];
+  buildInputs = [ bos cmdliner fpath logs ] ++ lib.optional doCheck alcotest;
+  propagatedBuildInputs = [ cstruct fmt ];
 
   doCheck = true;
-  checkInputs = [
-    alcotest
-    crowbar
-    hxd
-    bigstringaf
-  ];
-
 
   meta = {
     description = "Pure OCaml implementation of libXdiff (Rabin’s fingerprint)";

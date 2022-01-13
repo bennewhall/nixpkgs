@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, pkg-config, libusb1, libyubikey, json_c }:
+{ stdenv, fetchurl, fetchpatch, pkgconfig, libusb1, libyubikey, json_c }:
 
 stdenv.mkDerivation rec {
   pname = "yubikey-personalization";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libusb1 libyubikey json_c ];
 
   configureFlags = [
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     install -D -t $out/lib/udev/rules.d 69-yubikey.rules
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://developers.yubico.com/yubikey-personalization";
     description = "A library and command line tool to personalize YubiKeys";
     license = licenses.bsd2;

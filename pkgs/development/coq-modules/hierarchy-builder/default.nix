@@ -1,36 +1,43 @@
-{ lib, mkCoqDerivation, which, coq, coq-elpi, version ? null }:
+{ stdenv, fetchFromGitHub, which, coq, coq-elpi }:
 
-with lib; let hb = mkCoqDerivation {
-  pname = "hierarchy-builder";
-  owner = "math-comp";
-  inherit version;
-  defaultVersion = with versions; switch coq.coq-version [
-    { case = range "8.13" "8.14"; out = "1.2.0"; }
-    { case = range "8.12" "8.13"; out = "1.1.0"; }
-    { case = isEq "8.11";         out = "0.10.0"; }
-  ] null;
-  release."1.2.0".sha256  = "0sk01rvvk652d86aibc8rik2m8iz7jn6mw9hh6xkbxlsvh50719d";
-  release."1.1.0".sha256  = "sha256-spno5ty4kU4WWiOfzoqbXF8lWlNSlySWcRReR3zE/4Q=";
-  release."1.0.0".sha256  = "0yykygs0z6fby6vkiaiv3azy1i9yx4rqg8xdlgkwnf2284hffzpp";
-  release."0.10.0".sha256 = "1a3vry9nzavrlrdlq3cys3f8kpq3bz447q8c4c7lh2qal61wb32h";
-  releaseRev = v: "v${v}";
+let
+  versions = {
+      "0.10.0" =  {
+        rev = "v0.10.0";
+        sha256 = "1a3vry9nzavrlrdlq3cys3f8kpq3bz447q8c4c7lh2qal61wb32h";
+      };
+  };
+  version = x: versions.${x} // {version = x;};
+  params = {
+   "8.11" = version "0.10.0";
+   "8.12" = version "0.10.0";
+  };
+  param = params.${coq.coq-version};
+in
 
-  nativeBuildInputs = [ which ];
+stdenv.mkDerivation rec {
+  name = "coq${coq.coq-version}-hierarchy-builder-${param.version}";
+
+  src = fetchFromGitHub {
+    owner = "math-comp";
+    repo = "hierarchy-builder";
+    inherit (param) rev sha256;
+  };
 
   propagatedBuildInputs = [ coq-elpi ];
+  buildInputs = [ coq coq.ocaml coq.ocamlPackages.elpi ];
 
-  mlPlugin = true;
-
-  installFlags = [ "DESTDIR=$(out)" "COQMF_COQLIB=lib/coq/${coq.coq-version}" ];
-  extraInstallFlags = [ "VFILES=structures.v" ];
+  installPhase = ''make -f Makefile.coq VFILES=structures.v COQLIB=$out/lib/coq/${coq.coq-version}/ install'';
 
   meta = {
-    description = "High level commands to declare a hierarchy based on packed classes";
-    maintainers = with maintainers; [ cohencyril siraben ];
-    license = licenses.mit;
+    description = "Coq plugin embedding ELPI.";
+    maintainers = [ stdenv.lib.maintainers.cohencyril ];
+    license = stdenv.lib.licenses.lgpl21;
+    inherit (coq.meta) platforms;
+    inherit (src.meta) homepage;
   };
-}; in
-hb.overrideAttrs (o:
-  optionalAttrs (versions.isGe "1.2.0" o.version || o.version == "dev")
-    { buildPhase = "make build"; }
-)
+
+  passthru = {
+    compatibleCoqVersions = stdenv.lib.flip builtins.hasAttr params;
+  };
+}

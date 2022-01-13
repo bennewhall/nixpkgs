@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchurl, libX11, libXrandr }:
+{ stdenv, fetchurl, libX11, libXrandr }:
 
 stdenv.mkDerivation rec {
-  pname = "sct";
-  version = "unstable-2015-11-16";
+  name = "sct";
 
   src = fetchurl {
     url = "http://www.tedunangst.com/flak/files/sct.c";
@@ -17,7 +16,7 @@ stdenv.mkDerivation rec {
 
   installPhase = "install -Dt $out/bin sct";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.tedunangst.com/flak/post/sct-set-color-temperature";
     description = "A minimal utility to set display colour temperature";
     maintainers = [ maintainers.raskin ];

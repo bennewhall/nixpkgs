@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , meson
 , ninja
 , vala
-, pkg-config
+, pkgconfig
 , pantheon
 , python3
 , gettext
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     vala
-    pkg-config
+    pkgconfig
     python3
     wrapGAppsHook
   ];
@@ -54,12 +54,11 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple application for encoding and decoding text, designed for elementary OS";
     homepage = "https://github.com/arshubham/cipher";
-    maintainers = with maintainers; [ xiorcale ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [ xiorcale ] ++ pantheon.maintainers;
     platforms = platforms.linux;
     license = licenses.gpl3Plus;
-    mainProgram = "com.github.arshubham.cipher";
   };
 }

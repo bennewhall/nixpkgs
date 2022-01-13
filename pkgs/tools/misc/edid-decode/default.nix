@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchgit }:
-
-stdenv.mkDerivation rec {
+{ stdenv, fetchgit }:
+let
+  version = "2018-12-06";
+in stdenv.mkDerivation {
   pname = "edid-decode-unstable";
-  version = "unstable-2018-12-06";
+  inherit version;
 
   src = fetchgit {
     url = "git://linuxtv.org/edid-decode.git";
@@ -18,9 +19,9 @@ stdenv.mkDerivation rec {
   meta = {
     description = "EDID decoder and conformance tester";
     homepage = "https://cgit.freedesktop.org/xorg/app/edid-decode/";
-    license = lib.licenses.mit;
-    maintainers = [ lib.maintainers.chiiruno ];
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.mit;
+    maintainers = [ stdenv.lib.maintainers.chiiruno ];
+    platforms = stdenv.lib.platforms.all;
   };
 }
 

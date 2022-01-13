@@ -1,4 +1,4 @@
-{ lib, stdenv, python, fetchurl, openssl, boost, sconsPackages }:
+{ stdenv, python, fetchurl, openssl, boost, sconsPackages }:
 stdenv.mkDerivation rec {
   pname = "swiften";
   version = "4.0.2";
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An XMPP library for C++, used by the Swift client";
     homepage    = "http://swift.im/swiften.html";
     license     = licenses.gpl2Plus;

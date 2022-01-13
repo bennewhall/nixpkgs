@@ -1,37 +1,34 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, cmake
-, numba
 , numpy
-, pytestCheckHook
-, pyyaml
-, rapidjson
+, pandas
+, pytestrunner
+, pytest
+, h5py
 }:
 
 buildPythonPackage rec {
   pname = "awkward";
-  version = "1.7.0";
+  version = "0.14.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "e4e642dfe496d2acb245c90e37dc18028e25d5e936421e7371ea6ba0fde6435a";
+    sha256 = "6a3878f46e8bc2acf28a0b9feb69d354ad2fee2a2a0f65c48c115aa74f245204";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ pyyaml rapidjson ];
+  nativeBuildInputs = [ pytestrunner ];
+  checkInputs = [ pandas pytest h5py ];
   propagatedBuildInputs = [ numpy ];
 
-  dontUseCmakeConfigure = true;
-
-  checkInputs = [ pytestCheckHook numba ];
-  dontUseSetuptoolsCheck = true;
-  disabledTestPaths = [ "tests-cuda" ];
+  checkPhase = ''
+    py.test
+  '';
 
   meta = with lib; {
-    description = "Manipulate JSON-like data with NumPy-like idioms";
-    homepage = "https://github.com/scikit-hep/awkward-1.0";
+    description = "Manipulate jagged, chunky, and/or bitmasked arrays as easily as Numpy";
+    homepage = "https://github.com/scikit-hep/awkward-array";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ veprbl ];
+    maintainers = [ maintainers.costrouc ];
   };
 }

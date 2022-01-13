@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , six
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
   doCheck = false;  # missing json file from tarball
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python Import Magic - automagically add, remove and manage imports";
     homepage = "https://github.com/alecthomas/importmagic";
     license = licenses.bsd0;

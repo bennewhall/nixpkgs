@@ -1,82 +1,68 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
-, cmake
-, pkg-config
+, autoreconfHook
 , fltk
+, jansson
 , rtmidi
 , libsamplerate
 , libsndfile
 , jack2
-, alsa-lib
+, alsaLib
 , libpulseaudio
 , libXpm
-, flac
-, libogg
-, libvorbis
-, libopus
+, libXinerama
+, libXcursor
+, catch2
+, nlohmann_json
 }:
 
 stdenv.mkDerivation rec {
   pname = "giada";
-  version = "unstable-2021-09-24";
+  version = "0.16.4";
 
   src = fetchFromGitHub {
     owner = "monocasual";
     repo = pname;
-    # Using master with https://github.com/monocasual/giada/pull/509 till a new release is done.
-    rev = "f117a8b8eef08d904ef1ab22c45f0e1fad6b8a56";
-    sha256 = "01hb981lrsyk870zs8xph5fm0z7bbffpkxgw04hq487r804mkx9j";
-    fetchSubmodules = true;
+    rev = "v${version}";
+    sha256 = "0qyx0bvivlvly0vj5nnnbiks22xh13sqlw4mfgplq2lbbpgisigp";
   };
 
-  NIX_CFLAGS_COMPILE = [
-    "-w"
-    "-Wno-error"
-  ];
-
-  cmakeFlags = [
-    "-DCMAKE_INSTALL_BINDIR=bin"
-    "-DCMAKE_BUILD_TYPE=Release"
+  configureFlags = [
+    "--target=linux"
+    "--enable-system-catch"
   ];
 
   nativeBuildInputs = [
-    cmake
-    pkg-config
+    autoreconfHook
   ];
 
   buildInputs = [
-    rtmidi
     fltk
     libsndfile
     libsamplerate
-    alsa-lib
+    jansson
+    rtmidi
     libXpm
-    libpulseaudio
     jack2
-    flac
-    libogg
-    libvorbis
-    libopus
+    alsaLib
+    libpulseaudio
+    libXinerama
+    libXcursor
+    catch2
+    nlohmann_json
   ];
 
   postPatch = ''
-    local fixup_list=(
-      src/core/kernelMidi.cpp
-      src/gui/elems/config/tabMidi.cpp
-      src/utils/ver.cpp
-    )
-    for f in "''${fixup_list[@]}"; do
-      substituteInPlace "$f" \
-        --replace "<RtMidi.h>" "<${rtmidi.src}/RtMidi.h>"
-    done
+    sed -i 's:"deps/json/single_include/nlohmann/json\.hpp":<nlohmann/json.hpp>:' \
+        src/core/{conf,init,midiMapConf,patch}.cpp
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A free, minimal, hardcore audio tool for DJs, live performers and electronic musicians";
     homepage = "https://giadamusic.com/";
     license = licenses.gpl3;
     maintainers = with maintainers; [ petabyteboy ];
     platforms = platforms.all;
+    broken = stdenv.hostPlatform.isAarch64; # produces build failure on aarch64-linux
   };
 }

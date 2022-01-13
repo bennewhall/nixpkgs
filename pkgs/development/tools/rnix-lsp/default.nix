@@ -1,23 +1,22 @@
-{ lib, fetchFromGitHub, rustPlatform, nix }:
+{ callPackage, lib, fetchFromGitHub, rustPlatform }:
 
 rustPlatform.buildRustPackage rec {
   pname = "rnix-lsp";
-  version = "0.2.3";
+  version = "0.1.0";
 
   src = fetchFromGitHub {
     owner = "nix-community";
     repo = "rnix-lsp";
     rev = "v${version}";
-    sha256 = "sha256-D2ItR8z4LqEH1IL53vq/wPh9Pfe3eB0KsA79aLM/BWM=";
+
+    sha256 = "0fy620c34kxl27sd62x9mj0555bcdmnmbsxavmyiwb497z1m9wnn";
   };
 
-  cargoSha256 = "sha256-71vH8oc8DmwbwM2PgxjGmWAbyC4AByx7waHxLsr2koI=";
-
-  checkInputs = [ nix ];
+  cargoSha256 = "0xmaa7rds7hlagfxj65pv9vgflcv4nwbwbw4g7cyj88cbb1kbxxj";
 
   meta = with lib; {
     description = "A work-in-progress language server for Nix, with syntax checking and basic completion";
     license = licenses.mit;
-    maintainers = with maintainers; [ ma27 ];
+    maintainers = with maintainers; [ jD91mZM2 ];
   };
 }

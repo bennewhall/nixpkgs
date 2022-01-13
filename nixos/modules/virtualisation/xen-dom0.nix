@@ -35,8 +35,8 @@ in
 
     virtualisation.xen.package = mkOption {
       type = types.package;
-      defaultText = literalExpression "pkgs.xen";
-      example = literalExpression "pkgs.xen-light";
+      defaultText = "pkgs.xen";
+      example = literalExample "pkgs.xen-light";
       description = ''
         The package used for Xen binary.
       '';
@@ -45,8 +45,8 @@ in
 
     virtualisation.xen.package-qemu = mkOption {
       type = types.package;
-      defaultText = literalExpression "pkgs.xen";
-      example = literalExpression "pkgs.qemu_xen-light";
+      defaultText = "pkgs.xen";
+      example = literalExample "pkgs.qemu_xen-light";
       description = ''
         The package with qemu binaries for dom0 qemu and xendomains.
       '';
@@ -57,8 +57,7 @@ in
 
     virtualisation.xen.bootParams =
       mkOption {
-        default = [];
-        type = types.listOf types.str;
+        default = "";
         description =
           ''
             Parameters passed to the Xen hypervisor at boot time.
@@ -69,7 +68,6 @@ in
       mkOption {
         default = 0;
         example = 512;
-        type = types.addCheck types.int (n: n >= 0);
         description =
           ''
             Amount of memory (in MiB) allocated to Domain 0 on boot.
@@ -80,7 +78,6 @@ in
     virtualisation.xen.bridge = {
         name = mkOption {
           default = "xenbr0";
-          type = types.str;
           description = ''
               Name of bridge the Xen domUs connect to.
             '';
@@ -160,6 +157,9 @@ in
     virtualisation.xen.stored = mkDefault "${cfg.package}/bin/oxenstored";
 
     environment.systemPackages = [ cfg.package ];
+
+    # Make sure Domain 0 gets the required configuration
+    #boot.kernelPackages = pkgs.boot.kernelPackages.override { features={xen_dom0=true;}; };
 
     boot.kernelModules =
       [ "xen-evtchn" "xen-gntdev" "xen-gntalloc" "xen-blkback" "xen-netback"
@@ -245,7 +245,7 @@ in
     # Xen provides udev rules.
     services.udev.packages = [ cfg.package ];
 
-    services.udev.path = [ pkgs.bridge-utils pkgs.iproute2 ];
+    services.udev.path = [ pkgs.bridge-utils pkgs.iproute ];
 
     systemd.services.xen-store = {
       description = "Xen Store Daemon";

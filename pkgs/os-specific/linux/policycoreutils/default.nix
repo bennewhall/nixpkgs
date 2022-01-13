@@ -1,13 +1,13 @@
-{ lib, stdenv, fetchurl, gettext, libsepol, libselinux, libsemanage }:
+{ stdenv, fetchurl, gettext, libsepol, libselinux, libsemanage }:
 
 stdenv.mkDerivation rec {
   pname = "policycoreutils";
-  version = "3.3";
-  inherit (libsepol) se_url;
+  version = "2.9";
+  inherit (libsepol) se_release se_url;
 
   src = fetchurl {
-    url = "${se_url}/${version}/policycoreutils-${version}.tar.gz";
-    sha256 = "0y0hl32b2ks7r0fhbx3k2j1gqqms5aplyasjs3fz50caxl6096a1";
+    url = "${se_url}/${se_release}/policycoreutils-${version}.tar.gz";
+    sha256 = "0yqg5ws5gbl1cbn8msxdk1c3ilmmx58qg5dx883kqyq0517k8g65";
   };
 
   postPatch = ''
@@ -24,14 +24,14 @@ stdenv.mkDerivation rec {
 
   makeFlags = [
     "PREFIX=$(out)"
-    "SBINDIR=$(out)/bin"
+    "SBINDIR=$(out)/sbin"
     "ETCDIR=$(out)/etc"
     "BASHCOMPLETIONDIR=$out/share/bash-completion/completions"
     "LOCALEDIR=$(out)/share/locale"
     "MAN5DIR=$(out)/share/man/man5"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "SELinux policy core utilities";
     license = licenses.gpl2;
     inherit (libsepol.meta) homepage platforms maintainers;

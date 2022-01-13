@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, udev }:
+{ stdenv, fetchFromGitHub, udev }:
 
 stdenv.mkDerivation rec {
   pname = "libudev0-shim";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     ln -s "$name" "$out/lib/libudev.so.0"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Shim to preserve libudev.so.0 compatibility";
     homepage = "https://github.com/archlinux/libudev0-shim";
     platforms = platforms.linux;

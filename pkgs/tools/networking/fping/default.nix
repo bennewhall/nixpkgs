@@ -1,17 +1,16 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "fping";
-  version = "5.0";
+  name = "fping-5.0";
 
   src = fetchurl {
-    url = "https://www.fping.org/dist/fping-${version}.tar.gz";
+    url = "https://www.fping.org/dist/${name}.tar.gz";
     sha256 = "1f2prmii4fyl44cfykp40hp4jjhicrhddh9v3dfs11j6nsww0f7d";
   };
 
   configureFlags = [ "--enable-ipv6" "--enable-ipv4" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://fping.org/";
     description = "Send ICMP echo probes to network hosts";
     license = licenses.bsd0;

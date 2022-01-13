@@ -1,4 +1,4 @@
-{ lib, stdenv, dockapps-sources
+{ stdenv, dockapps-sources
 , libX11
 , libXpm
 , libXext
@@ -24,9 +24,9 @@ stdenv.mkDerivation rec {
       --replace "/usr/bin/install" "install"
   '';
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = [ "CC=cc" ];
 
-  installPhase = ''
+  preInstall = ''
     runHook preInstall
     install -d ${placeholder "out"}/bin
     runHook postInstall
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=${placeholder "out"}/bin" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "System monitor for Windowmaker";
     homepage = "https://www.dockapps.net/wmsmapp";
     license = licenses.gpl2;

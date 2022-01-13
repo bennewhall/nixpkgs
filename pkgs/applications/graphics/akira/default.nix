@@ -6,31 +6,30 @@
 , meson
 , ninja
 , pantheon
-, pkg-config
+, pkgconfig
 , python3
 , vala
 , vala-lint
 , wrapGAppsHook
 , cairo
 , glib
-, goocanvas3
+, goocanvas2
 , gtk3
 , gtksourceview3
 , json-glib
 , libarchive
 , libgee
-, libxml2
-}:
+, libxml2 }:
 
 stdenv.mkDerivation rec {
   pname = "akira";
-  version = "0.0.16";
+  version = "0.0.13";
 
   src = fetchFromGitHub {
     owner = "akiraux";
     repo = "Akira";
     rev = "v${version}";
-    sha256 = "sha256-qrqmSCwA0kQVFD1gzutks9gMr7My7nw/KJs/VPisa0w=";
+    sha256 = "1i20q78jagy8xky68nmd0n7mqvh88r98kp626rnlgyzvlc3c22cm";
   };
 
   nativeBuildInputs = [
@@ -38,7 +37,7 @@ stdenv.mkDerivation rec {
     desktop-file-utils
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
     vala-lint
@@ -48,7 +47,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     cairo
     glib
-    goocanvas3
+    goocanvas2
     pantheon.granite
     gtk3
     gtksourceview3
@@ -68,9 +67,8 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "Native Linux Design application built in Vala and GTK";
     homepage = "https://github.com/akiraux/Akira";
-    license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ Br1ght0ne neonfuz ] ++ teams.pantheon.members;
+    license = licenses.gpl3;
+    maintainers = with maintainers; [ Br1ght0ne neonfuz ] ++ pantheon.maintainers;
     platforms = platforms.linux;
-    mainProgram = "com.github.akiraux.akira";
   };
 }

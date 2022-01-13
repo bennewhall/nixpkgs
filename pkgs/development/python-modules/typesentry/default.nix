@@ -3,7 +3,7 @@
 , fetchFromGitHub
 , colorama
 , pytest
-, pytest-cov
+, pytestcov
 }:
 
 buildPythonPackage {
@@ -19,7 +19,7 @@ buildPythonPackage {
   };
 
   propagatedBuildInputs = [ colorama ];
-  checkInputs = [ pytest pytest-cov ];
+  checkInputs = [ pytest pytestcov ];
   checkPhase = ''
     pytest
   '';

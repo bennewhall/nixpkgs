@@ -1,53 +1,47 @@
-{ lib
-, python3
-, fetchFromGitHub
-, fetchpatch
-, nixosTests
-}:
+{ lib, python3, fetchFromGitHub, nixosTests }:
 
-with python3.pkgs; buildPythonApplication rec {
+let
+  python = python3.override {
+    packageOverrides = self: super: {
+      tornado = super.tornado.overridePythonAttrs (oldAttrs: rec {
+        version = "6.0.4";
+        src = oldAttrs.src.override {
+          inherit version;
+          sha256 = "1p5n7sw4580pkybywg93p8ddqdj9lhhy72rzswfa801vlidx9qhg";
+        };
+      });
+    };
+  };
+in with python.pkgs; buildPythonApplication rec {
   pname = "pinnwand";
-  version = "1.3.0";
+  version = "1.2.2";
   format = "pyproject";
 
   src = fetchFromGitHub {
     owner = "supakeen";
     repo = pname;
     rev = "v${version}";
-    sha256 = "046xk2y59wa0pdp7s3hp1gh8sqdw0yl4xab22r2x44iwwcyb0gy5";
+    sha256 = "0cxdpc3lxgzakzgvdyyrn234380dm05svnwr8av5nrjp4nm9s8z4";
   };
 
-  postPatch = ''
-    substituteInPlace pyproject.toml \
-      --replace 'click = "^7.0"' 'click = "*"' \
-      --replace 'docutils = "^0.16"' 'docutils = "*"' \
-      --replace 'sqlalchemy = "^1.3"' 'sqlalchemy = "*"' \
-      --replace 'token-bucket = "^0.2.0"' 'token-bucket = "*"'
-  '';
-
   nativeBuildInputs = [
-    poetry-core
+    poetry
   ];
 
   propagatedBuildInputs = [
     click
     docutils
-    pygments
-    pygments-better-html
-    sqlalchemy
-    token-bucket
-    toml
     tornado
+    pygments-better-html
+    toml
+    sqlalchemy
   ];
 
-  checkInputs = [ pytestCheckHook ];
+  checkInputs = [ pytest ];
 
-  disabledTests = [
-    # pygments renamed rst to restructuredText, hence a mismatch on this test
-    "test_guess_language"
-  ];
-
-  __darwinAllowLocalNetworking = true;
+  checkPhase = ''
+    pytest
+  '';
 
   passthru.tests = nixosTests.pinnwand;
 

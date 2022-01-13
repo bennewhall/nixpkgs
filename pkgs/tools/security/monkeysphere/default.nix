@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper
+{ stdenv, fetchurl, makeWrapper
 , perl, libassuan, libgcrypt
 , perlPackages, lockfileProgs, gnupg, coreutils
 # For the tests:
@@ -32,7 +32,7 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ perl libassuan libgcrypt ]
-    ++ lib.optional doCheck
+    ++ stdenv.lib.optional doCheck
       ([ gnupg opensshUnsafe which socat cpio hexdump procps lockfileProgs ] ++
       (with perlPackages; [ CryptOpenSSLRSA CryptOpenSSLBignum ]));
 
@@ -45,7 +45,7 @@ in stdenv.mkDerivation rec {
   # but they aren't enabled by default because they "drain" entropy (GnuPG
   # still uses /dev/random).
   doCheck = false;
-  preCheck = lib.optionalString doCheck ''
+  preCheck = stdenv.lib.optionalString doCheck ''
     patchShebangs tests/
     patchShebangs src/
     sed -i \
@@ -64,12 +64,12 @@ in stdenv.mkDerivation rec {
               CryptOpenSSLRSA
               CryptOpenSSLBignum
             ])
-          + lib.optionalString
+          + stdenv.lib.optionalString
               (builtins.length runtimeDeps > 0)
-              " --prefix PATH : ${lib.makeBinPath runtimeDeps}";
+              " --prefix PATH : ${stdenv.lib.makeBinPath runtimeDeps}";
         wrapMonkeysphere = runtimeDeps: program:
           "wrapProgram $out/bin/${program} ${wrapperArgs runtimeDeps}\n";
-        wrapPrograms = runtimeDeps: programs: lib.concatMapStrings
+        wrapPrograms = runtimeDeps: programs: stdenv.lib.concatMapStrings
           (wrapMonkeysphere runtimeDeps)
           programs;
     in wrapPrograms [ gnupg ] [ "monkeysphere-authentication" "monkeysphere-host" ]
@@ -84,7 +84,7 @@ in stdenv.mkDerivation rec {
         done
       '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://web.monkeysphere.info/";
     description = "Leverage the OpenPGP web of trust for SSH and TLS authentication";
     longDescription = ''

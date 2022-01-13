@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation rec {
   pname = "cppunit";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "19qpqzy66bq76wcyadmi3zahk5v1ll2kig1nvg96zx9padkcdic9";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://freedesktop.org/wiki/Software/cppunit/";
     description = "C++ unit testing framework";
     license = licenses.lgpl21;

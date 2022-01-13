@@ -1,8 +1,8 @@
-{ lib, stdenv, appimageTools, fetchurl, gsettings-desktop-schemas, gtk3, undmg }:
+{ stdenv, appimageTools, fetchurl, gsettings-desktop-schemas, gtk3, undmg }:
 
 let
   pname = "joplin-desktop";
-  version = "2.6.10";
+  version = "1.4.19";
   name = "${pname}-${version}";
 
   inherit (stdenv.hostPlatform) system;
@@ -16,8 +16,8 @@ let
   src = fetchurl {
     url = "https://github.com/laurent22/joplin/releases/download/v${version}/Joplin-${version}.${suffix}";
     sha256 = {
-      x86_64-linux = "sha256-2/QYEzQjB9n/4k5I/fry3ol8Fpsb5+tc1ttVdf2ID+4=";
-      x86_64-darwin = "sha256-BwBpq78hYJVUItUgs9lonBTV4YWJ+qvML6VTj5M4BQ4=";
+      x86_64-linux = "1xyj30pnlczchbh4awb955sxh51v89d170f4yk0v1jkj7dg2wjgj";
+      x86_64-darwin = "166yp2rr87p0lh64ngs498a50ahcann8z5s0g2p0azs6wi54a6kw";
     }.${system} or throwSystem;
   };
 
@@ -25,7 +25,7 @@ let
     inherit name src;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An open source note taking and to-do application with synchronisation capabilities";
     longDescription = ''
       Joplin is a free, open source note taking and to-do application, which can
@@ -55,8 +55,7 @@ let
       install -Dm444 ${appimageContents}/@joplinapp-desktop.desktop -t $out/share/applications
       install -Dm444 ${appimageContents}/@joplinapp-desktop.png -t $out/share/pixmaps
       substituteInPlace $out/share/applications/@joplinapp-desktop.desktop \
-        --replace 'Exec=AppRun' 'Exec=${pname}' \
-        --replace 'Icon=joplin' "Icon=$out/share/pixmaps/@joplinapp-desktop.png"
+        --replace 'Exec=AppRun' 'Exec=${pname}'
     '';
   };
 

@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, xorg, pkg-config}:
+{stdenv, fetchFromGitHub, xorg, pkgconfig}:
 
 stdenv.mkDerivation rec {
   pname = "hhpc";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1djsw1r38mh6zx0rbyn2cfa931hyddib4fl3i27c4z7xinl709ss";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ xorg.libX11 ];
 
   installPhase = ''
@@ -19,10 +19,10 @@ stdenv.mkDerivation rec {
       cp hhpc $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Hides the mouse pointer in X11";
     maintainers = with maintainers; [ nico202 ];
     platforms = platforms.unix;
-    license = lib.licenses.bsd3;
+    license = stdenv.lib.licenses.bsd3;
   };
 }

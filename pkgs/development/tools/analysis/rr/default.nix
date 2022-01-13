@@ -1,14 +1,14 @@
-{ lib, gcc9Stdenv, fetchFromGitHub, cmake, libpfm, zlib, pkg-config, python3Packages, which, procps, gdb, capnproto }:
+{ stdenv, fetchFromGitHub, cmake, libpfm, zlib, pkgconfig, python3Packages, which, procps, gdb, capnproto }:
 
-gcc9Stdenv.mkDerivation rec {
-  version = "5.5.0";
+stdenv.mkDerivation rec {
+  version = "5.4.0";
   pname = "rr";
 
   src = fetchFromGitHub {
     owner = "mozilla";
     repo = "rr";
     rev = version;
-    sha256 = "sha256-ZZhkmDWGNWejwXZEcFO9p9NG1dopK7kXRj7OrkJCPR0=";
+    sha256 = "1sfldgkkmsdyaqa28i5agcykc63gwm3zjihd64g86i852w8al2w6";
   };
 
   postPatch = ''
@@ -21,9 +21,9 @@ gcc9Stdenv.mkDerivation rec {
   # see https://github.com/mozilla/rr/issues/2269
   preConfigure = ''substituteInPlace CMakeLists.txt --replace "std=c++11" "std=c++14"'';
 
-  nativeBuildInputs = [ cmake pkg-config which ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    libpfm zlib python3Packages.python python3Packages.pexpect procps gdb capnproto
+    cmake libpfm zlib python3Packages.python python3Packages.pexpect which procps gdb capnproto
   ];
   propagatedBuildInputs = [ gdb ]; # needs GDB to replay programs at runtime
   cmakeFlags = [
@@ -36,6 +36,8 @@ gcc9Stdenv.mkDerivation rec {
   NIX_CFLAGS_COMPILE = "-Wno-error";
 
   hardeningDisable = [ "fortify" ];
+
+  enableParallelBuilding = true;
 
   # FIXME
   #doCheck = true;
@@ -52,8 +54,8 @@ gcc9Stdenv.mkDerivation rec {
       time the same execution is replayed.
     '';
 
-    license = with lib.licenses; [ mit bsd2 ];
-    maintainers = with lib.maintainers; [ pierron thoughtpolice ];
-    platforms = lib.platforms.x86;
+    license = with stdenv.lib.licenses; [ mit bsd2 ];
+    maintainers = with stdenv.lib.maintainers; [ pierron thoughtpolice ];
+    platforms = stdenv.lib.platforms.x86;
   };
 }

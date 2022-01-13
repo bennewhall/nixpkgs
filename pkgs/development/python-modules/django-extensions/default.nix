@@ -1,29 +1,30 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pythonOlder, django
+{ lib, buildPythonPackage, fetchFromGitHub, pythonOlder, python
+, django
 , factory_boy
 , glibcLocales
 , mock
 , pygments
 , pytest
-, pytest-cov
+, pytestcov
 , pytest-django
 , python-dateutil
 , shortuuid
 , six
 , tox
-, typing ? null
+, typing
 , vobject
 , werkzeug
 }:
 
 buildPythonPackage rec {
   pname = "django-extensions";
-  version = "3.1.3";
+  version = "3.0.8";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = version;
-    sha256 = "03mhikhh49z8bxajbjf1j790b9c9vl4zf4f86iwz7g0zrd7jqlvm";
+    sha256 = "1z2si9wpc8irqhi5i2wp4wr05dqxyw4mn2vj3amp0rvsvydws92c";
   };
 
   LC_ALL = "en_US.UTF-8";
@@ -39,7 +40,7 @@ buildPythonPackage rec {
     mock
     pygments # not explicitly declared in setup.py, but some tests require it
     pytest
-    pytest-cov
+    pytestcov
     pytest-django
     python-dateutil
     shortuuid
@@ -48,11 +49,10 @@ buildPythonPackage rec {
     werkzeug
   ];
 
-  # remove tests that need network access
+  # tests not compatible with pip>=20
   checkPhase = ''
     rm tests/management/commands/test_pipchecker.py
-    DJANGO_SETTINGS_MODULE=tests.testapp.settings \
-      pytest django_extensions tests
+    ${python.interpreter} setup.py test
   '';
 
   meta = with lib; {

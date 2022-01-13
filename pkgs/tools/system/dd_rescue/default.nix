@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoconf }:
+{ stdenv, fetchurl, autoconf }:
 
 stdenv.mkDerivation rec {
   version = "1.99.8";
@@ -30,12 +30,13 @@ stdenv.mkDerivation rec {
     cp "$out/share/dd_rescue"/dd_rhelp*/dd_rhelp "$out/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool to copy data from a damaged block device";
     maintainers = with maintainers; [ raskin domenkozar ];
     platforms = platforms.linux;
     homepage = "http://www.garloff.de/kurt/linux/ddrescue/";
     license = licenses.gpl2Plus;
+    inherit version;
     updateWalker = true;
   };
 }

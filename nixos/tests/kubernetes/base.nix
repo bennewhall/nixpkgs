@@ -40,7 +40,7 @@ let
                   allowedTCPPorts = [
                     10250 # kubelet
                   ];
-                  trustedInterfaces = ["mynet"];
+                  trustedInterfaces = ["docker0"];
 
                   extraCommands = concatMapStrings  (node: ''
                     iptables -A INPUT -s ${node.config.networking.primaryIPAddress} -j ACCEPT
@@ -51,6 +51,7 @@ let
               environment.systemPackages = [ kubectl ];
               services.flannel.iface = "eth1";
               services.kubernetes = {
+                addons.dashboard.enable = true;
                 proxy.hostname = "${masterName}.${domain}";
 
                 easyCerts = true;
@@ -60,13 +61,6 @@ let
                   advertiseAddress = master.ip;
                 };
                 masterAddress = "${masterName}.${config.networking.domain}";
-                # workaround for:
-                #   https://github.com/kubernetes/kubernetes/issues/102676
-                #   (workaround from) https://github.com/kubernetes/kubernetes/issues/95488
-                kubelet.extraOpts = ''\
-                  --cgroups-per-qos=false \
-                  --enforce-node-allocatable="" \
-                '';
               };
             }
             (optionalAttrs (any (role: role == "master") machine.roles) {

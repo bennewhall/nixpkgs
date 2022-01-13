@@ -1,9 +1,12 @@
-{ lib, stdenv, fetchurl, readline, bison }:
+{ stdenv, fetchurl, readline, yacc }:
 
-stdenv.mkDerivation rec {
+let
+  version = "0.9.1";
+in
+stdenv.mkDerivation {
 
   pname = "es";
-  version = "0.9.1";
+  inherit version;
 
   src = fetchurl {
     url = "https://github.com/wryun/es-shell/releases/download/v${version}/es-${version}.tar.gz";
@@ -17,11 +20,11 @@ stdenv.mkDerivation rec {
     sourceRoot=.
   '';
 
-  buildInputs = [ readline bison ];
+  buildInputs = [ readline yacc ];
 
   configureFlags = [ "--with-readline" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An extensible shell with higher order functions";
     longDescription =
       ''

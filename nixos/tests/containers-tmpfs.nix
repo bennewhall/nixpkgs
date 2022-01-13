@@ -1,13 +1,16 @@
-import ./make-test-python.nix ({ pkgs, lib, ... }: {
+# Test for NixOS' container support.
+
+import ./make-test-python.nix ({ pkgs, ...} : {
   name = "containers-tmpfs";
-  meta = {
-    maintainers = with lib.maintainers; [ patryk27 ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ kampka ];
   };
 
   machine =
     { pkgs, ... }:
     { imports = [ ../modules/installer/cd-dvd/channel.nix ];
       virtualisation.writableStore = true;
+      virtualisation.memorySize = 768;
 
       containers.tmpfs =
         {
@@ -25,7 +28,7 @@ import ./make-test-python.nix ({ pkgs, lib, ... }: {
           config = { };
         };
 
-      virtualisation.additionalPaths = [ pkgs.stdenv ];
+      virtualisation.pathsInNixDB = [ pkgs.stdenv ];
     };
 
   testScript = ''

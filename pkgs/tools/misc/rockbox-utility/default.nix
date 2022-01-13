@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl, pkg-config, cryptopp
+{ stdenv, fetchurl, pkgconfig, cryptopp
 , libusb1, qtbase, qttools, makeWrapper
 , qmake, withEspeak ? false, espeak ? null
 , qt5 }:
 
-let inherit (lib) getDev; in
+let inherit (stdenv.lib) getDev; in
 
 stdenv.mkDerivation  rec {
   pname = "rockbox-utility";
@@ -15,8 +15,8 @@ stdenv.mkDerivation  rec {
   };
 
   buildInputs = [ cryptopp libusb1 qtbase qttools ]
-    ++ lib.optional withEspeak espeak;
-  nativeBuildInputs = [ makeWrapper pkg-config qmake qt5.wrapQtAppsHook ];
+    ++ stdenv.lib.optional withEspeak espeak;
+  nativeBuildInputs = [ makeWrapper pkgconfig qmake qt5.wrapQtAppsHook ];
 
   postPatch = ''
     sed -i rbutil/rbutilqt/rbutilqt.pro \
@@ -34,7 +34,7 @@ stdenv.mkDerivation  rec {
     install -Dm755 RockboxUtility $out/bin/rockboxutility
     ln -s $out/bin/rockboxutility $out/bin/RockboxUtility
     wrapProgram $out/bin/rockboxutility \
-    ${lib.optionalString withEspeak ''
+    ${stdenv.lib.optionalString withEspeak ''
       --prefix PATH : ${espeak}/bin
     ''}
 
@@ -47,7 +47,7 @@ stdenv.mkDerivation  rec {
   # may clobber the files read by the parallel `make build/rcc/qrc_rbutilqt-lang.cpp`.
   enableParallelBuilding = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Open source firmware for mp3 players";
     homepage = "https://www.rockbox.org";
     license = licenses.gpl2;

@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, xlibsWrapper, motif }:
+{ stdenv, fetchFromGitHub, xlibsWrapper, motif }:
 
 stdenv.mkDerivation {
-  pname = "catclock";
-  version = "unstable-2015-10-04";
+  name = "catclock-2015-10-04";
 
   src = fetchFromGitHub {
     owner = "BarkyTheDog";
@@ -23,7 +22,7 @@ stdenv.mkDerivation {
 
   buildInputs = [ xlibsWrapper motif ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://codefromabove.com/2014/05/catclock/";
     license = with licenses; mit;
     maintainers = with maintainers; [ ramkromberg ];

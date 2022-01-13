@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -12,7 +12,7 @@ buildPythonPackage rec {
     sha256 = "bf947538d76e69ba12ab17283b10355a9ecfbc078e6123443f43f2107f6376f3";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pylonsproject.org/";
     description = "Utility library for i18n relied on by various Repoze and Pyramid packages";
     license = licenses.bsd0;

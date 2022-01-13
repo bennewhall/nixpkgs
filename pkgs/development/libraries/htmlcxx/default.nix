@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libiconv }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "htmlcxx";
@@ -9,13 +9,12 @@ stdenv.mkDerivation rec {
     sha256 = "1hgmyiad3qgbpf2dvv2jygzj6jpz4dl3n8ds4nql68a4l9g2nm07";
   };
 
-  buildInputs = [ libiconv ];
   patches = [ ./ptrdiff.patch ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://htmlcxx.sourceforge.net/";
     description = "A simple non-validating css1 and html parser for C++";
     license = licenses.lgpl2;
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }

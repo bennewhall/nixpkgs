@@ -1,25 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, zlib, protobufc, autoreconfHook }:
+{stdenv, fetchurl, zlib}:
 
-stdenv.mkDerivation rec {
-  pname = "libgadu";
-  version = "1.12.2";
+stdenv.mkDerivation {
 
-  src = fetchFromGitHub {
-    owner = "wojtekka";
-    repo = pname;
-    rev = version;
-    sha256 = "1s16cripy5w9k12534qb012iwc5m9qcjyrywgsziyn3kl3i0aa8h";
+  name = "libgadu-1.11.2";
+
+  src = fetchurl {
+    url = "http://toxygen.net/libgadu/files/libgadu-1.11.2.tar.gz";
+    sha256 = "0kifi9blhbimihqw4kaf6wyqhlx8fpp8nq4s6y280ar9p0il2n3z";
   };
 
   propagatedBuildInputs = [ zlib ];
-  buildInputs = [ protobufc ];
-  nativeBuildInputs = [ autoreconfHook ];
 
   meta = {
     description = "A library to deal with gadu-gadu protocol (most popular polish IM protocol)";
-    homepage = "https://libgadu.net/index.en.html";
-    platforms = lib.platforms.linux;
-    license = lib.licenses.lgpl21;
+    homepage = "http://toxygen.net/libgadu/";
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.lgpl21;
   };
 
 }

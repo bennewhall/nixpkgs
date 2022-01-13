@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, smlnj, rsync }:
+{ stdenv, fetchurl, pkgconfig, smlnj, rsync }:
 
 stdenv.mkDerivation rec {
   pname = "twelf";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0fi1kbs9hrdrm1x4k13angpjasxlyd1gc3ys8ah54i75qbcd9c4i";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ smlnj rsync ];
 
   buildPhase = ''
@@ -44,8 +44,8 @@ stdenv.mkDerivation rec {
       Standard ML.
     '';
     homepage = "http://twelf.org/wiki/Main_Page";
-    license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ jwiegley ];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.mit;
+    maintainers = with stdenv.lib.maintainers; [ jwiegley ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

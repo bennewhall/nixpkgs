@@ -1,22 +1,20 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python2Packages }:
 
-python3Packages.buildPythonApplication rec {
+python2Packages.buildPythonApplication rec {
   pname = "bmap-tools";
-  version = "3.6";
+  version = "3.4";
 
   src = fetchFromGitHub {
     owner = "intel";
     repo = "bmap-tools";
     rev = "v${version}";
-    sha256 = "01xzrv5nvd2nvj91lz4x9s91y9825j9pj96z0ap6yvy3w2dgvkkl";
+    sha256 = "0p0pdwvyf9b4czi1pnhclm1ih8kw78nk2sj4if5hwi7s5423wk5q";
   };
-
-  propagatedBuildInputs = with python3Packages; [ six ];
 
   # tests fail only on hydra.
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "bmap-related tools";
     homepage = "https://github.com/intel/bmap-tools";
     license = licenses.gpl2;

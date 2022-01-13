@@ -1,50 +1,34 @@
-{ lib
-, aiohttp
-, buildPythonPackage
-, fetchPypi
-, pytest-aiohttp
-, pytestCheckHook
-, pythonOlder
-, typing-extensions
+{ lib, fetchpatch, buildPythonPackage, fetchPypi
+, aiohttp, pytest, pytestcov, pytest-aiohttp
 }:
 
 buildPythonPackage rec {
-  pname = "aiohttp-remotes";
-  version = "1.1.0";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
+  pname = "aiohttp_remotes";
+  version = "0.1.2";
 
   src = fetchPypi {
-    pname = "aiohttp_remotes";
-    inherit version;
-    sha256 = "e44f2c5fd5fc3305477c89bb25f14570589100cc58c48b36745d4239839d3174";
+    inherit pname version;
+    sha256 = "43c3f7e1c5ba27f29fb4dbde5d43b900b5b5fc7e37bf7e35e6eaedabaec4a3fc";
   };
 
-  propagatedBuildInputs = [
-    aiohttp
-  ] ++ lib.optionals (pythonOlder "3.7") [
-    typing-extensions
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/aio-libs/aiohttp-remotes/commit/188772abcea038c31dae7d607e487eeed44391bc.patch";
+      sha256 = "0pb1y4jb8ar1szhnjiyj2sdmdk6z9h6c3wrxw59nv9kr3if5igvs";
+    })
   ];
 
-  checkInputs = [
-    pytest-aiohttp
-    pytestCheckHook
-  ];
+  propagatedBuildInputs = [ aiohttp ];
 
-  postPatch = ''
-    substituteInPlace setup.cfg \
-      --replace " --no-cov-on-fail --cov-branch --cov=aiohttp_remotes --cov-report=term --cov-report=html" ""
+  checkInputs = [ pytest pytestcov pytest-aiohttp ];
+  checkPhase = ''
+    python -m pytest
   '';
 
-  pythonImportsCheck = [
-    "aiohttp_remotes"
-  ];
-
   meta = with lib; {
-    description = "A set of useful tools for aiohttp.web server";
     homepage = "https://github.com/wikibusiness/aiohttp-remotes";
+    description = "A set of useful tools for aiohttp.web server";
     license = licenses.mit;
-    maintainers = with maintainers; [ qyliss ];
+    maintainers = [ maintainers.qyliss ];
   };
 }

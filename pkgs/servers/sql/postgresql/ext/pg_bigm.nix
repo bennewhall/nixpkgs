@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, postgresql }:
+{ stdenv, fetchurl, postgresql }:
 
 stdenv.mkDerivation rec {
   pname = "pg_bigm";
-  version = "1.2-20200228";
+  version = "1.2";
 
   src = fetchurl {
-    url = "mirror://osdn/pgbigm/72448/${pname}-${version}.tar.gz";
-    sha256 = "1hxn90prldwriqmqlf33ypgbxw5v54gkzx1305yzghryzfg7rhbl";
+    url = "mirror://osdn/pgbigm/66565/${pname}-${version}-20161011.tar.gz";
+    sha256 = "1jp30za4bhwlas0yrhyjs9m03b1sj63km61xnvcbnh0sizyvhwis";
   };
 
   buildInputs = [ postgresql ];
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     cp *.control $out/share/postgresql/extension
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Text similarity measurement and index searching based on bigrams";
     homepage = "https://pgbigm.osdn.jp/";
     maintainers = [ maintainers.marsam ];

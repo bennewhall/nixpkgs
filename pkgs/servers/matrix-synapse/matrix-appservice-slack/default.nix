@@ -1,22 +1,15 @@
-{ pkgs, nodejs, stdenv, fetchFromGitHub, lib, ... }:
+{ pkgs, nodejs, stdenv, lib, ... }:
+
 let
-  src = fetchFromGitHub {
-    owner = "matrix-org";
-    repo = "matrix-appservice-slack";
-    rev = "1.10.0";
-    sha256 = "WnonduUhhrxCMuXOgLk8voNnn+f6R5CsJ7VKpEmGwzk=";
-  };
+
+  packageName = with lib; concatStrings (map (entry: (concatStrings (mapAttrsToList (key: value: "${key}-${value}") entry))) (importJSON ./package.json));
 
   nodePackages = import ./node-composition.nix {
     inherit pkgs nodejs;
     inherit (stdenv.hostPlatform) system;
   };
 in
-nodePackages.package.override {
-  pname = "matrix-appservice-slack";
-
-  inherit src;
-
+nodePackages."${packageName}".override {
   nativeBuildInputs = [ pkgs.makeWrapper ];
 
   postInstall = ''
@@ -26,7 +19,7 @@ nodePackages.package.override {
 
   meta = with lib; {
     description = "A Matrix <--> Slack bridge";
-    maintainers = with maintainers; [ beardhatcode ];
+    maintainers = with maintainers; [ kampka ];
     license = licenses.asl20;
   };
 }

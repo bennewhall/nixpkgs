@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "tthsum";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
 
   doCheck = !stdenv.isDarwin;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An md5sum-alike program that works with Tiger/THEX hashes";
     longDescription = ''
       tthsum generates or checks TTH checksums (root of the THEX hash

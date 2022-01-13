@@ -1,11 +1,10 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchurl
 , gmp
-, libX11
-, perl
 , readline
+, libX11
 , tex
+, perl
 , withThread ? true, libpthreadstubs
 }:
 
@@ -13,47 +12,41 @@ assert withThread -> libpthreadstubs != null;
 
 stdenv.mkDerivation rec {
   pname = "pari";
-  version = "2.13.3";
+  version = "2.11.4";
 
   src = fetchurl {
-    urls = [
-      "https://pari.math.u-bordeaux.fr/pub/pari/unix/${pname}-${version}.tar.gz"
-      # old versions are at the url below
-      "https://pari.math.u-bordeaux.fr/pub/pari/OLD/${lib.versions.majorMinor version}/${pname}-${version}.tar.gz"
-    ];
-    hash = "sha256-zLp/FgbGhU8UQ2N7tXrQlY1Bx/R1P4roRZ8dZMJnoco=";
+    url = "https://pari.math.u-bordeaux.fr/pub/pari/unix/${pname}-${version}.tar.gz";
+    sha256 = "sha256-v8iPxPc1L0hA5uNSxy8DacvqikVAOxg0piafNwmXCxw=";
   };
 
   buildInputs = [
     gmp
-    libX11
-    perl
     readline
+    libX11
     tex
-  ] ++ lib.optionals withThread [
+    perl
+  ] ++ stdenv.lib.optionals withThread [
     libpthreadstubs
   ];
 
   configureScript = "./Configure";
   configureFlags = [
-    "--with-gmp=${lib.getDev gmp}"
-    "--with-readline=${lib.getDev readline}"
-  ]
-  ++ lib.optional stdenv.isDarwin "--host=x86_64-darwin"
-  ++ lib.optional withThread "--mt=pthread";
+    "--with-gmp=${gmp.dev}"
+    "--with-readline=${readline.dev}"
+  ] ++ stdenv.lib.optional stdenv.isDarwin "--host=x86_64-darwin"
+  ++ stdenv.lib.optional withThread "--mt=pthread";
 
   preConfigure = ''
     export LD=$CC
   '';
 
-  postConfigure = lib.optionalString stdenv.isDarwin ''
+  postConfigure = stdenv.lib.optionalString stdenv.isDarwin ''
     echo 'echo x86_64-darwin' > config/arch-osname
   '';
 
   makeFlags = [ "all" ];
 
-  meta = with lib; {
-    homepage = "http://pari.math.u-bordeaux.fr";
+  meta = with stdenv.lib; {
     description = "Computer algebra system for high-performance number theory computations";
     longDescription = ''
        PARI/GP is a widely used computer algebra system designed for fast
@@ -78,6 +71,7 @@ stdenv.mkDerivation rec {
          3 or 4 times faster.) gp2c currently only understands a subset of the
          GP language.
     '';
+    homepage = "http://pari.math.u-bordeaux.fr";
     downloadPage = "http://pari.math.u-bordeaux.fr/download.html";
     license = licenses.gpl2Plus;
     maintainers = with maintainers; [ ertes AndersonTorres ] ++ teams.sage.members;

@@ -1,10 +1,4 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, lxml
-, beautifulsoup4
-, pytestCheckHook
-}:
+{ lib, buildPythonPackage, fetchFromGitHub, lxml, beautifulsoup4, pytest, pytestrunner }:
 
 buildPythonPackage rec {
   pname = "html-sanitizer";
@@ -17,23 +11,11 @@ buildPythonPackage rec {
     sha256 = "0nnv34924r0yn01rwlk749j5ijy7yxyj302s1i57yjrkqr3zlvas";
   };
 
-  propagatedBuildInputs = [
-    lxml
-    beautifulsoup4
-  ];
-
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  pytestFlagsArray = [ "html_sanitizer/tests.py" ];
-
-  pythonImportsCheck = [ "html_sanitizer" ];
+  propagatedBuildInputs = [ lxml beautifulsoup4 ];
 
   meta = with lib; {
-    description = "Allowlist-based and very opinionated HTML sanitizer";
+    description = "An  allowlist-based and very opinionated HTML sanitizer that can be used both for untrusted and trusted sources.";
     homepage = "https://github.com/matthiask/html-sanitizer";
-    license = with licenses; [ bsd3 ];
-    maintainers = with maintainers; [ fab ];
+    license = licenses.bsd3;
   };
 }

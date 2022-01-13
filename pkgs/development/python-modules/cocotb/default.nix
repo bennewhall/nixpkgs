@@ -1,31 +1,19 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, fetchPypi
-, setuptools
-, setuptools-scm
-, cocotb-bus
-, pytest
-, swig
-, verilog
-}:
+{ stdenv, buildPythonPackage, fetchFromGitHub, setuptools, swig, verilog }:
 
 buildPythonPackage rec {
   pname = "cocotb";
-  version = "1.6.0";
+  version = "1.4.0";
 
-  # - we need to use the tarball from PyPi
-  #   or the full git checkout (with .git)
-  # - using fetchFromGitHub will cause a build failure,
-  #   because it does not include required metadata
-  src = fetchPypi {
-    inherit pname version;
-    sha256 = "a695544ab314e6d795b72ece9e67b51c6668c569b21303158e00452db43c5756";
+  src = fetchFromGitHub {
+    owner = pname;
+    repo = pname;
+    rev = "v${version}";
+    sha256 = "0fv0mg8zh40ffq0q39s195y6hvjrzihpx0i3f7ba5881syw3x7p4";
   };
 
-  nativeBuildInputs = [ setuptools-scm ];
-
-  buildInputs = [ setuptools ];
+  propagatedBuildInputs = [
+    setuptools
+  ];
 
   postPatch = ''
     patchShebangs bin/*.py
@@ -38,22 +26,27 @@ buildPythonPackage rec {
       substituteInPlace $f --replace 'shell which' 'shell command -v'
     done
 
-    # remove circular dependency cocotb-bus from setup.py
-    substituteInPlace setup.py --replace "'cocotb-bus<1.0'" ""
+    # This can perhaps be removed in the next update after 1.3.2?
+    substituteInPlace cocotb/share/makefiles/Makefile.inc --replace "-Werror" ""
   '';
 
-  checkInputs = [ cocotb-bus pytest swig verilog ];
+  checkInputs = [ swig verilog ];
 
   checkPhase = ''
+    # test expected failures actually pass because of a fix in our icarus version
+    # https://github.com/cocotb/cocotb/issues/1952
+    substituteInPlace tests/test_cases/test_discovery/test_discovery.py \
+      --replace 'def access_single_bit' $'def foo(x): pass\ndef foo' \
+      --replace 'def access_single_bit_assignment' $'def foo(x): pass\ndef foo'
+
     export PATH=$out/bin:$PATH
     make test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Coroutine based cosimulation library for writing VHDL and Verilog testbenches in Python";
     homepage = "https://github.com/cocotb/cocotb";
     license = licenses.bsd3;
     maintainers = with maintainers; [ matthuszagh ];
-    broken = stdenv.isDarwin;
   };
 }

@@ -1,11 +1,12 @@
 { lib
-, stdenv
 , pythonOlder
 , buildPythonPackage
 , fetchFromGitHub
+, fetchpatch
+, python
 , numpy
 , qiskit-terra
-, scikit-learn
+, scikitlearn
 , scipy
   # Optional package inputs
 , withVisualization ? false
@@ -23,7 +24,7 @@
 
 buildPythonPackage rec {
   pname = "qiskit-ignis";
-  version = "0.6.0";
+  version = "0.5.1";
 
   disabled = pythonOlder "3.6";
 
@@ -32,24 +33,29 @@ buildPythonPackage rec {
     owner = "Qiskit";
     repo = "qiskit-ignis";
     rev = version;
-    hash = "sha256-L5fwCMsN03ojiDvKIyqsGfUnwej1P7bpyHlL6mu7nh0=";
+    sha256 = "17kplmi17axcbbgw35dzfr3d5bzfymxfni9sf6v14223c5674p4y";
   };
+
+  # hacky, fix https://github.com/Qiskit/qiskit-ignis/issues/532.
+  # TODO: remove on qiskit-ignis v0.5.1
+  postPatch = ''
+    substituteInPlace qiskit/ignis/mitigation/expval/base_meas_mitigator.py --replace "plt.axes" "'plt.axes'"
+  '';
 
   propagatedBuildInputs = [
     numpy
     qiskit-terra
-    scikit-learn
+    scikitlearn
     scipy
   ] ++ lib.optionals (withCvx) [ cvxpy ]
   ++ lib.optionals (withVisualization) [ matplotlib ]
   ++ lib.optionals (withJit) [ numba ];
+  postInstall = "rm -rf $out/${python.sitePackages}/docs"; # this dir can create conflicts
 
   # Tests
   pythonImportsCheck = [ "qiskit.ignis" ];
   dontUseSetuptoolsCheck = true;
-  preCheck = ''
-    export HOME=$TMPDIR
-  '';
+  preCheck = "export HOME=$TMPDIR";
   checkInputs = [
     pytestCheckHook
     ddt
@@ -58,8 +64,7 @@ buildPythonPackage rec {
   ];
   disabledTests = [
     "test_tensored_meas_cal_on_circuit" # Flaky test, occasionally returns result outside bounds
-  ] ++ lib.optionals stdenv.isAarch64 [
-    "test_fitters" # Fails check that arrays are close. Might be due to aarch64 math issues.
+    "test_qv_fitter" # execution hangs, ran for several minutes
   ];
 
   meta = with lib; {

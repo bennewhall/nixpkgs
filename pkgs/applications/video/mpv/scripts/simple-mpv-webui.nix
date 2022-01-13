@@ -1,14 +1,14 @@
-{ lib, stdenvNoCC
+{ stdenv
 , fetchFromGitHub }:
-stdenvNoCC.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "simple-mpv-ui";
-  version = "2.1.0";
+  version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "open-dynaMIX";
     repo = "simple-mpv-webui";
     rev = "v${version}";
-    sha256 = "1z0y8sdv5mbxznxqh43w5592ym688vkvqg7w26p8cinrhf09pbw8";
+    sha256 = "1glrnnl1slcl0ri0zs4j64lc9aa52p9ffh6av0d81fk95nm98917";
   };
 
   dontBuild = true;
@@ -18,10 +18,10 @@ stdenvNoCC.mkDerivation rec {
   '';
   passthru.scriptName = "webui.lua";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A web based user interface with controls for the mpv mediaplayer";
     homepage = "https://github.com/open-dynaMIX/simple-mpv-webui";
-    maintainers = with maintainers; [ cript0nauta zopieux ];
+    maintainers = [ maintainers.cript0nauta ];
     longDescription = ''
       You can access the webui when accessing http://127.0.0.1:8080 or
       http://[::1]:8080 in your webbrowser. By default it listens on

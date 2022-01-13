@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, makeWrapper, jdk, selenium-server-standalone }:
+{ stdenv, fetchurl, makeWrapper, jdk, selenium-server-standalone }:
 
-with lib;
+with stdenv.lib;
 let
     name = "selendroid-standalone-${version}";
     pluginName = "selendroid-grid-plugin-${version}";
@@ -23,8 +23,7 @@ stdenv.mkDerivation {
 
   dontUnpack = true;
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jdk ];
+  buildInputs = [ jdk makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/share/lib/selendroid

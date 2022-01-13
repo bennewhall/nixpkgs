@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , asciidoc
 , docbook_xml_dtd_45
@@ -16,30 +16,27 @@
 , libXinerama
 , libXrandr
 , libXrender
-, libXres
 , pcre
-, pkg-config
+, pkgconfig
 }:
-
+let
+  rev   = "v0.6-17-g271e784";
+in
 stdenv.mkDerivation rec {
-  pname = "neocomp";
-  version = "unstable-2021-04-06";
+  pname = "neocomp-unstable";
+  version = "2019-03-12";
 
   src = fetchFromGitHub {
-    owner = "DelusionalLogic";
-    repo = "NeoComp";
-    rev = "ccd340d7b2dcd3f828aff958a638cc23686aee6f";
-    sha256 = "sha256-tLLEwpAGNVTC+N41bM7pfskIli4Yvc95wH2/NT0OZ+8=";
+    inherit rev;
+    owner  = "DelusionalLogic";
+    repo   = "NeoComp";
+    sha256 = "1mp338vz1jm5pwf7pi5azx4hzykmvpkwzx1kw6a9anj272f32zpg";
   };
 
-  nativeBuildInputs = [
+  buildInputs = [
     asciidoc
     docbook_xml_dtd_45
     docbook_xsl
-    pkg-config
-  ];
-
-  buildInputs = [
     freetype
     judy
     libGL
@@ -53,15 +50,15 @@ stdenv.mkDerivation rec {
     libXinerama
     libXrandr
     libXrender
-    libXres
     pcre
+    pkgconfig
   ];
 
   makeFlags = [
     "PREFIX=${placeholder "out"}"
     "CFGDIR=${placeholder "out"}/etc/xdg/neocomp"
     "ASTDIR=${placeholder "out"}/share/neocomp/assets"
-    "COMPTON_VERSION=${version}"
+    "COMPTON_VERSION=git-${rev}-${version}"
   ];
 
   postPatch = ''
@@ -73,10 +70,10 @@ stdenv.mkDerivation rec {
       "#define MAX_PATH_LENGTH 128"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage        = "https://github.com/DelusionalLogic/NeoComp";
-    license         = licenses.gpl3Only;
-    maintainers     = with maintainers; [ twey fortuneteller2k ];
+    license         = licenses.gpl3;
+    maintainers     = with maintainers; [ twey ];
     platforms       = platforms.linux;
     description     = "A fork of Compton, a compositor for X11";
     longDescription = ''

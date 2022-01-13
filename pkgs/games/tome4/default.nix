@@ -1,14 +1,8 @@
-{ lib, stdenv, fetchurl, makeDesktopItem, makeWrapper, premake4, unzip
+{ stdenv, fetchurl, makeDesktopItem, makeWrapper, premake4, unzip
 , openal, libpng, libvorbis, libGLU, SDL2, SDL2_image, SDL2_ttf }:
 
-stdenv.mkDerivation rec {
+let
   pname = "tome4";
-  version = "1.7.4";
-
-  src = fetchurl {
-    url = "https://te4.org/dl/t-engine/t-engine4-src-${version}.tar.bz2";
-    sha256 = "sha256-w1NPM/SMnPAnAl6z9E6Xsj3mEqZtXzFe1IMPmlKr8qQ=";
-  };
 
   desktop = makeDesktopItem {
     desktopName = pname;
@@ -20,6 +14,15 @@ stdenv.mkDerivation rec {
     type = "Application";
     categories = "Game;RolePlaying;";
     genericName = pname;
+  };
+
+in stdenv.mkDerivation rec {
+  name = "${pname}-${version}";
+  version = "1.6.7";
+
+  src = fetchurl {
+    url = "https://te4.org/dl/t-engine/t-engine4-src-${version}.tar.bz2";
+    sha256 = "0283hvms5hr29zr0grd6gq059k0hg8hcz3fsmwjmysiih8790i68";
   };
 
   prePatch = ''
@@ -67,7 +70,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tales of Maj'eyal (rogue-like game)";
     homepage = "https://te4.org/";
     license = licenses.gpl3;

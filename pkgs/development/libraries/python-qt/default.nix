@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, python, qmake,
+{ stdenv, fetchurl, python, qmake,
   qtwebengine, qtxmlpatterns,
   qttools, unzip }:
 
@@ -13,16 +13,14 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "all" ];
 
-  nativeBuildInputs = [ qmake qtwebengine qtxmlpatterns qttools unzip ];
+  nativeBuildInputs = [ qmake qtwebengine  qtxmlpatterns qttools ];
 
-  buildInputs = [ python ];
+  buildInputs = [ python unzip ];
 
   qmakeFlags = [ "PythonQt.pro"
                  "INCLUDEPATH+=${python}/include/python3.6"
                  "PYTHON_PATH=${python}/bin"
                  "PYTHON_LIB=${python}/lib"];
-
-  dontWrapQtApps = true;
 
   unpackCmd = "unzip $src";
 
@@ -34,7 +32,7 @@ stdenv.mkDerivation rec {
     cp -r ./extensions $out/include/PythonQt
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PythonQt is a dynamic Python binding for the Qt framework. It offers an easy way to embed the Python scripting language into your C++ Qt applications";
     homepage = "http://pythonqt.sourceforge.net/";
     license = licenses.lgpl21;

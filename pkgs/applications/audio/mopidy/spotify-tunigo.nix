@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, pythonPackages, mopidy, mopidy-spotify }:
+{ stdenv, fetchFromGitHub, pythonPackages, mopidy, mopidy-spotify }:
 
 pythonPackages.buildPythonApplication rec {
   pname = "mopidy-spotify-tunigo";
@@ -15,7 +15,7 @@ pythonPackages.buildPythonApplication rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Mopidy extension for providing the browse feature of Spotify";
     license = licenses.asl20;
     maintainers = [ maintainers.spwhitt ];

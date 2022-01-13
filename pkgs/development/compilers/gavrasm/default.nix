@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchzip, fpc , lang ? "en" } :
-assert lib.assertOneOf "lang" lang ["cn" "de" "en" "fr" "tr"];
+{ stdenv, fetchzip, fpc , lang ? "en" } :
+assert stdenv.lib.assertOneOf "lang" lang ["cn" "de" "en" "fr" "tr"];
 stdenv.mkDerivation rec {
   pname = "gavrasm";
   version = "4.5";
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     cp LiesMich.Txt $out/doc
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.avr-asm-tutorial.net/gavrasm";
     description = "AVR Assembler for ATMEL AVR-Processors";
     license = licenses.unfree;

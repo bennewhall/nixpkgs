@@ -76,7 +76,7 @@ in
 
   config = mkIf cfg.enable {
     assertions = [ {
-      assertion = pkgs.stdenv.hostPlatform.isx86;
+      assertion = pkgs.stdenv.isi686 || pkgs.stdenv.isx86_64;
       message = "Azure not currently supported on ${pkgs.stdenv.hostPlatform.system}";
     } {
       assertion = config.networking.networkmanager.enable == false;
@@ -146,7 +146,7 @@ in
 
     services.logrotate = {
       enable = true;
-      extraConfig = ''
+      config = ''
         /var/log/waagent.log {
             compress
             monthly

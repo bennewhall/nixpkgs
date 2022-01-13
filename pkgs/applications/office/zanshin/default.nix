@@ -2,19 +2,26 @@
 , lib
 , fetchurl
 , extra-cmake-modules
+, qtbase
 , boost
 , akonadi-calendar
+, akonadi-notes
+, akonadi-search
+, kidentitymanagement
 , kontactinterface
+, kldap
 , krunner
+, kwallet
+, kcalendarcore
 }:
 
 mkDerivation rec {
   pname = "zanshin";
-  version = "21.12.0";
+  version = "0.5.71";
 
   src = fetchurl {
-    url = "mirror://kde/stable/release-service/${version}/src/zanshin-${version}.tar.xz";
-    sha256 = "sha256-l8W47tS7q747fkSAH3HJdwPsqjMfCyxzl3xJEeAXeh0=";
+    url = "mirror://kde/stable/${pname}/${pname}-${version}.tar.xz";
+    sha256 = "0b316ddcd46sawva84x5d8nsp19v66gbm83djrra7fv3k8nkv4xh";
   };
 
   nativeBuildInputs = [
@@ -22,10 +29,17 @@ mkDerivation rec {
   ];
 
   buildInputs = [
+    qtbase
     boost
     akonadi-calendar
+    akonadi-notes
+    akonadi-search
+    kidentitymanagement
     kontactinterface
+    kldap
     krunner
+    kwallet
+    kcalendarcore
   ];
 
   meta = with lib; {
@@ -34,5 +48,6 @@ mkDerivation rec {
     maintainers = with maintainers; [ zraexy ];
     platforms = platforms.linux;
     license = licenses.gpl2Plus;
+    broken = true;
   };
 }

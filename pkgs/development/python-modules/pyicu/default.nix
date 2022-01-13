@@ -1,30 +1,40 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
+, pytest
 , six
+, fetchpatch
 , icu
 }:
 
 buildPythonPackage rec {
   pname = "PyICU";
-  version = "2.8";
+  version = "2.3.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "3d80de47045a8163db5aebc947c42b4d429eeea4f0c32af4f40b33981fa872b9";
+    sha256 = "ddb2b453853b4c25db382bc5e8c4cde09b3f4696ef1e1494f8294e174f459cf4";
   };
 
-  nativeBuildInputs = [ icu ]; # for icu-config, but should be replaced with pkg-config
+  patches = [
+    (fetchpatch {
+      url = "https://salsa.debian.org/python-team/modules/pyicu/raw/debian/2.2-2/"
+            + "debian/patches/icu_test.patch";
+      sha256 = "1iavdkyqixm9i753svl17barla93b7jzgkw09dn3hnggamx7zwx9";
+    })
+  ];
+
+  nativeBuildInputs = [ icu ]; # for icu-config
   buildInputs = [ icu ];
-  checkInputs = [ pytestCheckHook six ];
+  checkInputs = [ pytest ];
+  propagatedBuildInputs = [ six ];
 
-  pythonImportsCheck = [ "icu" ];
-
-  meta = with lib; {
-    homepage = "https://gitlab.pyicu.org/main/pyicu";
+  meta = with stdenv.lib; {
+    homepage = "https://pypi.python.org/pypi/PyICU/";
     description = "Python extension wrapping the ICU C++ API";
-    changelog = "https://gitlab.pyicu.org/main/pyicu/-/raw/v${version}/CHANGES";
     license = licenses.mit;
+    platforms = platforms.unix;
+    maintainers = [ maintainers.rycee ];
   };
+
 }

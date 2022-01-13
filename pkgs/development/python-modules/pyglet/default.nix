@@ -1,31 +1,26 @@
-{ lib, stdenv
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, unzip
-, pythonOlder
 , libGL
 , libGLU
 , xorg
-, pytestCheckHook
+, future
+, pytest
 , glibc
 , gtk2-x11
 , gdk-pixbuf
 , fontconfig
 , freetype
 , ffmpeg-full
-, openal
-, libpulseaudio
 }:
 
 buildPythonPackage rec {
-  version = "1.5.21";
+  version = "1.4.2";
   pname = "pyglet";
-  disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "5aaaddb06dc4b6f9ba08254d8d806a2bd2406925a9caf3a51fdffbd5d09728e2";
-    extension = "zip";
+    sha256 = "1dxxrl4nc7xh3aai1clgzvk48bvd35r7ksirsddz0mwhx7jmm8px";
   };
 
   # find_library doesn't reliably work with nix (https://github.com/NixOS/nixpkgs/issues/7307).
@@ -42,8 +37,6 @@ buildPythonPackage rec {
             path = None
             if name == 'GL':
                 path = '${libGL}/lib/libGL${ext}'
-            elif name == 'EGL':
-                path = '${libGL}/lib/libEGL${ext}'
             elif name == 'GLU':
                 path = '${libGLU}/lib/libGLU${ext}'
             elif name == 'c':
@@ -62,47 +55,27 @@ buildPythonPackage rec {
                 path = '${freetype}/lib/libfreetype${ext}'
             elif name[0:2] == 'av' or name[0:2] == 'sw':
                 path = '${ffmpeg-full}/lib/lib' + name + '${ext}'
-            elif name == 'openal':
-                path = '${openal}/lib/libopenal${ext}'
-            elif name == 'pulse':
-                path = '${libpulseaudio}/lib/libpulse${ext}'
-            elif name == 'Xi':
-                path = '${xorg.libXi}/lib/libXi${ext}'
-            elif name == 'Xinerama':
-                path = '${xorg.libXinerama}/lib/libXinerama${ext}'
-            elif name == 'Xxf86vm':
-                path = '${xorg.libXxf86vm}/lib/libXxf86vm${ext}'
             if path is not None:
                 return ctypes.cdll.LoadLibrary(path)
         raise Exception("Could not load library {}".format(names))
     EOF
   '';
 
-  nativeBuildInputs = [ unzip ];
+  propagatedBuildInputs = [ future ];
 
-  # needs GL set up which isn't really possible in a build environment even in headless mode.
-  # tests do run and pass in nix-shell, however.
+  # needs an X server. Keep an eye on
+  # https://bitbucket.org/pyglet/pyglet/issues/219/egl-support-headless-rendering
   doCheck = false;
 
   checkInputs = [
-    pytestCheckHook
+    pytest
   ];
 
-  preCheck = ''
-    export PYGLET_HEADLESS=True
+  checkPhase = ''
+    py.test tests/unit tests/integration
   '';
 
-  # test list taken from .travis.yml
-  disabledTestPaths = [
-    "tests/base"
-    "tests/interactive"
-    "tests/integration"
-    "tests/unit/text/test_layout.py"
-  ];
-
-  pythonImportsCheck = [ "pyglet" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.pyglet.org/";
     description = "A cross-platform windowing and multimedia library";
     license = licenses.bsd3;

@@ -1,19 +1,18 @@
-{ lib, stdenv, fetchurl, pkg-config, autoreconfHook, glib, jansson }:
+{ stdenv, fetchurl, pkgconfig, autoreconfHook, glib, jansson }:
 
 stdenv.mkDerivation rec {
-  pname = "xnbd";
-  version = "0.4.0";
+  name = "xnbd-0.4.0";
 
   src = fetchurl {
-    url = "https://bitbucket.org/hirofuchi/xnbd/downloads/xnbd-${version}.tgz";
+    url = "https://bitbucket.org/hirofuchi/xnbd/downloads/${name}.tgz";
     sha256 = "00wkvsa0yaq4mabczcbfpj6rjvp02yahw8vdrq8hgb3wpm80x913";
   };
 
-  sourceRoot = "xnbd-${version}/trunk";
+  sourceRoot = "${name}/trunk";
 
   patches = [ ./0001-Fix-build-for-glibc-2.28.patch ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ glib jansson ];
 
@@ -27,8 +26,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://bitbucket.org/hirofuchi/xnbd";
     description = "Yet another NBD (Network Block Device) server program";
-    license = lib.licenses.gpl2;
-    maintainers = [ lib.maintainers.volth ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = [ stdenv.lib.maintainers.volth ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -5,30 +5,42 @@
 , bootstrapHashes
 , selectRustPackage
 , rustcPatches ? []
-, llvmBootstrapForDarwin
-, llvmShared
-, llvmSharedForBuild
-, llvmSharedForHost
-, llvmSharedForTarget
-, llvmPackagesForBuild # Exposed through rustc for LTO in Firefox
 }:
 { stdenv, lib
 , buildPackages
 , newScope, callPackage
-, CoreFoundation, Security, SystemConfiguration
+, CoreFoundation, Security
+, llvmPackages
 , pkgsBuildTarget, pkgsBuildBuild
 , makeRustPlatform
-}:
+}: rec {
+  # https://doc.rust-lang.org/reference/conditional-compilation.html#target_arch
+  toTargetArch = platform:
+    if platform.isAarch32 then "arm"
+    else platform.parsed.cpu.name;
 
-let
-  # Use `import` to make sure no packages sneak in here.
-  lib' = import ../../../build-support/rust/lib { inherit lib; };
-in
-{
-  lib = lib';
+  # https://doc.rust-lang.org/reference/conditional-compilation.html#target_os
+  toTargetOs = platform:
+    if platform.isDarwin then "macos"
+    else platform.parsed.kernel.name;
 
-  # Backwards compat before `lib` was factored out.
-  inherit (lib') toTargetArch toTargetOs toRustTarget toRustTargetSpec;
+  # Returns the name of the rust target, even if it is custom. Adjustments are
+  # because rust has slightly different naming conventions than we do.
+  toRustTarget = platform: with platform.parsed; let
+    cpu_ = platform.rustc.platform.arch or {
+      "armv7a" = "armv7";
+      "armv7l" = "armv7";
+      "armv6l" = "arm";
+    }.${cpu.name} or cpu.name;
+  in platform.rustc.config
+    or "${cpu_}-${vendor.name}-${kernel.name}${lib.optionalString (abi.name != "unknown") "-${abi.name}"}";
+
+  # Returns the name of the rust target if it is standard, or the json file
+  # containing the custom target spec.
+  toRustTargetSpec = platform:
+    if (platform.rustc or {}) ? platform
+    then builtins.toFile (toRustTarget platform + ".json") (builtins.toJSON platform.rustc.platform)
+    else toRustTarget platform;
 
   # This just contains tools for now. But it would conceivably contain
   # libraries too, say if we picked some default/recommended versions from
@@ -64,17 +76,16 @@ in
         version = rustcVersion;
         sha256 = rustcSha256;
         inherit enableRustcDev;
-        inherit llvmShared llvmSharedForBuild llvmSharedForHost llvmSharedForTarget llvmPackagesForBuild;
 
         patches = rustcPatches;
 
         # Use boot package set to break cycle
         rustPlatform = bootRustPlatform;
       } // lib.optionalAttrs (stdenv.cc.isClang && stdenv.hostPlatform == stdenv.buildPlatform) {
-        stdenv = llvmBootstrapForDarwin.stdenv;
-        pkgsBuildBuild = pkgsBuildBuild // { targetPackages.stdenv = llvmBootstrapForDarwin.stdenv; };
-        pkgsBuildHost = pkgsBuildBuild // { targetPackages.stdenv = llvmBootstrapForDarwin.stdenv; };
-        pkgsBuildTarget = pkgsBuildTarget // { targetPackages.stdenv = llvmBootstrapForDarwin.stdenv; };
+        stdenv = llvmPackages.stdenv;
+        pkgsBuildBuild = pkgsBuildBuild // { targetPackages.stdenv = llvmPackages.stdenv; };
+        pkgsBuildHost = pkgsBuildBuild // { targetPackages.stdenv = llvmPackages.stdenv; };
+        pkgsBuildTarget = pkgsBuildTarget // { targetPackages.stdenv = llvmPackages.stdenv; };
       });
       rustfmt = self.callPackage ./rustfmt.nix { inherit Security; };
       cargo = self.callPackage ./cargo.nix {
@@ -83,7 +94,7 @@ in
         inherit CoreFoundation Security;
       };
       clippy = self.callPackage ./clippy.nix { inherit Security; };
-      rls = self.callPackage ./rls { inherit CoreFoundation Security SystemConfiguration; };
+      rls = self.callPackage ./rls { inherit CoreFoundation Security; };
     });
   };
 }

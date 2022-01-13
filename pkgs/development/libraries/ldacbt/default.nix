@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 }:
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     cmake
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "AOSP libldac dispatcher";
     homepage    = "https://github.com/EHfive/ldacBT";
     license     = licenses.asl20;

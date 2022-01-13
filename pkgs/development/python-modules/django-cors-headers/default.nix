@@ -1,35 +1,27 @@
-{ lib
-, fetchFromGitHub
-, buildPythonPackage
-, django
-, pytest-django
-, pytestCheckHook
+{ lib,
+  fetchPypi,
+  django,
+  buildPythonPackage
 }:
 
 buildPythonPackage rec {
   pname = "django-cors-headers";
-  version = "3.7.0";
+  version = "3.5.0";
 
-  src = fetchFromGitHub {
-    owner = "adamchainz";
-    repo = "django-cors-headers";
-    rev = version;
-    sha256 = "1wc8cs1gpg9v98bq5qwnd4pcv043za50wd63gwkm86lbvjxyxynz";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "db82b2840f667d47872ae3e4a4e0a0d72fbecb42779b8aa233fa8bb965f7836a";
   };
 
-  propagatedBuildInputs = [
-    django
-  ];
+  propagatedBuildInputs = [ django ];
 
-  checkInputs = [
-    pytest-django
-    pytestCheckHook
-  ];
+  # pypi release does not include tests
+  doCheck = false;
 
   meta = with lib; {
     description = "Django app for handling server Cross-Origin Resource Sharing (CORS) headers";
     homepage = "https://github.com/OttoYiu/django-cors-headers";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = [ maintainers.ivegotasthma ];
   };
 }

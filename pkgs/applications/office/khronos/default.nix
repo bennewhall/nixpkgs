@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , meson
@@ -7,24 +6,24 @@
 , vala
 , pkg-config
 , desktop-file-utils
+, pantheon
 , python3
 , glib
-, gtk4
+, gtk3
 , json-glib
-, libadwaita
 , libgee
-, wrapGAppsHook4
+, wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {
   pname = "khronos";
-  version = "3.6.6";
+  version = "1.0.8";
 
   src = fetchFromGitHub {
     owner = "lainsce";
     repo = pname;
     rev = version;
-    sha256 = "sha256-EFoW/2IZuCo6sg7q87XRrJJ7dmYtVZr2bJQUEiiMiVI=";
+    sha256 = "0d5ma1d86lh2apagwrwk0d1v1cm3fifjivhf530nlznb67vi1x80";
   };
 
   nativeBuildInputs = [
@@ -34,20 +33,20 @@ stdenv.mkDerivation rec {
     vala
     pkg-config
     python3
-    wrapGAppsHook4
+    wrapGAppsHook
   ];
 
   buildInputs = [
     glib
-    gtk4
+    gtk3
     json-glib
-    libadwaita
     libgee
+    pantheon.granite
   ];
 
   postPatch = ''
-    chmod +x build-aux/post_install.py
-    patchShebangs build-aux/post_install.py
+    chmod +x meson/post_install.py
+    patchShebangs meson/post_install.py
   '';
 
   passthru = {
@@ -56,12 +55,11 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Track each task's time in a simple inobtrusive way";
     homepage = "https://github.com/lainsce/khronos";
-    maintainers = with maintainers; [ xiorcale ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [ xiorcale ] ++ pantheon.maintainers;
     platforms = platforms.linux;
-    license = licenses.gpl3Plus;
-    mainProgram = "io.github.lainsce.Khronos";
+    license = licenses.gpl3;
   };
 }

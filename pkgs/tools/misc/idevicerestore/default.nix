@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
 , curl
 , libimobiledevice
 , libirecovery
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoreconfHook
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -32,9 +32,9 @@ stdenv.mkDerivation rec {
     # Not listing other dependencies specified in
     # https://github.com/libimobiledevice/idevicerestore/blob/8a882038b2b1e022fbd19eaf8bea51006a373c06/README#L20
     # because they are inherited `libimobiledevice`.
-  ] ++ lib.optionals stdenv.isDarwin [ IOKit ];
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [ IOKit ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/libimobiledevice/idevicerestore";
     description = "Restore/upgrade firmware of iOS devices";
     longDescription = ''

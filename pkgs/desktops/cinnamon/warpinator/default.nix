@@ -1,5 +1,5 @@
 { fetchFromGitHub
-, lib
+, stdenv
 , gobject-introspection
 , meson
 , ninja
@@ -14,15 +14,16 @@
 
 python3.pkgs.buildPythonApplication rec  {
   pname = "warpinator";
-  version = "1.2.5";
+  version = "1.0.8";
 
   format = "other";
+  doCheck = false;
 
   src = fetchFromGitHub {
     owner = "linuxmint";
     repo = pname;
     rev = version;
-    hash = "sha256-pTLM4CrkBLEZS9IdM9IBSGH0WPOj1rlAgvWLOUy6MxY=";
+    sha256 = "0n1b50j2w76qnhfj5yg5q2j7fgxr9gbmzpazmbml4q41h8ybcmxm";
   };
 
   nativeBuildInputs = [
@@ -54,10 +55,6 @@ python3.pkgs.buildPythonApplication rec  {
     netifaces
   ];
 
-  mesonFlags = [
-    "-Dbundle-zeroconf=false"
-  ];
-
   postPatch = ''
     chmod +x install-scripts/*
     patchShebangs .
@@ -72,11 +69,11 @@ python3.pkgs.buildPythonApplication rec  {
     chmod -x+X $out/libexec/warpinator/*.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/linuxmint/warpinator";
     description = "Share files across the LAN";
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = teams.cinnamon.members;
+    maintainers = [ maintainers.mkg20001 ];
   };
 }

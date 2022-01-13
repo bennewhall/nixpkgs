@@ -1,43 +1,40 @@
 { lib
+, buildPythonPackage
+, fetchPypi
+, pythonOlder
 , attrs
 , botocore
-, buildPythonPackage
 , click
-, fetchFromGitHub
+, enum-compat
 , hypothesis
-, inquirer
 , jmespath
 , mock
 , mypy-extensions
 , pip
-, pytestCheckHook
-, pythonOlder
+, pytest
 , pyyaml
-, requests
 , setuptools
 , six
 , typing
 , watchdog
-, websocket-client
 , wheel
 }:
 
 buildPythonPackage rec {
   pname = "chalice";
-  version = "1.26.2";
+  version = "1.21.4";
 
-  src = fetchFromGitHub {
-    owner = "aws";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-zF7wmrJTMX0Cr3wpJECUqhH58G2SLiVoC4Z2XbblQdQ=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "fb3580272cc66ba0fd59914b7ac395d2da6b9b32b11dc7557aa80a0ae7cccf3c";
   };
 
+  checkInputs = [ watchdog pytest hypothesis mock ];
   propagatedBuildInputs = [
     attrs
     botocore
     click
-    inquirer
+    enum-compat
     jmespath
     mypy-extensions
     pip
@@ -45,57 +42,28 @@ buildPythonPackage rec {
     setuptools
     six
     wheel
-    watchdog
-  ] ++ lib.optionals (pythonOlder "3.7") [
+  ] ++ lib.optionals (pythonOlder "3.5") [
     typing
   ];
 
-  checkInputs = [
-    hypothesis
-    mock
-    pytestCheckHook
-    requests
-    websocket-client
-  ];
+  # conftest.py not included with pypi release
+  doCheck = false;
 
   postPatch = ''
     sed -i setup.py -e "/pip>=/c\'pip',"
     substituteInPlace setup.py \
-      --replace 'typing==3.6.4' 'typing'
+      --replace 'typing==3.6.4' 'typing' \
+      --replace 'attrs>=19.3.0,<20.3.0' 'attrs'
   '';
 
-  disabledTestPaths = [
-    # Don't check the templates and the sample app
-    "chalice/templates"
-    "docs/source/samples/todo-app/code/tests/test_db.py"
-    # Requires credentials
-    "tests/aws/test_features.py"
-    # Requires network access
-    "tests/aws/test_websockets.py"
-    "tests/integration/test_package.py"
-  ];
-
-  disabledTests = [
-    # Requires network access
-    "test_update_domain_name_failed"
-    "test_can_reload_server"
-    # Content for the tests is missing
-    "test_can_import_env_vars"
-    "test_stack_trace_printed_on_error"
-    # Don't build
-    "test_can_generate_pipeline_for_all"
-    "test_build_wheel"
-    # https://github.com/aws/chalice/issues/1850
-    "test_resolve_endpoint"
-    "test_endpoint_from_arn"
-  ];
-
-  pythonImportsCheck = [ "chalice" ];
+  checkPhase = ''
+    pytest tests
+  '';
 
   meta = with lib; {
     description = "Python Serverless Microframework for AWS";
     homepage = "https://github.com/aws/chalice";
     license = licenses.asl20;
-    maintainers = with maintainers; [ costrouc ];
+    maintainers = [ maintainers.costrouc ];
   };
 }

@@ -1,17 +1,14 @@
-{ fetchurl, lib, stdenv }:
+{ fetchurl, stdenv }:
 
 stdenv.mkDerivation rec {
-  pname = "mpage";
-  version = "2.5.7";
-
+  name = "mpage-2.5.7";
   src = fetchurl {
-    url = "https://www.mesa.nl/pub/mpage/mpage-${version}.tgz";
+    url = "http://www.mesa.nl/pub/mpage/${name}.tgz";
     sha256 = "1zn37r5xrvjgjbw2bdkc0r7s6q8b1krmcryzj0yf0dyxbx79rasi";
   };
 
-  postPatch = ''
+  patchPhase = ''
     sed -i "Makefile" -e "s|^ *PREFIX *=.*$|PREFIX = $out|g"
-    substituteInPlace Makefile --replace 'gcc' '${stdenv.cc.targetPrefix}cc'
   '';
 
   meta = {
@@ -27,6 +24,6 @@ stdenv.mkDerivation rec {
 
     license = "liberal";  # a non-copyleft license, see `Copyright' file
     homepage = "http://www.mesa.nl/pub/mpage/";
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

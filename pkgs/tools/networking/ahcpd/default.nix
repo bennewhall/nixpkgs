@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "ahcpd";
-  version = "0.53";
+  name = "ahcpd-0.53";
 
   src = fetchurl {
-    url = "http://www.pps.univ-paris-diderot.fr/~jch/software/files/ahcpd-${version}.tar.gz";
+    url = "http://www.pps.univ-paris-diderot.fr/~jch/software/files/${name}.tar.gz";
     sha256 = "0lhdmky3zdyk51hclv2lrhw3hzymbdc8bw2khs3rnaibgn0jwqm4";
   };
 
@@ -17,7 +16,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.pps.univ-paris-diderot.fr/~jch/software/ahcp/";
     description = "Autoconfiguration protocol for IPv6 and dual-stack IPv6/IPv4 networks";
-    license = lib.licenses.mit;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.mit;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

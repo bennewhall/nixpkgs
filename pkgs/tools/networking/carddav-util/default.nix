@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchgit, python3Packages, makeWrapper }:
+{ stdenv, fetchgit, python, pythonPackages, makeWrapper }:
 
 stdenv.mkDerivation {
-  pname = "carddav";
-  version = "0.1-2014-02-26";
+
+  name = "carddav-0.1-2014-02-26";
 
   src = fetchgit {
     url = "git://github.com/ljanyst/carddav-util";
@@ -10,11 +10,9 @@ stdenv.mkDerivation {
     sha256 = "0f0raffdy032wlnxfck6ky60r163nhqfbr311y4ry55l60s4497n";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [makeWrapper];
 
-  propagatedBuildInputs = with python3Packages; [ requests vobject lxml ];
-
-  strictDeps = true;
+  propagatedBuildInputs = with pythonPackages; [ requests vobject lxml ];
 
   doCheck = false; # no test
 
@@ -22,7 +20,7 @@ stdenv.mkDerivation {
     mkdir -p $out/bin
     cp $src/carddav-util.py $out/bin
 
-    pythondir="$out/lib/${python3Packages.python.sitePackages}"
+    pythondir="$out/lib/${python.libPrefix}/site-packages"
     mkdir -p "$pythondir"
     cp $src/carddav.py "$pythondir"
   '';
@@ -33,7 +31,7 @@ stdenv.mkDerivation {
       --prefix PATH : "$prefix/bin:$PATH"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ljanyst/carddav-util";
     description = "A CardDAV import/export utility";
     platforms = platforms.unix;

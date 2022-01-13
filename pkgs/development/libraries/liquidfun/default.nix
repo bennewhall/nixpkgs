@@ -1,6 +1,6 @@
-{ lib, stdenv, requireFile, cmake, libGLU, libGL, libX11, libXi }:
+{ stdenv, requireFile, cmake, libGLU, libGL, libX11, libXi }:
 
-let
+let 
   sourceInfo = rec {
     version="1.1.0";
     name="liquidfun-${version}";
@@ -16,8 +16,7 @@ stdenv.mkDerivation {
   };
 
   inherit (sourceInfo) name version;
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ libGLU libGL libX11 libXi ];
+  buildInputs = [ cmake libGLU libGL libX11 libXi ];
 
   sourceRoot = "liquidfun/Box2D/";
 
@@ -27,22 +26,23 @@ stdenv.mkDerivation {
     sed -i Box2D/Common/b2Settings.h -e 's@b2_maxPolygonVertices .*@b2_maxPolygonVertices 15@'
     substituteInPlace Box2D/CMakeLists.txt --replace "Common/b2GrowableStack.h" "Common/b2GrowableStack.h Common/b2GrowableBuffer.h"
   '';
-
+      
   configurePhase = ''
     mkdir Build
-    cd Build;
+    cd Build; 
     cmake -DBOX2D_INSTALL=ON -DBOX2D_BUILD_SHARED=ON -DCMAKE_INSTALL_PREFIX=$out ..
   '';
 
   meta = {
     description = "2D physics engine based on Box2D";
-    maintainers = with lib.maintainers;
+    maintainers = with stdenv.lib.maintainers;
     [
       qknight
     ];
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
     hydraPlatforms = [];
-    license = lib.licenses.bsd2;
+    license = stdenv.lib.licenses.bsd2;
     homepage = "https://google.github.io/liquidfun/";
   };
 }
+

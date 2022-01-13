@@ -1,10 +1,9 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , meson
 , ninja
 , sassc
-, gnome
+, gnome3
 , gtk-engine-murrine
 , gdk-pixbuf
 , librsvg
@@ -12,32 +11,42 @@
 
 stdenv.mkDerivation rec {
   pname = "materia-theme";
-  version = "20210322";
+  version = "20200916";
 
   src = fetchFromGitHub {
     owner = "nana-4";
     repo = pname;
     rev = "v${version}";
-    sha256 = "1fsicmcni70jkl4jb3fvh7yv0v9jhb8nwjzdq8vfwn256qyk0xvl";
+    sha256 = "0qaxxafsn5zd2ysgr0jyv5j73360mfdmxyd55askswlsfphssn74";
   };
 
-  nativeBuildInputs = [ meson ninja sassc ];
+  nativeBuildInputs = [
+    meson
+    ninja
+    sassc
+  ];
 
-  buildInputs = [ gnome.gnome-themes-extra gdk-pixbuf librsvg ];
+  buildInputs = [
+    gnome3.gnome-themes-extra
+    gdk-pixbuf
+    librsvg
+  ];
 
-  propagatedUserEnvPkgs = [ gtk-engine-murrine ];
+  propagatedUserEnvPkgs = [
+    gtk-engine-murrine
+  ];
 
   dontBuild = true;
 
   mesonFlags = [
-    "-Dgnome_shell_version=${lib.versions.majorMinor gnome.gnome-shell.version}"
+    "-Dgnome_shell_version=${stdenv.lib.versions.majorMinor gnome3.gnome-shell.version}"
   ];
 
   postInstall = ''
     rm $out/share/themes/*/COPYING
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Material Design theme for GNOME/GTK based desktop environments";
     homepage = "https://github.com/nana-4/materia-theme";
     license = licenses.gpl2Only;

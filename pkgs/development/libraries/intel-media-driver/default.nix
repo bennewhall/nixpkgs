@@ -1,37 +1,18 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, fetchpatch
-, cmake
-, pkg-config
-, libva
-, libpciaccess
-, intel-gmmlib
-, libdrm
-, enableX11 ? stdenv.isLinux
-, libX11
+{ stdenv, fetchFromGitHub
+, cmake, pkg-config
+, libva, libpciaccess, intel-gmmlib, libX11
 }:
 
 stdenv.mkDerivation rec {
   pname = "intel-media-driver";
-  version = "22.1.0";
-
-  outputs = [ "out" "dev" ];
+  version = "20.4.3";
 
   src = fetchFromGitHub {
-    owner = "intel";
-    repo = "media-driver";
-    rev = "intel-media-${version}";
-    sha256 = "0giba5274kzpjb5rp3d9bbnvcz7fp8ybi4s3hha2idxk0l5yamf1";
+    owner  = "intel";
+    repo   = "media-driver";
+    rev    = "intel-media-${version}";
+    sha256 = "04a0hcw9f8fr96xpc1inc19mncssqzxmjba9cdvvh71n8j7n3yyw";
   };
-
-  patches = [
-    # fix platform detection
-    (fetchpatch {
-      url = "https://salsa.debian.org/multimedia-team/intel-media-driver-non-free/-/raw/master/debian/patches/0002-Remove-settings-based-on-ARCH.patch";
-      sha256 = "sha256-f4M0CPtAVf5l2ZwfgTaoPw7sPuAP/Uxhm5JSHEGhKT0=";
-    })
-  ];
 
   cmakeFlags = [
     "-DINSTALL_DRIVER_SYSCONF=OFF"
@@ -40,19 +21,11 @@ stdenv.mkDerivation rec {
     "-DMEDIA_RUN_TEST_SUITE=OFF"
   ];
 
-  NIX_CFLAGS_COMPILE = lib.optionalString (stdenv.hostPlatform.system == "i686-linux") "-D_FILE_OFFSET_BITS=64";
-
   nativeBuildInputs = [ cmake pkg-config ];
 
-  buildInputs = [ libva libpciaccess intel-gmmlib libdrm ]
-    ++ lib.optional enableX11 libX11;
+  buildInputs = [ libva libpciaccess intel-gmmlib libX11 ];
 
-  postFixup = lib.optionalString enableX11 ''
-    patchelf --set-rpath "$(patchelf --print-rpath $out/lib/dri/iHD_drv_video.so):${lib.makeLibraryPath [ libX11 ]}" \
-      $out/lib/dri/iHD_drv_video.so
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Intel Media Driver for VAAPI — Broadwell+ iGPUs";
     longDescription = ''
       The Intel Media Driver for VAAPI is a new VA-API (Video Acceleration API)
@@ -63,6 +36,6 @@ stdenv.mkDerivation rec {
     changelog = "https://github.com/intel/media-driver/releases/tag/intel-media-${version}";
     license = with licenses; [ bsd3 mit ];
     platforms = platforms.linux;
-    maintainers = with maintainers; [ primeos jfrankenau SuperSandro2000 ];
+    maintainers = with maintainers; [ primeos jfrankenau ];
   };
 }

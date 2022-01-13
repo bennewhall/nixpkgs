@@ -5,10 +5,8 @@
 }:
 
 mkDerivation {
-  pname = "kcolorchooser";
+  name = "kcolorchooser";
   meta = {
-    homepage = "https://apps.kde.org/kcolorchooser/";
-    description = "Color chooser";
     license = with lib.licenses; [ mit ];
     maintainers = [ lib.maintainers.ttuegel ];
   };

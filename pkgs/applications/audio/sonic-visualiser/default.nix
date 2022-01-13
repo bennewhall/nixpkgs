@@ -1,6 +1,6 @@
 # TODO add plugins having various licenses, see http://www.vamp-plugins.org/download.html
 
-{ lib, stdenv, fetchurl, alsa-lib, bzip2, fftw, libjack2, libX11, liblo
+{ stdenv, fetchurl, alsaLib, bzip2, fftw, libjack2, libX11, liblo
 , libmad, lrdf, librdf_raptor, librdf_rasqal, libsamplerate
 , libsndfile, pkg-config, libpulseaudio, qtbase, qtsvg, redland
 , rubberband, serd, sord, vamp-plugin-sdk, fftwFloat
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkg-config wrapQtAppsHook ];
   buildInputs =
     [ libsndfile qtbase qtsvg fftw fftwFloat bzip2 lrdf rubberband
-      libsamplerate vamp-plugin-sdk alsa-lib librdf_raptor librdf_rasqal redland
+      libsamplerate vamp-plugin-sdk alsaLib librdf_raptor librdf_rasqal redland
       serd
       sord
       # optional
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "View and analyse contents of music audio files";
     homepage = "https://www.sonicvisualiser.org/";
     license = licenses.gpl2Plus;

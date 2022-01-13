@@ -1,20 +1,20 @@
 { lib, buildPythonPackage, isPy27, fetchPypi
-, jsonschema, openapi-schema-validator, pyyaml, six, pathlib
-, mock, pytest, pytest-cov, pytest-flake8, tox, setuptools }:
+, jsonschema, pyyaml, six, pathlib
+, mock, pytest, pytestcov, pytest-flake8, tox, setuptools }:
 
 buildPythonPackage rec {
   pname = "openapi-spec-validator";
-  version = "0.3.1";
+  version = "0.2.9";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "3d70e6592754799f7e77a45b98c6a91706bdd309a425169d17d8e92173e198a2";
+    sha256 = "1jw59mmd3n1d5zihdqz2a3j2axxf3m34lqp1190fw8rlndlilf3r";
   };
 
-  propagatedBuildInputs = [ jsonschema openapi-schema-validator pyyaml six setuptools ]
+  propagatedBuildInputs = [ jsonschema pyyaml six setuptools ]
     ++ (lib.optionals (isPy27) [ pathlib ]);
 
-  checkInputs = [ mock pytest pytest-cov pytest-flake8 tox ];
+  checkInputs = [ mock pytest pytestcov pytest-flake8 tox ];
 
   meta = with lib; {
     homepage = "https://github.com/p1c2u/openapi-spec-validator";

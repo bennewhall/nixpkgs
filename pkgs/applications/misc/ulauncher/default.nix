@@ -1,10 +1,10 @@
-{ lib
+{ stdenv
 , fetchurl
 , nix-update-script
 , python3Packages
 , gdk-pixbuf
 , glib
-, gnome
+, gnome3
 , gobject-introspection
 , gtk3
 , wrapGAppsHook
@@ -14,32 +14,31 @@
 , libappindicator
 , intltool
 , wmctrl
-, xvfb-run
+, xvfb_run
 , librsvg
 }:
 
 python3Packages.buildPythonApplication rec {
   pname = "ulauncher";
-  version = "5.12.1";
+  version = "5.8.0";
 
   disabled = python3Packages.isPy27;
 
   src = fetchurl {
     url = "https://github.com/Ulauncher/Ulauncher/releases/download/${version}/ulauncher_${version}.tar.gz";
-    sha256 = "sha256-Fd3IOCEeXGV8zGd/8SzrWRsSsZRVePnsDaX8WrBrCOQ=";
+    sha256 = "1czxzcxix9iwv1sir1q64j5aavc7lzjjwqpisgdc1kidkwnk05zp";
   };
 
   nativeBuildInputs = with python3Packages; [
     distutils_extra
     intltool
     wrapGAppsHook
-    gdk-pixbuf
   ];
 
   buildInputs = [
     gdk-pixbuf
     glib
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
     gobject-introspection
     gtk3
     keybinder3
@@ -59,16 +58,16 @@ python3Packages.buildPythonApplication rec {
     pyinotify
     python-Levenshtein
     pyxdg
-    pycairo
     requests
-    websocket-client
+    websocket_client
   ];
 
   checkInputs = with python3Packages; [
     mock
     pytest
     pytest-mock
-    xvfb-run
+    pytestpep8
+    xvfb_run
   ];
 
   patches = [
@@ -79,9 +78,6 @@ python3Packages.buildPythonApplication rec {
 
   postPatch = ''
     substituteInPlace setup.py --subst-var out
-    patchShebangs bin/ulauncher-toggle
-    substituteInPlace bin/ulauncher-toggle \
-      --replace wmctrl ${wmctrl}/bin/wmctrl
   '';
 
   # https://github.com/Ulauncher/Ulauncher/issues/390
@@ -99,18 +95,13 @@ python3Packages.buildPythonApplication rec {
     # skip tests in invocation that handle paths that
     # aren't nix friendly (i think)
     xvfb-run -s '-screen 0 1024x768x16' \
-      pytest -k 'not TestPath and not test_handle_key_press_event' tests
+      pytest -k 'not TestPath and not test_handle_key_press_event' --pep8 tests
 
     runHook postCheck
   '';
 
-  # do not double wrap
-  dontWrapGApps = true;
   preFixup = ''
-    makeWrapperArgs+=(
-     "''${gappsWrapperArgs[@]}"
-     --prefix PATH : "${lib.makeBinPath [ wmctrl ]}"
-    )
+    gappsWrapperArgs+=(--prefix PATH : "${stdenv.lib.makeBinPath [ wmctrl ]}")
   '';
 
   passthru = {
@@ -120,11 +111,11 @@ python3Packages.buildPythonApplication rec {
   };
 
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fast application launcher for Linux, written in Python, using GTK";
     homepage = "https://ulauncher.io/";
     license = licenses.gpl3;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ aaronjanse ];
+    maintainers = with maintainers; [ aaronjanse worldofpeace ];
   };
 }

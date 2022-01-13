@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, intltool, pkg-config, glib, gtk, lua, libwnck }:
+{ stdenv, fetchurl, intltool, pkgconfig, glib, gtk, lua, libwnck3 }:
 
 stdenv.mkDerivation rec {
   pname = "devilspie2";
@@ -9,8 +9,8 @@ stdenv.mkDerivation rec {
     sha256 = "0a7qjl2qd4099kkkbwa1y2fk48s21jlr409lf9mij7mlc9yc3zzc";
   };
 
-  nativeBuildInputs = [ intltool pkg-config ];
-  buildInputs = [ glib gtk lua libwnck ];
+  nativeBuildInputs = [ intltool pkgconfig ];
+  buildInputs = [ glib gtk lua libwnck3 ];
 
   installPhase = ''
     mkdir -p $out/bin $out/share/man/man1
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     cp devilspie2.1 $out/share/man/man1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A window matching utility";
     longDescription = ''
       Devilspie2 is a window matching utility, allowing the user to

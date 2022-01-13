@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, Carbon }:
+{ stdenv, fetchFromGitHub, Carbon }:
 
 stdenv.mkDerivation {
   pname = "qes";
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
 
   makeFlags = [ "BUILD_PATH=$(out)/bin" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Quartz Event Synthesizer";
     homepage = "https://github.com/koekeishiya/qes";
     platforms = platforms.darwin;

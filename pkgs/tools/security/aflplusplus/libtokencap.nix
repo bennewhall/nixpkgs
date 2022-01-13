@@ -1,7 +1,7 @@
-{ lib, stdenv, aflplusplus}:
+{ stdenv, aflplusplus}:
 
 stdenv.mkDerivation {
-  version = lib.getVersion aflplusplus;
+  version = stdenv.lib.getVersion aflplusplus;
   pname = "libtokencap";
 
   src = aflplusplus.src;
@@ -23,10 +23,10 @@ stdenv.mkDerivation {
     chmod +x $out/bin/get-libtokencap-so
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/vanhauser-thc/AFLplusplus";
     description = "strcmp & memcmp token capture library";
-    license = lib.licenses.asl20;
+    license = stdenv.lib.licenses.asl20;
     maintainers = with maintainers; [ ris ];
   };
 }

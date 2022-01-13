@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # Tests can't work because there is no power information available.
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Cross-platform system power status information";
     homepage = "https://github.com/Kentzo/Power";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, zlib, pcre, xorg, libjpeg, libtiff, libpng, gtk2, libpaper, makeWrapper, ghostscript }:
+{ stdenv, fetchurl, pkgconfig, zlib, pcre, xorg, libjpeg, libtiff, libpng, gtk2, libpaper, makeWrapper, ghostscript }:
 
 stdenv.mkDerivation rec {
   pname = "ted";
@@ -49,7 +49,7 @@ stdenv.mkDerivation rec {
     pushd $out/share/Ted/examples
     for f in rtf2*.sh
     do
-        makeWrapper "$PWD/$f" "$out/bin/$f" --prefix PATH : $out/bin:${lib.makeBinPath [ ghostscript ]}
+        makeWrapper "$PWD/$f" "$out/bin/$f" --prefix PATH : $out/bin:${stdenv.lib.makeBinPath [ ghostscript ]}
     done
     popd
 
@@ -58,10 +58,9 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
-  buildInputs = [ zlib pcre xorg.xlibsWrapper xorg.libXpm libjpeg libtiff libpng gtk2 libpaper ];
+  buildInputs = [ pkgconfig zlib pcre xorg.xlibsWrapper xorg.libXpm libjpeg libtiff libpng gtk2 libpaper makeWrapper ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An easy rich text processor";
     longDescription = ''
       Ted is a text processor running under X Windows on Unix/Linux systems.

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, automake, autoconf, libtool, pkg-config
+{ stdenv, fetchFromGitHub, automake, autoconf, libtool, pkgconfig
 , libusb1
 , readline
 }:
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     autoconf
     automake
     libtool
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     ''--with-udevrule="OWNER=\"root\", GROUP=\"myusergroup\", MODE=\"0660\""''
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/libimobiledevice/libirecovery";
     description = "Library and utility to talk to iBoot/iBSS via USB on Mac OS X, Windows, and Linux";
     longDescription = ''

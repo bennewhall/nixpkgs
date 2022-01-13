@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k, isPyPy }:
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k, isPyPy }:
 
 buildPythonPackage rec {
   pname = "python-cjson";
@@ -10,7 +10,7 @@ buildPythonPackage rec {
     sha256 = "3006c2c218297be3448dc793218e0b15d20fe9839775521bfc294fc6aa24972b";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A very fast JSON encoder/decoder for Python";
     homepage = "https://ag-projects.com/";
     license = licenses.lgpl2;

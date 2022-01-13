@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , makeDesktopItem
 , curl
-, dotnetCorePackages
+, dotnet-netcore
 , fontconfig
 , krb5
 , openssl
@@ -11,10 +11,9 @@
 }:
 
 let
-  dotnet-runtime = dotnetCorePackages.runtime_5_0;
-  libPath = lib.makeLibraryPath [
+  libPath = stdenv.lib.makeLibraryPath [
     curl
-    dotnet-runtime
+    dotnet-netcore
     fontconfig.lib
     krb5
     openssl
@@ -25,11 +24,11 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "wasabiwallet";
-  version = "1.1.12.9";
+  version = "1.1.12.2";
 
   src = fetchurl {
     url = "https://github.com/zkSNACKs/WalletWasabi/releases/download/v${version}/Wasabi-${version}.tar.gz";
-    sha256 = "sha256-DtoLQbRXyR4xGm+M0xg9uj8wcbh1dOBJUG430OS8AS4=";
+    sha256 = "0nl7n24nsy3gyzrxa6llx81pvsjqcwi0a4qdv34dpcq483aclp2r";
   };
 
   dontBuild = true;
@@ -57,7 +56,7 @@ stdenv.mkDerivation rec {
     cp -v $desktopItem/share/applications/* $out/share/applications
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Privacy focused Bitcoin wallet";
     homepage = "https://wasabiwallet.io/";
     license = licenses.mit;

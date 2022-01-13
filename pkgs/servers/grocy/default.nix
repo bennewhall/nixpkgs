@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, unzip, nixosTests }:
+{ stdenv, fetchurl, unzip, nixosTests }:
 
 stdenv.mkDerivation rec {
   pname = "grocy";
-  version = "3.1.3";
+  version = "2.7.1";
 
   src = fetchurl {
     url = "https://github.com/grocy/grocy/releases/download/v${version}/grocy_${version}.zip";
-    sha256 = "sha256-6vgnV9HQHwJGUHGxAMXxXXiEj2kNTWqGcHnpPHvma/Q=";
+    sha256 = "0ab1yxj499vadakq2c1lils3ir6fm02wrdgrirrlar4s4z6c4p7r";
   };
 
   nativeBuildInputs = [ unzip ];
@@ -14,8 +14,6 @@ stdenv.mkDerivation rec {
     unzip ${src} -d .
   '';
 
-  # NOTE: if patches are created from a git checkout, those should be modified
-  # with `unixdos` to make sure those apply here.
   patches = [
     ./0001-Define-configs-with-env-vars.patch
     ./0002-Remove-check-for-config-file-as-it-s-stored-in-etc-g.patch
@@ -31,7 +29,7 @@ stdenv.mkDerivation rec {
     cp -R . $out/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.mit;
     maintainers = with maintainers; [ ma27 ];
     description = "ERP beyond your fridge - grocy is a web-based self-hosted groceries & household management solution for your home";

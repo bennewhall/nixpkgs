@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, texinfo6_5, libXext, xorgproto, libX11
-, libXpm, libXt, libXcursor, alsa-lib, cmake, zlib, libpng, libvorbis
+{ stdenv, fetchurl, texinfo6_5, libXext, xorgproto, libX11
+, libXpm, libXt, libXcursor, alsaLib, cmake, zlib, libpng, libvorbis
 , libXxf86dga, libXxf86misc
 , libXxf86vm, openal, libGLU, libGL }:
 
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     texinfo6_5 libXext xorgproto libX11 libXpm libXt libXcursor
-    alsa-lib cmake zlib libpng libvorbis libXxf86dga libXxf86misc
+    alsaLib cmake zlib libpng libvorbis libXxf86dga libXxf86misc
     libXxf86vm openal libGLU libGL
   ];
 
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [ "-DCMAKE_SKIP_RPATH=ON" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A game programming library";
     homepage = "https://liballeg.org/";
     license = licenses.free; # giftware

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake }:
+{ stdenv, fetchurl, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "libunarr";
@@ -11,7 +11,9 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     homepage = "https://github.com/selmf/unarr";
     description = "A lightweight decompression library with support for rar, tar and zip archives";
     license = licenses.lgpl3;

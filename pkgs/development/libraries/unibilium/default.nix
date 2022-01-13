@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, libtool, pkg-config, perl, ncurses }:
+{ stdenv, lib, fetchFromGitHub, libtool, pkgconfig, perl, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "unibilium-unstable";
@@ -13,9 +13,9 @@ stdenv.mkDerivation rec {
   };
 
   makeFlags = [ "PREFIX=$(out)" ]
-    ++ lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool";
+    ++ stdenv.lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool";
 
-  nativeBuildInputs = [ pkg-config perl ];
+  nativeBuildInputs = [ pkgconfig perl ];
   buildInputs = [ libtool ncurses ];
 
   meta = with lib; {

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , cffi
@@ -16,22 +16,17 @@
 }:
 
 buildPythonPackage rec {
-  version = "1.0.0";
+  version = "0.4.1";
   pname = "gpsoauth";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1c4d6a980625b8ab6f6f1cf3e30d9b10a6c61ababb2b60bfe4870649e9c82be0";
+    sha256 = "1c3f45824d45ac3d06b9d9a0c0eccafe1052505d31ac9a698aef8b00fb0dfc37";
   };
 
   propagatedBuildInputs = [ cffi cryptography enum34 idna ipaddress ndg-httpsclient pyopenssl pyasn1 pycparser pycryptodomex requests six ];
 
-  # no tests executed
-  doCheck = false;
-
-  pythonImportsCheck = [ "gpsoauth" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A python client library for Google Play Services OAuth";
     homepage = "https://github.com/simon-weber/gpsoauth";
     license = licenses.mit;

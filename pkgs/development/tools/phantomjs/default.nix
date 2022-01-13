@@ -5,8 +5,7 @@ let
 in
 
 stdenv.mkDerivation rec {
-  pname = "phantomjs";
-  version = "1.9.8";
+  name = "phantomjs-1.9.8";
 
   # I chose to use the binary build for now.
   # The source version is quite nasty to compile
@@ -15,27 +14,27 @@ stdenv.mkDerivation rec {
 
   src = if stdenv.hostPlatform.system == "i686-linux" then
           fetchurl {
-            url = "https://bitbucket.org/ariya/phantomjs/downloads/${pname}-${version}-linux-i686.tar.bz2";
+            url = "https://bitbucket.org/ariya/phantomjs/downloads/${name}-linux-i686.tar.bz2";
             sha256 = "11fzmssz9pqf3arh4f36w06sl2nyz8l9h8iyxyd7w5aqnq5la0j1";
           }
         else
           if stdenv.hostPlatform.system == "x86_64-linux" then
             fetchurl {
-              url = "https://bitbucket.org/ariya/phantomjs/downloads/${pname}-${version}-linux-x86_64.tar.bz2";
+              url = "https://bitbucket.org/ariya/phantomjs/downloads/${name}-linux-x86_64.tar.bz2";
               sha256 = "0fhnqxxsxhy125fmif1lwgnlhfx908spy7fx9mng4w72320n5nd1";
             }
           else # x86_64-darwin
             fetchurl {
-              url = "https://bitbucket.org/ariya/phantomjs/downloads/${pname}-${version}-macosx.zip";
+              url = "https://bitbucket.org/ariya/phantomjs/downloads/${name}-macosx.zip";
               sha256 = "0j0aq8dgzmb210xdrh0v3d4nblskl3zsckl8bzf1a603wcx085cg";
             };
 
-  nativeBuildInputs = lib.optional stdenv.isDarwin unzip;
+  buildInputs = lib.optional stdenv.isDarwin unzip;
 
   buildPhase = lib.optionalString (!stdenv.isDarwin) ''
     patchelf \
       --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-      --set-rpath "${lib.makeLibraryPath [ freetype fontconfig stdenv.cc.cc stdenv.cc.cc openssl ]}" \
+      --set-rpath "${stdenv.lib.makeLibraryPath [ freetype fontconfig stdenv.cc.cc stdenv.cc.cc openssl ]}" \
       bin/phantomjs
   '';
 

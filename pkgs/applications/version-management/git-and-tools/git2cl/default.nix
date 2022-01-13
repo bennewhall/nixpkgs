@@ -1,8 +1,7 @@
-{ fetchgit, lib, stdenv, perl }:
+{ fetchgit, stdenv, perl }:
 
-stdenv.mkDerivation rec {
-  pname = "git2cl";
-  version = "unstable-2008-08-27";
+stdenv.mkDerivation {
+  name = "git2cl-20080827";
 
   src = fetchgit {
     url = "git://repo.or.cz/git2cl.git";
@@ -19,6 +18,6 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://savannah.nongnu.org/projects/git2cl";
     description = "Convert git logs to GNU style ChangeLog files";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

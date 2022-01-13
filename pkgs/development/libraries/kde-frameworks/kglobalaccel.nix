@@ -2,7 +2,7 @@
   mkDerivation,
   extra-cmake-modules,
   kconfig, kcoreaddons, kcrash, kdbusaddons, kservice, kwindowsystem,
-  qtbase, qttools, qtx11extras, libXdmcp,
+  qtbase, qttools, qtx11extras,
 }:
 
 mkDerivation {
@@ -10,8 +10,7 @@ mkDerivation {
   nativeBuildInputs = [ extra-cmake-modules ];
   buildInputs = [
     kconfig kcoreaddons kcrash kdbusaddons kservice kwindowsystem qttools
-    qtx11extras libXdmcp
+    qtx11extras
   ];
-  outputs = [ "out" "dev" ];
   propagatedBuildInputs = [ qtbase ];
 }

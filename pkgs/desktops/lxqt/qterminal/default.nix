@@ -12,13 +12,13 @@
 
 mkDerivation rec {
   pname = "qterminal";
-  version = "1.0.0";
+  version = "0.15.0";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "12p3fnbkpj6z0iplg75304l8kvnn145iq6bpw30n9bwflxrd6yhd";
+    sha256 = "1vna0fvdasrdx7l5zxaaxi1v9fy34g2qblgkdhpczxivnmmxm5a3";
   };
 
   nativeBuildInputs = [
@@ -36,9 +36,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/qterminal";
     description = "A lightweight Qt-based terminal emulator";
-    license = licenses.gpl2Plus;
+    homepage = "https://github.com/lxqt/qterminal";
+    license = licenses.gpl2;
     platforms = with platforms; unix;
     maintainers = with maintainers; [ romildo globin ];
   };

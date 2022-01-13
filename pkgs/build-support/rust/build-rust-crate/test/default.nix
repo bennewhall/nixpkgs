@@ -146,18 +146,12 @@ let
         };
       in
       runCommand "assert-outputs-${name}" {
-      } (''
+      } ''
       local actualFiles=$(mktemp)
 
       cd "${crateOutput}"
-      find . -type f \
-        | sort \
-      ''
-      # sed out the hash because it differs per platform
-      + ''
-        | sed -E -e 's/-[0-9a-fA-F]{10}\.rlib/-HASH.rlib/g' \
-        > "$actualFiles"
-      diff -q ${expectedFilesFile} "$actualFiles" > /dev/null || {
+      find . -type f | sort >$actualFiles
+      diff -q ${expectedFilesFile} $actualFiles >/dev/null || {
         echo -e "\033[0;1;31mERROR: Difference in expected output files in ${crateOutput} \033[0m" >&2
         echo === Got:
         sed -e 's/^/  /' $actualFiles
@@ -170,7 +164,7 @@ let
         exit 1
       }
       touch $out
-      '')
+      ''
       ;
 
   in rec {
@@ -600,7 +594,7 @@ let
       };
       expectedFiles = [
         "./nix-support/propagated-build-inputs"
-        "./lib/libtest_lib-HASH.rlib"
+        "./lib/libtest_lib-042a1fdbef.rlib"
         "./lib/link"
       ];
     };
@@ -617,7 +611,7 @@ let
       };
       expectedFiles = [
         "./nix-support/propagated-build-inputs"
-        "./lib/libtest_lib-HASH.rlib"
+        "./lib/libtest_lib-042a1fdbef.rlib"
         "./lib/link"
       ];
     };

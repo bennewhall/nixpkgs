@@ -5,7 +5,7 @@
 
 let
   perlDeps =
-    [ perlPackages.MIMETools perlPackages.HTMLParser ]
+    [ perlPackages.MIMEtools perlPackages.HTMLParser ]
     ++ lib.optional cursesSupport perlPackages.CursesUI
     ++ lib.optional uriFindSupport perlPackages.URIFind;
 

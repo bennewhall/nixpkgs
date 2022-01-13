@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.gitea;
-  opt = options.services.gitea;
   gitea = cfg.package;
   pg = config.services.postgresql;
   useMysql = cfg.database.type == "mysql";
@@ -33,7 +32,7 @@ in
       package = mkOption {
         default = pkgs.gitea;
         type = types.package;
-        defaultText = literalExpression "pkgs.gitea";
+        defaultText = "pkgs.gitea";
         description = "gitea derivation to use";
       };
 
@@ -52,12 +51,11 @@ in
       log = {
         rootPath = mkOption {
           default = "${cfg.stateDir}/log";
-          defaultText = literalExpression ''"''${config.${opt.stateDir}}/log"'';
           type = types.str;
           description = "Root path for log files.";
         };
         level = mkOption {
-          default = "Info";
+          default = "Trace";
           type = types.enum [ "Trace" "Debug" "Info" "Warn" "Error" "Critical" ];
           description = "General log level.";
         };
@@ -84,13 +82,8 @@ in
         };
 
         port = mkOption {
-          type = types.port;
+          type = types.int;
           default = (if !usePostgresql then 3306 else pg.port);
-          defaultText = literalExpression ''
-            if config.${opt.database.type} != "postgresql"
-            then 3306
-            else config.${options.services.postgresql.port}
-          '';
           description = "Database host port.";
         };
 
@@ -129,7 +122,7 @@ in
         socket = mkOption {
           type = types.nullOr types.path;
           default = if (cfg.database.createDatabase && usePostgresql) then "/run/postgresql" else if (cfg.database.createDatabase && useMysql) then "/run/mysqld/mysqld.sock" else null;
-          defaultText = literalExpression "null";
+          defaultText = "null";
           example = "/run/mysqld/mysqld.sock";
           description = "Path to the unix socket file to use for authentication.";
         };
@@ -137,7 +130,6 @@ in
         path = mkOption {
           type = types.str;
           default = "${cfg.stateDir}/data/gitea.db";
-          defaultText = literalExpression ''"''${config.${opt.stateDir}}/data/gitea.db"'';
           description = "Path to the sqlite3 database file.";
         };
 
@@ -174,7 +166,6 @@ in
         backupDir = mkOption {
           type = types.str;
           default = "${cfg.stateDir}/dump";
-          defaultText = literalExpression ''"''${config.${opt.stateDir}}/dump"'';
           description = "Path to the dump files.";
         };
       };
@@ -208,7 +199,6 @@ in
         contentDir = mkOption {
           type = types.str;
           default = "${cfg.stateDir}/data/lfs";
-          defaultText = literalExpression ''"''${config.${opt.stateDir}}/data/lfs"'';
           description = "Where to store LFS files.";
         };
       };
@@ -222,7 +212,6 @@ in
       repositoryRoot = mkOption {
         type = types.str;
         default = "${cfg.stateDir}/repositories";
-        defaultText = literalExpression ''"''${config.${opt.stateDir}}/repositories"'';
         description = "Path to the git repositories.";
       };
 
@@ -266,9 +255,8 @@ in
       };
 
       staticRootPath = mkOption {
-        type = types.either types.str types.path;
-        default = gitea.data;
-        defaultText = literalExpression "package.data";
+        type = types.str;
+        default = "${gitea.data}";
         example = "/var/lib/gitea/data";
         description = "Upper level of template and static files path.";
       };
@@ -299,7 +287,7 @@ in
           Gitea configuration. Refer to <link xlink:href="https://docs.gitea.io/en-us/config-cheat-sheet/"/>
           for details on supported values.
         '';
-        example = literalExpression ''
+        example = literalExample ''
           {
             "cron.sync_external_users" = {
               RUN_AT_START = true;
@@ -310,7 +298,7 @@ in
               ENABLED = true;
               MAILER_TYPE = "sendmail";
               FROM = "do-not-reply@example.org";
-              SENDMAIL_PATH = "''${pkgs.system-sendmail}/bin/sendmail";
+              SENDMAIL_PATH = "${pkgs.system-sendmail}/bin/sendmail";
             };
             other = {
               SHOW_FOOTER_VERSION = false;
@@ -360,8 +348,8 @@ in
       server = mkMerge [
         {
           DOMAIN = cfg.domain;
-          STATIC_ROOT_PATH = toString cfg.staticRootPath;
-          LFS_JWT_SECRET = "#lfsjwtsecret#";
+          STATIC_ROOT_PATH = cfg.staticRootPath;
+          LFS_JWT_SECRET = "#jwtsecret#";
           ROOT_URL = cfg.rootUrl;
         }
         (mkIf cfg.enableUnixSocket {
@@ -393,7 +381,6 @@ in
 
       security = {
         SECRET_KEY = "#secretkey#";
-        INTERNAL_TOKEN = "#internaltoken#";
         INSTALL_LOCK = true;
       };
 
@@ -408,10 +395,6 @@ in
 
       mailer = mkIf (cfg.mailerPasswordFile != null) {
         PASSWD = "#mailerpass#";
-      };
-
-      oauth2 = {
-        JWT_SECRET = "#oauth2jwtsecret#";
       };
     };
 
@@ -470,80 +453,55 @@ in
       description = "gitea";
       after = [ "network.target" ] ++ lib.optional usePostgresql "postgresql.service" ++ lib.optional useMysql "mysql.service";
       wantedBy = [ "multi-user.target" ];
-      path = [ gitea pkgs.git ];
+      path = [ gitea pkgs.gitAndTools.git ];
 
-      # In older versions the secret naming for JWT was kind of confusing.
-      # The file jwt_secret hold the value for LFS_JWT_SECRET and JWT_SECRET
-      # wasn't persistant at all.
-      # To fix that, there is now the file oauth2_jwt_secret containing the
-      # values for JWT_SECRET and the file jwt_secret gets renamed to
-      # lfs_jwt_secret.
-      # We have to consider this to stay compatible with older installations.
       preStart = let
         runConfig = "${cfg.stateDir}/custom/conf/app.ini";
         secretKey = "${cfg.stateDir}/custom/conf/secret_key";
-        oauth2JwtSecret = "${cfg.stateDir}/custom/conf/oauth2_jwt_secret";
-        oldLfsJwtSecret = "${cfg.stateDir}/custom/conf/jwt_secret"; # old file for LFS_JWT_SECRET
-        lfsJwtSecret = "${cfg.stateDir}/custom/conf/lfs_jwt_secret"; # new file for LFS_JWT_SECRET
-        internalToken = "${cfg.stateDir}/custom/conf/internal_token";
+        jwtSecret = "${cfg.stateDir}/custom/conf/jwt_secret";
       in ''
         # copy custom configuration and generate a random secret key if needed
         ${optionalString (cfg.useWizard == false) ''
-          function gitea_setup {
-            cp -f ${configFile} ${runConfig}
+          cp -f ${configFile} ${runConfig}
 
-            if [ ! -e ${secretKey} ]; then
-                ${gitea}/bin/gitea generate secret SECRET_KEY > ${secretKey}
-            fi
+          if [ ! -e ${secretKey} ]; then
+              ${gitea}/bin/gitea generate secret SECRET_KEY > ${secretKey}
+          fi
 
-            # Migrate LFS_JWT_SECRET filename
-            if [[ -e ${oldLfsJwtSecret} && ! -e ${lfsJwtSecret} ]]; then
-                mv ${oldLfsJwtSecret} ${lfsJwtSecret}
-            fi
+          if [ ! -e ${jwtSecret} ]; then
+              ${gitea}/bin/gitea generate secret LFS_JWT_SECRET > ${jwtSecret}
+          fi
 
-            if [ ! -e ${oauth2JwtSecret} ]; then
-                ${gitea}/bin/gitea generate secret JWT_SECRET > ${oauth2JwtSecret}
-            fi
-
-            if [ ! -e ${lfsJwtSecret} ]; then
-                ${gitea}/bin/gitea generate secret LFS_JWT_SECRET > ${lfsJwtSecret}
-            fi
-
-            if [ ! -e ${internalToken} ]; then
-                ${gitea}/bin/gitea generate secret INTERNAL_TOKEN > ${internalToken}
-            fi
-
-            SECRETKEY="$(head -n1 ${secretKey})"
-            DBPASS="$(head -n1 ${cfg.database.passwordFile})"
-            OAUTH2JWTSECRET="$(head -n1 ${oauth2JwtSecret})"
-            LFSJWTSECRET="$(head -n1 ${lfsJwtSecret})"
-            INTERNALTOKEN="$(head -n1 ${internalToken})"
-            ${if (cfg.mailerPasswordFile == null) then ''
-              MAILERPASSWORD="#mailerpass#"
-            '' else ''
-              MAILERPASSWORD="$(head -n1 ${cfg.mailerPasswordFile} || :)"
-            ''}
-            sed -e "s,#secretkey#,$SECRETKEY,g" \
-                -e "s,#dbpass#,$DBPASS,g" \
-                -e "s,#oauth2jwtsecret#,$OAUTH2JWTSECRET,g" \
-                -e "s,#lfsjwtsecret#,$LFSJWTSECRET,g" \
-                -e "s,#internaltoken#,$INTERNALTOKEN,g" \
-                -e "s,#mailerpass#,$MAILERPASSWORD,g" \
-                -i ${runConfig}
-          }
-          (umask 027; gitea_setup)
+          KEY="$(head -n1 ${secretKey})"
+          DBPASS="$(head -n1 ${cfg.database.passwordFile})"
+          JWTSECRET="$(head -n1 ${jwtSecret})"
+          ${if (cfg.mailerPasswordFile == null) then ''
+            MAILERPASSWORD="#mailerpass#"
+          '' else ''
+            MAILERPASSWORD="$(head -n1 ${cfg.mailerPasswordFile} || :)"
+          ''}
+          sed -e "s,#secretkey#,$KEY,g" \
+              -e "s,#dbpass#,$DBPASS,g" \
+              -e "s,#jwtsecret#,$JWTSECRET,g" \
+              -e "s,#mailerpass#,$MAILERPASSWORD,g" \
+              -i ${runConfig}
+          chmod 640 ${runConfig} ${secretKey} ${jwtSecret}
         ''}
 
-        # run migrations/init the database
-        ${gitea}/bin/gitea migrate
-
         # update all hooks' binary paths
-        ${gitea}/bin/gitea admin regenerate hooks
+        HOOKS=$(find ${cfg.repositoryRoot} -mindepth 4 -maxdepth 6 -type f -wholename "*git/hooks/*")
+        if [ "$HOOKS" ]
+        then
+          sed -ri 's,/nix/store/[a-z0-9.-]+/bin/gitea,${gitea}/bin/gitea,g' $HOOKS
+          sed -ri 's,/nix/store/[a-z0-9.-]+/bin/env,${pkgs.coreutils}/bin/env,g' $HOOKS
+          sed -ri 's,/nix/store/[a-z0-9.-]+/bin/bash,${pkgs.bash}/bin/bash,g' $HOOKS
+          sed -ri 's,/nix/store/[a-z0-9.-]+/bin/perl,${pkgs.perl}/bin/perl,g' $HOOKS
+        fi
 
         # update command option in authorized_keys
         if [ -r ${cfg.stateDir}/.ssh/authorized_keys ]
         then
-          ${gitea}/bin/gitea admin regenerate keys
+          sed -ri 's,/nix/store/[a-z0-9.-]+/bin/gitea,${gitea}/bin/gitea,g' ${cfg.stateDir}/.ssh/authorized_keys
         fi
       '';
 
@@ -607,7 +565,8 @@ in
     users.groups.gitea = {};
 
     warnings =
-      optional (cfg.database.password != "") "config.services.gitea.database.password will be stored as plaintext in the Nix store. Use database.passwordFile instead." ++
+      optional (cfg.database.password != "") ''
+        config.services.gitea.database.password will be stored as plaintext in the Nix store. Use database.passwordFile instead.'' ++
       optional (cfg.extraConfig != null) ''
         services.gitea.`extraConfig` is deprecated, please use services.gitea.`settings`.
       '';
@@ -646,5 +605,5 @@ in
       timerConfig.OnCalendar = cfg.dump.interval;
     };
   };
-  meta.maintainers = with lib.maintainers; [ srhb ma27 ];
+  meta.maintainers = with lib.maintainers; [ srhb ];
 }

@@ -1,69 +1,41 @@
-{ lib
-, stdenv
-, fetchurl
-, pkg-config
-, gobject-introspection
-, gtk-doc
-, docbook-xsl-nons
-, docbook_xml_dtd_43
-, glib
-, python3
-, libgudev
-, libmbim
-, libqrtr-glib
-}:
+{ stdenv, fetchurl, pkg-config, gobject-introspection, glib, python3, libgudev, libmbim }:
 
 stdenv.mkDerivation rec {
   pname = "libqmi";
-  version = "1.30.2";
-
-  outputs = [ "out" "dev" "devdoc" ];
+  version = "1.26.6";
 
   src = fetchurl {
     url = "https://www.freedesktop.org/software/libqmi/${pname}-${version}.tar.xz";
-    sha256 = "sha256-vgHs4OosIZTL6ldEv1qvBsBLpft+x4h6ExFsdtEU/t0=";
+    sha256 = "1fbwz6534q6n4bgabdx4svbgkf4mdyisjh3y51jjd94p22xn66d7";
   };
+
+  outputs = [ "out" "dev" "devdoc" ];
+
+  configureFlags = [
+    "--with-udev-base-dir=${placeholder "out"}/lib/udev"
+    "--enable-introspection"
+  ];
 
   nativeBuildInputs = [
     pkg-config
     gobject-introspection
     python3
-    gtk-doc
-    docbook-xsl-nons
-    docbook_xml_dtd_43
   ];
 
   buildInputs = [
+    glib
     libgudev
     libmbim
-  ];
-
-  propagatedBuildInputs = [
-    glib
-    libqrtr-glib
-  ];
-
-  configureFlags = [
-    "--with-udev-base-dir=${placeholder "out"}/lib/udev"
-    "--enable-gtk-doc"
-    "--enable-introspection"
   ];
 
   enableParallelBuilding = true;
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.freedesktop.org/wiki/Software/libqmi/";
     description = "Modem protocol helper library";
-    maintainers = teams.freedesktop.members;
     platforms = platforms.linux;
-    license = with licenses; [
-      # Library
-      lgpl2Plus
-      # Tools
-      gpl2Plus
-    ];
-    changelog = "https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/blob/${version}/NEWS";
+    license = licenses.gpl2;
   };
 }

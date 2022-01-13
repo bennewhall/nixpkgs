@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , qmake4Hook
 , qt4
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
       --replace /usr $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.gpl3;
     platforms = platforms.all;
     maintainers = with maintainers; [ fgaz ];

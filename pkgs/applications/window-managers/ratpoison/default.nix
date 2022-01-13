@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, perl, autoconf, automake
+{ stdenv, fetchurl, pkgconfig, perl, autoconf, automake
 , libX11, xorgproto, libXt, libXpm, libXft, libXtst, libXi
 , libXrandr, fontconfig, freetype, readline
 }:
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     "--enable-history"
   ];
 
-  nativeBuildInputs = [ pkg-config autoconf automake ];
+  nativeBuildInputs = [ pkgconfig autoconf automake ];
 
   buildInputs =
     [ perl
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     mv $out/share/ratpoison $contrib/share
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.nongnu.org/ratpoison/";
     description = "Simple mouse-free tiling window manager";
     license = licenses.gpl2Plus;

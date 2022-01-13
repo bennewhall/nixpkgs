@@ -1,53 +1,36 @@
-{ lib, stdenv, fetchFromGitHub, z3, ocamlPackages, makeWrapper, installShellFiles }:
+{ stdenv, fetchFromGitHub, z3, ocamlPackages, makeWrapper, installShellFiles }:
 
 stdenv.mkDerivation rec {
   pname = "fstar";
-  version = "2021.12.25";
+  version = "0.9.6.0";
 
   src = fetchFromGitHub {
     owner = "FStarLang";
     repo = "FStar";
     rev = "v${version}";
-    sha256 = "RmXKv/admC1w26z/ClNhH11J8n87WTfDr2lYOF6Fx7I=";
+    sha256 = "0wix7l229afkn6c6sk4nwkfq0nznsiqdkds4ixi2yyf72immwmmb";
   };
 
   nativeBuildInputs = [ makeWrapper installShellFiles ];
 
-  buildInputs = [
-    z3
-  ] ++ (with ocamlPackages; [
-    ocaml
-    findlib
-    ocamlbuild
-    batteries
-    zarith
-    stdint
-    yojson
-    fileutils
-    menhir
-    menhirLib
-    pprint
-    sedlex_2
-    ppxlib
-    ppx_deriving
-    ppx_deriving_yojson
-    process
-  ]);
+  buildInputs = with ocamlPackages; [
+    z3 ocaml findlib batteries menhir stdint
+    zarith camlp4 yojson pprint
+    ulex ocaml-migrate-parsetree process ppx_deriving ppx_deriving_yojson ocamlbuild
+  ];
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  buildFlags = [ "libs" ];
-
-  enableParallelBuilding = true;
-
-  postPatch = ''
-    patchShebangs ulib/gen_mllib.sh
-    substituteInPlace src/ocaml-output/Makefile --replace '$(COMMIT)' 'v${version}'
+  preBuild = ''
+    patchShebangs src/tools
+    patchShebangs bin
   '';
+  buildFlags = [ "-C" "src/ocaml-output" ];
 
   preInstall = ''
     mkdir -p $out/lib/ocaml/${ocamlPackages.ocaml.version}/site-lib/fstarlib
   '';
+  installFlags = [ "-C" "src/ocaml-output" ];
   postInstall = ''
     wrapProgram $out/bin/fstar.exe --prefix PATH ":" "${z3}/bin"
     installShellCompletion --bash .completion/bash/fstar.exe.bash
@@ -55,12 +38,11 @@ stdenv.mkDerivation rec {
     installShellCompletion --zsh --name _fstar.exe .completion/zsh/__fstar.exe
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ML-like functional programming language aimed at program verification";
     homepage = "https://www.fstar-lang.org";
     license = licenses.asl20;
-    changelog = "https://github.com/FStarLang/FStar/raw/v${version}/CHANGES.md";
     platforms = with platforms; darwin ++ linux;
-    maintainers = with maintainers; [ gebner pnmadelaine ];
+    maintainers = with maintainers; [ gebner ];
   };
 }

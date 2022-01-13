@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config,
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig,
   gettext, openssl
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation {
   pname = "notbit";
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
     sha256 = "1623n0lvx42mamvb2vwin5i38hh0nxpxzmkr5188ss2x7m20lmii";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ openssl gettext ];
 

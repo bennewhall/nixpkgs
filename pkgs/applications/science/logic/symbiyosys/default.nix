@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , bash, python3, yosys
 , yices, boolector, z3, aiger
 }:
 
 stdenv.mkDerivation {
   pname = "symbiyosys";
-  version = "2021.11.30";
+  version = "2020.08.22";
 
   src = fetchFromGitHub {
-    owner = "YosysHQ";
-    repo  = "SymbiYosys";
-    rev   = "b409b1179e36d2a3fff66c85b7d4e271769a2d9e";
-    hash  = "sha256-S7of2upntiMkSdh4kf1RsrjriS31Eh8iEcVvG36isQg=";
+    owner  = "YosysHQ";
+    repo   = "SymbiYosys";
+    rev    = "33b0bb7d836fe2a73dc7b10587222f2a718beef4";
+    sha256 = "03rbrbwsji1sqcp2yhgbc0fca04zsryv2g4izjhdzv64nqjzjyhn";
   };
 
   buildInputs = [ ];
@@ -31,9 +31,6 @@ stdenv.mkDerivation {
 
     substituteInPlace sbysrc/sby_core.py \
       --replace '##yosys-program-prefix##' '"${yosys}/bin/"'
-
-    substituteInPlace sbysrc/sby.py \
-      --replace '/usr/bin/env python3' '${python3}/bin/python'
   '';
 
   buildPhase = "true";
@@ -54,8 +51,8 @@ stdenv.mkDerivation {
   meta = {
     description = "Tooling for Yosys-based verification flows";
     homepage    = "https://symbiyosys.readthedocs.io/";
-    license     = lib.licenses.isc;
-    maintainers = with lib.maintainers; [ thoughtpolice emily ];
-    platforms   = lib.platforms.all;
+    license     = stdenv.lib.licenses.isc;
+    maintainers = with stdenv.lib.maintainers; [ thoughtpolice emily ];
+    platforms   = stdenv.lib.platforms.all;
   };
 }

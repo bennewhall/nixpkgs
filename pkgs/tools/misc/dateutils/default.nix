@@ -1,13 +1,20 @@
-{ lib, stdenv, fetchurl, autoreconfHook, tzdata, fetchpatch }:
+{ stdenv, fetchurl, autoreconfHook, tzdata, fetchpatch }:
 
 stdenv.mkDerivation rec {
-  version = "0.4.9";
+  version = "0.4.7";
   pname = "dateutils";
 
   src = fetchurl {
     url = "https://bitbucket.org/hroptatyr/dateutils/downloads/${pname}-${version}.tar.xz";
-    sha256 = "1hy96h9imxdbg9y7305mgv4grr6x4qic9xy3vhgh15lvjkcmc0kr";
+    sha256 = "16jr9yjk8wgzfh22hr3z6mp4jm3fkacyibds4jj5xx5yymbm8wj9";
   };
+
+  patches = [
+    (fetchpatch {
+      url = "https://bitbucket.org/hroptatyr/dateutils/commits/6813ed94534f2311fbe9164748919e39d60b0190/raw";
+      sha256 = "1zs3iizb172ha56g03rr8kzd8zx6qypiqsc11jw758mliwxk5rgc";
+    })
+  ];
 
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [ tzdata ]; # needed for datezone
@@ -15,11 +22,11 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A bunch of tools that revolve around fiddling with dates and times in the command line";
     homepage = "http://www.fresse.org/dateutils/";
     license = licenses.bsd3;
-    platforms = platforms.unix;
+    platforms = platforms.linux;
     maintainers = [ maintainers.paperdigits ];
   };
 }

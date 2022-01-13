@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , pixman
-, alsa-lib
+, alsaLib
 , openssl
 , libXrandr
 , libXfixes
@@ -24,42 +24,37 @@
 , orc
 }:
 
-let
-  # This file was mistakenly not included with the 0.15.0 release tarball.
-  # Should be fixed with the next release.
-  # https://gitlab.freedesktop.org/spice/spice/-/issues/56
-  doxygen_sh = fetchurl {
-    url = "https://gitlab.freedesktop.org/spice/spice/-/raw/v0.15.0/doxygen.sh";
-    sha256 = "0g4bx91qclihp1jfhdhyj7wp4hf4289794xxbw32kk58lnd7bzkg";
-  };
-in
-
 stdenv.mkDerivation rec {
   pname = "spice";
-  version = "0.15.0";
+  version = "0.14.2";
 
   src = fetchurl {
-    url = "https://www.spice-space.org/download/releases/spice-server/${pname}-${version}.tar.bz2";
-    sha256 = "1xd0xffw0g5vvwbq4ksmm3jjfq45f9dw20xpmi82g1fj9f7wy85k";
+    url = "https://www.spice-space.org/download/releases/${pname}-${version}.tar.bz2";
+    sha256 = "19r999py9v9c7md2bb8ysj809ag1hh6djl1ik8jcgx065s4b60xj";
   };
 
+  patches = [
+    # submitted https://gitlab.freedesktop.org/spice/spice/merge_requests/4
+    ./correct-meson.patch
+  ];
+
   postPatch = ''
-    install ${doxygen_sh} doxygen.sh
     patchShebangs build-aux
   '';
 
+
   nativeBuildInputs = [
-    glib
     meson
     ninja
-    pkg-config
+    pkgconfig
+    spice-protocol
     python3
     python3.pkgs.six
     python3.pkgs.pyparsing
   ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     cyrus_sasl
     glib
     gst_all_1.gst-plugins-base
@@ -76,7 +71,6 @@ stdenv.mkDerivation rec {
     orc
     pixman
     python3.pkgs.pyparsing
-    spice-protocol
     zlib
   ];
 
@@ -84,13 +78,14 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-Dgstreamer=1.0"
+    "-Dcelt051=disabled"
   ];
 
   postInstall = ''
     ln -s spice-server $out/include/spice
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Complete open source solution for interaction with virtualized desktop devices";
     longDescription = ''
       The Spice project aims to provide a complete open source solution for interaction

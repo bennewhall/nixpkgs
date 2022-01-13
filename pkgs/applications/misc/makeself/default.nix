@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, which, zstd, pbzip2 }:
+{ stdenv, fetchFromGitHub, which }:
 
 stdenv.mkDerivation rec {
-  version = "2.4.5";
+  version = "2.4.2";
   pname = "makeself";
 
   src = fetchFromGitHub {
@@ -9,17 +9,14 @@ stdenv.mkDerivation rec {
     repo = "makeself";
     rev = "release-${version}";
     fetchSubmodules = true;
-    sha256 = "sha256-15lUtErGsbXF2Gn0f0rvA18mMuVMmkKrGO2poeYZU9g=";
+    sha256 = "07cq7q71bv3fwddkp2863ylry2ivds00f8sjy8npjpdbkailxm21";
   };
 
-  postPatch = "patchShebangs test";
+  patchPhase = "patchShebangs test";
 
-  # Issue #110149: our default /bin/sh apparently has 32-bit math only
-  # (attribute busybox-sandbox-shell), and that causes problems
-  # when running these tests inside build, based on free disk space.
-  doCheck = false;
+  doCheck = true;
   checkTarget = "test";
-  checkInputs = [ which zstd pbzip2 ];
+  checkInputs = [ which ];
 
   installPhase = ''
     mkdir -p $out/{bin,share/{${pname}-${version},man/man1}}
@@ -33,8 +30,8 @@ stdenv.mkDerivation rec {
     sed -e "s|^HEADER=.*|HEADER=$out/share/${pname}-${version}/makeself-header.sh|" -i $out/bin/makeself
   '';
 
-  meta = with lib; {
-    homepage = "https://makeself.io";
+  meta = with stdenv.lib; {
+    homepage = "http://megastep.org/makeself";
     description = "Utility to create self-extracting packages";
     license = licenses.gpl2;
     maintainers = [ maintainers.wmertens ];

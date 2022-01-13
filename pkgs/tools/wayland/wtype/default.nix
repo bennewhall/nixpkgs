@@ -10,15 +10,15 @@
 , wayland
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "wtype";
-  version = "0.3";
+  version = "2020-09-14";
 
   src = fetchFromGitHub {
     owner = "atx";
     repo = "wtype";
-    rev = "v${version}";
-    hash = "sha256-8q2PxI3ItR4tsP/KOiSlqnuK4ZSe7OdekheolEFVmys=";
+    rev = "74071228dea4047157ae82960a2541ecc431e4a1";
+    sha256 = "1ncspxpnbwv1vkfmxs58q7aykjb6skaa1pg5sw5h798pss5j80rd";
   };
 
   nativeBuildInputs = [ meson ninja pkg-config wayland ];

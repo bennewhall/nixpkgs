@@ -17,14 +17,14 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "bubblemail";
-  version = "1.4";
+  version = "1.3";
 
   src = fetchFromGitLab {
     domain = "framagit.org";
     owner = "razer";
     repo = "bubblemail";
     rev = "v${version}";
-    sha256 = "sha256-MPl4pXvdhwCFWTepn/Mxp8ZMs+HCzXC59qdKZp3mHdw=";
+    sha256 = "FEIdEoZBlM28F5kSMoln7KACwetb8hp+qix1P+DIE8k=";
   };
 
   buildInputs = [

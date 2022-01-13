@@ -1,18 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, git, gnupg, installShellFiles }:
+{ stdenv, fetchFromGitHub, git, gnupg }:
 
-stdenv.mkDerivation rec {
+let version = "2.5.0"; in
+stdenv.mkDerivation {
   pname = "yadm";
-  version = "3.1.1";
+  inherit version;
 
   buildInputs = [ git gnupg ];
-
-  nativeBuildInputs = [ installShellFiles ];
 
   src = fetchFromGitHub {
     owner  = "TheLocehiliosan";
     repo   = "yadm";
     rev    = version;
-    sha256 = "sha256-bgiRBlqEjDq0gQ0+aUWpFDeE2piFX3Gy2gEAXgChAOk=";
+    sha256 = "128qlx8mp7h5ifapqqgsj3fwghn3q6x6ya0y33h5r7gnassd3njr";
   };
 
   dontConfigure = true;
@@ -20,15 +19,11 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     runHook preInstall
-    install -Dt $out/bin yadm
+    install -Dt $out/bin $src/yadm
+    install -Dt $out/share/man/man1 $src/yadm.1
+    install -D $src/completion/yadm.zsh_completion $out/share/zsh/site-functions/_yadm
+    install -D $src/completion/yadm.bash_completion $out/share/bash-completion/completions/yadm.bash
     runHook postInstall
-  '';
-
-  postInstall = ''
-    installManPage yadm.1
-    installShellCompletion --cmd yadm \
-      --zsh completion/zsh/_yadm \
-      --bash completion/bash/yadm
   '';
 
   meta = {
@@ -40,8 +35,7 @@ stdenv.mkDerivation rec {
       * Provides a way to use alternate files on a specific OS or host.
       * Supplies a method of encrypting confidential data so it can safely be stored in your repository.
     '';
-    license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [ abathur ];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl3;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

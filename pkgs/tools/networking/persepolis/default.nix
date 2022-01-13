@@ -1,4 +1,4 @@
-{ lib, buildPythonApplication, fetchFromGitHub, makeWrapper
+{ stdenv, lib, buildPythonApplication, fetchFromGitHub, makeWrapper
 , aria
 , libnotify
 , pulseaudio
@@ -47,7 +47,7 @@ buildPythonApplication rec {
   # feed args to wrapPythonApp
   makeWrapperArgs = [
     "--prefix PATH : ${lib.makeBinPath [aria libnotify ]}"
-    "\${qtWrapperArgs[@]}"
+    ''''${qtWrapperArgs[@]}''
   ];
 
   propagatedBuildInputs = [
@@ -61,7 +61,7 @@ buildPythonApplication rec {
     youtube-dl
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Persepolis Download Manager is a GUI for aria2";
     homepage = "https://persepolisdm.github.io/";
     license = licenses.gpl3;

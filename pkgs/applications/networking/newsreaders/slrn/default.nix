@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , slang, ncurses, openssl }:
 
 stdenv.mkDerivation rec {
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ slang ncurses openssl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The slrn (S-Lang read news) newsreader";
     homepage = "http://slrn.sourceforge.net/index.html";
     maintainers = with maintainers; [ ehmry ];

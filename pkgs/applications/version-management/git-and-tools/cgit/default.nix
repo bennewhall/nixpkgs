@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, openssl, zlib, asciidoc, libxml2, libxslt
-, docbook_xsl, pkg-config, luajit
+{ stdenv, fetchurl, openssl, zlib, asciidoc, libxml2, libxslt
+, docbook_xsl, pkgconfig, luajit
 , coreutils, gnused, groff, docutils
 , gzip, bzip2, lzip, xz, zstd
 , python, wrapPython, pygments, markdown
@@ -22,9 +22,9 @@ stdenv.mkDerivation rec {
     sha256 = "09lzwa183nblr6l8ib35g2xrjf9wm9yhk3szfvyzkwivdv69c9r2";
   };
 
-  nativeBuildInputs = [ pkg-config asciidoc ] ++ [ python wrapPython ];
+  nativeBuildInputs = [ pkgconfig ] ++ [ python wrapPython ];
   buildInputs = [
-    openssl zlib libxml2 libxslt docbook_xsl luajit
+    openssl zlib asciidoc libxml2 libxslt docbook_xsl luajit
   ];
   pythonPath = [ pygments markdown ];
 
@@ -48,14 +48,9 @@ stdenv.mkDerivation rec {
   preBuild = ''
     mkdir -p git
     tar --strip-components=1 -xf "$gitSrc" -C git
-  '';
 
-  makeFlags = [
-    "prefix=$(out)"
-    "CGIT_SCRIPT_PATH=$(out)/cgit/"
-    "CC=${stdenv.cc.targetPrefix}cc"
-    "AR=${stdenv.cc.targetPrefix}ar"
-  ];
+    makeFlagsArray+=(prefix="$out" CGIT_SCRIPT_PATH="$out/cgit/")
+  '';
 
   # Install manpage.
   postInstall = ''
@@ -70,7 +65,7 @@ stdenv.mkDerivation rec {
     wrapPythonProgramsIn "$out/lib/cgit/filters" "$out $pythonPath"
 
     for script in $out/lib/cgit/filters/*.sh $out/lib/cgit/filters/html-converters/txt2html; do
-      wrapProgram $script --prefix PATH : '${lib.makeBinPath [ coreutils gnused ]}'
+      wrapProgram $script --prefix PATH : '${stdenv.lib.makeBinPath [ coreutils gnused ]}'
     done
   '';
 
@@ -80,8 +75,8 @@ stdenv.mkDerivation rec {
     homepage = "https://git.zx2c4.com/cgit/about/";
     repositories.git = "git://git.zx2c4.com/cgit";
     description = "Web frontend for git repositories";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ bjornfor ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ bjornfor ];
   };
 }

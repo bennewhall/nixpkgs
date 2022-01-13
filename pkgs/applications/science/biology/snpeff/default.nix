@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, jre, unzip, makeWrapper}:
+{stdenv, fetchurl, jre, unzip, makeWrapper}:
 
 stdenv.mkDerivation rec {
   pname = "snpeff";
@@ -9,8 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0i12mv93bfv8xjwc3rs2x73d6hkvi7kgbbbx3ry984l3ly4p6nnm";
   };
 
-  nativeBuildInputs = [ makeWrapper unzip ];
-  buildInputs = [ jre ];
+  buildInputs = [ unzip jre makeWrapper ];
 
   sourceRoot = "snpEff";
 
@@ -23,7 +22,7 @@ stdenv.mkDerivation rec {
     makeWrapper ${jre}/bin/java $out/bin/snpsift --add-flags "-jar $out/libexec/snpeff/SnpSift.jar"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Genetic variant annotation and effect prediction toolbox";
     license = licenses.lgpl3;
     homepage = "http://snpeff.sourceforge.net/";

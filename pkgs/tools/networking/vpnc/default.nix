@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchsvn, nettools, libgcrypt, openssl, openresolv, perl, gawk, makeWrapper }:
+{ stdenv, fetchsvn, nettools, libgcrypt, openssl, openresolv, perl, gawk, makeWrapper }:
 
 stdenv.mkDerivation {
-  pname = "vpnc";
-  version = "0.5.3-post-r550";
+  name = "vpnc-0.5.3-post-r550";
   src = fetchsvn {
     url = "https://svn.unix-ag.uni-kl.de/vpnc";
     rev = "550";
@@ -14,24 +13,13 @@ stdenv.mkDerivation {
     rm -r $sourceRoot/{trunk,branches,tags}
   '';
 
-  patches = [ ./no_default_route_when_netmask.patch ];
+  patches = [ ./makefile.patch ./no_default_route_when_netmask.patch ];
 
   # The `etc/vpnc/vpnc-script' script relies on `which' and on
   # `ifconfig' as found in net-tools (not GNU Inetutils).
   propagatedBuildInputs = [ nettools ];
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [libgcrypt perl openssl ];
-
-  makeFlags = [
-    "PREFIX=$(out)"
-    "ETCDIR=$(out)/etc/vpnc"
-    "SCRIPT_PATH=$(out)/etc/vpnc/vpnc-script"
-  ];
-
-  postPatch = ''
-    patchShebangs makeman.pl
-  '';
+  buildInputs = [libgcrypt perl makeWrapper openssl ];
 
   preConfigure = ''
     sed -i 's|^#OPENSSL|OPENSSL|g' Makefile
@@ -43,6 +31,9 @@ stdenv.mkDerivation {
 
     substituteInPlace "config.c" \
       --replace "/etc/vpnc/vpnc-script" "$out/etc/vpnc/vpnc-script"
+
+    substituteInPlace "pcf2vpnc" \
+      --replace "/usr/bin/perl" "${perl}/bin/perl"
   '';
 
   postInstall = ''
@@ -59,8 +50,8 @@ stdenv.mkDerivation {
   meta = {
     homepage = "https://www.unix-ag.uni-kl.de/~massar/vpnc/";
     description = "Virtual private network (VPN) client for Cisco's VPN concentrators";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

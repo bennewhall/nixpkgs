@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , pytest, pytest-shutil, pytest-fixture-config, psutil
 , requests, future, retry }:
 
@@ -17,10 +17,10 @@ buildPythonPackage rec {
   # RuntimeError: Unable to find a free server number to start Xvfb
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extensible server fixures for py.test";
     homepage  = "https://github.com/manahl/pytest-plugins";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ nand0p ];
   };
 }

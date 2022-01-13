@@ -1,13 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, gawk, gnused, libgcrypt, zlib, bzip2 }:
+{ stdenv, fetchFromGitHub, autoreconfHook, gawk, gnused, libgcrypt, zlib, bzip2 }:
 
 stdenv.mkDerivation rec {
-  pname = "munge";
-  version = "0.5.14";
+  name = "munge-0.5.14";
 
   src = fetchFromGitHub {
     owner = "dun";
     repo = "munge";
-    rev = "${pname}-${version}";
+    rev = name;
     sha256 = "15h805rwcb9f89dyrkxfclzs41n3ff8x7cc1dbvs8mb0ds682c4j";
   };
 
@@ -23,7 +22,7 @@ stdenv.mkDerivation rec {
     "--localstatedir=/var"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       An authentication service for creating and validating credentials
     '';

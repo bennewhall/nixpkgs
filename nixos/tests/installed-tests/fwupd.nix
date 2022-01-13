@@ -7,5 +7,6 @@ makeInstalledTest {
     services.fwupd.enable = true;
     services.fwupd.disabledPlugins = lib.mkForce []; # don't disable test plugin
     services.fwupd.enableTestRemote = true;
+    virtualisation.memorySize = 768;
   };
 }

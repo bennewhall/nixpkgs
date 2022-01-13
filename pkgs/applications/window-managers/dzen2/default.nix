@@ -1,14 +1,13 @@
-{ lib, stdenv, fetchurl, pkg-config, libX11, libXft, libXinerama, libXpm }:
+{ stdenv, fetchurl, pkgconfig, libX11, libXft, libXinerama, libXpm }:
 
-stdenv.mkDerivation rec {
-  pname = "dzen2";
-  version = "0.9.5";
+stdenv.mkDerivation {
+  name = "dzen2-0.9.5";
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libX11 libXft libXinerama libXpm ];
 
   src = fetchurl {
-    url = "https://github.com/robm/dzen/tarball/master/dzen2-${version}git.tar.gz";
+    url = "https://github.com/robm/dzen/tarball/master/dzen2-0.9.5git.tar.gz";
     sha256 = "d4f7943cd39dc23fd825eb684b49dc3484860fa8443d30b06ee38af72a53b556";
   };
 
@@ -31,8 +30,8 @@ stdenv.mkDerivation rec {
 
   meta = {
     homepage = "https://github.com/robm/dzen";
-    license = lib.licenses.mit;
+    license = stdenv.lib.licenses.mit;
     description = "X notification utility";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -1,68 +1,36 @@
-{ lib
-, stdenv
-, buildPythonPackage
+{ buildPythonPackage
 , fetchPypi
-, html5lib
 , isodate
+, html5lib
+, SPARQLWrapper
 , networkx
 , nose
-, pyparsing
-, tabulate
-, pandas
-, pytestCheckHook
-, pythonOlder
-, SPARQLWrapper
+, python
 }:
 
 buildPythonPackage rec {
   pname = "rdflib";
-  version = "6.0.2";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.7";
+  version = "5.0.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-YTauBWABR07ir/X8W5VuYqEcOpxmuw89nAqqX7tWhU4=";
+    sha256 = "0mdi7xh4zcr3ngqwlgqdqf0i5bxghwfddyxdng1zwpiqkpa9s53q";
   };
 
-  propagatedBuildInputs = [
-    isodate
-    html5lib
-    pyparsing
-    SPARQLWrapper
-  ];
+  propagatedBuildInputs = [isodate html5lib SPARQLWrapper ];
 
-  checkInputs = [
-    networkx
-    pandas
-    nose
-    tabulate
-    pytestCheckHook
-  ];
+  checkInputs = [ networkx nose ];
 
-  disabledTests = [
-    # Requires network access
-    "api_key"
-    "BerkeleyDBTestCase"
-    "test_bad_password"
-    "test_service"
-    "testGuessFormatForParse"
-  ] ++ lib.optional stdenv.isDarwin [
-    # Require loopback network access
-    "test_sparqlstore"
-    "test_sparqlupdatestore_mock"
-    "TestGraphHTTP"
-  ];
+  # Python 2 syntax
+  # Failing doctest
+  doCheck = false;
 
-  pythonImportsCheck = [
-    "rdflib"
-  ];
+  checkPhase = ''
+    ${python.interpreter} run_tests.py
+  '';
 
-  meta = with lib; {
-    description = "Python library for working with RDF";
-    homepage = "https://rdflib.readthedocs.io";
-    license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+  meta = {
+    description = "A Python library for working with RDF, a simple yet powerful language for representing information";
+    homepage = "http://www.rdflib.net/";
   };
 }

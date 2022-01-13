@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip, jdk, makeWrapper, installShellFiles, coreutils }:
+{ stdenv, fetchzip, jdk, makeWrapper, installShellFiles, coreutils }:
 
 stdenv.mkDerivation rec {
   pname = "spring-boot-cli";
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       CLI which makes it easy to create spring-based applications
     '';

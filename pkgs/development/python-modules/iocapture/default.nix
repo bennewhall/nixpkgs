@@ -3,7 +3,7 @@
 , fetchPypi
 , flexmock
 , pytest
-, pytest-cov
+, pytestcov
 , six
 }:
 
@@ -19,7 +19,7 @@ buildPythonPackage rec {
   checkInputs = [
     flexmock
     pytest
-    pytest-cov
+    pytestcov
     six
   ];
 

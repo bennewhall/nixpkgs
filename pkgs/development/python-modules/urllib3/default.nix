@@ -1,72 +1,33 @@
-{ lib
-, brotli
-, buildPythonPackage
-, cryptography
-, python-dateutil
-, fetchPypi
-, idna
-, isPy27
-, mock
-, pyopenssl
-, pysocks
-, pytest-freezegun
-, pytest-timeout
-, pytestCheckHook
-, tornado
-, trustme
-}:
+{ stdenv, buildPythonPackage, fetchPypi
+, pytest, mock, tornado, pyopenssl, cryptography
+, idna, certifi, ipaddress, pysocks }:
 
 buildPythonPackage rec {
   pname = "urllib3";
-  version = "1.26.7";
+  version = "1.26.2";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-SYfGVVT3otvzDBj9SHeO8SSvb6t3GjdxA9oFheIzbs4=";
+    sha256 = "19188f96923873c92ccb987120ec4acaa12f0461fa9ce5d3d0772bc965a39e08";
   };
 
-  propagatedBuildInputs = [
-    brotli
-    pysocks
-  ] ++ lib.optionals isPy27 [
-    cryptography
-    idna
-    pyopenssl
+  NOSE_EXCLUDE = stdenv.lib.concatStringsSep "," [
+    "test_headers" "test_headerdict" "test_can_validate_ip_san" "test_delayed_body_read_timeout"
+    "test_timeout_errors_cause_retries" "test_select_multiple_interrupts_with_event"
   ];
 
-  checkInputs = [
-    python-dateutil
-    mock
-    pytest-freezegun
-    pytest-timeout
-    pytestCheckHook
-    tornado
-    trustme
-  ];
-
-  # Tests in urllib3 are mostly timeout-based instead of event-based and
-  # are therefore inherently flaky. On your own machine, the tests will
-  # typically build fine, but on a loaded cluster such as Hydra random
-  # timeouts will occur.
-  #
-  # The urllib3 test suite has two different timeouts in their test suite
-  # (see `test/__init__.py`):
-  # - SHORT_TIMEOUT
-  # - LONG_TIMEOUT
-  # When CI is in the env, LONG_TIMEOUT will be significantly increased.
-  # Still, failures can occur and for that reason tests are disabled.
-  doCheck = false;
-
-  preCheck = ''
-    export CI # Increases LONG_TIMEOUT
+  checkPhase = ''
+    nosetests -v --cover-min-percentage 1
   '';
 
-  pythonImportsCheck = [ "urllib3" ];
+  doCheck = false;
 
-  meta = with lib; {
+  checkInputs = [ pytest mock tornado ];
+  propagatedBuildInputs = [ pyopenssl cryptography idna certifi ipaddress pysocks ];
+
+  meta = with stdenv.lib; {
     description = "Powerful, sanity-friendly HTTP client for Python";
     homepage = "https://github.com/shazow/urllib3";
     license = licenses.mit;
-    maintainers = with maintainers; [ fab ];
   };
 }

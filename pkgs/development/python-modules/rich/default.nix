@@ -1,11 +1,12 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , pythonOlder
 , CommonMark
 , colorama
 , dataclasses
-, poetry-core
+, ipywidgets
+, poetry
 , pygments
 , typing-extensions
 , pytestCheckHook
@@ -13,35 +14,30 @@
 
 buildPythonPackage rec {
   pname = "rich";
-  version = "10.14.0";
-  format = "pyproject";
-  disabled = pythonOlder "3.6";
+  version = "9.1.0";
 
+  # tests not included in pypi tarball
   src = fetchFromGitHub {
     owner = "willmcgugan";
     repo = pname;
     rev = "v${version}";
-    sha256 = "1j1m1064gmy07ah4crds5sd0k7dcwvf2b1z6rvjfvq4v9fx962qv";
+    sha256 = "18iha0fs8vm0j11k39yxj26h8qxrp27ijhx6h1yyizbygmr5b5nk";
   };
+  format = "pyproject";
 
-  nativeBuildInputs = [ poetry-core ];
-
+  nativeBuildInputs = [ poetry ];
   propagatedBuildInputs = [
     CommonMark
     colorama
+    ipywidgets
     pygments
     typing-extensions
-  ] ++ lib.optional (pythonOlder "3.7") [
-    dataclasses
-  ];
+  ] ++ stdenv.lib.optional (pythonOlder "3.7") dataclasses;
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
+  checkInputs = [ pytestCheckHook ];
   pythonImportsCheck = [ "rich" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal";
     homepage = "https://github.com/willmcgugan/rich";
     license = licenses.mit;

@@ -1,16 +1,12 @@
-{ lib, stdenv, fetchurl, ocaml, findlib, ocamlbuild, topkg, uchar, uutf, uunf, uucd }:
+{ stdenv, fetchurl, ocaml, findlib, ocamlbuild, topkg, uchar, uutf, uunf }:
 
 let
   pname = "uucp";
-  version = "14.0.0";
+  version = "11.0.0";
   webpage = "https://erratique.ch/software/${pname}";
-  minimumOCamlVersion = "4.03";
-  doCheck = true;
 in
 
-if !(lib.versionAtLeast ocaml.version minimumOCamlVersion)
-then builtins.throw "${pname} needs at least OCaml ${minimumOCamlVersion}"
-else
+assert stdenv.lib.versionAtLeast ocaml.version "4.01";
 
 stdenv.mkDerivation {
 
@@ -18,33 +14,21 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "${webpage}/releases/${pname}-${version}.tbz";
-    sha256 = "sha256:1yx9nih3d9prb9zizq8fzmmqylf24a6yifhf81h33znrj5xn1mpj";
+    sha256 = "0pidg2pmqsifmk4xx9cc5p5jprhg26xb68g1xddjm7sjzbdzhlm4";
   };
 
   buildInputs = [ ocaml findlib ocamlbuild topkg uutf uunf ];
 
   propagatedBuildInputs = [ uchar ];
 
-  buildPhase = ''
-    runHook preBuild
-    ${topkg.buildPhase} --with-cmdliner false --tests ${lib.boolToString doCheck}
-    runHook postBuild
-  '';
+  buildPhase = "${topkg.buildPhase} --with-cmdliner false";
 
   inherit (topkg) installPhase;
 
-  inherit doCheck;
-  checkPhase = ''
-    runHook preCheck
-    ${topkg.run} test
-    runHook postCheck
-  '';
-  checkInputs = [ uucd ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An OCaml library providing efficient access to a selection of character properties of the Unicode character database";
     homepage = webpage;
-    inherit (ocaml.meta) platforms;
+    platforms = ocaml.meta.platforms or [];
     license = licenses.bsd3;
     maintainers = [ maintainers.vbgl ];
   };

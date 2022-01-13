@@ -1,19 +1,18 @@
-{ lib, stdenv, fetchurl, tcl, tk, libX11, glibc, which, bison, flex, imake, xorgproto, gccmakedep }:
+{ stdenv, fetchurl, tcl, tk, libX11, glibc, which, yacc, flex, imake, xorgproto, gccmakedep }:
 
 let
-  libiconvInc = lib.optionalString stdenv.isLinux "${glibc.dev}/include";
-  libiconvLib = lib.optionalString stdenv.isLinux "${glibc.out}/lib";
+  libiconvInc = stdenv.lib.optionalString stdenv.isLinux "${glibc.dev}/include";
+  libiconvLib = stdenv.lib.optionalString stdenv.isLinux "${glibc.out}/lib";
 in
 stdenv.mkDerivation rec {
-  pname = "tkgate";
-  version = "1.8.7";
+  name = "tkgate-1.8.7";
 
   src = fetchurl {
-    url = "http://www.tkgate.org/downloads/tkgate-${version}.tgz";
+    url = "http://www.tkgate.org/downloads/${name}.tgz";
     sha256 = "1pqywkidfpdbj18i03h97f4cimld4fb3mqfy8jjsxs12kihm18fs";
   };
 
-  nativeBuildInputs = [ which bison flex imake gccmakedep ];
+  nativeBuildInputs = [ which yacc flex imake gccmakedep ];
   buildInputs = [ tcl tk libX11 xorgproto ];
   dontUseImakeConfigure = true;
 
@@ -36,7 +35,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Event driven digital circuit simulator with a TCL/TK-based graphical editor";
     homepage = "http://www.tkgate.org/";
-    license = lib.licenses.gpl2Plus;
-    hydraPlatforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2Plus;
+    maintainers = [ stdenv.lib.maintainers.peti ];
+    hydraPlatforms = stdenv.lib.platforms.linux;
   };
 }

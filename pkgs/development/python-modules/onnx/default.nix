@@ -1,52 +1,53 @@
 { lib
+, fetchpatch
 , buildPythonPackage
-, cmake
 , fetchPypi
+, pythonOlder
 , isPy27
-, nbval
-, numpy
+, cmake
 , protobuf
-, pytestCheckHook
+, numpy
 , six
-, tabulate
 , typing-extensions
+, typing
+, pytestrunner
+, pytest
+, nbval
+, tabulate
 }:
 
 buildPythonPackage rec {
   pname = "onnx";
-  version = "1.10.2";
-  format = "setuptools";
+  version = "1.8.0";
 
+  # Due to Protobuf packaging issues this build of Onnx with Python 2 gives
+  # errors on import.
+  # Also support for Python 2 will be deprecated from Onnx v1.8.
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-JNc8p9/X5sczmUT4lVS0AQcZiZM3kk/KFEfY8bXbUNY=";
+    sha256 = "5f787fd3ce1290e12da335237b3b921152157e51aa09080b65631b3ce3fcc50c";
   };
 
-  nativeBuildInputs = [
-    cmake
-  ];
+  nativeBuildInputs = [ cmake ];
 
   propagatedBuildInputs = [
     protobuf
     numpy
     six
     typing-extensions
-  ];
+  ] ++ lib.optional (pythonOlder "3.5") [ typing ];
 
   checkInputs = [
+    pytestrunner
+    pytest
     nbval
-    pytestCheckHook
     tabulate
   ];
 
   postPatch = ''
-    chmod +x tools/protoc-gen-mypy.sh.in
-    patchShebangs tools/protoc-gen-mypy.sh.in tools/protoc-gen-mypy.py
-
-    substituteInPlace setup.py \
-      --replace "setup_requires.append('pytest-runner')" ""
+    patchShebangs tools/protoc-gen-mypy.py
   '';
 
   preBuild = ''
@@ -61,14 +62,10 @@ buildPythonPackage rec {
   # The setup.py does all the configuration
   dontUseCmakeConfigure = true;
 
-  pythonImportsCheck = [
-    "onnx"
-  ];
-
-  meta = with lib; {
+  meta = {
+    homepage    = "http://onnx.ai";
     description = "Open Neural Network Exchange";
-    homepage = "https://onnx.ai";
-    license = licenses.asl20;
-    maintainers = with maintainers; [ acairncross ];
+    license     = lib.licenses.mit;
+    maintainers = [ lib.maintainers.acairncross ];
   };
 }

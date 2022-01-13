@@ -4,80 +4,70 @@
 , pythonOlder
 , brotlipy
 , zopfli
+, fs
 , lxml
 , scipy
 , munkres
 , unicodedata2
 , sympy
+, matplotlib
 , reportlab
-, sphinx
-, pytestCheckHook
+, pytest
+, pytest-randomly
 , glibcLocales
 }:
 
 buildPythonPackage rec {
   pname = "fonttools";
-  version = "4.26.2";
-
-  # Bump to 3.7 when https://github.com/fonttools/fonttools/pull/2417 is merged
+  version = "4.14.0";
   disabled = pythonOlder "3.6";
 
   src = fetchFromGitHub {
     owner  = pname;
     repo   = pname;
     rev    = version;
-    sha256 = "1zp9idjkn4bn1a4pn8x64vi8j1ijdsd4qvgf1f70dfwqvw6ak1i6";
+    sha256 = "0aiaxjg2v2391gxnhp4nvmgfb3ygm6x7n080s5mnkfjq2bq319in";
   };
 
   # all dependencies are optional, but
   # we run the checks with them
-
   checkInputs = [
-    pytestCheckHook
+    pytest
+    pytest-randomly
+    glibcLocales
     # etree extra
     lxml
+    # ufo extra
+    fs
     # woff extra
     brotlipy
     zopfli
+    # unicode extra
+    unicodedata2
     # interpolatable extra
     scipy
     munkres
     # symfont
     sympy
+    # varLib
+    matplotlib
     # pens
     reportlab
-    sphinx
-  ] ++ lib.optionals (pythonOlder "3.9") [
-    # unicode extra
-    unicodedata2
   ];
 
   preCheck = ''
-    # tests want to execute the "fonttools" executable from $PATH
-    export PATH="$out/bin:$PATH"
+    export LC_ALL="en_US.UTF-8"
   '';
 
-  # Timestamp tests have timing issues probably related
-  # to our file timestamp normalization
-  disabledTests = [
-    "test_recalc_timestamp_ttf"
-    "test_recalc_timestamp_otf"
-    "test_ttcompile_timestamp_calcs"
-  ];
+  # avoid timing issues with timestamps in subset_test.py and ttx_test.py
+  checkPhase = ''
+    pytest Tests fontTools \
+      -k 'not ttcompile_timestamp_calcs and not recalc_timestamp'
+  '';
 
-  disabledTestPaths = [
-    # avoid test which depend on fs and matplotlib
-    # fs and matplotlib were removed to prevent strong cyclic dependencies
-    "Tests/misc/plistlib_test.py"
-    "Tests/pens"
-    "Tests/ufoLib"
-  ];
-
-
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/fonttools/fonttools";
     description = "A library to manipulate font files from Python";
-    license = licenses.mit;
-    maintainers = [ maintainers.sternenseemann ];
+    license = lib.licenses.mit;
   };
 }

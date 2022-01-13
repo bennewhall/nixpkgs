@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip }:
+{ stdenv, fetchzip }:
 
 let
   variants = {
@@ -48,7 +48,7 @@ let
       outputHashMode = "recursive";
       inherit outputHash;
 
-      meta = with lib; {
+      meta = with stdenv.lib; {
         longDescription = ''
           TeX Gyre ${displayName} Math is a math companion for the TeX Gyre
           ${displayName} family of fonts (see
@@ -64,4 +64,4 @@ let
       };
     };
 in
-  lib.mapAttrs mkVariant variants
+  stdenv.lib.mapAttrs mkVariant variants

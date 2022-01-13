@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, isPy3k
+{ lib, pkgs, buildPythonPackage, fetchFromGitHub, isPy3k
 , ipython
 , ipywidgets
 , numpy

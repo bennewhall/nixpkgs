@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, libxslt, asciidoc }:
+{ stdenv, fetchFromGitHub, cmake, asciidoc }:
 
 stdenv.mkDerivation rec {
   pname = "mktiupgrade";
@@ -11,13 +11,11 @@ stdenv.mkDerivation rec {
     sha256 = "15y3rxvv7ipgc80wrvrpksxzdyqr21ywysc9hg6s7d3w8lqdq8dm";
   };
 
-  strictDeps = true;
-
-  nativeBuildInputs = [ asciidoc cmake libxslt.bin ];
+  nativeBuildInputs = [ asciidoc cmake ];
 
   hardeningDisable = [ "format" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "https://knightos.org/";
     description = "Makes TI calculator upgrade files from ROM dumps";
     license     = licenses.mit;

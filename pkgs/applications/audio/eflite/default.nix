@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, flite, alsa-lib, debug ? false }:
+{ stdenv, fetchurl, fetchpatch, flite, alsaLib, debug ? false }:
 
 stdenv.mkDerivation rec {
   pname = "eflite";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "088p9w816s02s64grfs28gai3lnibzdjb9d1jwxzr8smbs2qbbci";
   };
 
-  buildInputs = [ flite alsa-lib ];
+  buildInputs = [ flite alsaLib ];
 
   configureFlags = [
     "flite_dir=${flite}"
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     ./format.patch
   ];
 
-  CFLAGS = lib.optionalString debug " -DDEBUG=2";
+  CFLAGS = stdenv.lib.optionalString debug " -DDEBUG=2";
 
   meta = {
     homepage = "http://eflite.sourceforge.net";
@@ -44,8 +44,8 @@ stdenv.mkDerivation rec {
       a free text-to-speech engine developed at the CMU Speech
       Center as an off-shoot of Festival.
     '';
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ jhhuh ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ jhhuh ];
   };
 }

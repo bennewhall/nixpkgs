@@ -3,6 +3,7 @@
 , stdenv
 , ruby
 , bundlerEnv
+# , libxml2
 }:
 
 let
@@ -12,6 +13,10 @@ let
 
     inherit ruby;
 
+    # buildInputs = [
+    #   libxml2
+    # ];
+
     gemfile = ./Gemfile;
     lockfile = ./Gemfile.lock;
     gemset = ./gemset.nix;
@@ -20,15 +25,15 @@ let
 in stdenv.mkDerivation {
 
   pname = "docbookrx";
-  version = "unstable-2018-05-18";
+  version = "unstable-2018-05-02";
 
   buildInputs = [ env.wrappedRuby ];
 
   src = fetchFromGitHub {
     owner = "asciidoctor";
     repo = "docbookrx";
-    rev = "83d1d1235e3bb44506123eda337780a912581cd0";
-    sha256 = "sha256-OdPRh7ZIhgM7hs5qPiuxLEUuMEtaXcgZ83M6i6CV6AY=";
+    rev = "682d8c2f7a9e1e6f546c5f7d0067353621c68a7a";
+    sha256 = "07jilh17gj8xx4ps4ln787izmhv8xwwwv6fkqqg3pwjni5qikx7w";
   };
 
   # TODO: I don't know ruby packaging but this does the trick for now

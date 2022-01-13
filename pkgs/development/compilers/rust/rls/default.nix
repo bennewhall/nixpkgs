@@ -1,8 +1,8 @@
-{ lib, stdenv, makeWrapper, fetchFromGitHub, rustPlatform
-, openssh, openssl, pkg-config, cmake, zlib, curl, libiconv
-, CoreFoundation, Security, SystemConfiguration }:
+{ stdenv, makeWrapper, fetchFromGitHub, rustPlatform
+, openssh, openssl, pkgconfig, cmake, zlib, curl, libiconv
+, CoreFoundation, Security }:
 
-rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage {
   pname = "rls";
   inherit (rustPlatform.rust.rustc) src version;
 
@@ -14,7 +14,7 @@ rustPlatform.buildRustPackage rec {
 
   preBuild = ''
     # client tests are flaky
-    rm ${buildAndTestSubdir}/tests/client.rs
+    rm tests/client.rs
   '';
 
   # a nightly compiler is required unless we use this cheat code.
@@ -28,9 +28,9 @@ rustPlatform.buildRustPackage rec {
   # rls-rustc links to rustc_private crates
   CARGO_BUILD_RUSTFLAGS = if stdenv.isDarwin then "-C rpath" else null;
 
-  nativeBuildInputs = [ pkg-config cmake makeWrapper ];
-  buildInputs = [ openssh openssl curl zlib libiconv rustPlatform.rust.rustc.llvm ]
-    ++ lib.optionals stdenv.isDarwin [ CoreFoundation Security SystemConfiguration ];
+  nativeBuildInputs = [ pkgconfig cmake ];
+  buildInputs = [ openssh openssl curl zlib libiconv makeWrapper rustPlatform.rust.rustc.llvm ]
+    ++ (stdenv.lib.optionals stdenv.isDarwin [ CoreFoundation Security ]);
 
   doCheck = true;
 
@@ -39,12 +39,12 @@ rustPlatform.buildRustPackage rec {
     $out/bin/rls --version
   '';
 
-  RUST_SRC_PATH = rustPlatform.rustLibSrc;
+  RUST_SRC_PATH = rustPlatform.rustcSrc;
   postInstall = ''
-    wrapProgram $out/bin/rls --set-default RUST_SRC_PATH ${rustPlatform.rustLibSrc}
+    wrapProgram $out/bin/rls --set-default RUST_SRC_PATH ${rustPlatform.rustcSrc}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Rust Language Server - provides information about Rust programs to IDEs and other tools";
     homepage = "https://github.com/rust-lang/rls/";
     license = with licenses; [ asl20 /* or */ mit ];

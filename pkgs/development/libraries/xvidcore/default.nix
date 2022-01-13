@@ -1,13 +1,13 @@
-{ lib, stdenv, fetchurl, yasm, autoconf, automake, libtool }:
+{ stdenv, fetchurl, yasm, autoconf, automake, libtool }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "xvidcore";
-  version = "1.3.7";
+  version = "1.3.5";
 
   src = fetchurl {
-    url = "https://downloads.xvid.com/downloads/${pname}-${version}.tar.bz2";
-    sha256 = "1xyg3amgg27zf7188kss7y248s0xhh1vv8rrk0j9bcsd5nasxsmf";
+    url = "http://downloads.xvid.org/downloads/${pname}-${version}.tar.bz2";
+    sha256 = "1d0hy1w9sn6491a3vhyf3vmhq4xkn6yd4ralx1191s6qz5wz483w";
   };
 
   preConfigure = ''

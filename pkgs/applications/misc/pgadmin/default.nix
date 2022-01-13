@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, postgresql, wxGTK, libxml2, libxslt, openssl, zlib, makeDesktopItem }:
+{ stdenv, fetchurl, fetchpatch, postgresql, wxGTK, libxml2, libxslt, openssl, zlib, makeDesktopItem }:
 
 stdenv.mkDerivation rec {
   pname = "pgadmin3";
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     "--with-libxslt=${libxslt.dev}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PostgreSQL administration GUI tool";
     homepage = "https://www.pgadmin.org";
     license = licenses.gpl2;

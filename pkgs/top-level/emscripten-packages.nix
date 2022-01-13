@@ -10,11 +10,12 @@ rec {
     stdenv = pkgs.emscriptenStdenv;
   }).overrideDerivation
     (old: {
-      nativeBuildInputs = [ pkg-config cmake ];
+      nativeBuildInputs = [ autoreconfHook pkgconfig ];
       propagatedBuildInputs = [ zlib ];
+      buildInputs = old.buildInputs ++ [ automake autoconf ];
       configurePhase = ''
         HOME=$TMPDIR
-        emcmake cmake . $cmakeFlags -DCMAKE_INSTALL_PREFIX=$out -DCMAKE_INSTALL_INCLUDEDIR=$dev/include
+        emconfigure ./configure --prefix=$out 
       '';
       checkPhase = ''
         echo "================= testing json_c using node ================="
@@ -25,11 +26,11 @@ rec {
           `pkg-config zlib --cflags` \
           `pkg-config zlib --libs` \
           -I . \
-          libjson-c.a \
+          .libs/libjson-c.so \
           -o ./test1.js
 
-        echo "Using node to execute the test which basically outputs an error on stderr which we grep for"
-        ${pkgs.nodejs}/bin/node ./test1.js
+        echo "Using node to execute the test which basically outputs an error on stderr which we grep for" 
+        ${pkgs.nodejs}/bin/node ./test1.js 
 
         set +x
         if [ $? -ne 0 ]; then
@@ -41,17 +42,17 @@ rec {
         echo "================= /testing json_c using node ================="
       '';
     });
-
+  
   libxml2 = (pkgs.libxml2.override {
     stdenv = emscriptenStdenv;
     pythonSupport = false;
   }).overrideDerivation
-    (old: {
+    (old: { 
       propagatedBuildInputs = [ zlib ];
-      buildInputs = old.buildInputs ++ [ pkg-config ];
+      buildInputs = old.buildInputs ++ [ pkgconfig ];
 
       # just override it with nothing so it does not fail
-      autoreconfPhase = "echo autoreconfPhase not used...";
+      autoreconfPhase = "echo autoreconfPhase not used..."; 
       configurePhase = ''
         HOME=$TMPDIR
         emconfigure ./configure --prefix=$out --without-python
@@ -63,10 +64,10 @@ rec {
         set -x
         emcc -O2 -s EMULATE_FUNCTION_POINTER_CASTS=1 xmllint.o \
         ./.libs/libxml2.a `pkg-config zlib --cflags` `pkg-config zlib --libs` -o ./xmllint.test.js \
-        --embed-file ./test/xmlid/id_err1.xml
+        --embed-file ./test/xmlid/id_err1.xml  
 
-        echo "Using node to execute the test which basically outputs an error on stderr which we grep for"
-        ${pkgs.nodejs}/bin/node ./xmllint.test.js --noout test/xmlid/id_err1.xml 2>&1 | grep 0bar
+        echo "Using node to execute the test which basically outputs an error on stderr which we grep for" 
+        ${pkgs.nodejs}/bin/node ./xmllint.test.js --noout test/xmlid/id_err1.xml 2>&1 | grep 0bar   
 
         set +x
         if [ $? -ne 0 ]; then
@@ -77,21 +78,21 @@ rec {
         fi
         echo "================= /testing libxml2 using node ================="
       '';
-    });
-
+    });            
+  
   xmlmirror = pkgs.buildEmscriptenPackage rec {
     pname = "xmlmirror";
     version = "unstable-2016-06-05";
 
-    buildInputs = [ pkg-config autoconf automake libtool gnumake libxml2 nodejs openjdk json_c ];
-    nativeBuildInputs = [ pkg-config zlib ];
+    buildInputs = [ pkgconfig autoconf automake libtool gnumake libxml2 nodejs openjdk json_c ];
+    nativeBuildInputs = [ pkgconfig zlib ];
 
     src = pkgs.fetchgit {
       url = "https://gitlab.com/odfplugfest/xmlmirror.git";
       rev = "4fd7e86f7c9526b8f4c1733e5c8b45175860a8fd";
       sha256 = "1jasdqnbdnb83wbcnyrp32f36w3xwhwp0wq8lwwmhqagxrij1r4b";
     };
-
+     
     configurePhase = ''
       rm -f fastXmlLint.js*
       # a fix for ERROR:root:For asm.js, TOTAL_MEMORY must be a multiple of 16MB, was 234217728
@@ -103,18 +104,18 @@ rec {
       # https://gitlab.com/odfplugfest/xmlmirror/issues/11
       sed -e "s/-o fastXmlLint.js/-s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\", \"cwrap\"]' -o fastXmlLint.js/g" -i Makefile.emEnv
     '';
-
+    
     buildPhase = ''
       HOME=$TMPDIR
       make -f Makefile.emEnv
     '';
-
+    
     outputs = [ "out" "doc" ];
-
+    
     installPhase = ''
       mkdir -p $out/share
       mkdir -p $doc/share/${pname}
-
+      
       cp Demo* $out/share
       cp -R codemirror-5.12 $out/share
       cp fastXmlLint.js* $out/share
@@ -127,14 +128,15 @@ rec {
       cp README.md $doc/share/${pname}
     '';
     checkPhase = ''
+      
     '';
-  };
+  };  
 
   zlib = (pkgs.zlib.override {
     stdenv = pkgs.emscriptenStdenv;
   }).overrideDerivation
-    (old: {
-      buildInputs = old.buildInputs ++ [ pkg-config ];
+    (old: { 
+      buildInputs = old.buildInputs ++ [ pkgconfig ];
       # we need to reset this setting!
       NIX_CFLAGS_COMPILE="";
       configurePhase = ''
@@ -161,10 +163,10 @@ rec {
         echo "Compiling a custom test"
         set -x
         emcc -O2 -s EMULATE_FUNCTION_POINTER_CASTS=1 test/example.c -DZ_SOLO \
-        -L. libz.so.${old.version} -I . -o example.js
+        libz.so.${old.version} -I . -o example.js
 
         echo "Using node to execute the test"
-        ${pkgs.nodejs}/bin/node ./example.js
+        ${pkgs.nodejs}/bin/node ./example.js 
 
         set +x
         if [ $? -ne 0 ]; then
@@ -176,12 +178,12 @@ rec {
         echo "================= /testing zlib using node ================="
       '';
 
-      postPatch = pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+      postPatch = pkgs.stdenv.lib.optionalString pkgs.stdenv.isDarwin ''
         substituteInPlace configure \
           --replace '/usr/bin/libtool' 'ar' \
           --replace 'AR="libtool"' 'AR="ar"' \
           --replace 'ARFLAGS="-o"' 'ARFLAGS="-r"'
       '';
-    });
-
+    }); 
+  
 }

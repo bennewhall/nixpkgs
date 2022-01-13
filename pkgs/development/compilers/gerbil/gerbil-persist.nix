@@ -1,27 +1,27 @@
-{ lib, fetchFromGitHub, gerbilPackages, ... }:
-{
+{ pkgs, lib, fetchFromGitHub, gerbil-unstable, gerbil-support, gambit-support }:
+
+gerbil-support.gerbilPackage {
   pname = "gerbil-persist";
-  version = "unstable-2021-11-30";
-  git-version = "0.0-20-ge9b7fe9";
-  softwareName = "Gerbil-persist";
+  version = "unstable-2020-08-31";
+  git-version = "0.0-8-gd211390";
   gerbil-package = "clan/persist";
+  gerbil = gerbil-unstable;
+  gerbilInputs = with gerbil-support.gerbilPackages-unstable; [gerbil-utils gerbil-crypto gerbil-poo];
+  buildInputs = [];
+  gambit-params = gambit-support.unstable-params;
   version-path = "version";
-
-  gerbilInputs = with gerbilPackages; [ gerbil-utils gerbil-crypto gerbil-poo ];
-
-  pre-src = {
-    fun = fetchFromGitHub;
+  softwareName = "Gerbil-persist";
+  src = fetchFromGitHub {
     owner = "fare";
     repo = "gerbil-persist";
-    rev = "e9b7fe9afddbee64017f132ed38f59bb01f9d3f6";
-    sha256 = "0sd1ayj1162f4d5xarfh6jspv2qz0fr60lf9wih3vvr01sirj766";
+    rev = "d211390c8a199cf2b8c7400cd98977524e960015";
+    sha256 = "13s6ws8ziwalfp23nalss41qnz667z2712lr3y123sypm5n5axk7";
   };
-
-  meta = with lib; {
+  meta = {
     description = "Gerbil Persist: Persistent data and activities";
     homepage    = "https://github.com/fare/gerbil-persist";
-    license     = licenses.asl20;
-    platforms   = platforms.unix;
-    maintainers = with maintainers; [ fare ];
+    license     = lib.licenses.asl20;
+    platforms   = lib.platforms.unix;
+    maintainers = with lib.maintainers; [ fare ];
   };
 }

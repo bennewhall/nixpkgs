@@ -1,13 +1,12 @@
-{ callPackage
+{ stdenv, callPackage, fetchpatch
 # Darwin frameworks
 , Cocoa, CoreMedia, VideoToolbox
-, stdenv, lib
 , ...
 }@args:
 
 callPackage ./generic.nix (rec {
-  version = "4.4.1";
-  branch = version;
-  sha256 = "0hmck0placn12kd9l0wam70mrpgfs2nlfmi8krd135gdql5g5jcg";
+  version = "4.3.1";
+  branch = "4.3";
+  sha256 = "1nghcpm2r9ir2h6xpqfn9381jq6aiwlkwlnyplxywvkbjiisr97l";
   darwinFrameworks = [ Cocoa CoreMedia VideoToolbox ];
 } // args)

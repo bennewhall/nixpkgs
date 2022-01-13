@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "LAStools";
@@ -23,9 +23,9 @@ stdenv.mkDerivation rec {
     cmake
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Software for rapid LiDAR processing";
-    homepage = "http://lastools.org/";
+    homepage = http://lastools.org/;
     license = licenses.unfree;
     maintainers = with maintainers; [ stephenwithph ];
     platforms = platforms.unix;

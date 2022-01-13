@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, ncurses }:
+{ stdenv, fetchFromGitHub, autoreconfHook, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "cmatrix";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [ ncurses ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simulates the falling characters theme from The Matrix movie";
     license = licenses.gpl3;
     longDescription = ''

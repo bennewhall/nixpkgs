@@ -1,8 +1,7 @@
 { stdenv, lib, fetchFromGitHub, makeWrapper, unzip, catdoc }:
 
 stdenv.mkDerivation {
-  pname = "catdocx";
-  version = "unstable-2017-01-02";
+  name = "catdocx-20170102";
 
   src = fetchFromGitHub {
     owner = "jncraton";
@@ -21,7 +20,7 @@ stdenv.mkDerivation {
     ln -s $out/libexec/catdocx.sh $out/bin/catdocx
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extracts plain text from docx files";
     homepage = "https://github.com/jncraton/catdocx";
     license = with licenses; [ bsd3 ];

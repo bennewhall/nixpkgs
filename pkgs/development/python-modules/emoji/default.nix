@@ -1,33 +1,21 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, pytestCheckHook
-}:
+{ lib, buildPythonPackage, fetchPypi, nose }:
 
 buildPythonPackage rec {
   pname = "emoji";
-  version = "1.6.2";
+  version = "0.6.0";
 
-  src = fetchFromGitHub {
-    owner = "carpedm20";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "1g927w9l3j5mycg6pqa4vjk2lyy35sppfp8pbzb6mvca500001rk";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "e42da4f8d648f8ef10691bc246f682a1ec6b18373abfd9be10ec0b398823bd11";
   };
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  checkInputs = [ nose ];
 
-  disabledTests = [
-    "test_emojize_name_only"
-  ];
-
-  pythonImportsCheck = [ "emoji" ];
+  checkPhase = ''nosetests'';
 
   meta = with lib; {
     description = "Emoji for Python";
-    homepage = "https://github.com/carpedm20/emoji/";
+    homepage = "https://pypi.python.org/pypi/emoji/";
     license = licenses.bsd3;
     maintainers = with maintainers; [ joachifm ];
   };

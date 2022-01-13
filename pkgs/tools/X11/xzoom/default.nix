@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libX11, libXext, libXt, imake, gccmakedep}:
+{ stdenv, fetchurl, libX11, libXext, libXt, imake, gccmakedep}:
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";
@@ -29,9 +29,10 @@ stdenv.mkDerivation rec {
   installTargets = [ "install" "install.man" ];
 
   meta = {
+    inherit version;
     description = "An X11 screen zoom tool";
-    license = lib.licenses.free ;
-    maintainers = [lib.maintainers.raskin];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.free ;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

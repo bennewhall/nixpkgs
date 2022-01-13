@@ -1,98 +1,100 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, makeWrapper, callPackage
-, nodePackages, cmake, nodejs, unzip, python3
+{ lib, stdenv, vscode-utils, fetchFromGitHub, rustPlatform, makeWrapper, jq
+, nodePackages, cmake, nodejs, unzip, python3, lldb, breakpointHook
+, setDefaultLldbPath ? true
 }:
 assert lib.versionAtLeast python3.version "3.5";
 let
   publisher = "vadimcn";
-  pname = "vscode-lldb";
-  version = "1.6.8";
+  name = "vscode-lldb";
+  version = "1.5.3";
 
-  vscodeExtUniqueId = "${publisher}.${pname}";
+  dylibExt = stdenv.hostPlatform.extensions.sharedLibrary;
 
   src = fetchFromGitHub {
     owner = "vadimcn";
     repo = "vscode-lldb";
     rev = "v${version}";
-    sha256 = "sha256-/2iyWJfNjvk5n7KwWIu2gc24/21KWibU6IAPN/tJ8Q4=";
+    sha256 = "1139945j3z0fxc3nlyvd81k0ypymqsj051idrbgbibwshpi86y93";
+    fetchSubmodules = true;
   };
 
-  lldb = callPackage ./lldb.nix {};
-
   adapter = rustPlatform.buildRustPackage {
-    pname = "${pname}-adapter";
+    pname = "${name}-adapter";
     inherit version src;
+
+    cargoSha256 = "0jl4msf2jcjxddwqkx8fr0c35wg4vwvg5c19mihri1v34i09zc5r";
 
     # It will pollute the build environment of `buildRustPackage`.
     cargoPatches = [ ./reset-cargo-config.patch ];
-
-    cargoSha256 = "sha256-rG+Qw8ac9cCgCjfLFXLlohLk+zV5s1OaqzU0/nXiqgU=";
 
     nativeBuildInputs = [ makeWrapper ];
 
     buildAndTestSubdir = "adapter";
 
-    buildFeatures = [ "weak-linkage" ];
+    # Hack: Need a nightly compiler.
+    RUSTC_BOOTSTRAP = 1;
 
-    cargoBuildFlags = [
-      "--lib"
-      "--bin=codelldb"
-    ];
+    # `adapter` expects a special hierarchy to resolve everything well.
+    postInstall = ''
+      mkdir -p $out/adapter
+      mv -t $out/adapter \
+        $out/bin/* \
+        $out/lib/* \
+        ./adapter/*.py \
+        ./formatters/*.py
+      rmdir $out/{bin,lib}
+    '';
 
-    # Tests are linked to liblldb but it is not available here.
-    doCheck = false;
+    postFixup = ''
+      wrapProgram $out/adapter/codelldb \
+        --prefix PATH : "${python3}/bin" \
+        --prefix LD_LIBRARY_PATH : "${python3}/lib"
+    '';
   };
 
-  nodeDeps = nodePackages."vscode-lldb-build-deps-../../misc/vscode-extensions/vscode-lldb/build-deps";
+  build-deps = nodePackages."vscode-lldb-build-deps-../../misc/vscode-extensions/vscode-lldb/build-deps";
 
-in stdenv.mkDerivation {
-  pname = "vscode-extension-${publisher}-${pname}";
-  inherit src version vscodeExtUniqueId;
+  vsix = stdenv.mkDerivation {
+    name = "${name}-${version}-vsix";
+    inherit src;
 
-  installPrefix = "share/vscode/extensions/${vscodeExtUniqueId}";
+    # Only build the extension. We handle `adapter` and `lldb` with nix.
+    patches = [ ./cmake-build-extension-only.patch ];
 
-  nativeBuildInputs = [ cmake nodejs unzip makeWrapper ];
+    nativeBuildInputs = [ cmake nodejs unzip breakpointHook ];
 
-  patches = [ ./cmake-build-extension-only.patch ];
+    postConfigure = ''
+      cp -r ${build-deps}/lib/node_modules/vscode-lldb/{node_modules,package-lock.json} .
+    '';
 
-  postConfigure = ''
-    cp -r ${nodeDeps}/lib/node_modules/vscode-lldb/{node_modules,package-lock.json} .
-  '';
+    makeFlags = [ "vsix_bootstrap" ];
 
-  cmakeFlags = [
-    # Do not append timestamp to version.
-    "-DVERSION_SUFFIX="
-  ];
-  makeFlags = [ "vsix_bootstrap" ];
+    installPhase = ''
+      unzip ./codelldb-bootstrap.vsix 'extension/*' -d ./vsix-extracted
+      mv vsix-extracted/extension $out
 
-  installPhase = ''
-    ext=$out/$installPrefix
-    runHook preInstall
+      ln -s ${adapter}/adapter $out
+      # Mark that adapter and lldb are installed.
+      touch $out/platform.ok
+    '';
 
-    unzip ./codelldb-bootstrap.vsix 'extension/*' -d ./vsix-extracted
-
-    mkdir -p $ext/{adapter,formatters}
-    mv -t $ext vsix-extracted/extension/*
-    cp -t $ext/adapter ${adapter}/{bin,lib}/* ../adapter/*.py
-    wrapProgram $ext/adapter/codelldb \
-      --set-default LLDB_DEBUGSERVER_PATH "${lldb.out}/bin/lldb-server"
-    cp -t $ext/formatters ../formatters/*.py
-    ln -s ${lldb.lib} $ext/lldb
-    # Mark that all components are installed.
-    touch $ext/platform.ok
-
-    runHook postInstall
-  '';
-
-  # `adapter` will find python binary and libraries at runtime.
-  postFixup = ''
-    wrapProgram $out/$installPrefix/adapter/codelldb \
-      --prefix PATH : "${python3}/bin" \
-      --prefix LD_LIBRARY_PATH : "${python3}/lib"
-  '';
-
-  passthru = {
-    inherit lldb adapter;
+    dontStrip = true;
+    dontPatchELF = true;
   };
+
+in vscode-utils.buildVscodeExtension {
+  inherit name;
+  src = vsix;
+
+  nativeBuildInputs = lib.optional setDefaultLldbPath jq;
+  postUnpack = lib.optionalString setDefaultLldbPath ''
+    jq '.contributes.configuration.properties."lldb.library".default = $s' \
+      --arg s "${lldb}/lib/liblldb.so" \
+      $sourceRoot/package.json >$sourceRoot/package.json.new
+    mv $sourceRoot/package.json.new $sourceRoot/package.json
+  '';
+
+  vscodeExtUniqueId = "${publisher}.${name}";
 
   meta = with lib; {
     description = "A native debugger extension for VSCode based on LLDB";

@@ -1,10 +1,10 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
-with lib;
+with stdenv.lib;
 
 buildGoPackage rec {
   pname = "kubicorn";
-  version = "2018-10-13-${lib.strings.substring 0 7 rev}";
+  version = "2018-10-13-${stdenv.lib.strings.substring 0 7 rev}";
   rev = "4c7f3623e9188fba43778271afe161a4facfb657";
 
   src = fetchFromGitHub {
@@ -20,7 +20,7 @@ buildGoPackage rec {
   meta = {
     description = "Simple, cloud native infrastructure for Kubernetes";
     homepage = "http://kubicorn.io/";
-    maintainers = with lib.maintainers; [ offline ];
-    license = lib.licenses.asl20;
+    maintainers = with stdenv.lib.maintainers; [ offline ];
+    license = stdenv.lib.licenses.asl20;
   };
 }

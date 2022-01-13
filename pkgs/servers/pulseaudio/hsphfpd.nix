@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, perlPackages }:
+{ stdenv, fetchFromGitHub, makeWrapper, perlPackages }:
 
 let
   perlLibs = with perlPackages; [ NetDBus XMLTwig XMLParser ];
@@ -36,7 +36,7 @@ stdenv.mkDerivation {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bluetooth HSP/HFP daemon";
     homepage = "https://github.com/pali/hsphfpd-prototype";
     license = licenses.artistic1;

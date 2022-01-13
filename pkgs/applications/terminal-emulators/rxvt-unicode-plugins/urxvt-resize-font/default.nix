@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "urxvt-resize-font";
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
     cp resize-font $out/lib/urxvt/perl
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "URxvt Perl extension for resizing the font";
     homepage = "https://github.com/simmel/urxvt-resize-font";
     license = licenses.mit;

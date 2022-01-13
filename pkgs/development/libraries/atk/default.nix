@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, meson, ninja, gettext, pkg-config, glib
-, fixDarwinDylibNames, gobject-introspection, gnome
+{ stdenv, fetchurl, meson, ninja, gettext, pkgconfig, glib
+, fixDarwinDylibNames, gobject-introspection, gnome3
 }:
 
 let
@@ -11,14 +11,14 @@ stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${name}.tar.xz";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${name}.tar.xz";
     sha256 = "1217cmmykjgkkim0zr1lv5j13733m4w5vipmy4ivw0ll6rz28xpv";
   };
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ meson ninja pkg-config gettext gobject-introspection glib ]
-    ++ lib.optional stdenv.hostPlatform.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ meson ninja pkgconfig gettext gobject-introspection glib ]
+    ++ stdenv.lib.optional stdenv.hostPlatform.isDarwin fixDarwinDylibNames;
 
   propagatedBuildInputs = [
     # Required by atk.pc
@@ -31,16 +31,11 @@ stdenv.mkDerivation rec {
     ./fix_pc.patch
   ];
 
-  mesonFlags = [
-    "-Dintrospection=${lib.boolToString (stdenv.buildPlatform == stdenv.hostPlatform)}"
-  ];
-
   doCheck = true;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
@@ -57,10 +52,10 @@ stdenv.mkDerivation rec {
 
     homepage = "http://library.gnome.org/devel/atk/";
 
-    license = lib.licenses.lgpl2Plus;
+    license = stdenv.lib.licenses.lgpl2Plus;
 
-    maintainers = with lib.maintainers; [ raskin ];
-    platforms = lib.platforms.linux ++ lib.platforms.darwin;
+    maintainers = with stdenv.lib.maintainers; [ raskin ];
+    platforms = stdenv.lib.platforms.linux ++ stdenv.lib.platforms.darwin;
   };
 
 }

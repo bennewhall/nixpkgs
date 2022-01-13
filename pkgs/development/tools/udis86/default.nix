@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, python }:
+{ stdenv, fetchFromGitHub, autoreconfHook, python }:
 
 stdenv.mkDerivation rec {
   pname = "udis86";
@@ -8,6 +8,7 @@ stdenv.mkDerivation rec {
     owner = "vmt";
     repo = "udis86";
     rev = "v${version}";
+    url = "https://github.com/vmt/udis86/archive/v${version}.tar.gz";
     sha256 = "0c60zwimim6jrm4saw36s38w5sg5v8n9mr58pkqmjrlf7q9g6am1";
   };
 
@@ -19,13 +20,13 @@ stdenv.mkDerivation rec {
 
   outputs = [ "bin" "out" "dev" "lib" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://udis86.sourceforge.net";
     license = licenses.bsd2;
     maintainers = with maintainers; [ timor ];
     description = ''
       Easy-to-use, minimalistic x86 disassembler library (libudis86)
     '';
-    platforms = platforms.all;
+    platforms = platforms.all ;
   };
 }

@@ -1,14 +1,12 @@
-{ fetchFromGitHub, lib, stdenv }:
+{ fetchurl, stdenv }:
 
 stdenv.mkDerivation rec {
   pname = "symlinks";
   version = "1.4.3";
 
-  src = fetchFromGitHub {
-    owner = "brandt";
-    repo = "symlinks";
-    rev = "v${version}";
-    sha256 = "EMWd7T/k4v1uvXe2QxhyPoQKUpKIUANE9AOwX461FgU=";
+  src = fetchurl {
+    url = "https://github.com/brandt/symlinks/archive/v${version}.tar.gz";
+    sha256 = "1cihrd3dap52z1msdhhgda7b7wy1l5ysfvyba8yxb3zjk0l5n417";
   };
 
   buildFlags = [ "CC=${stdenv.cc}/bin/cc" ];
@@ -19,7 +17,7 @@ stdenv.mkDerivation rec {
     cp symlinks.8 $out/share/man/man8
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Find and remedy problematic symbolic links on a system";
     homepage = "https://github.com/brandt/symlinks";
     license = licenses.mit;

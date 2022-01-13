@@ -1,4 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, cmake, curl, pkg-config }:
+{ stdenv, fetchFromGitHub, cmake
+, curl, pkgconfig }:
 
 stdenv.mkDerivation {
   pname = "http-getter";
@@ -11,10 +12,9 @@ stdenv.mkDerivation {
     sha256 = "0plyqqwfm9bysichda0w3akbdxf6279wd4mx8mda0c4mxd4xy9nl";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
-  buildInputs = [ curl ];
+  buildInputs = [ cmake pkgconfig curl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/tohojo/http-getter";
     description = "Simple getter for HTTP URLs using cURL";
     platforms = platforms.unix;

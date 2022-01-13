@@ -23,25 +23,23 @@ assert pythonSupport -> pythonPackages != null;
 
 rustPlatform.buildRustPackage rec {
   pname = "sequoia";
-  # Upstream has separate version numbering for the library and the CLI frontend.
-  # This derivation provides the CLI frontend, and thus uses its version number.
-  version = "0.25.0";
+  version = "0.20.0";
 
   src = fetchFromGitLab {
     owner = "sequoia-pgp";
     repo = "sequoia";
-    rev = "sq/v${version}";
-    sha256 = "13f582g10vba0cpbdmqkkfzgd5jgagb640jaz1w425wf5nbh6q50";
+    rev = "v${version}";
+    sha256 = "sha256-br5GRzWprQTixNrE0WpNIB7Ayj5oEfyCg5JY4MnX5rA=";
   };
 
-  cargoSha256 = "sha256-qIGP48uj2iQ6MVgy5anKI9QrX9vnuKh46Fmmcczda4w=";
+  cargoSha256 = "sha256-SpCdoLCtvU9jpG/ivB/+4KhRdKZxN3/+7P/RlR6n9/c=";
 
   nativeBuildInputs = [
     pkg-config
     cargo
     rustc
     git
-    llvmPackages_10.libclang.lib
+    llvmPackages_10.libclang
     llvmPackages_10.clang
     ensureNewerSourcesForZipFilesHook
     capnproto
@@ -51,7 +49,7 @@ rustPlatform.buildRustPackage rec {
 
   checkInputs = lib.optionals pythonSupport [
     pythonPackages.pytest
-    pythonPackages.pytest-runner
+    pythonPackages.pytestrunner
   ];
 
   buildInputs = [
@@ -72,7 +70,7 @@ rustPlatform.buildRustPackage rec {
     "build-release"
   ];
 
-  LIBCLANG_PATH = "${llvmPackages_10.libclang.lib}/lib";
+  LIBCLANG_PATH = "${llvmPackages_10.libclang}/lib";
 
   # Sometimes, tests fail on CI (ofborg) & hydra without this
   CARGO_TEST_ARGS = "--workspace --exclude sequoia-store";
@@ -99,10 +97,10 @@ rustPlatform.buildRustPackage rec {
   checkPhase = null;
   installPhase = null;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A cool new OpenPGP implementation";
     homepage = "https://sequoia-pgp.org/";
-    license = licenses.gpl2Plus;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ minijackson doronbehar ];
   };
 }

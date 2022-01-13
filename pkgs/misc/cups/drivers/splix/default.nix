@@ -1,15 +1,16 @@
-{ lib, stdenv, fetchsvn, fetchurl, cups, cups-filters, jbigkit, zlib }:
+{ stdenv, fetchsvn, fetchurl, cups, cups-filters, jbigkit, zlib }:
 
 let
 
   color-profiles = stdenv.mkDerivation {
-    pname = "splix-color-profiles";
-    version = "unstable-2007-06-25";
+    name = "splix-color-profiles-20070625";
 
     src = fetchurl {
       url = "http://splix.ap2c.org/samsung_cms.tar.bz2";
       sha256 = "1156flics5m9m7a4hdmcc2nphbdyary6dfmbcrmsp9xb7ivsypdl";
     };
+
+    phases = [ "unpackPhase" "installPhase" ];
 
     installPhase = ''
       mkdir -p $out/share/cups/profiles/samsung
@@ -18,14 +19,14 @@ let
   };
 
 in stdenv.mkDerivation rec {
-  pname = "splix-svn";
-  version = "315";
+  name = "splix-svn-${rev}";
+  rev = "315";
 
   src = fetchsvn {
     # We build this from svn, because splix hasn't been in released in several years
     # although the community has been adding some new printer models.
     url = "svn://svn.code.sf.net/p/splix/code/splix";
-    rev = version;
+    inherit rev;
     sha256 = "16wbm4xnz35ca3mw2iggf5f4jaxpyna718ia190ka6y4ah932jxl";
   };
 
@@ -44,11 +45,11 @@ in stdenv.mkDerivation rec {
 
   buildInputs = [ cups zlib jbigkit ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "CUPS drivers for SPL (Samsung Printer Language) printers";
     homepage = "http://splix.ap2c.org";
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ jfrankenau ];
+    maintainers = with maintainers; [ jfrankenau peti ];
   };
 }

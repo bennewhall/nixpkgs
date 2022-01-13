@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "libwhich";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     install -Dm755 -t $out/bin libwhich
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Like `which`, for dynamic libraries";
     homepage = "https://github.com/vtjnash/libwhich";
     license = licenses.mit;

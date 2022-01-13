@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage, django }:
+{ stdenv, fetchurl, fetchPypi, buildPythonPackage, django }:
 
 buildPythonPackage rec {
   pname = "django-ranged-response";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ django ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A modified FileResponse that returns `Content-Range` headers with the HTTP response, so browsers (read Safari 9+) that request the file, can stream the response properly";
     homepage = "https://github.com/wearespindle/django-ranged-fileresponse";
     license = licenses.mit;

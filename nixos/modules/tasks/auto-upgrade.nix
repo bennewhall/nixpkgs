@@ -139,7 +139,6 @@ in {
         gzip
         gitMinimal
         config.nix.package.out
-        config.programs.ssh.package
       ];
 
       script = let

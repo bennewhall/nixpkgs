@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, lua, file, ncurses, gmime, pcre-cpp
+{ stdenv, fetchurl, pkgconfig, lua, file, ncurses, gmime, pcre-cpp
 , perl, perlPackages, makeWrapper
 , debugBuild ? false
 , alternativeGlobalConfigFilePath ? null
@@ -35,7 +35,7 @@ stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
   buildInputs = [
     lua file ncurses gmime pcre-cpp
     perl perlPackages.JSON perlPackages.NetIMAPClient
@@ -52,7 +52,7 @@ stdenv.mkDerivation {
     sed -e "s|^#\!\(.*/perl.*\)$|#\!\1$perlFlags|" -i perl.d/imap-proxy
   '';
 
-  buildFlags = lib.optional debugBuild "lumail2-debug";
+  buildFlags = stdenv.lib.optional debugBuild "lumail2-debug";
 
   installPhase = ''
     mkdir -p $out/bin || true
@@ -72,7 +72,7 @@ stdenv.mkDerivation {
     "LUMAIL_LIBS=$(out)/etc/lumail2"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Console-based email client";
     homepage = "https://lumail.org/";
     license = licenses.gpl2;

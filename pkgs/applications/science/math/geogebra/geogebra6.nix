@@ -1,14 +1,14 @@
-{ lib, stdenv, unzip, fetchurl, electron, makeWrapper, geogebra }:
+{ stdenv, unzip, fetchurl, electron_6, makeWrapper, geogebra }:
 let
   pname = "geogebra";
-  version = "6-0-676-0";
+  version = "6-0-609-0";
 
   srcIcon = geogebra.srcIcon;
   desktopItem = geogebra.desktopItem;
 
-  meta = with lib; geogebra.meta // {
+  meta = with stdenv.lib; geogebra.meta // {
     license = licenses.geogebra;
-    maintainers = with maintainers; [ voidless sikmir ];
+    maintainers = with maintainers; [ voidless ];
     platforms = with platforms; linux ++ darwin;
   };
 
@@ -17,10 +17,10 @@ let
 
     src = fetchurl {
       urls = [
-        "https://download.geogebra.org/installers/6.0/GeoGebra-Linux64-Portable-${version}.zip"
-        "https://web.archive.org/web/20211123222708/https://download.geogebra.org/installers/6.0/GeoGebra-Linux64-Portable-${version}.zip"
-      ];
-      sha256 = "0wn90n2nd476rkf83gk9vvcpbjflkrvyri50pnmv52j76n023hmm";
+          "https://download.geogebra.org/installers/6.0/GeoGebra-Linux64-Portable-${version}.zip"
+          "https://web.archive.org/web/20201022200156/https://download.geogebra.org/installers/6.0/GeoGebra-Linux64-Portable-${version}.zip"
+        ];
+      sha256 = "0rzcbq587x8827g9v03awa9hz27vyfjc0cz45ymbchqp31lsx49b";
     };
 
     dontConfigure = true;
@@ -38,7 +38,7 @@ let
     installPhase = ''
       mkdir -p $out/libexec/geogebra/ $out/bin
       cp -r GeoGebra-linux-x64/{resources,locales} "$out/"
-      makeWrapper ${lib.getBin electron}/bin/electron $out/bin/geogebra --add-flags "$out/resources/app"
+      makeWrapper ${stdenv.lib.getBin electron_6}/bin/electron $out/bin/geogebra --add-flags "$out/resources/app"
       install -Dm644 "${desktopItem}/share/applications/"* \
         -t $out/share/applications/
 
@@ -51,11 +51,8 @@ let
     inherit pname version meta;
 
     src = fetchurl {
-      urls = [
-        "https://download.geogebra.org/installers/6.0/GeoGebra-Classic-6-MacOS-Portable-${version}.zip"
-        "https://web.archive.org/web/20211124143625/https://download.geogebra.org/installers/6.0/GeoGebra-Classic-6-MacOS-Portable-${version}.zip"
-      ];
-      sha256 = "1dwv2f94a1c2y10lmy0i66cafynalp7dkqgnpk4f0mk6pir2fdgj";
+      url = "https://download.geogebra.org/installers/6.0/GeoGebra-Classic-6-MacOS-Portable-${version}.zip";
+      sha256 = "0275869zgwbl1qjj593q6629hnxbwk9c15rkm29a3lh10pinb099";
     };
 
     dontUnpack = true;

@@ -22,16 +22,16 @@ let
   pname = "wire-desktop";
 
   version = {
-    x86_64-darwin = "3.26.4145";
-    x86_64-linux = "3.26.2941";
+    x86_64-darwin = "3.21.3959";
+    x86_64-linux = "3.21.2936";
   }.${system} or throwSystem;
 
   sha256 = {
-    x86_64-darwin = "1ck74a9z2mrwmljrqm347bqhjiaf1v0bf1jfnp58cqngh5ygqnf2";
-    x86_64-linux = "01gy84gr0gw5ap7hpy72azaf6hlzac7vxkn5cgad5sfbyzxgjgc9";
+    x86_64-darwin = "0fgzzqf1wnkjbcr0j0vjn6sggkz0z1kx6w4gi7gk4c4markdicm1";
+    x86_64-linux = "033804nkz1fdmq3p8iplrlx708x1fjlr09bmrpy36lqg5h7m3yd6";
   }.${system} or throwSystem;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A modern, secure messenger for everyone";
     longDescription = ''
       Wire Personal is a secure, privacy-friendly messenger. It combines useful
@@ -51,6 +51,7 @@ let
       arianvp
       kiwi
       toonn
+      worldofpeace
     ];
     platforms = [
       "x86_64-darwin"
@@ -94,17 +95,9 @@ let
 
     buildInputs = atomEnv.packages;
 
-    unpackPhase = ''
-      runHook preUnpack
-
-      dpkg-deb -x $src .
-
-      runHook postUnpack
-    '';
+    unpackPhase = "dpkg-deb -x $src .";
 
     installPhase = ''
-      runHook preInstall
-
       mkdir -p "$out/bin"
       cp -R "opt" "$out"
       cp -R "usr/share" "$out/share"
@@ -113,8 +106,6 @@ let
       # Desktop file
       mkdir -p "$out/share/applications"
       cp "${desktopItem}/share/applications/"* "$out/share/applications"
-
-      runHook postInstall
     '';
 
     runtimeDependencies = [
@@ -143,29 +134,17 @@ let
     ];
 
     unpackPhase = ''
-      runHook preUnpack
-
       xar -xf $src
       cd com.wearezeta.zclient.mac.pkg
-
-      runHook postUnpack
     '';
 
     buildPhase = ''
-      runHook preBuild
-
       cat Payload | gunzip -dc | cpio -i
-
-      runHook postBuild
     '';
 
     installPhase = ''
-      runHook preInstall
-
       mkdir -p $out/Applications
       cp -r Wire.app $out/Applications
-
-      runHook postInstall
     '';
   };
 

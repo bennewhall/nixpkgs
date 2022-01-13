@@ -1,23 +1,33 @@
-{ lib, mkCoqDerivation, coq, mathcomp-ssreflect, version ? null }:
-with lib;
+{ stdenv, fetchgit, coq, mathcomp }:
 
-mkCoqDerivation {
-  pname = "autosubst";
+stdenv.mkDerivation rec {
 
-  release."1.7".rev    = "v1.7";
-  release."1.7".sha256 = "sha256-qoyteQ5W2Noxf12uACOVeHhPLvgmTzrvEo6Ts+FKTGI=";
+  name = "coq-autosubst-${coq.coq-version}-${version}";
+  version = "5b40a32e";
 
-  inherit version;
-  defaultVersion = with versions; switch coq.coq-version [
-    { case = isGe "8.10"; out = "1.7"; }
-  ] null;
+  src = fetchgit {
+    url = "git://github.com/uds-psl/autosubst.git";
+    rev = "1c3bb3bbf5477e3b33533a0fc090399f45fe3034";
+    sha256 = "06pcjbngzwqyncvfwzz88j33wvdj9kizxyg5adp7y6186h8an341";
+  };
 
-  propagatedBuildInputs = [ mathcomp-ssreflect ];
+  buildInputs = [ coq ];
+  propagatedBuildInputs = [ mathcomp ];
 
-  meta = {
+  patches = [./0001-changes-to-work-with-Coq-8.6.patch];
+
+  installFlags = [ "COQLIB=$(out)/lib/coq/${coq.coq-version}/" ];
+
+  meta = with stdenv.lib; {
     homepage = "https://www.ps.uni-saarland.de/autosubst/";
     description = "Automation for de Bruijn syntax and substitution in Coq";
-    maintainers = with maintainers; [ siraben jwiegley ];
-    license = licenses.mit;
+    maintainers = with maintainers; [ jwiegley ];
+    platforms = coq.meta.platforms;
   };
+
+  passthru = {
+    compatibleCoqVersions = v: builtins.elem v [ "8.5" "8.6" "8.7" ];
+  };
+
+
 }

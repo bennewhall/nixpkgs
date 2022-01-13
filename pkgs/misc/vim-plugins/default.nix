@@ -1,26 +1,12 @@
 # TODO check that no license information gets lost
-{ callPackage, config, lib, vimUtils, vim, darwin, llvmPackages, luaPackages }:
+{ callPackage, config, lib, vimUtils, vim, darwin, llvmPackages }:
 
 let
 
-  inherit (vimUtils.override {inherit vim;}) buildVimPluginFrom2Nix vimGenDocHook;
-
-  inherit (lib) extends;
-
-  initialPackages = self: {
-    # Convert derivation to a vim plugin.
-    toVimPlugin = drv:
-      drv.overrideAttrs(oldAttrs: {
-
-        nativeBuildInputs = oldAttrs.nativeBuildInputs or [] ++ [ vimGenDocHook ];
-        passthru = (oldAttrs.passthru or {}) // {
-          vimPlugin = true;
-        };
-      });
-  };
+  inherit (vimUtils.override {inherit vim;}) buildVimPluginFrom2Nix;
 
   plugins = callPackage ./generated.nix {
-    inherit buildVimPluginFrom2Nix;
+    inherit buildVimPluginFrom2Nix overrides;
   };
 
   # TL;DR
@@ -32,16 +18,11 @@ let
   overrides = callPackage ./overrides.nix {
     inherit (darwin.apple_sdk.frameworks) Cocoa CoreFoundation CoreServices;
     inherit buildVimPluginFrom2Nix;
-    inherit llvmPackages luaPackages;
+    inherit llvmPackages;
   };
 
-  aliases = if (config.allowAliases or true) then (import ./aliases.nix lib) else final: prev: {};
+  aliases = lib.optionalAttrs (config.allowAliases or true) (import ./aliases.nix lib plugins);
 
-  extensible-self = lib.makeExtensible
-    (extends aliases
-      (extends overrides
-        (extends plugins initialPackages)
-      )
-    );
 in
-  extensible-self
+
+plugins // aliases

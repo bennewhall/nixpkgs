@@ -1,7 +1,8 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
-, scikit-learn
+, python
+, scikitlearn
 , scipy
 , pytest
 , isPy27
@@ -20,7 +21,7 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    scikit-learn
+    scikitlearn
     scipy
   ];
 

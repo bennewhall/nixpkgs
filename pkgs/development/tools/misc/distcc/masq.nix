@@ -1,10 +1,9 @@
-{ lib, stdenv, gccRaw, binutils }:
+{ stdenv, gccRaw, binutils }:
 
 stdenv.mkDerivation {
   name = "distcc-masq-${gccRaw.name}";
 
-  dontUnpack = true;
-
+  phases = [ "installPhase" ];
   installPhase = ''
     mkdir -p $out/bin
 
@@ -40,6 +39,6 @@ stdenv.mkDerivation {
   '';
 
   meta = {
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

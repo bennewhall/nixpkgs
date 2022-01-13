@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, requests }:
+{ stdenv, buildPythonPackage, fetchPypi, requests }:
 
 buildPythonPackage rec {
   pname = "nanoleaf";
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ requests ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A python interface for Nanoleaf Aurora lighting";
     homepage = "https://github.com/software-2/nanoleaf";
     license = licenses.mit;

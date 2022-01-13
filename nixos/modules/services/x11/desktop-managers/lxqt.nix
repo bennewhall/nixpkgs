@@ -19,7 +19,7 @@ in
 
     environment.lxqt.excludePackages = mkOption {
       default = [];
-      example = literalExpression "[ pkgs.lxqt.qterminal ]";
+      example = literalExample "[ pkgs.lxqt.qterminal ]";
       type = types.listOf types.package;
       description = "Which LXQt packages to exclude from the default environment";
     };
@@ -51,15 +51,15 @@ in
     environment.systemPackages =
       pkgs.lxqt.preRequisitePackages ++
       pkgs.lxqt.corePackages ++
-      (pkgs.gnome.removePackagesByName
+      (pkgs.gnome3.removePackagesByName
         pkgs.lxqt.optionalPackages
         config.environment.lxqt.excludePackages);
 
     # Link some extra directories in /run/current-system/software/share
     environment.pathsToLink = [ "/share" ];
 
-    # virtual file systems support for PCManFM-QT
     services.gvfs.enable = true;
+    services.gvfs.package = pkgs.gvfs;
 
     services.upower.enable = config.powerManagement.enable;
   };

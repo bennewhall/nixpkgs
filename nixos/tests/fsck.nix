@@ -4,7 +4,7 @@ import ./make-test-python.nix {
   machine = { lib, ... }: {
     virtualisation.emptyDiskImages = [ 1 ];
 
-    virtualisation.fileSystems = {
+    fileSystems = lib.mkVMOverride {
       "/mnt" = {
         device = "/dev/vdb";
         fsType = "ext4";

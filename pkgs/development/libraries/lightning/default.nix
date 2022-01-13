@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, libopcodes }:
+{ stdenv, fetchurl, libopcodes }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
 
   pname = "lightning";
@@ -27,6 +27,6 @@ stdenv.mkDerivation rec {
     '';
     maintainers = [ maintainers.AndersonTorres ];
     license = licenses.lgpl3Plus;
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
-, alsa-lib
+, alsaLib
 , bzip2
 , fftw
 , freeglut
@@ -17,13 +17,13 @@
 , ode
 , openal
 , openssl
-, racket_7_9
+, racket
 , sconsPackages
 , zlib
 }:
 let
   libs = [
-    alsa-lib
+    alsaLib
     bzip2
     fftw
     freeglut
@@ -42,7 +42,6 @@ let
     openssl
     zlib
   ];
-  racket = racket_7_9;
 in
 stdenv.mkDerivation rec {
   pname = "fluxus";
@@ -55,7 +54,7 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     fftw
     freeglut.dev
     freetype
@@ -68,7 +67,7 @@ stdenv.mkDerivation rec {
     ode
     openal
     openssl.dev
-    racket_7_9
+    racket
   ];
   nativeBuildInputs = [ sconsPackages.scons_3_1_2 ];
 
@@ -77,7 +76,7 @@ stdenv.mkDerivation rec {
     "RacketPrefix=${racket}"
     "RacketInclude=${racket}/include/racket"
     "RacketLib=${racket}/lib/racket"
-    "LIBPATH=${lib.makeLibraryPath libs}"
+    "LIBPATH=${stdenv.lib.makeLibraryPath libs}"
     "DESTDIR=build"
   ];
   configurePhase = ''
@@ -88,7 +87,7 @@ stdenv.mkDerivation rec {
     cp -r build$out/* $out/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Livecoding environment for 3D graphics, sound, and games";
     license = licenses.gpl2;
     homepage = "http://www.pawfal.org/fluxus/";

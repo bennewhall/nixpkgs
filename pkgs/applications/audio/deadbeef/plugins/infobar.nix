@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, deadbeef, gtk3, libxml2 }:
+{ stdenv, fetchurl, pkgconfig, deadbeef, gtk3, libxml2 }:
 
 stdenv.mkDerivation rec {
   pname = "deadbeef-infobar-plugin";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0c9wh3wh1hdww7v96i8cy797la06mylhfi0880k8vwh88079aapf";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ deadbeef gtk3 libxml2 ];
 
   buildFlags = [ "gtk3" ];
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     broken = true; # crashes DeaDBeeF and is abandoned (https://bitbucket.org/dsimbiriatin/deadbeef-infobar/issues/38/infobar-causes-deadbeef-180-to-crash)
     description = "DeaDBeeF Infobar Plugin";
     homepage = "https://bitbucket.org/dsimbiriatin/deadbeef-infobar";

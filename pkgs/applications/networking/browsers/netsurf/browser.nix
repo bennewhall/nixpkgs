@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchurl, fetchpatch, makeWrapper, wrapGAppsHook
+{ stdenv, fetchurl, fetchpatch, makeWrapper, wrapGAppsHook
 
 # Buildtime dependencies.
-, check, pkg-config, xxd
+, check, pkgconfig, xxd
 
 # Runtime dependencies.
 , curl, expat, libXcursor, libXrandr, libidn, libjpeg, libpng, libwebp, libxml2
@@ -22,7 +22,7 @@
 }:
 
 let
-  inherit (lib) optional optionals;
+  inherit (stdenv.lib) optional optionals;
 in
 stdenv.mkDerivation rec {
   pname = "netsurf";
@@ -37,7 +37,7 @@ stdenv.mkDerivation rec {
     makeWrapper
     perl
     perlPackages.HTMLParser
-    pkg-config
+    pkgconfig
     xxd
   ]
   ++ optional (uilib == "gtk2" || uilib == "gtk3") wrapGAppsHook
@@ -67,7 +67,7 @@ stdenv.mkDerivation rec {
     "TARGET=${uilib}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/";
     description = "A free, open source, small web browser";
     longDescription = ''

@@ -1,7 +1,7 @@
 { mkDerivation, lib, fetchFromGitHub
-, cmake, git, pkg-config, wget, zip
+, cmake, git, pkgconfig, wget, zip
 , qtbase, qtx11extras
-, libdwarf, libjpeg_turbo, libunwind, xz, tinyxml, libX11
+, libdwarf, libjpeg_turbo, libunwind, lzma, tinyxml, libX11
 , SDL2, SDL2_gfx, SDL2_image, SDL2_ttf
 , freeglut, libGLU
 , fetchpatch
@@ -26,12 +26,12 @@ mkDerivation {
     })
   ];
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [
     git wget zip
     qtbase qtx11extras
-    libdwarf libjpeg_turbo libunwind xz tinyxml libX11
+    libdwarf libjpeg_turbo libunwind lzma tinyxml libX11
     SDL2 SDL2_gfx SDL2_image SDL2_ttf
     freeglut libGLU
   ];

@@ -1,26 +1,27 @@
 { lib
 , buildPythonPackage
 , fetchPypi
+, python
+, isPy3k
+, pythonNamespacesHook
 , msrestazure
 , azure-common
 , azure-mgmt-datalake-nspkg
-, azure-mgmt-core
 }:
 
 buildPythonPackage rec {
   pname = "azure-mgmt-datalake-store";
-  version = "1.0.0";
+  version = "0.5.0";
 
   src = fetchPypi {
     inherit pname version;
     extension = "zip";
-    sha256 = "sha256-GrmVK97M+iojevPLVTuLmfQRLxvrHtr9DRHymJvLYHE=";
+    sha256 = "9376d35495661d19f8acc5604f67b0bc59493b1835bbc480f9a1952f90017a4c";
   };
 
   propagatedBuildInputs = [
     msrestazure
     azure-common
-    azure-mgmt-core
     azure-mgmt-datalake-nspkg
   ];
 

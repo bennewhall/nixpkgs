@@ -1,16 +1,14 @@
-{ lib, stdenv, fetchurl, libpng, perl, perlPackages, makeWrapper }:
+{ stdenv, fetchurl, libpng, perl, perlPackages, makeWrapper }:
 
 stdenv.mkDerivation rec {
-  pname = "icoutils";
-  version = "0.32.3";
+  name = "icoutils-0.32.3";
 
   src = fetchurl {
-    url = "mirror://savannah/icoutils/icoutils-${version}.tar.bz2";
+    url = "mirror://savannah/icoutils/${name}.tar.bz2";
     sha256 = "1q66cksms4l62y0wizb8vfavhmf7kyfgcfkynil3n99s0hny1aqp";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ libpng perl ];
+  buildInputs = [ makeWrapper libpng perl ];
   propagatedBuildInputs = [ perlPackages.LWP ];
 
   patchPhase = ''
@@ -28,7 +26,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://www.nongnu.org/icoutils/";
     description = "Set of programs to deal with Microsoft Windows(R) icon and cursor files";
-    license = lib.licenses.gpl3Plus;
-    platforms = with lib.platforms; linux ++ darwin;
+    license = stdenv.lib.licenses.gpl3Plus;
+    platforms = with stdenv.lib.platforms; linux ++ darwin;
   };
 }

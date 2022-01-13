@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, lua52Packages, makeWrapper }:
+{ stdenv, fetchFromGitHub, lua52Packages, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "z-lua";
-  version = "1.8.13";
+  version = "1.8.7";
 
   src = fetchFromGitHub {
     owner = "skywind3000";
     repo = "z.lua";
     rev = version;
-    sha256 = "sha256-74EWeLkSRrVsJuucdN8sSTl5fPmboViYW0qdovBZQ5U=";
+    sha256 = "14n1abv7gh4zajq471bgzpcv8l1159g00h9x83h719i9kxxsa2ba";
   };
 
   dontBuild = true;
@@ -20,19 +20,16 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
 
-    install -Dm755 z.lua $out/bin/z.lua
-    wrapProgram $out/bin/z.lua --set LUA_CPATH "${lua52Packages.luafilesystem}/lib/lua/5.2/lfs.so" --set _ZL_USE_LFS 1;
-    # Create symlink for backwards compatibility. See: https://github.com/NixOS/nixpkgs/pull/96081
-    ln -s $out/bin/z.lua $out/bin/z
+    install -Dm755 z.lua $out/bin/z
+    wrapProgram $out/bin/z --set LUA_CPATH "${lua52Packages.luafilesystem}/lib/lua/5.2/lfs.so" --set _ZL_USE_LFS 1;
 
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/skywind3000/z.lua";
     description = "A new cd command that helps you navigate faster by learning your habits";
     license = licenses.mit;
-    maintainers = with maintainers; [ marsam ];
-    mainProgram = "z.lua";
+    maintainers = [ maintainers.marsam ];
   };
 }

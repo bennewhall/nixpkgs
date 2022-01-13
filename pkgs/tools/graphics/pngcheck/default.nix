@@ -1,19 +1,14 @@
-{ lib, stdenv, fetchurl, zlib }:
+{ stdenv, fetchurl, zlib }:
 
 stdenv.mkDerivation rec {
-  pname = "pngcheck";
-  version = "3.0.2";
+  name = "pngcheck-2.3.0";
 
   src = fetchurl {
-    url = "mirror://sourceforge/png-mng/pngcheck-${version}.tar.gz";
-    sha256 = "sha256-DX4mLyQRb93yhHqM61yS2fXybvtC6f/2PsK7dnYTHKc=";
+    url = "mirror://sourceforge/png-mng/${name}.tar.gz";
+    sha256 = "0pzkj1bb4kdybk6vbfq9s0wzdm5szmrgixkas3xmbpv4mhws1w3p";
   };
 
   hardeningDisable = [ "format" ];
-
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace Makefile.unx --replace "gcc" "clang"
-  '';
 
   makefile = "Makefile.unx";
   makeFlags = [ "ZPATH=${zlib.static}/lib" ];
@@ -25,11 +20,10 @@ stdenv.mkDerivation rec {
     cp pngcheck $out/bin/pngcheck
   '';
 
-  meta = with lib; {
+  meta = {
     homepage = "http://pmt.sourceforge.net/pngcrush";
     description = "Verifies the integrity of PNG, JNG and MNG files";
-    license = licenses.free;
-    platforms = with platforms; [ unix ];
-    maintainers = with maintainers; [ starcraft66 ];
+    license = stdenv.lib.licenses.free;
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

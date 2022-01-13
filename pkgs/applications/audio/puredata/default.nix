@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, autoreconfHook, gettext, makeWrapper
-, alsa-lib, libjack2, tk, fftw
+{ stdenv, fetchurl, autoreconfHook, gettext, makeWrapper
+, alsaLib, libjack2, tk, fftw
 }:
 
 stdenv.mkDerivation  rec {
@@ -13,7 +13,7 @@ stdenv.mkDerivation  rec {
 
   nativeBuildInputs = [ autoreconfHook gettext makeWrapper ];
 
-  buildInputs = [ alsa-lib libjack2 fftw ];
+  buildInputs = [ alsaLib libjack2 fftw ];
 
   configureFlags = [
     "--enable-alsa"
@@ -27,7 +27,7 @@ stdenv.mkDerivation  rec {
     wrapProgram $out/bin/pd --prefix PATH : ${tk}/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''A real-time graphical programming environment for
                     audio, video, and graphical processing'';
     homepage = "http://puredata.info";

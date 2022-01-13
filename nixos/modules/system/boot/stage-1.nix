@@ -22,7 +22,7 @@ let
     rootModules = config.boot.initrd.availableKernelModules ++ config.boot.initrd.kernelModules;
     kernel = modulesTree;
     firmware = firmware;
-    allowMissing = false;
+    allowMissing = true;
   };
 
 
@@ -137,14 +137,6 @@ let
         copy_bin_and_libs ${pkgs.e2fsprogs}/sbin/resize2fs
       ''}
 
-      # Copy multipath.
-      ${optionalString config.services.multipath.enable ''
-        copy_bin_and_libs ${config.services.multipath.package}/bin/multipath
-        copy_bin_and_libs ${config.services.multipath.package}/bin/multipathd
-        # Copy lib/multipath manually.
-        cp -rpv ${config.services.multipath.package}/lib/multipath $out/lib
-      ''}
-
       # Copy secrets if needed.
       #
       # TODO: move out to a separate script; see #85000.
@@ -207,32 +199,19 @@ let
       $out/bin/dmsetup --version 2>&1 | tee -a log | grep -q "version:"
       LVM_SYSTEM_DIR=$out $out/bin/lvm version 2>&1 | tee -a log | grep -q "LVM"
       $out/bin/mdadm --version
-      ${optionalString config.services.multipath.enable ''
-        ($out/bin/multipath || true) 2>&1 | grep -q 'need to be root'
-        ($out/bin/multipathd || true) 2>&1 | grep -q 'need to be root'
-      ''}
 
       ${config.boot.initrd.extraUtilsCommandsTest}
       fi
     ''; # */
 
 
-  # Networkd link files are used early by udev to set up interfaces early.
-  # This must be done in stage 1 to avoid race conditions between udev and
-  # network daemons.
   linkUnits = pkgs.runCommand "link-units" {
       allowedReferences = [ extraUtils ];
       preferLocalBuild = true;
-    } (''
+    } ''
       mkdir -p $out
       cp -v ${udev}/lib/systemd/network/*.link $out/
-      '' + (
-      let
-        links = filterAttrs (n: v: hasSuffix ".link" n) config.systemd.network.units;
-        files = mapAttrsToList (n: v: "${v.unit}/${n}") links;
-      in
-        concatMapStringsSep "\n" (file: "cp -v ${file} $out/") files
-      ));
+    '';
 
   udevRules = pkgs.runCommand "udev-rules" {
       allowedReferences = [ extraUtils ];
@@ -301,7 +280,7 @@ let
 
     inherit (config.system.build) earlyMountScript;
 
-    inherit (config.boot.initrd) checkJournalingFS verbose
+    inherit (config.boot.initrd) checkJournalingFS
       preLVMCommands preDeviceCommands postDeviceCommands postMountCommands preFailCommands kernelModules;
 
     resumeDevices = map (sd: if sd ? device then sd.device else "/dev/disk/by-label/${sd.label}")
@@ -329,7 +308,7 @@ let
   # the initial RAM disk.
   initialRamdisk = pkgs.makeInitrd {
     name = "initrd-${kernel-name}";
-    inherit (config.boot.initrd) compressor compressorArgs prepend;
+    inherit (config.boot.initrd) compressor prepend;
 
     contents =
       [ { object = bootStage1;
@@ -350,33 +329,12 @@ let
         { object = pkgs.kmod-debian-aliases;
           symlink = "/etc/modprobe.d/debian.conf";
         }
-      ] ++ lib.optionals config.services.multipath.enable [
-        { object = pkgs.runCommand "multipath.conf" {
-              src = config.environment.etc."multipath.conf".text;
-              preferLocalBuild = true;
-            } ''
-              target=$out
-              printf "$src" > $out
-              substituteInPlace $out \
-                --replace ${config.services.multipath.package}/lib ${extraUtils}/lib
-            '';
-          symlink = "/etc/multipath.conf";
-        }
-      ] ++ (lib.mapAttrsToList
-        (symlink: options:
-          {
-            inherit symlink;
-            object = options.source;
-          }
-        )
-        config.boot.initrd.extraFiles);
+      ];
   };
 
   # Script to add secret files to the initrd at bootloader update time
   initialRamdiskSecretAppender =
-    let
-      compressorExe = initialRamdisk.compressorExecutableFunction pkgs;
-    in pkgs.writeScriptBin "append-initrd-secrets"
+    pkgs.writeScriptBin "append-initrd-secrets"
       ''
         #!${pkgs.bash}/bin/bash -e
         function usage {
@@ -406,19 +364,19 @@ let
         }
         trap cleanup EXIT
 
-        tmp=$(mktemp -d ''${TMPDIR:-/tmp}/initrd-secrets.XXXXXXXXXX)
+        tmp=$(mktemp -d initrd-secrets.XXXXXXXXXX)
 
         ${lib.concatStringsSep "\n" (mapAttrsToList (dest: source:
             let source' = if source == null then dest else toString source; in
               ''
-                mkdir -p $(dirname "$tmp/.initrd-secrets/${dest}")
-                cp -a ${source'} "$tmp/.initrd-secrets/${dest}"
+                mkdir -p $(dirname "$tmp/${dest}")
+                cp -a ${source'} "$tmp/${dest}"
               ''
           ) config.boot.initrd.secrets)
          }
 
-        (cd "$tmp" && find . -print0 | sort -z | cpio --quiet -o -H newc -R +0:+0 --reproducible --null) | \
-          ${compressorExe} ${lib.escapeShellArgs initialRamdisk.compressorArgs} >> "$1"
+        (cd "$tmp" && find . -print0 | sort -z | cpio -o -H newc -R +0:+0 --reproducible --null) | \
+          ${config.boot.initrd.compressor} >> "$1"
       '';
 
 in
@@ -442,27 +400,11 @@ in
     boot.initrd.enable = mkOption {
       type = types.bool;
       default = !config.boot.isContainer;
-      defaultText = literalExpression "!config.boot.isContainer";
+      defaultText = "!config.boot.isContainer";
       description = ''
         Whether to enable the NixOS initial RAM disk (initrd). This may be
         needed to perform some initialisation tasks (like mounting
         network/encrypted file systems) before continuing the boot process.
-      '';
-    };
-
-    boot.initrd.extraFiles = mkOption {
-      default = { };
-      type = types.attrsOf
-        (types.submodule {
-          options = {
-            source = mkOption {
-              type = types.package;
-              description = "The object to make available inside the initrd.";
-            };
-          };
-        });
-      description = ''
-        Extra files to link and copy in to the initrd.
       '';
     };
 
@@ -569,31 +511,11 @@ in
     };
 
     boot.initrd.compressor = mkOption {
-      default = (
-        if lib.versionAtLeast config.boot.kernelPackages.kernel.version "5.9"
-        then "zstd"
-        else "gzip"
-      );
-      defaultText = literalDocBook "<literal>zstd</literal> if the kernel supports it (5.9+), <literal>gzip</literal> if not";
-      type = types.unspecified; # We don't have a function type...
-      description = ''
-        The compressor to use on the initrd image. May be any of:
-
-        <itemizedlist>
-         <listitem><para>The name of one of the predefined compressors, see <filename>pkgs/build-support/kernel/initrd-compressor-meta.nix</filename> for the definitions.</para></listitem>
-         <listitem><para>A function which, given the nixpkgs package set, returns the path to a compressor tool, e.g. <literal>pkgs: "''${pkgs.pigz}/bin/pigz"</literal></para></listitem>
-         <listitem><para>(not recommended, because it does not work when cross-compiling) the full path to a compressor tool, e.g. <literal>"''${pkgs.pigz}/bin/pigz"</literal></para></listitem>
-        </itemizedlist>
-
-        The given program should read data from stdin and write it to stdout compressed.
-      '';
+      internal = true;
+      default = "gzip -9n";
+      type = types.str;
+      description = "The compressor to use on the initrd image.";
       example = "xz";
-    };
-
-    boot.initrd.compressorArgs = mkOption {
-      default = null;
-      type = types.nullOr (types.listOf types.str);
-      description = "Arguments to pass to the compressor for the initrd image, or null to use the compressor's defaults.";
     };
 
     boot.initrd.secrets = mkOption
@@ -606,7 +528,7 @@ in
             is the path it should be copied from (or null for the same
             path inside and out).
           '';
-        example = literalExpression
+        example = literalExample
           ''
             { "/etc/dropbear/dropbear_rsa_host_key" =
                 ./secret-dropbear-key;
@@ -619,23 +541,6 @@ in
       example = [ "btrfs" ];
       type = types.listOf types.str;
       description = "Names of supported filesystem types in the initial ramdisk.";
-    };
-
-    boot.initrd.verbose = mkOption {
-      default = true;
-      type = types.bool;
-      description =
-        ''
-          Verbosity of the initrd. Please note that disabling verbosity removes
-          only the mandatory messages generated by the NixOS scripts. For a
-          completely silent boot, you might also want to set the two following
-          configuration options:
-
-          <itemizedlist>
-            <listitem><para><literal>boot.consoleLogLevel = 0;</literal></para></listitem>
-            <listitem><para><literal>boot.kernelParams = [ "quiet" "udev.log_priority=3" ];</literal></para></listitem>
-          </itemizedlist>
-        '';
     };
 
     boot.loader.supportsInitrdSecrets = mkOption

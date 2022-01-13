@@ -1,6 +1,6 @@
-{ lib, fetchFromGitHub, buildPythonApplication, python3Packages, wrapGAppsHook
+{ stdenv, fetchFromGitHub, buildPythonApplication, python3Packages, wrapGAppsHook
 , xflux, librsvg, gtk3, gobject-introspection, pango, gdk-pixbuf, atk
-, pexpect, pygobject3, pyxdg, libappindicator-gtk3
+, pexpect, pyGtkGlade, pygobject3, pyxdg, libappindicator-gtk3
 }:
 buildPythonApplication rec {
   pname = "xflux-gui";
@@ -42,8 +42,8 @@ buildPythonApplication rec {
   meta = {
     description = "Better lighting for Linux. Open source GUI for xflux";
     homepage = "https://justgetflux.com/linux.html";
-    license = lib.licenses.unfree; # marked as unfree since the source code contains a copy of the unfree xflux binary
-    maintainers = [ lib.maintainers.sheenobu ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.unfree; # marked as unfree since the source code contains a copy of the unfree xflux binary
+    maintainers = [ stdenv.lib.maintainers.sheenobu ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

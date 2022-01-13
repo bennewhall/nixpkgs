@@ -5,37 +5,32 @@
 # cgit) that are needed here should be included directly in Nixpkgs as
 # files.
 
-stdenv.mkDerivation rec {
-  pname = "expat";
-  version = "2.4.1";
+let
+  version = "2.2.10";
+in stdenv.mkDerivation rec {
+  name = "expat-${version}";
 
   src = fetchurl {
-    url = "https://github.com/libexpat/libexpat/releases/download/R_${lib.replaceStrings ["."] ["_"] version}/${pname}-${version}.tar.xz";
-    sha256 = "sha256-zwMtDbqbkoY2VI4ysyei1msaq2PE9KE90TLC0dLy+2o=";
+    url = "https://github.com/libexpat/libexpat/releases/download/R_${lib.replaceStrings ["."] ["_"] version}/${name}.tar.xz";
+    sha256 = "sha256-Xf5Tj4tbY/A+mO2sUg19mmpNIuSC5cltTQb8xUhcJfI=";
   };
 
   outputs = [ "out" "dev" ]; # TODO: fix referrers
   outputBin = "dev";
 
-  configureFlags = lib.optional stdenv.isFreeBSD "--with-pic";
+  configureFlags = stdenv.lib.optional stdenv.isFreeBSD "--with-pic";
 
   outputMan = "dev"; # tiny page for a dev tool
 
   doCheck = true; # not cross;
 
   preCheck = ''
-    patchShebangs ./configure ./run.sh ./test-driver-wrapper.sh
+    patchShebangs ./run.sh
+    patchShebangs ./test-driver-wrapper.sh
   '';
 
-  # CMake files incorrectly calculate library path from dev prefix
-  # https://github.com/libexpat/libexpat/issues/501
-  postFixup = ''
-    substituteInPlace $dev/lib/cmake/expat-${version}/expat-noconfig.cmake \
-      --replace "$"'{_IMPORT_PREFIX}' $out
-  '';
-
-  meta = with lib; {
-    homepage = "https://libexpat.github.io/";
+  meta = with stdenv.lib; {
+    homepage = "http://www.libexpat.org/";
     description = "A stream-oriented XML parser library written in C";
     platforms = platforms.all;
     license = licenses.mit; # expat version

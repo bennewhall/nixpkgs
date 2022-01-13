@@ -1,12 +1,11 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , extra-cmake-modules
 , botan2
 , karchive
 , kauth
 , libdrm
-, hwdata
-, glxinfo
+, mesa-demos
 , procps
 , util-linux
 , vulkan-tools
@@ -21,13 +20,13 @@
 
 stdenv.mkDerivation rec{
   pname = "corectrl";
-  version = "1.2.2";
+  version = "1.1.1";
 
   src = fetchFromGitLab {
     owner = "corectrl";
     repo = "corectrl";
     rev = "v${version}";
-    sha256 = "1zp523cgvmfjc42wx1f1jh5q3jnsnm833m2xnbbwmfrmhrzh5269";
+    sha256 = "sha256-YQDrxPqCa3OzNKd3UiAffqqvOrgbXmDFJGjYPetolyY=";
   };
 
   nativeBuildInputs = [
@@ -39,7 +38,7 @@ stdenv.mkDerivation rec{
     karchive
     kauth
     libdrm
-    glxinfo
+    mesa-demos
     procps
     util-linux
     vulkan-tools
@@ -51,10 +50,8 @@ stdenv.mkDerivation rec{
     qtxmlpatterns
   ];
 
-  cmakeFlags = [ "-DWITH_PCI_IDS_PATH=${hwdata}/share/hwdata/pci.ids" ];
-
-  runtimeDeps = [ hwdata glxinfo vulkan-tools util-linux procps ];
-  binPath = lib.makeBinPath runtimeDeps;
+  runtimeDeps = [ mesa-demos vulkan-tools ];
+  binPath = stdenv.lib.makeBinPath runtimeDeps;
 
   dontWrapQtApps = true;
 
@@ -62,7 +59,7 @@ stdenv.mkDerivation rec{
     wrapQtApp $out/bin/corectrl --prefix PATH ":" ${binPath}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gitlab.com/corectrl/corectrl/";
     description = "Control your computer hardware via application profiles";
     longDescription = ''

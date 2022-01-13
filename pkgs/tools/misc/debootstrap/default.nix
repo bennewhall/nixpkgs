@@ -1,13 +1,12 @@
-{ lib, stdenv, fetchurl, dpkg, gawk, perl, wget, coreutils, util-linux
-, gnugrep, gnupg1, gnutar, gnused, gzip, makeWrapper }:
+{ stdenv, fetchurl, dpkg, gawk, perl, wget, coreutils, util-linux
+, gnugrep, gnutar, gnused, gzip, makeWrapper }:
 # USAGE like this: debootstrap sid /tmp/target-chroot-directory
 # There is also cdebootstrap now. Is that easier to maintain?
-let binPath = lib.makeBinPath [
+let binPath = stdenv.lib.makeBinPath [
     coreutils
     dpkg
     gawk
     gnugrep
-    gnupg1
     gnused
     gnutar
     gzip
@@ -16,13 +15,13 @@ let binPath = lib.makeBinPath [
   ];
 in stdenv.mkDerivation rec {
   pname = "debootstrap";
-  version = "1.0.126";
+  version = "1.0.123";
 
   src = fetchurl {
     # git clone git://git.debian.org/d-i/debootstrap.git
     # I'd like to use the source. However it's lacking the lanny script ? (still true?)
     url = "mirror://debian/pool/main/d/${pname}/${pname}_${version}.tar.gz";
-    sha256 = "sha256-vEjhxQDDO+1QvQDSAfM408ktbA3LHyAsO8AO8B+Wxhg=";
+    sha256 = "0a53dhfwa74vdhqd6kbl7zlm7iic37c6wkdclppf0syxxi3q2njy";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -58,7 +57,7 @@ in stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool to create a Debian system in a chroot";
     homepage = "https://wiki.debian.org/Debootstrap";
     license = licenses.mit;

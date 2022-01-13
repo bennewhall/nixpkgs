@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, makeWrapper, pkg-config, gtk3, librsvg }:
+{ stdenv, fetchurl, makeWrapper, pkgconfig, gtk3, librsvg }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "howl";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   # The Makefile uses "/usr/local" if not explicitly overridden
   installFlags = [ "PREFIX=$(out)" ];
 
-  nativeBuildInputs = [ makeWrapper pkg-config ];
+  nativeBuildInputs = [ makeWrapper pkgconfig ];
   buildInputs = [ gtk3 librsvg ];
   enableParallelBuilding = true;
 

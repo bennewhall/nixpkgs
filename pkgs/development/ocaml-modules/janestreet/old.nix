@@ -1,32 +1,8 @@
-{ self
-, super
-, lib
-, stdenv
-, openssl
-}:
+{ stdenv, lib, janePackage, ocaml, ocamlbuild, cryptokit, ctypes, magic-mime,
+  ocaml-migrate-parsetree, octavius, ounit, ppx_deriving, re, zarith, num,
+  openssl }:
 
-let
-  inherit (super)
-    janePackage
-    ocaml
-    ocamlbuild
-    cryptokit
-    ctypes
-    magic-mime
-    ocaml-migrate-parsetree
-    octavius
-    ounit
-    ppx_deriving
-    re
-    zarith
-    num
-    ;
-
-in
-
-with self;
-
-{
+rec {
 
   # Jane Street packages, up to ppx_core
 

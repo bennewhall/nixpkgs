@@ -1,17 +1,8 @@
-{ lib
+{ stdenv
 , fetchFromGitHub
 , buildPythonPackage
-, cython
-, git
-, pkgconfig
-, pytest-runner
-, setuptools-scm
-, future
-, numpy
 , pyusb
-, mock
-, pytestCheckHook
-, zipp
+, numpy
 }:
 
 ## Usage
@@ -21,45 +12,29 @@
 
 buildPythonPackage rec {
   pname = "seabreeze";
-  version = "1.3.0";
+  version = "0.6.0";
 
   src = fetchFromGitHub {
     owner = "ap--";
     repo = "python-seabreeze";
-    rev = "v${version}";
-    sha256 = "1hm9aalpb9sdp8s7ckn75xvyiacp5678pv9maybm5nz0z2h29ibq";
-    leaveDotGit = true;
+    rev = "python-seabreeze-v${version}";
+    sha256 = "0bc2s9ic77gz9m40w89snixphxlzib60xa4f49n4zasjrddfz1l8";
   };
-
-  nativeBuildInputs = [
-    cython
-    git
-    pkgconfig
-    pytest-runner
-    setuptools-scm
-  ];
-
-  propagatedBuildInputs = [
-    future
-    numpy
-    pyusb
-  ];
 
   postInstall = ''
     mkdir -p $out/etc/udev/rules.d
-    cp os_support/10-oceanoptics.rules $out/etc/udev/rules.d/10-oceanoptics.rules
+    cp misc/10-oceanoptics.rules $out/etc/udev/rules.d/10-oceanoptics.rules
   '';
 
-  # few backends enabled, but still some tests
-  checkInputs = [
-    pytestCheckHook
-    mock
-    zipp
-  ];
+  # underlying c libraries are tested and fail
+  # (c libs are used with anaconda, which we don't care about as we use the alternative path, being that of pyusb).
+  doCheck = false;
+
+  propagatedBuildInputs = [ pyusb numpy ];
 
   setupPyBuildFlags = [ "--without-cseabreeze" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ap--/python-seabreeze";
     description = "A python library to access Ocean Optics spectrometers";
     maintainers = [];

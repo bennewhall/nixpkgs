@@ -20,7 +20,8 @@ buildPythonPackage rec {
 
   src = fetchPypi ({
     pname = "tensorboard";
-    inherit version format;
+    inherit version;
+    format = "wheel";
   } // (if isPy3k then {
     python = "py3";
     sha256 = "1g62i3nrgp8q9wfsyqqjkkfnsz7x2k018c26kdh527h1yrjjrbac";

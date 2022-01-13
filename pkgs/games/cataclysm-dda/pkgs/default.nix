@@ -13,17 +13,15 @@ let
     };
   };
 
-  pkgs' = lib.mapAttrs (_: mods: lib.filterAttrs isAvailable mods) pkgs;
+  pkgs' = lib.mapAttrs (_: mod: lib.filterAttrs availableForBuild mod) pkgs;
 
-  isAvailable = _: mod:
+  availableForBuild = _: mod:
   if isNull build then
     true
   else if build.isTiles then
-    mod.forTiles or false
-  else if build.isCurses then
-    mod.forCurses or false
+    mod.forTiles
   else
-    false;
+    mod.forCurses;
 in
 
 lib.makeExtensible (_: pkgs')

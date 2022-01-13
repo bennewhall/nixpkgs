@@ -1,27 +1,27 @@
-{ lib, fetchFromGitHub, ... }:
+{ pkgs, lib, fetchFromGitHub, gerbil-unstable, gerbil-support, gambit-support }:
 
-{
+gerbil-support.gerbilPackage {
   pname = "gerbil-libp2p";
-  version = "unstable-2021-12-01";
-  git-version = "f0f86c3";
-  softwareName = "Gerbil-libp2p";
+  version = "unstable-2018-12-27";
+  git-version = "2376b3f";
   gerbil-package = "vyzo";
-
-  buildInputs = []; # Note: at *runtime*, this depends on go-libp2p-daemon running
-
-  pre-src = {
-    fun = fetchFromGitHub;
+  gerbil = gerbil-unstable;
+  gerbilInputs = [];
+  buildInputs = []; # Note: at *runtime*, depends on go-libp2p-daemon
+  gambit-params = gambit-support.unstable-params;
+  version-path = "version";
+  softwareName = "Gerbil-libp2p";
+  src = fetchFromGitHub {
     owner = "vyzo";
     repo = "gerbil-libp2p";
-    rev = "f0f86c37256b540eb51f21e518979fc786f1fd5b";
-    sha256 = "1qqak3imsgbc2hbi7ibldfxpdvl0i6k37r1726lxr35kmkqj452q";
+    rev = "2376b3f39cee04dd4ec455c8ea4e5faa93c2bf88";
+    sha256 = "0jcy7hfg953078msigyfwp2g4ii44pi6q7vcpmq01cbbvxpxz6zw";
   };
-
-  meta = with lib; {
+  meta = {
     description = "Gerbil libp2p: use libp2p from Gerbil";
     homepage    = "https://github.com/vyzo/gerbil-libp2p";
-    license     = licenses.mit;
-    platforms   = platforms.unix;
-    maintainers = with maintainers; [ fare ];
+    license     = lib.licenses.mit;
+    platforms   = lib.platforms.unix;
+    maintainers = with lib.maintainers; [ fare ];
   };
 }

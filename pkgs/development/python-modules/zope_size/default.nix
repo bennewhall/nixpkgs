@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , zope_i18nmessageid
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ zope_i18nmessageid zope_interface ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/zopefoundation/zope.size";
     description = "Interfaces and simple adapter that give the size of an object";
     license = licenses.zpl20;

@@ -1,12 +1,10 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
+{ lib, buildPythonPackage, fetchFromGitHub
 , packaging
-}:
+, fetchurl, python }:
 
 buildPythonPackage rec {
   pname = "vcver";
-  version = "0.2.12";
+  version = "0.2.10";
 
   src = fetchFromGitHub {
     owner = "toumorokoshi";
@@ -22,7 +20,7 @@ buildPythonPackage rec {
   # circular dependency on test tool uranium https://pypi.org/project/uranium/
   doCheck = false;
 
-  pythonImportsCheck = [ "vcver" ];
+  pythonImportTests = [ "vcver" ];
 
   meta = with lib; {
     description = "Reference Implementation of vcver";

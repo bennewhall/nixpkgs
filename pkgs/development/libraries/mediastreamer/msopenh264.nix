@@ -4,8 +4,8 @@
 , fetchpatch
 , mediastreamer
 , openh264
-, pkg-config
-, lib, stdenv
+, pkgconfig
+, stdenv
 }:
 
 stdenv.mkDerivation rec {
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     sha256 = "140hs5lzpshzswvl39klcypankq3v2qck41696j22my7s4wsa0hr";
   };
 
-  nativeBuildInputs = [ autoreconfHook cmake pkg-config ];
+  nativeBuildInputs = [ autoreconfHook cmake pkgconfig ];
   buildInputs = [ mediastreamer openh264 ];
 
   # Do not build static libraries
@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
     cp src/libmsopenh264.so $out/lib/mediastreamer/plugins/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "H.264 encoder/decoder plugin for mediastreamer2";
     homepage = "https://www.linphone.org/technical-corner/mediastreamer2";
     license = licenses.gpl2;

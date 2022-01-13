@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 }:
 
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = "prefix=${placeholder "out"}";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Firmware loader for Qualcomm Gobi USB chipsets";
     homepage = "https://www.codon.org.uk/~mjg59/gobi_loader/";
     license = with licenses; [ gpl2 ];

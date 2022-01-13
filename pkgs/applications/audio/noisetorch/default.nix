@@ -1,42 +1,44 @@
-{ lib, buildGoModule, fetchFromGitHub, copyDesktopItems }:
+{ stdenv, buildGoModule, fetchFromGitHub, rnnoise-plugin }:
 
 buildGoModule rec {
   pname = "NoiseTorch";
-  version = "0.11.4";
+  version = "0.8.2";
 
   src = fetchFromGitHub {
     owner = "lawl";
     repo = "NoiseTorch";
     rev = version;
-    sha256 = "sha256-3+Yk7dqD7eyvd1I5CMmrg085ZtFxD2EnGqL5ttwx8eM=";
+    sha256 = "14i04rmraxbddcvk0k9c6ak9invln7002g5jms54kcjzv9p39hbf";
   };
+
+  patches = [ ./version.patch ./embedlibrnnoise.patch ];
 
   vendorSha256 = null;
 
   doCheck = false;
 
-  ldflags = [ "-X main.version=${version}"  "-X main.distribution=nix" ];
-
   subPackages = [ "." ];
 
-  nativeBuildInputs = [ copyDesktopItems ];
+  buildInputs = [ rnnoise-plugin ];
 
   preBuild = ''
-    make -C c/ladspa/
-    go generate
+    export RNNOISE_LADSPA_PLUGIN="${rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+    go generate;
     rm  ./scripts/*
   '';
 
   postInstall = ''
-    install -D ./assets/icon/noisetorch.png $out/share/icons/hicolor/256x256/apps/noisetorch.png
-    copyDesktopItems assets/noisetorch.desktop $out/share/applications/
+    mkdir -p $out/share/icons/hicolor/256x256/apps/
+    cp assets/icon/noisetorch.png $out/share/icons/hicolor/256x256/apps/
+    mkdir -p $out/share/applications/
+    cp assets/noisetorch.desktop $out/share/applications/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Virtual microphone device with noise supression for PulseAudio";
     homepage = "https://github.com/lawl/NoiseTorch";
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ panaeon lom ];
+    maintainers = with maintainers; [ panaeon ];
   };
 }

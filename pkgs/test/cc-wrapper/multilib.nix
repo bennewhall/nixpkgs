@@ -1,4 +1,4 @@
-{ lib, stdenv }:
+{ stdenv }:
 
 stdenv.mkDerivation {
   name = "cc-multilib-test";
@@ -33,5 +33,5 @@ stdenv.mkDerivation {
     touch $out
   '';
 
-  meta.platforms = lib.platforms.x86_64;
+  meta.platforms = stdenv.lib.platforms.x86_64;
 }

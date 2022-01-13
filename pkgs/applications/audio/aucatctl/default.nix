@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, sndio, libbsd }:
+{ stdenv, fetchurl, sndio, libbsd }:
 
 stdenv.mkDerivation rec {
   pname = "aucatctl";
@@ -10,14 +10,14 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ sndio ]
-    ++ lib.optional (!stdenv.isDarwin && !stdenv.targetPlatform.isBSD)
+    ++ stdenv.lib.optional (!stdenv.isDarwin && !stdenv.targetPlatform.isBSD)
     libbsd;
 
   outputs = [ "out" "man" ];
 
   preBuild = ''
     makeFlagsArray+=("PREFIX=$out")
-  '' + lib.optionalString
+  '' + stdenv.lib.optionalString
     (!stdenv.isDarwin && !stdenv.targetPlatform.isBSD) ''
       makeFlagsArray+=(LDADD="-lsndio -lbsd")
 
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
         --replace '#include <string.h>' '#include <bsd/string.h>'
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description =
       "The aucatctl utility sends MIDI messages to control sndiod and/or aucat volumes";
     homepage = "http://www.sndio.org";

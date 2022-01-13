@@ -1,12 +1,12 @@
-{ lib, fetchPypi, buildPythonPackage }:
+{ stdenv, fetchPypi, buildPythonPackage }:
 
 buildPythonPackage rec {
   pname = "distro";
-  version = "1.6.0";
+  version = "1.5.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "83f5e5a09f9c5f68f60173de572930effbcc0287bb84fdc4426cb4168c088424";
+    sha256 = "0e58756ae38fbd8fc3020d54badb8eae17c5b9dcbed388b17bb55b8a5928df92";
   };
 
   # tests are very targeted at individual linux distributions
@@ -14,10 +14,10 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "distro" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/nir0s/distro";
     description = "Linux Distribution - a Linux OS platform information API.";
     license = licenses.asl20;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ nand0p ];
   };
 }

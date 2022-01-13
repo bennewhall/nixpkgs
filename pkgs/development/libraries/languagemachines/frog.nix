@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchurl
-, automake, autoconf, bzip2, libtar, libtool, pkg-config, autoconf-archive
+{ stdenv, fetchurl
+, automake, autoconf, bzip2, libtar, libtool, pkgconfig, autoconf-archive
 , libxml2, icu
 , languageMachines
 }:
 
 let
-  release = lib.importJSON ./release-info/LanguageMachines-frog.json;
+  release = builtins.fromJSON (builtins.readFile ./release-info/LanguageMachines-frog.json);
 in
 
 stdenv.mkDerivation {
@@ -13,7 +13,7 @@ stdenv.mkDerivation {
   version = release.version;
   src = fetchurl { inherit (release) url sha256;
                    name = "frog-v${release.version}.tar.gz"; };
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ automake autoconf bzip2 libtar libtool autoconf-archive
                   libxml2 icu
                   languageMachines.ticcutils
@@ -37,7 +37,7 @@ stdenv.mkDerivation {
     make check
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Tagger-Lemmatizer-Morphological-Analyzer-Dependency-Parser for Dutch";
     homepage    = "https://languagemachines.github.io/frog";
     license     = licenses.gpl3;

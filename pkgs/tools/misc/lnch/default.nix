@@ -1,22 +1,21 @@
-{ lib, fetchFromGitHub, buildGoPackage }:
+{ stdenv, fetchFromGitHub, buildGoPackage }:
 
 buildGoPackage rec {
   pname = "lnch";
-  version = "unstable-2021-02-10";
+  version = "2017-02-16";
 
   goPackagePath = "github.com/oem/${pname}";
 
   src = fetchFromGitHub {
     owner = "oem";
     repo = pname;
-    rev = "6ed336dd893afa071178b8ac6f6297d23fc55514";
-    sha256 = "K2TV+mx6C3/REJyDpC6a/Zn/ZZFxkDMC3EnkveH6YNQ=";
+    rev = "f24eed5392f01d2c8a9cfe9cdf70dcfbbf4b6b36";
+    sha256 = "0skzrjnbxq1yj7y64cq7angp4wqnrgw1xp9v8vw9zp8f8zwmpy0y";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/oem/lnch";
-    description = "Launches a process and moves it out of the process group";
-    license = licenses.mit;
-    platforms = with platforms; all;
+    description = "A small go app that launches a process and moves it out of the process group";
+    license = licenses.publicDomain; # really I don't know
   };
 }

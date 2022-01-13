@@ -2,7 +2,7 @@
 , mkDerivation
 , fetchFromGitHub
 , cmake
-, pkg-config
+, pkgconfig
 , lxqt-build-tools
 , pcre
 , libexif
@@ -16,18 +16,18 @@
 
 mkDerivation rec {
   pname = "libfm-qt";
-  version = "1.0.0";
+  version = "0.15.1";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = "libfm-qt";
     rev = version;
-    sha256 = "1kk2cv9cp2gdj2pzdgm72c009iyl3mhrvsiz05kdxd4v1kn38ci1";
+    sha256 = "1gjxml6c9m3xn094zbr9835sr4749dpxk4nc0ap9lg27qim63gx3";
   };
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
     lxqt-build-tools
   ];
 
@@ -46,9 +46,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/libfm-qt";
     description = "Core library of PCManFM-Qt (Qt binding for libfm)";
-    license = licenses.lgpl21Plus;
+    homepage = "https://github.com/lxqt/libfm-qt";
+    license = licenses.lgpl21;
     platforms = with platforms; unix;
     maintainers = with maintainers; [ romildo ];
   };

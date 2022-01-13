@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, xrdb, xlsfonts }:
+{ stdenv, fetchFromGitHub, xrdb, xlsfonts }:
 
-stdenv.mkDerivation rec {
-  name = "urxvt-font-size";
-  version = "1.3";
+stdenv.mkDerivation {
+  name = "urxvt-font-size-2015-05-22";
+  dontPatchShebangs = true;
 
   src = fetchFromGitHub {
     owner = "majutsushi";
     repo = "urxvt-font-size";
-    rev = "v${version}";
-    sha256 = "1526ap161cp3378f4ijd09nmsh71ld7bkxxhp8p6razdi2v8r16h";
+    rev = "fd5b09c10798c6723bbf771d4d8881cf6563bc69";
+    sha256 = "16m3kkypg3y00x597zx05zy167a0kaqpawz0l591wzb2bv1dz55z";
   };
 
   installPhase = ''
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     cp font-size $out/lib/urxvt/perl
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Change the urxvt font size on the fly";
     homepage = "https://github.com/majutsushi/urxvt-font-size";
     license = licenses.mit;

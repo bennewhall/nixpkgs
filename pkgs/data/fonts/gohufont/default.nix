@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchFromGitHub
+{ stdenv, fetchurl, fetchFromGitHub
 , mkfontscale, bdf2psf, bdftopcf
 , fonttosfnt, libfaketime
 }:
@@ -58,7 +58,7 @@ stdenv.mkDerivation rec {
     mkfontdir "$fontDir"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       A monospace bitmap font well suited for programming and terminal use
     '';

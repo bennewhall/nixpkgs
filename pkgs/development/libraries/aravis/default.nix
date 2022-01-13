@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, gtk-doc, intltool
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, gtk-doc, intltool
 , audit, glib, libusb1, libxml2
 , wrapGAppsHook
 , gstreamer ? null
@@ -6,7 +6,7 @@
 , gst-plugins-good ? null
 , gst-plugins-bad ? null
 , libnotify ? null
-, gnome ? null
+, gnome3 ? null
 , gtk3 ? null
 , enableUsb ? true
 , enablePacketSocket ? true
@@ -19,14 +19,14 @@
 
 let
   gstreamerAtLeastVersion1 =
-    lib.all
-      (pkg: pkg != null && lib.versionAtLeast (lib.getVersion pkg) "1.0")
+    stdenv.lib.all
+      (pkg: pkg != null && stdenv.lib.versionAtLeast (stdenv.lib.getVersion pkg) "1.0")
       [ gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad ];
 in
-  assert enableGstPlugin -> lib.all (pkg: pkg != null) [ gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad ];
+  assert enableGstPlugin -> stdenv.lib.all (pkg: pkg != null) [ gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad ];
   assert enableViewer -> enableGstPlugin;
   assert enableViewer -> libnotify != null;
-  assert enableViewer -> gnome != null;
+  assert enableViewer -> gnome3 != null;
   assert enableViewer -> gtk3 != null;
   assert enableViewer -> gstreamerAtLeastVersion1;
 
@@ -46,29 +46,29 @@ in
 
     nativeBuildInputs = [
       autoreconfHook
-      pkg-config
+      pkgconfig
       intltool
       gtk-doc
-    ] ++ lib.optional enableViewer wrapGAppsHook;
+    ] ++ stdenv.lib.optional enableViewer wrapGAppsHook;
 
     buildInputs =
       [ glib libxml2 ]
-      ++ lib.optional enableUsb libusb1
-      ++ lib.optional enablePacketSocket audit
-      ++ lib.optionals (enableViewer || enableGstPlugin) [ gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad ]
-      ++ lib.optionals (enableViewer) [ libnotify gtk3 gnome.adwaita-icon-theme ];
+      ++ stdenv.lib.optional enableUsb libusb1
+      ++ stdenv.lib.optional enablePacketSocket audit
+      ++ stdenv.lib.optionals (enableViewer || enableGstPlugin) [ gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad ]
+      ++ stdenv.lib.optionals (enableViewer) [ libnotify gtk3 gnome3.adwaita-icon-theme ];
 
-    preAutoreconf = "./autogen.sh";
+    preAutoreconf = ''./autogen.sh'';
 
     configureFlags =
-      lib.optional enableUsb "--enable-usb"
-        ++ lib.optional enablePacketSocket "--enable-packet-socket"
-        ++ lib.optional enableViewer "--enable-viewer"
-        ++ lib.optional enableGstPlugin
+      stdenv.lib.optional enableUsb "--enable-usb"
+        ++ stdenv.lib.optional enablePacketSocket "--enable-packet-socket"
+        ++ stdenv.lib.optional enableViewer "--enable-viewer"
+        ++ stdenv.lib.optional enableGstPlugin
         (if gstreamerAtLeastVersion1 then "--enable-gst-plugin" else "--enable-gst-0.10-plugin")
-        ++ lib.optional enableCppTest "--enable-cpp-test"
-        ++ lib.optional enableFastHeartbeat "--enable-fast-heartbeat"
-        ++ lib.optional enableAsan "--enable-asan";
+        ++ stdenv.lib.optional enableCppTest "--enable-cpp-test"
+        ++ stdenv.lib.optional enableFastHeartbeat "--enable-fast-heartbeat"
+        ++ stdenv.lib.optional enableAsan "--enable-asan";
 
     postPatch = ''
         ln -s ${gtk-doc}/share/gtk-doc/data/gtk-doc.make .
@@ -82,9 +82,9 @@ in
         Implements the gigabit ethernet and USB3 protocols used by industrial cameras.
       '';
       homepage = "https://aravisproject.github.io/docs/aravis-0.5";
-      license = lib.licenses.lgpl2;
+      license = stdenv.lib.licenses.lgpl2;
       maintainers = [];
-      platforms = lib.platforms.unix;
+      platforms = stdenv.lib.platforms.unix;
     };
   }
 

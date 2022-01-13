@@ -23,7 +23,7 @@ in fetchzip rec {
       most Western and Central European Latin-based languages, plus
       Greek and Cyrillic. It is designed by Mark Simonson.
     '';
-    maintainers = with maintainers; [ raskin ];
+    maintainers = with maintainers; [ raskin rycee ];
     license = licenses.ofl;
     platforms = platforms.all;
   };

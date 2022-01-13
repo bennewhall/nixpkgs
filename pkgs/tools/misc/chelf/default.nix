@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "chelf";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     mv chelf $out/bin/chelf
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "change or display the stack size of an ELF binary";
     homepage = "https://github.com/Gottox/chelf";
     license = licenses.bsd2;

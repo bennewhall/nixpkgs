@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchurl, autoreconfHook, automake, pkg-config
+{ stdenv, fetchurl, autoreconfHook, automake, pkgconfig
 , cairo, ghostscript, ngspice, tcl, tk, xorg, zlib }:
 
 let
   version = "3.10.12";
   name = "xcircuit-${version}";
-  inherit (lib) getBin;
+  inherit (stdenv.lib) getBin;
 
 in stdenv.mkDerivation {
   inherit name version;
@@ -14,7 +14,7 @@ in stdenv.mkDerivation {
     sha256 = "1h1ywc3mr7plvwnhdii2zgnnv5ih2nhyl4qbdjpi83dq0aq1s2mn";
   };
 
-  nativeBuildInputs = [ autoreconfHook automake pkg-config ];
+  nativeBuildInputs = [ autoreconfHook automake pkgconfig ];
   hardeningDisable = [ "format" ];
 
   configureFlags = [
@@ -25,7 +25,7 @@ in stdenv.mkDerivation {
 
   buildInputs = with xorg; [ cairo ghostscript libSM libXt libICE libX11 libXpm tcl tk zlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Generic drawing program tailored to circuit diagrams";
     homepage = "http://opencircuitdesign.com/xcircuit";
     license = licenses.gpl2;

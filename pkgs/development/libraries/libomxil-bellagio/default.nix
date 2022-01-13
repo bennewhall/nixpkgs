@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "libomxil-bellagio";
@@ -10,24 +10,17 @@ stdenv.mkDerivation rec {
   };
 
   configureFlags =
-    lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [ "ac_cv_func_malloc_0_nonnull=yes" ];
+    stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [ "ac_cv_func_malloc_0_nonnull=yes" ];
 
-  patches = [
-    ./fedora-fixes.patch
-    ./fno-common.patch
-  ];
-
-  # Disable parallel build as it fails as:
-  #    ld: cannot find -lomxil-bellagio
-  enableParallelBuilding = false;
+  patches = [ ./fedora-fixes.patch ];
 
   doCheck = false; # fails
 
   # Fix for #40213, probably permanent, because upstream doesn't seem to be
   # developed anymore. Alternatively, gcc7Stdenv could be used.
-  NIX_CFLAGS_COMPILE = "-Wno-error=array-bounds -Wno-error=stringop-overflow=8";
+  NIX_CFLAGS_COMPILE = "-Wno-error=array-bounds";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://sourceforge.net/projects/omxil/";
     description = "An opensource implementation of the Khronos OpenMAX Integration Layer API to access multimedia components";
     license = licenses.lgpl21;

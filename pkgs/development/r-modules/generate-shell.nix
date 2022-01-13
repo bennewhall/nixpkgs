@@ -5,18 +5,13 @@ stdenv.mkDerivation {
 
   buildCommand = "exit 1";
 
-  buildInputs = [
-    wget
-    cacert
-    nix
-  ];
+  buildInputs = [ wget ];
 
   nativeBuildInputs = [
     (rWrapper.override {
       packages = with rPackages; [
         data_table
         parallel
-        BiocManager
       ];
     })
   ];

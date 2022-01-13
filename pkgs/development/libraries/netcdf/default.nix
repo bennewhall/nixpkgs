@@ -1,5 +1,4 @@
-{ lib, stdenv
-, fetchpatch
+{ stdenv
 , fetchurl
 , hdf5
 , m4
@@ -8,27 +7,16 @@
 }:
 
 let
-  inherit (hdf5) mpiSupport mpi;
+  mpiSupport = hdf5.mpiSupport;
+  mpi = hdf5.mpi;
 in stdenv.mkDerivation rec {
   pname = "netcdf";
-  version = "4.8.0"; # Remove patch mentioned below on upgrade
+  version = "4.7.4";
 
   src = fetchurl {
     url = "https://www.unidata.ucar.edu/downloads/netcdf/ftp/${pname}-c-${version}.tar.gz";
-    sha256 = "1mfn8qi4k0b8pyar3wa8v0npj69c7rhgfdlppdwmq5jqk88kb5k7";
+    sha256 = "1a2fpp15a2rl1m50gcvvzd9y6bavl6vjf9zzf63sz5gdmq06yiqf";
   };
-
-  patches = [
-    # Fixes:
-    #     *** Checking vlen of compound file...Sorry! Unexpected result, tst_h_atts3.c, line: 289
-    #     FAIL tst_h_atts3 (exit status: 2)
-    # TODO: Remove with next netcdf release (see https://github.com/Unidata/netcdf-c/pull/1980)
-    (fetchpatch {
-      name = "netcdf-Fix-tst_h_atts3-for-hdf5-1.12.patch";
-      url = "https://github.com/Unidata/netcdf-c/commit/9fc8ae62a8564e095ff17f4612874581db0e4db5.patch";
-      sha256 = "128kxz5jikq32x5qjmi0xdngi0k336rf6bvbcppvlk5gibg5nk7v";
-    })
-  ];
 
   postPatch = ''
     patchShebangs .
@@ -43,7 +31,8 @@ in stdenv.mkDerivation rec {
   buildInputs = [ hdf5 curl mpi ];
 
   passthru = {
-    inherit mpiSupport mpi;
+    mpiSupport = mpiSupport;
+    inherit mpi;
   };
 
   configureFlags = [
@@ -52,7 +41,7 @@ in stdenv.mkDerivation rec {
       "--enable-shared"
       "--disable-dap-remote-tests"
   ]
-  ++ (lib.optionals mpiSupport [ "--enable-parallel-tests" "CC=${mpi}/bin/mpicc" ]);
+  ++ (stdenv.lib.optionals mpiSupport [ "--enable-parallel-tests" "CC=${mpi}/bin/mpicc" ]);
 
   disallowedReferences = [ stdenv.cc ];
 
@@ -64,7 +53,7 @@ in stdenv.mkDerivation rec {
 
   meta = {
       description = "Libraries for the Unidata network Common Data Format";
-      platforms = lib.platforms.unix;
+      platforms = stdenv.lib.platforms.unix;
       homepage = "https://www.unidata.ucar.edu/software/netcdf/";
       license = {
         url = "https://www.unidata.ucar.edu/software/netcdf/docs/copyright.html";

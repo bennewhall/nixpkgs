@@ -1,38 +1,32 @@
-{ lib, stdenv, buildGoModule, fetchFromGitHub, buildPackages, installShellFiles
-, makeWrapper
-, enableCmount ? true, fuse, macfuse-stubs
-}:
+{ stdenv, buildGoModule, fetchFromGitHub, buildPackages, installShellFiles }:
 
 buildGoModule rec {
   pname = "rclone";
-  version = "1.57.0";
+  version = "1.53.3";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = "v${version}";
-    sha256 = "0pwbprbkx5y0c93b61k8znan4aimk7dkssapjhkhzw4c38xd4lza";
+    sha256 = "10nimrq8nmpmfk2d4fx0yp916wk5q027m283izpshrbwvx7l6xx0";
   };
 
-  vendorSha256 = "0353pff07lwpa1jmi095kb2izcw09z73x6nninnnpyqppwzas6ha";
+  vendorSha256 = "1l4iz31k1pylvf0zrp4nhxna70s1ma4981x6q1s3dhszjxil5c88";
 
   subPackages = [ "." ];
 
   outputs = [ "out" "man" ];
 
-  buildInputs = lib.optional enableCmount (if stdenv.isDarwin then macfuse-stubs else fuse);
-  nativeBuildInputs = [ installShellFiles makeWrapper ];
+  nativeBuildInputs = [ installShellFiles ];
 
-  tags = lib.optionals enableCmount [ "cmount" ];
-
-  ldflags = [ "-s" "-w" "-X github.com/rclone/rclone/fs.Version=${version}" ];
+  buildFlagsArray = [ "-ldflags=-s -w -X github.com/rclone/rclone/fs.Version=${version}" ];
 
   postInstall =
     let
       rcloneBin =
         if stdenv.buildPlatform == stdenv.hostPlatform
         then "$out"
-        else lib.getBin buildPackages.rclone;
+        else stdenv.lib.getBin buildPackages.rclone;
     in
     ''
       installManPage rclone.1
@@ -40,15 +34,12 @@ buildGoModule rec {
         ${rcloneBin}/bin/rclone genautocomplete $shell rclone.$shell
         installShellCompletion rclone.$shell
       done
-    '' + lib.optionalString (enableCmount && !stdenv.isDarwin) ''
-      wrapProgram $out/bin/rclone --prefix LD_LIBRARY_PATH : "${fuse}/lib"
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Command line program to sync files and directories to and from major cloud storage";
     homepage = "https://rclone.org";
-    changelog = "https://github.com/rclone/rclone/blob/v${version}/docs/content/changelog.md";
     license = licenses.mit;
-    maintainers = with maintainers; [ danielfullmer marsam SuperSandro2000 ];
+    maintainers = with maintainers; [ danielfullmer marsam ];
   };
 }

@@ -1,40 +1,32 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, pkg-config, wayland-scanner
-, libGL, wayland, wayland-protocols, libinput, libxkbcommon, pixman
+{ stdenv, fetchFromGitHub, meson, ninja, pkg-config, wayland
+, libGL, wayland-protocols, libinput, libxkbcommon, pixman
 , xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, mesa
-, libpng, ffmpeg, xcbutilrenderutil, seatd
-
-, enableXWayland ? true, xwayland ? null
+, libpng, ffmpeg
 }:
 
 stdenv.mkDerivation rec {
   pname = "wlroots";
-  version = "0.14.1";
+  version = "0.12.0";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
     rev = version;
-    sha256 = "1sshp3lvlkl1i670kxhwsb4xzxl8raz6769kqvgmxzcb63ns9ay1";
+    sha256 = "01j38lmgs2c6fq68v8b75pkilia2wsgzgp46ivfbi9hhx47kgcfn";
   };
 
   # $out for the library and $examples for the example programs (in examples):
   outputs = [ "out" "examples" ];
 
-  depsBuildBuild = [ pkg-config ];
-
-  nativeBuildInputs = [ meson ninja pkg-config wayland-scanner ];
+  nativeBuildInputs = [ meson ninja pkg-config wayland ];
 
   buildInputs = [
     libGL wayland wayland-protocols libinput libxkbcommon pixman
     xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa
-    libpng ffmpeg xcbutilrenderutil seatd
-  ]
-    ++ lib.optional enableXWayland xwayland
-  ;
+    libpng ffmpeg
+  ];
 
-  mesonFlags =
-    lib.optional (!enableXWayland) "-Dxwayland=disabled"
-  ;
+  mesonFlags = [ "-Dlogind-provider=systemd" "-Dlibseat=disabled" ];
 
   postFixup = ''
     # Install ALL example programs to $examples:
@@ -48,7 +40,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A modular Wayland compositor library";
     longDescription = ''
       Pluggable, composable, unopinionated modules for building a Wayland
@@ -58,6 +50,6 @@ stdenv.mkDerivation rec {
     changelog = "https://github.com/swaywm/wlroots/releases/tag/${version}";
     license     = licenses.mit;
     platforms   = platforms.linux;
-    maintainers = with maintainers; [ primeos synthetica ];
+    maintainers = with maintainers; [ primeos ];
   };
 }

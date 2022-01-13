@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, pkg-config
+, pkgconfig
 , gettext
 , gtk3
 , glib
@@ -17,22 +17,21 @@
 , enablePostScript ? true, libspectre
 , enableXps ? true, libgxps
 , enableImages ? false
-, mateUpdateScript
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "atril";
-  version = "1.26.0";
+  version = "1.24.0";
 
   src = fetchurl {
-    url = "https://pub.mate-desktop.org/releases/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "0pz44k3axhjhhwfrfvnwvxak1dmjkwqs63rhrbcaagyymrp7cpki";
+    url = "https://pub.mate-desktop.org/releases/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0967gxw7h2qh2kpwl0jgv58hicz6aa92kr12mnykbpikad25s95y";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     gettext
     wrapGAppsHook
   ];
@@ -68,13 +67,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  passthru.updateScript = mateUpdateScript { inherit pname version; };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple multi-page document viewer for the MATE desktop";
     homepage = "https://mate-desktop.org";
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
     platforms = platforms.unix;
-    maintainers = teams.mate.members;
+    maintainers = [ maintainers.romildo ];
   };
 }

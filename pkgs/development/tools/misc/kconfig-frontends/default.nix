@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, bison, flex, gperf, ncurses, python3, bash }:
+{ stdenv, fetchurl, pkgconfig, bison, flex, gperf, ncurses, pythonPackages }:
 
 stdenv.mkDerivation rec {
   basename = "kconfig-frontends";
@@ -10,18 +10,20 @@ stdenv.mkDerivation rec {
     url = "http://ymorin.is-a-geek.org/download/${basename}/${name}.tar.xz";
   };
 
-  nativeBuildInputs = [ bison flex gperf pkg-config ];
-  buildInputs = [ bash ncurses python3 ];
-
-  strictDeps = true;
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ bison flex gperf ncurses pythonPackages.python pythonPackages.wrapPython ];
 
   configureFlags = [
     "--enable-frontends=conf,mconf,nconf"
   ];
 
-  NIX_CFLAGS_COMPILE = lib.optionalString stdenv.cc.isClang "-Wno-error=format-security";
+  postInstall = ''
+    wrapPythonPrograms
+  '';
 
-  meta = with lib; {
+  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.cc.isClang "-Wno-error=format-security";
+
+  meta = with stdenv.lib; {
     description = "Out of Linux tree packaging of the kconfig infrastructure";
     longDescription = ''
       Configuration language and system for the Linux kernel and other

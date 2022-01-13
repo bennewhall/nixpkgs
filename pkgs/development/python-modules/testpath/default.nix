@@ -1,23 +1,19 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "testpath";
-  version = "0.5.0";
+  version = "0.4.4";
+  format = "wheel";
 
   src = fetchPypi {
-    inherit pname version;
-    sha256 = "05z4s4d5i1ja16hiv4jhqv63fvg1a4vw77s0ay1sw11hrl5pmkqs";
+    inherit pname version format;
+    sha256 = "bfcf9411ef4bf3db7579063e0546938b1edda3d69f4e1fb8756991f5951f85d4";
   };
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Test utilities for code working with files and commands";
     license = licenses.mit;
     homepage = "https://github.com/jupyter/testpath";

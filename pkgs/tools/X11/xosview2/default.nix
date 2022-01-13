@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, libX11 }:
+{ stdenv, fetchurl, libX11 }:
 
 stdenv.mkDerivation rec {
   pname = "xosview2";
-  version = "2.3.2";
+  version = "2.3.1";
 
   src = fetchurl {
     url = "mirror://sourceforge/xosview/${pname}-${version}.tar.gz";
-    sha256 = "sha256-ex1GDBgx9Zzx5tOkZ2IRYskmBh/bUYpRTXHWRoE30vA=";
+    sha256 = "1drp0n6qjbxyc0104a3aw2g94rh5p218wmrqwxh3kwwm7pmr9xip";
   };
 
   # The software failed to buid with this enabled; it seemed tests were not implemented
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libX11 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lightweight program that gathers information from your operating system and displays it in graphical form";
     longDescription = ''
       xosview is a lightweight program that gathers information from your

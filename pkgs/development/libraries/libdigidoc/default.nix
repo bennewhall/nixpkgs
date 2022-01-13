@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, openssl, pcsclite, opensc, libxml2, Security }:
+{ stdenv, fetchurl, cmake, openssl, pcsclite, opensc, libxml2, Security }:
 
 stdenv.mkDerivation rec {
 
@@ -13,11 +13,11 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
 
   buildInputs = [ openssl pcsclite opensc libxml2 ]
-    ++ lib.optionals stdenv.isDarwin [ Security ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ Security ];
 
-  cmakeFlags = lib.optionals stdenv.isDarwin [ "-DFRAMEWORK=OFF" ];
+  cmakeFlags = stdenv.lib.optionals stdenv.isDarwin [ "-DFRAMEWORK=OFF" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library for creating DigiDoc signature files";
     homepage = "https://github.com/open-eid/libdigidoc";
     license = licenses.lgpl2;

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchurl
 , glibcLocales
@@ -16,7 +16,7 @@ buildPythonPackage rec {
   LC_ALL="en_US.utf-8";
   buildInputs = [ glibcLocales ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "lightweight way of building RPMs, and sabotaging them";
     homepage = "https://pagure.io/rpmfluff";
     license = licenses.gpl2;

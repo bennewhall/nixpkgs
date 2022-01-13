@@ -14,6 +14,4 @@ with lib;
   documentation.enable = mkDefault false;
 
   documentation.nixos.enable = mkDefault false;
-
-  programs.command-not-found.enable = mkDefault false;
 }

@@ -1,20 +1,14 @@
-{ lib, stdenv, targetPackages, fetchurl, fetchpatch, noSysDirs
+{ stdenv, targetPackages, fetchurl, fetchpatch, noSysDirs
 , langC ? true, langCC ? true, langFortran ? false
 , langAda ? false
 , langObjC ? stdenv.targetPlatform.isDarwin
 , langObjCpp ? stdenv.targetPlatform.isDarwin
 , langD ? false
 , langGo ? false
-, reproducibleBuild ? true
 , profiledCompiler ? false
 , langJit ? false
 , staticCompiler ? false
-, # N.B. the defult is intentionally not from an `isStatic`. See
-  # https://gcc.gnu.org/install/configure.html - this is about target
-  # platform libraries not host platform ones unlike normal. But since
-  # we can't rebuild those without also rebuilding the compiler itself,
-  # we opt to always build everything unlike our usual policy.
-  enableShared ? true
+, enableShared ? true
 , enableLTO ? true
 , texinfo ? null
 , perl ? null # optional, for texi2pod (then pod2man)
@@ -30,8 +24,8 @@
 , threadsCross ? null # for MinGW
 , crossStageStatic ? false
 , # Strip kills static libs of other archs (hence no cross)
-  stripped ? stdenv.hostPlatform.system == stdenv.buildPlatform.system
-          && stdenv.targetPlatform.system == stdenv.hostPlatform.system
+  stripped ? stdenv.hostPlatform == stdenv.buildPlatform
+          && stdenv.targetPlatform == stdenv.hostPlatform
 , gnused ? null
 , cloog # unused; just for compat with gcc4, as we override the parameter on some places
 , buildPackages
@@ -55,19 +49,10 @@ assert langAda -> gnatboot != null;
 # threadsCross is just for MinGW
 assert threadsCross != null -> stdenv.targetPlatform.isWindows;
 
-# profiledCompiler builds inject non-determinism in one of the compilation stages.
-# If turned on, we can't provide reproducible builds anymore
-assert reproducibleBuild -> profiledCompiler == false;
-
-with lib;
+with stdenv.lib;
 with builtins;
 
 let majorVersion = "9";
-    /*
-      If you update, please build on aarch64-linux
-      and check braces adjacent to `cplusplus` lines in file
-      ./result/lib/gcc/aarch64-unknown-linux-gnu/9.*.0/include/arm_acle.h
-    */
     version = "${majorVersion}.3.0";
 
     inherit (stdenv) buildPlatform hostPlatform targetPlatform;
@@ -80,7 +65,6 @@ let majorVersion = "9";
       # This patch can most likely be removed by a post 9.3.0-release.
       [ ./avoid-cycling-subreg-reloads.patch ]
       ++ optional (targetPlatform != hostPlatform) ../libstdc++-target.patch
-      ++ optional targetPlatform.isNetBSD ../libstdc++-netbsd-ctypes.patch
       ++ optional noSysDirs ../no-sys-dirs.patch
       /* ++ optional (hostPlatform != buildPlatform) (fetchpatch { # XXX: Refine when this should be applied
         url = "https://git.busybox.net/buildroot/plain/package/gcc/${version}/0900-remove-selftests.patch?id=11271540bfe6adafbc133caf6b5b902a816f5f02";
@@ -90,11 +74,10 @@ let majorVersion = "9";
       ++ optional langD ../libphobos.patch
       ++ optional langFortran ../gfortran-driving.patch
       ++ optional (targetPlatform.libc == "musl" && targetPlatform.isPower) ../ppc-musl.patch
-
-      # Obtain latest patch with ../update-mcfgthread-patches.sh
-      ++ optional (!crossStageStatic && targetPlatform.isMinGW) ./Added-mcf-thread-model-support-from-mcfgthread.patch
-
-      ++ [ ../libsanitizer-no-cyclades-9.patch ];
+      ++ optional (!crossStageStatic && targetPlatform.isMinGW) (fetchpatch {
+        url = "https://raw.githubusercontent.com/lhmouse/MINGW-packages/${import ../common/mfcgthreads-patches-repo.nix}/mingw-w64-gcc-git/9000-gcc-${majorVersion}-branch-Added-mcf-thread-model-support-from-mcfgthread.patch";
+        sha256 = "1in5kvcknlpi9z1vvjw6jfmwy8k12zvbqlqfnq84qpm99r0rh00a";
+      });
 
     /* Cross-gcc settings (build == host != target) */
     crossMingw = targetPlatform != hostPlatform && targetPlatform.libc == "msvcrt";
@@ -116,7 +99,7 @@ stdenv.mkDerivation ({
 
   inherit patches;
 
-  outputs = [ "out" "man" "info" ] ++ lib.optional (!langJit) "lib";
+  outputs = [ "out" "man" "info" ] ++ stdenv.lib.optional (!langJit) "lib";
   setOutputFlags = false;
   NIX_NO_SELF_RPATH = true;
 
@@ -124,15 +107,9 @@ stdenv.mkDerivation ({
 
   hardeningDisable = [ "format" "pie" ];
 
-  postPatch = ''
-    configureScripts=$(find . -name configure)
-    for configureScript in $configureScripts; do
-      patchShebangs $configureScript
-    done
-  ''
   # This should kill all the stdinc frameworks that gcc and friends like to
   # insert into default search paths.
-  + lib.optionalString hostPlatform.isDarwin ''
+  prePatch = stdenv.lib.optionalString hostPlatform.isDarwin ''
     substituteInPlace gcc/config/darwin-c.c \
       --replace 'if (stdinc)' 'if (0)'
 
@@ -141,8 +118,14 @@ stdenv.mkDerivation ({
 
     substituteInPlace libgfortran/configure \
       --replace "-install_name \\\$rpath/\\\$soname" "-install_name ''${!outputLib}/lib/\\\$soname"
-  ''
-  + (
+  '';
+
+  postPatch = ''
+    configureScripts=$(find . -name configure)
+    for configureScript in $configureScripts; do
+      patchShebangs $configureScript
+    done
+  '' + (
     if targetPlatform != hostPlatform || stdenv.cc.libc != null then
       # On NixOS, use the right path to the dynamic linker instead of
       # `/lib/ld*.so'.
@@ -160,13 +143,13 @@ stdenv.mkDerivation ({
                  -e 's|define[[:blank:]]*MUSL_DYNAMIC_LINKER\([0-9]*\)[[:blank:]]"\([^\"]\+\)"$|define MUSL_DYNAMIC_LINKER\1 "${libc.out}\2"|g'
            done
         ''
-        + lib.optionalString (targetPlatform.libc == "musl")
+        + stdenv.lib.optionalString (targetPlatform.libc == "musl")
         ''
             sed -i gcc/config/linux.h -e '1i#undef LOCAL_INCLUDE_DIR'
         ''
         )
     else "")
-      + lib.optionalString targetPlatform.isAvr ''
+      + stdenv.lib.optionalString targetPlatform.isAvr ''
           makeFlagsArray+=(
              'LIMITS_H_TEST=false'
           )
@@ -177,9 +160,7 @@ stdenv.mkDerivation ({
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ texinfo which gettext ]
-    ++ (optional (perl != null) perl)
-    ++ (optional langAda gnatboot)
-    ;
+    ++ (optional (perl != null) perl);
 
   # For building runtime libs
   depsBuildTarget =
@@ -200,24 +181,25 @@ stdenv.mkDerivation ({
     # The builder relies on GNU sed (for instance, Darwin's `sed' fails with
     # "-i may not be used with stdin"), and `stdenvNative' doesn't provide it.
     ++ (optional hostPlatform.isDarwin gnused)
+    ++ (optional langAda gnatboot)
     ;
 
   depsTargetTarget = optional (!crossStageStatic && threadsCross != null) threadsCross;
 
-  NIX_LDFLAGS = lib.optionalString  hostPlatform.isSunOS "-lm -ldl";
+  NIX_LDFLAGS = stdenv.lib.optionalString  hostPlatform.isSunOS "-lm -ldl";
 
   preConfigure = import ../common/pre-configure.nix {
-    inherit lib;
-    inherit version targetPlatform hostPlatform gnatboot langAda langGo langJit;
+    inherit (stdenv) lib;
+    inherit version hostPlatform gnatboot langAda langGo langJit;
   };
 
   dontDisableStatic = true;
 
-  configurePlatforms = [ "build" "host" "target" ];
+  # TODO(@Ericson2314): Always pass "--target" and always prefix.
+  configurePlatforms = [ "build" "host" ] ++ stdenv.lib.optional (targetPlatform != hostPlatform) "target";
 
   configureFlags = import ../common/configure-flags.nix {
     inherit
-      lib
       stdenv
       targetPackages
       crossStageStatic libcCross
@@ -272,7 +254,7 @@ stdenv.mkDerivation ({
 
   inherit
     (import ../common/extra-target-flags.nix {
-      inherit lib stdenv crossStageStatic langD libcCross threadsCross;
+      inherit stdenv crossStageStatic langD libcCross threadsCross;
     })
     EXTRA_FLAGS_FOR_TARGET
     EXTRA_LDFLAGS_FOR_TARGET
@@ -290,7 +272,7 @@ stdenv.mkDerivation ({
 
   meta = {
     homepage = "https://gcc.gnu.org/";
-    license = lib.licenses.gpl3Plus;  # runtime support libraries are typically LGPLv3+
+    license = stdenv.lib.licenses.gpl3Plus;  # runtime support libraries are typically LGPLv3+
     description = "GNU Compiler Collection, version ${version}"
       + (if stripped then "" else " (with debugging info)");
 
@@ -303,9 +285,13 @@ stdenv.mkDerivation ({
       compiler used in the GNU system including the GNU/Linux variant.
     '';
 
-    maintainers = lib.teams.gcc.members;
+    maintainers = with stdenv.lib.maintainers; [ synthetica ];
 
-    platforms = lib.platforms.unix;
+    platforms =
+      stdenv.lib.platforms.linux ++
+      stdenv.lib.platforms.freebsd ++
+      stdenv.lib.platforms.illumos ++
+      stdenv.lib.platforms.darwin;
   };
 }
 

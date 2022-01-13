@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, postgresql, perl, perlPackages, which }:
+{ stdenv, fetchFromGitHub, postgresql, perl, perlPackages, which }:
 
 stdenv.mkDerivation rec {
   pname = "pgtap";
-  version = "1.2.0";
+  version = "1.1.0";
 
   src = fetchFromGitHub {
     owner = "theory";
     repo = "pgtap";
     rev = "v${version}";
-    sha256 = "sha256-lb0PRffwo6J5a6Hqw1ggvn0cW7gPZ02OEcLPi9ineI8=";
+    sha256 = "09fvzsl8m18yzpvrz6cqvs1ffzs451iwmb2mw39yq69jgqby5kqy";
   };
 
   nativeBuildInputs = [ postgresql perl perlPackages.TAPParserSourceHandlerpgTAP which ];
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     install -D {sql/pgtap--${version}.sql,pgtap.control} -t $out/share/postgresql/extension
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A unit testing framework for PostgreSQL";
     longDescription = ''
       pgTAP is a unit testing framework for PostgreSQL written in PL/pgSQL and PL/SQL.

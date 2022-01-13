@@ -8,7 +8,7 @@
 }:
 mkDerivation {
 
-  pname = "kapptemplate";
+  name = "kapptemplate";
 
   nativeBuildInputs = [ extra-cmake-modules cmake  ];
 

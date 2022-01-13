@@ -4,7 +4,7 @@
 , libxkbcommon
 , systemd
 , xorg
-, electron_11
+, electron_3
 , makeWrapper
 , makeDesktopItem
 }:
@@ -17,15 +17,15 @@ let
     genericName = "Obinskit keyboard configurator";
     categories = "Utility";
   };
-  electron = electron_11;
+  electron = electron_3;
 in
 stdenv.mkDerivation rec {
   pname = "obinskit";
-  version = "1.1.8";
+  version = "1.1.4";
 
   src = fetchurl {
     url = "http://releases.obins.net/occ/linux/tar/ObinsKit_${version}_x64.tar.gz";
-    sha256 = "MgasbgexOdscQrUte/6OzCSrc74RvaBq44oHplQA/Gc=";
+    sha256 = "0q422rmfn4k4ww1qlgrwdmxz4l10dxkd6piynbcw5cr4i5icnh2l";
   };
 
   unpackPhase = "tar -xzf $src";
@@ -51,12 +51,12 @@ stdenv.mkDerivation rec {
   postFixup = ''
     makeWrapper ${electron}/bin/electron $out/bin/${pname} \
       --add-flags $out/opt/obinskit/resources/app.asar \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ stdenv.cc.cc.lib libxkbcommon (lib.getLib systemd) xorg.libXt xorg.libXtst ]}"
+      --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath [ stdenv.cc.cc.lib libxkbcommon (lib.getLib systemd) xorg.libXt ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graphical configurator for Anne Pro and Anne Pro II keyboards";
-    homepage = "https://www.hexcore.xyz/obinskit";
+    homepage = "http://en.obins.net/obinskit/"; # https is broken
     license = licenses.unfree;
     maintainers = with maintainers; [ shou ];
     platforms = [ "x86_64-linux" ];

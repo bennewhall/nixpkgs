@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, zlib, pciutils }:
+{ stdenv, fetchFromGitHub, autoreconfHook, zlib, pciutils }:
 
 stdenv.mkDerivation rec {
   pname = "biosdevname";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--sbindir=\${out}/bin" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Udev helper for naming devices per BIOS names";
     license = licenses.gpl2;
     platforms = ["x86_64-linux" "i686-linux"];

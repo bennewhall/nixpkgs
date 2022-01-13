@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl} :
+{stdenv, fetchurl} :
 
 stdenv.mkDerivation rec {
   pname = "rxp";
@@ -10,9 +10,9 @@ stdenv.mkDerivation rec {
   };
 
   meta = {
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     description = "A validating XML parser written in C";
     homepage = "http://www.cogsci.ed.ac.uk/~richard/rxp.html";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

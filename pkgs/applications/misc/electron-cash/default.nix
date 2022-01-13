@@ -1,47 +1,37 @@
-{ lib, stdenv, fetchFromGitHub, python3Packages, qtbase, fetchpatch, wrapQtAppsHook
+{ lib, fetchFromGitHub, python3Packages, qtbase, fetchpatch, wrapQtAppsHook
 , secp256k1 }:
 
 python3Packages.buildPythonApplication rec {
   pname = "electron-cash";
-  version = "4.2.5";
+  version = "4.2.0";
 
   src = fetchFromGitHub {
     owner = "Electron-Cash";
     repo = "Electron-Cash";
     rev = version;
-    sha256 = "sha256-ALIrNnhpX46xdQdfJdx/9e/QtdyBEgi5xLrbuOBJR7o=";
+    sha256 = "0ixsx4224jilc5zis6wbsbxqxv10mm5sksrzq15xp30zz0bzb6md";
   };
 
   propagatedBuildInputs = with python3Packages; [
-    # requirements
-    pyaes
-    ecdsa
-    requests
-    qrcode
-    protobuf
-    jsonrpclib-pelix
-    pysocks
-    qdarkstyle
-    python-dateutil
-    stem
-    certifi
-    pathvalidate
     dnspython
-
-    # requirements-binaries
+    ecdsa
+    jsonrpclib-pelix
+    matplotlib
+    pbkdf2
+    pyaes
+    pycrypto
     pyqt5
-    psutil
-    pycryptodomex
-    cryptography
+    pysocks
+    qrcode
+    requests
+    tlslite-ng
+    qdarkstyle
+    stem
 
-    # requirements-hw
-    cython
-    trezor
+    # plugins
     keepkey
+    trezor
     btchip
-    hidapi
-    pyscard
-    pysatochip
   ];
 
   nativeBuildInputs = [ wrapQtAppsHook ];
@@ -61,7 +51,7 @@ python3Packages.buildPythonApplication rec {
     pytest electroncash/tests
   '';
 
-  postInstall = lib.optionalString stdenv.isLinux ''
+  postInstall = ''
     substituteInPlace $out/share/applications/electron-cash.desktop \
       --replace "Exec=electron-cash" "Exec=$out/bin/electron-cash"
   '';
@@ -92,8 +82,8 @@ python3Packages.buildPythonApplication rec {
       of the blockchain.
     '';
     homepage = "https://www.electroncash.org/";
-    platforms = platforms.unix;
-    maintainers = with maintainers; [ lassulus nyanloutre oxalica ];
+    platforms = platforms.linux;
+    maintainers = with maintainers; [ lassulus nyanloutre ];
     license = licenses.mit;
   };
 }

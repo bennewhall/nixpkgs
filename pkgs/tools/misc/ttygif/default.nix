@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, imagemagick, xorg }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "ttygif";
@@ -13,13 +13,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "CC:=$(CC)" "PREFIX=${placeholder "out"}" ];
 
-  nativeBuildInputs = [ makeWrapper ];
-  postInstall = ''
-    wrapProgram $out/bin/ttygif \
-      --prefix PATH : ${lib.makeBinPath [ imagemagick xorg.xwd ]}
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/icholy/ttygif";
     description = "Convert terminal recordings to animated gifs";
     platforms = platforms.unix;

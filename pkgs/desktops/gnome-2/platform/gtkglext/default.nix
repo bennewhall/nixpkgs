@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
-, pkg-config
+, pkgconfig
 , gtk-doc
 , autoconf
 , automake
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     gtk-doc
     autoconf
     automake
@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
     NOCONFIGURE=1 ./autogen.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://projects.gnome.org/gtkglext/";
     description = "GtkGLExt, an OpenGL extension to GTK";
     longDescription = ''

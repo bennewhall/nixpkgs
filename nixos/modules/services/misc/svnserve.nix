@@ -24,7 +24,6 @@ in
       };
 
       svnBaseDir = mkOption {
-        type = types.str;
         default = "/repos";
         description = "Base directory from which Subversion repositories are accessed.";
       };

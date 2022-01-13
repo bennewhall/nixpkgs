@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27
+{ stdenv, buildPythonPackage, fetchPypi, isPy27
 , entrypoints
 , glibcLocales
 , ipython
@@ -12,7 +12,7 @@
 , six
 , sphinx
 , toolz
-, typing ? null
+, typing
 , vega_datasets
 }:
 
@@ -33,19 +33,17 @@ buildPythonPackage rec {
     pandas
     six
     toolz
-    jinja2
-  ] ++ lib.optionals (pythonOlder "3.5") [ typing ];
+  ] ++ stdenv.lib.optionals (pythonOlder "3.5") [ typing ];
 
   checkInputs = [
     glibcLocales
     ipython
+    jinja2
     pytest
     recommonmark
     sphinx
     vega_datasets
   ];
-
-  pythonImportsCheck = [ "altair" ];
 
   checkPhase = ''
     export LANG=en_US.UTF-8
@@ -54,7 +52,7 @@ buildPythonPackage rec {
     pytest --doctest-modules altair
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A declarative statistical visualization library for Python.";
     homepage = "https://github.com/altair-viz/altair";
     license = licenses.bsd3;

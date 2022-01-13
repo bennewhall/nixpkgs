@@ -1,4 +1,4 @@
-{ lib, stdenv, autoPatchelfHook, makeDesktopItem, makeWrapper, copyDesktopItems
+{ stdenv, fetchurl, autoPatchelfHook, makeDesktopItem, makeWrapper, copyDesktopItems
 
   # Dynamic Libraries
 , curl, libGL, libX11, libXext, libXmu, libXrandr, libXrender
@@ -73,7 +73,7 @@ in stdenv.mkDerivation {
     extraWrapperArgs = ''
       --set LD_PRELOAD "${libredirect}/lib/libredirect.so" \
       --set NIX_REDIRECTS "/bin/ls=${coreutils}/bin/ls" \
-      --prefix PATH : "${lib.makeBinPath [ coreutils gnugrep util-linux which ]}"
+      --prefix PATH : "${stdenv.lib.makeBinPath [ coreutils gnugrep util-linux which ]}"
     '';
   in ''
     runHook preInstall
@@ -119,11 +119,11 @@ in stdenv.mkDerivation {
 
   desktopItems = builtins.attrValues desktopItems;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An office suite with a word processor, spreadsheet and presentation program";
     homepage = "https://www.softmaker.com/";
     license = licenses.unfree;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ danieldk ];
     platforms = [ "x86_64-linux" ];
   };
 }

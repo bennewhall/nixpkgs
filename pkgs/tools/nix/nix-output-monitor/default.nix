@@ -1,23 +1,21 @@
 { mkDerivation, ansi-terminal, async, attoparsec, base, containers
-, cassava, directory, HUnit, mtl, nix-derivation, process, relude, lib
-, stm, terminal-size, text, time, unix, wcwidth, fetchFromGitHub
-, lock-file, data-default, expect, runtimeShell
+, directory, HUnit, mtl, nix-derivation, process, relude, stdenv
+, stm, text, time, unix, fetchFromGitHub
 }:
-mkDerivation rec {
+mkDerivation {
   pname = "nix-output-monitor";
-  version = "1.0.4.0";
+  version = "0.1.0.2";
   src = fetchFromGitHub {
     owner = "maralorn";
     repo = "nix-output-monitor";
-    hash = "sha256-3EQgjrDX8C3qG6danuPRl2gnPlX1qZjxjrROrKitsS0=";
-    rev = "v${version}";
+    sha256 = "0r4348cbmnpawbfa20qw3wnywiqp0jkl5svzl27jrm2yk2g51509";
+    rev = "5bf7534";
   };
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    ansi-terminal async attoparsec base cassava containers directory mtl
-    nix-derivation relude stm terminal-size text time unix wcwidth lock-file
-    data-default
+    ansi-terminal async attoparsec base containers directory mtl
+    nix-derivation relude stm text time unix
   ];
   executableHaskellDepends = [
     ansi-terminal async attoparsec base containers directory mtl
@@ -27,15 +25,8 @@ mkDerivation rec {
     ansi-terminal async attoparsec base containers directory HUnit mtl
     nix-derivation process relude stm text time unix
   ];
-  postInstall = ''
-    cat > $out/bin/nom-build << EOF
-    #!${runtimeShell}
-    ${expect}/bin/unbuffer nix-build "\$@" 2>&1 | exec $out/bin/nom
-    EOF
-    chmod a+x $out/bin/nom-build
-  '';
   homepage = "https://github.com/maralorn/nix-output-monitor";
   description = "Parses output of nix-build to show additional information";
-  license = lib.licenses.agpl3Plus;
-  maintainers = [ lib.maintainers.maralorn ];
+  license = stdenv.lib.licenses.agpl3Plus;
+  maintainers = [ stdenv.lib.maintainers.maralorn ];
 }

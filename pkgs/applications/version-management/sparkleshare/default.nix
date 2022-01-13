@@ -1,6 +1,5 @@
 {
   appindicator-sharp,
-  bash,
   coreutils,
   fetchFromGitHub,
   git,
@@ -19,7 +18,7 @@
   stdenv,
   symlinkJoin,
   webkit2-sharp,
-  xdg-utils,
+  xdg_utils,
 }:
 
 stdenv.mkDerivation rec {
@@ -58,7 +57,6 @@ stdenv.mkDerivation rec {
         --set PATH ${symlinkJoin {
           name = "mono-path";
           paths = [
-            bash
             coreutils
             git
             git-lfs
@@ -66,7 +64,7 @@ stdenv.mkDerivation rec {
             mono
             openssh
             openssl
-            xdg-utils
+            xdg_utils
           ];
         }}/bin \
         --set MONO_GAC_PREFIX ${lib.concatStringsSep ":" [

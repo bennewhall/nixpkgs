@@ -1,8 +1,8 @@
 {
-  mkDerivation, lib,
+  mkDerivation,
   extra-cmake-modules,
   kcoreaddons, kdeclarative, ki18n, kitemmodels, krunner, kservice,
-  plasma-framework, qtbase, qtscript, qtdeclarative
+  plasma-framework, qtscript, qtdeclarative
 }:
 
 mkDerivation {

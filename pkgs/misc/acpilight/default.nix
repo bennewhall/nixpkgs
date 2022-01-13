@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, python3, coreutils }:
+{ stdenv, fetchgit, python3, coreutils }:
 
 stdenv.mkDerivation rec {
   pname = "acpilight";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   };
 
   pyenv = python3.withPackages (pythonPackages: with pythonPackages; [
-    configargparse
+    ConfigArgParse
   ]);
 
   postConfigure = ''
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "DESTDIR=$(out) prefix=" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gitlab.com/wavexx/acpilight";
     description = "ACPI backlight control";
     license = licenses.gpl3;

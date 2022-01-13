@@ -22,6 +22,5 @@ with pkgs; stdenv.mkDerivation {
     docgen lists 'List manipulation functions'
     docgen debug 'Debugging functions'
     docgen options 'NixOS / nixpkgs option handling'
-    docgen sources 'Source filtering functions'
   '';
 }

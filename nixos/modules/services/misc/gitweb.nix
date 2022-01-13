@@ -47,7 +47,6 @@ in
         $highlight_bin = "${pkgs.highlight}/bin/highlight";
         ${cfg.extraConfig}
       '';
-      defaultText = literalDocBook "generated config file";
       type = types.path;
       readOnly = true;
       internal = true;
@@ -55,6 +54,6 @@ in
 
   };
 
-  meta.maintainers = with maintainers; [ ];
+  meta.maintainers = with maintainers; [ gnidorah ];
 
 }

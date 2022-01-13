@@ -2,7 +2,7 @@
 
 buildGoModule rec {
   pname = "doctl";
-  version = "1.68.0";
+  version = "1.54.0";
 
   vendorSha256 = null;
 
@@ -10,12 +10,13 @@ buildGoModule rec {
 
   subPackages = [ "cmd/doctl" ];
 
-  ldflags = let t = "github.com/digitalocean/doctl"; in [
-    "-X ${t}.Major=${lib.versions.major version}"
-    "-X ${t}.Minor=${lib.versions.minor version}"
-    "-X ${t}.Patch=${lib.versions.patch version}"
-    "-X ${t}.Label=release"
-  ];
+  buildFlagsArray = let t = "github.com/digitalocean/doctl"; in ''
+    -ldflags=
+    -X ${t}.Major=${lib.versions.major version}
+    -X ${t}.Minor=${lib.versions.minor version}
+    -X ${t}.Patch=${lib.versions.patch version}
+    -X ${t}.Label=release
+  '';
 
   nativeBuildInputs = [ installShellFiles ];
 
@@ -31,7 +32,7 @@ buildGoModule rec {
     owner = "digitalocean";
     repo = "doctl";
     rev = "v${version}";
-    sha256 = "sha256-3W6jDMT4UUtSND9bJJEexQ9LrqxL4oZtpucdcM1McdE=";
+    sha256 = "163n3d07vv9d4356ql6hbw2vg6n5c834axz7y4gk8gm9badbna82";
   };
 
   meta = with lib; {

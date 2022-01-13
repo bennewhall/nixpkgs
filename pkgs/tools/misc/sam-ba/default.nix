@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchzip, libX11, libXScrnSaver, libXext, libXft, libXrender
+{ stdenv, fetchzip, libX11, libXScrnSaver, libXext, libXft, libXrender
 , freetype, zlib, fontconfig
 }:
 
 let
   maybe64 = if stdenv.isx86_64 then "_64" else "";
-  libPath = lib.makeLibraryPath
+  libPath = stdenv.lib.makeLibraryPath
     [ stdenv.cc.cc.lib libX11 libXScrnSaver libXext libXft libXrender freetype
       zlib fontconfig
     ];
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
   # Do our own thing
   dontPatchELF = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Programming tools for Atmel SAM3/7/9 ARM-based microcontrollers";
     longDescription = ''
       Atmel SAM-BA software provides an open set of tools for programming the

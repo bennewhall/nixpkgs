@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv }:
+{ fetchurl, stdenv }:
 
 stdenv.mkDerivation rec {
   pname = "rush";
@@ -29,10 +29,10 @@ stdenv.mkDerivation rec {
       '';
 
     homepage = "https://www.gnu.org/software/rush/";
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = [ lib.maintainers.bjg ];
-    platforms = lib.platforms.all;
+    maintainers = [ stdenv.lib.maintainers.bjg ];
+    platforms = stdenv.lib.platforms.all;
   };
 
   passthru = {

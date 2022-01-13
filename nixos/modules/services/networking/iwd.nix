@@ -4,31 +4,8 @@ with lib;
 
 let
   cfg = config.networking.wireless.iwd;
-  ini = pkgs.formats.ini { };
-  configFile = ini.generate "main.conf" cfg.settings;
 in {
-  options.networking.wireless.iwd = {
-    enable = mkEnableOption "iwd";
-
-    settings = mkOption {
-      type = ini.type;
-      default = { };
-
-      example = {
-        Settings.AutoConnect = true;
-
-        Network = {
-          EnableIPv6 = true;
-          RoutePriorityOffset = 300;
-        };
-      };
-
-      description = ''
-        Options passed to iwd.
-        See <link xlink:href="https://iwd.wiki.kernel.org/networkconfigurationsettings">here</link> for supported options.
-      '';
-    };
-  };
+  options.networking.wireless.iwd.enable = mkEnableOption "iwd";
 
   config = mkIf cfg.enable {
     assertions = [{
@@ -38,8 +15,6 @@ in {
       '';
     }];
 
-    environment.etc."iwd/main.conf".source = configFile;
-
     # for iwctl
     environment.systemPackages =  [ pkgs.iwd ];
 
@@ -47,15 +22,7 @@ in {
 
     systemd.packages = [ pkgs.iwd ];
 
-    systemd.network.links."80-iwd" = {
-      matchConfig.Type = "wlan";
-      linkConfig.NamePolicy = "keep kernel";
-    };
-
-    systemd.services.iwd = {
-      wantedBy = [ "multi-user.target" ];
-      restartTriggers = [ configFile ];
-    };
+    systemd.services.iwd.wantedBy = [ "multi-user.target" ];
   };
 
   meta.maintainers = with lib.maintainers; [ mic92 dtzWill ];

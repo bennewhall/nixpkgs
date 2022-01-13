@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage, six }:
+{ stdenv, fetchPypi, buildPythonPackage, six }:
 
 buildPythonPackage rec {
   pname = "limits";
@@ -13,7 +13,7 @@ buildPythonPackage rec {
 
   doCheck = false; # ifilter
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Rate limiting utilities";
     license = licenses.mit;
     homepage = "https://limits.readthedocs.org/";

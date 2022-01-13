@@ -1,12 +1,13 @@
 import ./make-test-python.nix ({ pkgs, ... }: {
   name = "metabase";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ mmahut ];
   };
 
   nodes = {
     machine = { ... }: {
       services.metabase.enable = true;
+      virtualisation.memorySize = 1024;
     };
   };
 

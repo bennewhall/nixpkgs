@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "buildtorrent";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-6OJ2R72ziHOsVw1GwalompKwG7Z/WQidHN0IeE9wUtA=";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple commandline torrent creator";
     homepage = "https://mathr.co.uk/blog/torrent.html";
     license = licenses.gpl3Plus;

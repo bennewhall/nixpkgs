@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pythonOlder
@@ -18,11 +18,11 @@ buildPythonPackage rec {
 
   LC_ALL = "en_US.UTF-8";
 
-  propagatedBuildInputs = lib.optionals (pythonOlder "3.7") [ importlib-resources ];
+  propagatedBuildInputs = stdenv.lib.optionals (pythonOlder "3.7") [ importlib-resources ];
 
   checkInputs = [ glibcLocales pytestCheckHook ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://netaddr.readthedocs.io/en/latest/";
     downloadPage = "https://github.com/netaddr/netaddr/releases";
     changelog = "https://netaddr.readthedocs.io/en/latest/changes.html";

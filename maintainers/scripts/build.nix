@@ -1,18 +1,10 @@
-{ maintainer
-, localSystem ? { system = args.system or builtins.currentSystem; }
-, system ? localSystem.system
-, crossSystem ? localSystem
-, ...
-}@args:
+{ maintainer }:
 
 # based on update.nix
 # nix-build build.nix --argstr maintainer <yourname>
 
-# to build for aarch64-linux using boot.binfmt.emulatedSystems:
-# nix-build build.nix --argstr maintainer <yourname> --argstr system aarch64-linux
-
 let
-  pkgs = import ./../../default.nix (removeAttrs args [ "maintainer" ]);
+  pkgs = import ./../../default.nix {};
   maintainer_ = pkgs.lib.maintainers.${maintainer};
   packagesWith = cond: return: set:
     (pkgs.lib.flatten

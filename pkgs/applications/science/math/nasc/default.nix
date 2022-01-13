@@ -1,7 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
-, pkg-config
-, fetchpatch
+, pkgconfig
 , python3
 , meson
 , ninja
@@ -9,6 +8,7 @@
 , gtk3
 , glib
 , pantheon
+, libsoup
 , gtksourceview
 , libgee
 , nix-update-script
@@ -21,13 +21,13 @@
 
 stdenv.mkDerivation rec {
   pname = "nasc";
-  version = "0.8.0";
+  version = "0.7.5";
 
   src = fetchFromGitHub {
     owner = "parnold-x";
     repo = pname;
     rev = version;
-    sha256 = "02b9a59a9fzsb6nn3ycwwbcbv04qfzm6x7csq2addpzx5wak6dd8";
+    sha256 = "kSRc5RLkI6SBJirUYw6swZi8IJhaL3y74b2Zw8kh2XA=";
     fetchSubmodules = true;
   };
 
@@ -37,7 +37,7 @@ stdenv.mkDerivation rec {
     intltool # for libqalculate
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
     wrapGAppsHook
@@ -70,7 +70,7 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Do maths like a normal person, designed for elementary OS";
     longDescription = ''
       It’s an app where you do maths like a normal person. It lets you
@@ -80,9 +80,8 @@ stdenv.mkDerivation rec {
       the equations it’s used in.
     '';
     homepage = "https://github.com/parnold-x/nasc";
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
     platforms = platforms.linux;
     license = licenses.gpl3Plus;
-    mainProgram = "com.github.parnold_x.nasc";
   };
 }

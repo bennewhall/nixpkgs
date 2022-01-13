@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, readline, ncurses }:
+{ stdenv, fetchurl, readline, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "devtodo";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://swapoff.org/devtodo1.html";
     description = "A hierarchical command-line task manager";
     license = licenses.gpl2;

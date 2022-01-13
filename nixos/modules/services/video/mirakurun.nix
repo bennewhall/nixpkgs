@@ -8,23 +8,11 @@ let
   username = config.users.users.mirakurun.name;
   groupname = config.users.users.mirakurun.group;
   settingsFmt = pkgs.formats.yaml {};
-
-  polkitRule = pkgs.writeTextDir "share/polkit-1/rules.d/10-mirakurun.rules" ''
-    polkit.addRule(function (action, subject) {
-      if (
-        (action.id == "org.debian.pcsc-lite.access_pcsc" ||
-          action.id == "org.debian.pcsc-lite.access_card") &&
-        subject.user == "${username}"
-      ) {
-        return polkit.Result.YES;
-      }
-    });
-  '';
 in
   {
     options = {
       services.mirakurun = {
-        enable = mkEnableOption "the Mirakurun DVR Tuner Server";
+        enable = mkEnableOption mirakurun.meta.description;
 
         port = mkOption {
           type = with types; nullOr port;
@@ -60,19 +48,10 @@ in
           '';
         };
 
-        allowSmartCardAccess = mkOption {
-          type = types.bool;
-          default = true;
-          description = ''
-            Install polkit rules to allow Mirakurun to access smart card readers
-            which is commonly used along with tuner devices.
-          '';
-        };
-
         serverSettings = mkOption {
           type = settingsFmt.type;
           default = {};
-          example = literalExpression ''
+          example = literalExample ''
             {
               highWaterMark = 25165824;
               overflowTimeLimit = 30000;
@@ -89,7 +68,7 @@ in
         tunerSettings = mkOption {
           type = with types; nullOr settingsFmt.type;
           default = null;
-          example = literalExpression ''
+          example = literalExample ''
             [
               {
                 name = "tuner-name";
@@ -110,7 +89,7 @@ in
         channelSettings = mkOption {
           type = with types; nullOr settingsFmt.type;
           default = null;
-          example = literalExpression ''
+          example = literalExample ''
             [
               {
                 name = "channel";
@@ -131,7 +110,7 @@ in
     };
 
     config = mkIf cfg.enable {
-      environment.systemPackages = [ mirakurun ] ++ optional cfg.allowSmartCardAccess polkitRule;
+      environment.systemPackages = [ mirakurun ];
       environment.etc = {
         "mirakurun/server.yml".source = settingsFmt.generate "server.yml" cfg.serverSettings;
         "mirakurun/tuners.yml" = mkIf (cfg.tunerSettings != null) {
@@ -173,7 +152,7 @@ in
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
         serviceConfig = {
-          ExecStart = "${mirakurun}/bin/mirakurun-start";
+          ExecStart = "${mirakurun}/bin/mirakurun";
           User = username;
           Group = groupname;
           RuntimeDirectory="mirakurun";

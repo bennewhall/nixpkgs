@@ -7,8 +7,8 @@ import ../make-test-python.nix ({ pkgs, lib, ... }:
   in
   {
     name = "wg-quick";
-    meta = with pkgs.lib.maintainers; {
-      maintainers = [ d-xo ];
+    meta = with pkgs.stdenv.lib.maintainers; {
+      maintainers = [ xwvvvvwx ];
     };
 
     nodes = {

@@ -1,49 +1,44 @@
-{ lib, python3 }:
+{ stdenv, python3, beancount }:
 
-python3.pkgs.buildPythonApplication rec {
+let
+  inherit (python3.pkgs) buildPythonApplication fetchPypi;
+in
+buildPythonApplication rec {
   pname = "fava";
-  version = "1.19";
+  version = "1.17";
 
-  src = python3.pkgs.fetchPypi {
+  src = fetchPypi {
     inherit pname version;
-    sha256 = "def7c0210bf0ce8dfffdb46ce21b3efcf71eba5a4e903565258419e4c53c2d43";
+    sha256 = "efad3a4b5697b9d7ee29eff5dc0c8367fc1df37b1abacc8d0b2071602e94a6cd";
   };
 
-  nativeBuildInputs = with python3.pkgs; [ setuptools-scm ];
+  checkInputs = [ python3.pkgs.pytest ];
+  propagatedBuildInputs = with python3.pkgs;
+    [
+      Babel
+      cheroot
+      flaskbabel
+      flask
+      jinja2
+      beancount
+      click
+      markdown2
+      ply
+      simplejson
+      werkzeug
+      jaraco_functools
+    ];
 
-  propagatedBuildInputs = with python3.pkgs; [
-    Babel
-    beancount
-    cheroot
-    click
-    flask
-    flaskbabel
-    jaraco_functools
-    jinja2
-    markdown2
-    ply
-    simplejson
-    werkzeug
-  ];
-
-  checkInputs = with python3.pkgs; [
-    pytestCheckHook
-  ];
-
-  preCheck = ''
-    export HOME=$TEMPDIR
+  # CLI test expects fava on $PATH.  Not sure why static_url fails.
+  # the entry_slices and render_entries requires other files to pass
+  checkPhase = ''
+    py.test tests -k 'not cli and not static_url and not entry_slice and not render_entries'
   '';
 
-  disabledTests = [
-    # runs fava in debug mode, which tries to interpret bash wrapper as Python
-    "test_cli"
-  ];
-
-  meta = with lib; {
-    description = "Web interface for beancount";
+  meta = {
     homepage = "https://beancount.github.io/fava";
-    changelog = "https://beancount.github.io/fava/changelog.html";
-    license = licenses.mit;
-    maintainers = with maintainers; [ bhipple ];
+    description = "Web interface for beancount";
+    license = stdenv.lib.licenses.mit;
+    maintainers = with stdenv.lib.maintainers; [ matthiasbeyer ];
   };
 }

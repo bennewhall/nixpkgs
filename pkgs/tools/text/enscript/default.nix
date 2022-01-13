@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, gettext }:
+{ stdenv, fetchurl, gettext }:
 
 stdenv.mkDerivation rec {
-  pname = "enscript";
-  version = "1.6.6";
+  name = "enscript-1.6.6";
 
   src = fetchurl {
-    url = "mirror://gnu/enscript/enscript-${version}.tar.gz";
+    url = "mirror://gnu/enscript/${name}.tar.gz";
     sha256 = "1fy0ymvzrrvs889zanxcaxjfcxarm2d3k43c9frmbl1ld7dblmkd";
   };
 
@@ -34,11 +33,11 @@ stdenv.mkDerivation rec {
          it has many options that can be used to customize printouts.
       '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
     homepage = "https://www.gnu.org/software/enscript/";
 
     maintainers = [ ];
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

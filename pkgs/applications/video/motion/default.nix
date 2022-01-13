@@ -1,22 +1,22 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
 , ffmpeg, libjpeg, libmicrohttpd }:
 
 stdenv.mkDerivation rec {
   pname = "motion";
-  version = "4.4.0";
+  version = "4.3.2";
 
   src = fetchFromGitHub {
     owner  = "Motion-Project";
     repo   = "motion";
     rev    = "release-${version}";
-    sha256 = "sha256-srL9F99HHq5cw82rnQpywkTuY4s6hqIO64Pw5CnaG5Q=";
+    sha256 = "09xs815jsivcilpmnrx2jkcxirj4lg5kp99fkr0p2sdxw03myi95";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ ffmpeg libjpeg libmicrohttpd ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Monitors the video signal from cameras";
     homepage = "https://motion-project.github.io/";
     license = licenses.gpl2Plus;

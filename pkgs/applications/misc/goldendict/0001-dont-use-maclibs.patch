@@ -1,16 +1,14 @@
 diff --git i/goldendict.pro w/goldendict.pro
-index 4a4a3094..082b728f 100644
+index 328dc20..5202a07 100644
 --- i/goldendict.pro
 +++ w/goldendict.pro
-@@ -212,22 +212,19 @@ mac {
+@@ -210,21 +210,18 @@ mac {
          -llzo2
      !CONFIG( no_ffmpeg_player ) {
          LIBS += -lao \
--            -lswresample-gd \
 -            -lavutil-gd \
 -            -lavformat-gd \
 -            -lavcodec-gd
-+            -lswresample \
 +            -lavutil \
 +            -lavformat \
 +            -lavcodec
@@ -31,7 +29,7 @@ index 4a4a3094..082b728f 100644
                        cp -R locale/*.qm GoldenDict.app/Contents/MacOS/locale/ & \
                        mkdir -p GoldenDict.app/Contents/MacOS/help & \
                        cp -R $${PWD}/help/*.qch GoldenDict.app/Contents/MacOS/help/
-@@ -235,15 +232,6 @@ mac {
+@@ -232,15 +229,6 @@ mac {
      CONFIG += zim_support
      !CONFIG( no_chinese_conversion_support ) {
          CONFIG += chinese_conversion_support
@@ -48,15 +46,17 @@ index 4a4a3094..082b728f 100644
  }
  DEFINES += PROGRAM_VERSION=\\\"$$VERSION\\\"
 diff --git i/tiff.cc w/tiff.cc
-index e3cb8bf5..95dd812f 100644
+index e3cb8bf..9ff880f 100644
 --- i/tiff.cc
 +++ w/tiff.cc
-@@ -5,7 +5,7 @@
- 
+@@ -6,8 +6,8 @@
  #include "tiff.hh"
  
--#if defined (Q_OS_MAC) || defined (Q_OS_WIN)
-+#if defined (Q_OS_WIN)
- #include "tiff/tiff.h"
- #include "tiff/tiffio.h"
+ #if defined (Q_OS_MAC) || defined (Q_OS_WIN)
+-#include "tiff/tiff.h"
+-#include "tiff/tiffio.h"
++#include "tiff.h"
++#include "tiffio.h"
  #else
+ #include "tiff.h"
+ #include "tiffio.h"

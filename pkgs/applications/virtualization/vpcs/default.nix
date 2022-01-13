@@ -1,19 +1,22 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchurl, glibc }:
 
 stdenv.mkDerivation rec {
   pname = "vpcs";
-  version = "0.8.2";
+  version = "0.8";
 
-  src = fetchFromGitHub {
-    owner = "GNS3";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-joEXRMtNZMQumkYDX1gdpGAV+XdNKiAMj3dh1GZxeqc=";
+  src = fetchurl {
+    name = "${pname}-${version}.tar.bz2";
+    url = "mirror://sourceforge/project/${pname}/${version}/${pname}-${version}-src.tbz";
+    sha256 = "14y9nflcyq486vvw0na0fkfmg5dac004qb332v4m5a0vaz8059nw";
   };
+
+  patches = [ ./vpcs-0.8-glibc-2.26.patch ];
+
+  buildInputs = [ glibc.static ];
 
   buildPhase = ''(
     cd src
-    ./mk.sh ${stdenv.buildPlatform.linuxArch}
+    ./mk.sh ${stdenv.buildPlatform.platform.kernelArch}
   )'';
 
   installPhase = ''
@@ -23,16 +26,16 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
-    description = "A simple virtual PC simulator";
+  meta = with stdenv.lib; {
+    description = "Virtual PC simulator";
     longDescription = ''
-      The VPCS (Virtual PC Simulator) can simulate up to 9 PCs. You can
-      ping/traceroute them, or ping/traceroute the other hosts/routers from the
-      VPCS when you study the Cisco routers in the dynamips.
+      The VPCS can simulate up to 9 PCs. You can ping/traceroute them, or
+      ping/traceroute the other hosts/routers from the VPCS when you study the
+      Cisco routers in the dynamips.
     '';
-    inherit (src.meta) homepage;
+    homepage = "https://sourceforge.net/projects/vpcs/";
     license = licenses.bsd2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ primeos ];
   };
 }

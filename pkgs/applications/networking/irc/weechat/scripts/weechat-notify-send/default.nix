@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libnotify }:
+{ stdenv, fetchFromGitHub, libnotify }:
 
 stdenv.mkDerivation rec {
   pname = "weechat-notify-send";
@@ -22,9 +22,9 @@ stdenv.mkDerivation rec {
       --replace "'notify-send'" "'${libnotify}/bin/notify-send'"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A WeeChat script that sends highlight and message notifications through notify-send";
-    homepage = "https://github.com/s3rvac/weechat-notify-send";
+    homepage = "https://github.com/s3rvac/weechat-notify-srnd";
     license = licenses.mit;
     maintainers = with maintainers; [ tobim ];
   };

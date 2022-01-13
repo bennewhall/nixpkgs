@@ -1,8 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , ninja
 , vala
@@ -15,13 +15,13 @@
 
 stdenv.mkDerivation rec {
   pname = "pantheon-agent-polkit";
-  version = "1.0.4";
+  version = "1.0.3";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = pname;
     rev = version;
-    sha256 = "1acqjjarl225yk0f68wkldsamcrzrj0ibpcxma04wq9w7jlmz60c";
+    sha256 = "sha256-YL1LHnPH7pP0EW9IkjdSEX+VuaAF9uNyFbl47vjVps0=";
   };
 
   passthru = {
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
     vala
     wrapGAppsHook
   ];
@@ -45,11 +45,11 @@ stdenv.mkDerivation rec {
     polkit
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Polkit Agent for the Pantheon Desktop";
     homepage = "https://github.com/elementary/pantheon-agent-polkit";
     license = licenses.lgpl21Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
   };
 }

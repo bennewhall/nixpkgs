@@ -8,25 +8,19 @@
 , fetchPypi
 , isPy3k
 , lib
-, stdenv
 }:
 
 buildPythonPackage rec {
   pname = "argon2_cffi";
-  version = "21.1.0";
+  version = "19.2.0";
 
   src = fetchPypi {
     pname = "argon2-cffi";
     inherit version;
-    sha256 = "sha256-9xC2EQPRofaSyj7L0Tc+KKpeVFrGJboGf/L+yhsruHA=";
+    sha256 = "ffaa623eea77b497ffbdd1a51e941b33d3bf552c60f14dbee274c4070677bda3";
   };
 
   propagatedBuildInputs = [ cffi six ] ++ lib.optional (!isPy3k) enum34;
-
-  propagatedNativeBuildInputs = [ cffi ];
-
-  ARGON2_CFFI_USE_SSE2 = lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) "0";
-
   checkInputs = [ hypothesis pytest wheel ];
   checkPhase = ''
     pytest tests

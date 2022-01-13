@@ -1,11 +1,9 @@
-{ fetchurl, lib, stdenv, makeWrapper, perl, perlPackages }:
+{ fetchurl, stdenv, makeWrapper, perl, perlPackages }:
 
 stdenv.mkDerivation rec {
-  pname = "dirvish";
-  version = "1.2.1";
-
+  name = "dirvish-1.2.1";
   src = fetchurl {
-    url = "http://dirvish.org/dirvish${version}.tgz";
+    url = "http://dirvish.org/${name}.tgz";
     sha256 = "6b7f29c3541448db3d317607bda3eb9bac9fb3c51f970611ffe27e9d63507dcd";
   };
 
@@ -54,10 +52,10 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast, disk based, rotating network backup system";
     homepage = "http://dirvish.org/";
-    license = lib.licenses.osl2;
+    license = stdenv.lib.licenses.osl2;
     platforms = platforms.linux;
     maintainers = [ maintainers.winpat ];
   };

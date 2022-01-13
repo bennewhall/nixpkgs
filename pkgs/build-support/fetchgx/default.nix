@@ -12,9 +12,7 @@ stdenvNoCC.mkDerivation {
   outputHashMode = "recursive";
   outputHash = sha256;
 
-  dontConfigure = true;
-  doCheck = false;
-  doInstallCheck = false;
+  phases = [ "unpackPhase" "buildPhase" "installPhase" ];
 
   buildPhase = ''
     export GOPATH=$(pwd)/vendor

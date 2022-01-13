@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libnfnetlink }:
+{ stdenv, fetchurl, libnfnetlink }:
 
 stdenv.mkDerivation rec {
   pname = "minissdpd";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Small daemon to speed up UPnP device discoveries";
     longDescription = ''
       MiniSSDPd receives NOTIFY packets and stores (caches) that information

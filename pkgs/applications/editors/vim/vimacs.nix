@@ -1,17 +1,17 @@
-{ lib, stdenv, config, vim_configurable, macvim, vimPlugins
+{ stdenv, config, vim_configurable, macvim, vimPlugins
 , useMacvim ? stdenv.isDarwin && (config.vimacs.macvim or true)
 , vimacsExtraArgs ? "" }:
 
 stdenv.mkDerivation rec {
   pname = "vimacs";
-  version = lib.getVersion vimPackage;
+  version = vimPackage.version;
   vimPackage = if useMacvim then macvim else vim_configurable;
 
   buildInputs = [ vimPackage vimPlugins.vimacs ];
 
   buildCommand = ''
     mkdir -p "$out"/bin
-    cp "${vimPlugins.vimacs}"/bin/vim $out/bin/vimacs
+    cp "${vimPlugins.vimacs}"/share/vim-plugins/vimacs/bin/vim $out/bin/vimacs
     substituteInPlace "$out"/bin/vimacs \
       --replace '-vim}' '-@bin@/bin/vim}' \
       --replace '-gvim}' '-@bin@/bin/vim -g}' \
@@ -25,10 +25,10 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Vim-Improved eMACS: Emacs emulation for Vim";
     homepage = "http://algorithm.com.au/code/vimacs";
     license = licenses.gpl2Plus;
-    maintainers = with lib.maintainers; [ millerjason ];
+    maintainers = with stdenv.lib.maintainers; [ millerjason ];
   };
 }

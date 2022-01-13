@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 stdenv.mkDerivation rec {
   pname = "libctb";
   version = "0.16";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   makeFlags = [
     "prefix=$(out)"
   ];
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Communications toolbox";
     homepage = "https://iftools.com";
     license = licenses.lgpl2;

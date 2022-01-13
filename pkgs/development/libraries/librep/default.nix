@@ -1,49 +1,37 @@
-{ lib
-, stdenv
-, fetchurl
-, autoreconfHook
-, gdbm
-, gmp
-, libffi
-, pkg-config
-, readline
-, texinfo
-}:
+{ stdenv, fetchurl
+, pkgconfig, autoreconfHook
+, readline, texinfo
+, gdbm, gmp, libffi }:
+
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "librep";
   version = "0.92.7";
+  sourceName = "librep_${version}";
 
   src = fetchurl {
-    url = "https://download.tuxfamily.org/${pname}/${pname}_${version}.tar.xz";
+    url = "https://download.tuxfamily.org/librep/${sourceName}.tar.xz";
     sha256 = "1bmcjl1x1rdh514q9z3hzyjmjmwwwkziipjpjsl301bwmiwrd8a8";
   };
 
-  nativeBuildInputs = [
-    autoreconfHook
-    pkg-config
-    texinfo
-  ];
-  buildInputs = [
-    gdbm
-    gmp
-    libffi
-    readline
-  ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
+  buildInputs = [ readline texinfo ];
+  propagatedBuildInputs = [ gdbm gmp libffi ];
 
   setupHook = ./setup-hook.sh;
 
-  meta = with lib;{
-    homepage = "http://sawfish.tuxfamily.org/";
+  meta = {
     description = "Fast, lightweight, and versatile Lisp environment";
     longDescription = ''
-      librep is a Lisp system for UNIX, comprising an interpreter, a byte-code
-      compiler, and a virtual machine. It can serve as an application extension
-      language but is also suitable for standalone scripts.
-    '';
-    license = licenses.gpl2Plus;
+      librep is a Lisp system for UNIX, comprising an
+      interpreter, a byte-code compiler, and a virtual
+      machine. It can serve as an application extension language
+      but is also suitable for standalone scripts.
+     '';
+    homepage = "http://sawfish.wikia.com";
+    license = licenses.gpl2;
     maintainers = [ maintainers.AndersonTorres ];
-    platforms = platforms.unix;
   };
 }
 # TODO: investigate fetchFromGithub

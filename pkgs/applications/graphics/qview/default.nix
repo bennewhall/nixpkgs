@@ -1,11 +1,4 @@
-{ lib
-, mkDerivation
-, fetchFromGitHub
-, qmake
-, qtbase
-, qtimageformats
-, qtsvg
-}:
+{ mkDerivation, lib, fetchFromGitHub, qmake, qtbase }:
 
 mkDerivation rec {
   pname = "qview";
@@ -22,8 +15,6 @@ mkDerivation rec {
 
   buildInputs = [
     qtbase
-    qtimageformats
-    qtsvg
   ];
 
   patchPhase = ''
@@ -33,7 +24,7 @@ mkDerivation rec {
   meta = with lib; {
     description = "Practical and minimal image viewer";
     homepage = "https://interversehq.com/qview/";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ acowley ];
     platforms = platforms.all;
   };

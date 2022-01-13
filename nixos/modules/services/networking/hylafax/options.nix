@@ -2,8 +2,8 @@
 
 let
 
-  inherit (lib.options) literalExpression mkEnableOption mkOption;
-  inherit (lib.types) bool enum ints lines attrsOf nullOr path str submodule;
+  inherit (lib.options) literalExample mkEnableOption mkOption;
+  inherit (lib.types) bool enum int lines attrsOf nullOr path str submodule;
   inherit (lib.modules) mkDefault mkIf mkMerge;
 
   commonDescr = ''
@@ -18,6 +18,7 @@ let
   '';
 
   str1 = lib.types.addCheck str (s: s!="");  # non-empty string
+  int1 = lib.types.addCheck int (i: i>0);  # positive integer
 
   configAttrType =
     # Options in HylaFAX configuration files can be
@@ -26,7 +27,7 @@ let
     # This type definition resolves all
     # those types into a list of strings.
     let
-      inherit (lib.types) attrsOf coercedTo int listOf;
+      inherit (lib.types) attrsOf coercedTo listOf;
       innerType = coercedTo bool (x: if x then "Yes" else "No")
         (coercedTo int (toString) str);
     in
@@ -84,8 +85,8 @@ let
       # Otherwise, we use `false` to provoke
       # an error if hylafax tries to use it.
       c.sendmailPath = mkMerge [
-        (mkIfDefault noWrapper "${pkgs.coreutils}/bin/false")
-        (mkIfDefault (!noWrapper) "${wrapperDir}/${program}")
+        (mkIfDefault noWrapper ''${pkgs.coreutils}/bin/false'')
+        (mkIfDefault (!noWrapper) ''${wrapperDir}/${program}'')
       ];
       importDefaultConfig = file:
         lib.attrsets.mapAttrs
@@ -120,7 +121,7 @@ in
 
   options.services.hylafax = {
 
-    enable = mkEnableOption "HylaFAX server";
+    enable = mkEnableOption ''HylaFAX server'';
 
     autostart = mkOption {
       type = bool;
@@ -138,28 +139,28 @@ in
       type = nullOr str1;
       default = null;
       example = "49";
-      description = "Country code for server and all modems.";
+      description = ''Country code for server and all modems.'';
     };
 
     areaCode = mkOption {
       type = nullOr str1;
       default = null;
       example = "30";
-      description = "Area code for server and all modems.";
+      description = ''Area code for server and all modems.'';
     };
 
     longDistancePrefix = mkOption {
       type = nullOr str;
       default = null;
       example = "0";
-      description = "Long distance prefix for server and all modems.";
+      description = ''Long distance prefix for server and all modems.'';
     };
 
     internationalPrefix = mkOption {
       type = nullOr str;
       default = null;
       example = "00";
-      description = "International prefix for server and all modems.";
+      description = ''International prefix for server and all modems.'';
     };
 
     spoolAreaPath = mkOption {
@@ -197,7 +198,7 @@ in
 
     sendmailPath = mkOption {
       type = path;
-      example = literalExpression ''"''${pkgs.postfix}/bin/sendmail"'';
+      example = literalExample "''${pkgs.postfix}/bin/sendmail";
       # '' ;  # fix vim
       description = ''
         Path to <filename>sendmail</filename> program.
@@ -266,7 +267,7 @@ in
     spoolExtraInit = mkOption {
       type = lines;
       default = "";
-      example = "chmod 0755 .  # everyone may read my faxes";
+      example = ''chmod 0755 .  # everyone may read my faxes'';
       description = ''
         Additional shell code that is executed within the
         spooling area directory right after its setup.
@@ -289,7 +290,7 @@ in
       '';
     };
     faxcron.infoDays = mkOption {
-      type = ints.positive;
+      type = int1;
       default = 30;
       description = ''
         Set the expiration time for data in the
@@ -297,7 +298,7 @@ in
       '';
     };
     faxcron.logDays = mkOption {
-      type = ints.positive;
+      type = int1;
       default = 30;
       description = ''
         Set the expiration time for
@@ -305,7 +306,7 @@ in
       '';
     };
     faxcron.rcvDays = mkOption {
-      type = ints.positive;
+      type = int1;
       default = 7;
       description = ''
         Set the expiration time for files in
@@ -342,9 +343,9 @@ in
       '';
     };
     faxqclean.doneqMinutes = mkOption {
-      type = ints.positive;
+      type = int1;
       default = 15;
-      example = literalExpression "24*60";
+      example = literalExample ''24*60'';
       description = ''
         Set the job
         age threshold (in minutes) that controls how long
@@ -352,9 +353,9 @@ in
       '';
     };
     faxqclean.docqMinutes = mkOption {
-      type = ints.positive;
+      type = int1;
       default = 60;
-      example = literalExpression "24*60";
+      example = literalExample ''24*60'';
       description = ''
         Set the document
         age threshold (in minutes) that controls how long

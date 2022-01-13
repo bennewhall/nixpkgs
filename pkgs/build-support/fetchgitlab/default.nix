@@ -1,26 +1,22 @@
-{ fetchgit, fetchzip, lib }:
+{ fetchzip, lib }:
 
 # gitlab example
-{ owner, repo, rev, protocol ? "https", domain ? "gitlab.com", name ? "source", group ? null
-, fetchSubmodules ? false, leaveDotGit ? false, deepClone ? false
+{ owner, repo, rev, domain ? "gitlab.com", name ? "source", group ? null
 , ... # For hash agility
 } @ args:
 
+with lib;
+
 let
-  slug = lib.concatStringsSep "/" ((lib.optional (group != null) group) ++ [ owner repo ]);
-  escapedSlug = lib.replaceStrings [ "." "/" ] [ "%2E" "%2F" ] slug;
-  escapedRev = lib.replaceStrings [ "+" "%" "/" ] [ "%2B" "%25" "%2F" ] rev;
-  passthruAttrs = removeAttrs args [ "protocol" "domain" "owner" "group" "repo" "rev" ];
+  slug = concatStringsSep "/"
+    ((optional (group != null) group) ++ [ owner repo ]);
 
-  useFetchGit = deepClone || fetchSubmodules || leaveDotGit;
-  fetcher = if useFetchGit then fetchgit else fetchzip;
-
-  fetcherArgs = (if useFetchGit then {
-    inherit rev deepClone fetchSubmodules leaveDotGit;
-    url = "${protocol}://${domain}/${slug}.git";
-  } else {
-    url = "${protocol}://${domain}/api/v4/projects/${escapedSlug}/repository/archive.tar.gz?sha=${escapedRev}";
-  }) // passthruAttrs // { inherit name; };
+  escapedSlug = replaceStrings ["." "/"] ["%2E" "%2F"] slug;
+  escapedRev = replaceStrings ["+" "%" "/"] ["%2B" "%25" "%2F"] rev;
 in
 
-fetcher fetcherArgs // { meta.homepage = "${protocol}://${domain}/${slug}/"; inherit rev; }
+fetchzip ({
+  inherit name;
+  url = "https://${domain}/api/v4/projects/${escapedSlug}/repository/archive.tar.gz?sha=${escapedRev}";
+  meta.homepage = "https://${domain}/${slug}/";
+} // removeAttrs args [ "domain" "owner" "group" "repo" "rev" ]) // { inherit rev; }

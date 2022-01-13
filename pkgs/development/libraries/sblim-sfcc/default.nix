@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, curl }:
+{ stdenv, fetchFromGitHub, autoreconfHook, curl }:
 
 stdenv.mkDerivation rec {
   pname = "sblim-sfcc";
@@ -17,11 +17,12 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Small Footprint CIM Client Library";
     homepage    = "https://sourceforge.net/projects/sblim/";
     license     = licenses.cpl10;
     maintainers = with maintainers; [ deepfire ];
     platforms   = platforms.unix;
+    inherit version;
   };
 }

@@ -1,24 +1,12 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, fetchpatch
-, pkg-config
-, bzip2
-, curl
-, expat
-, fribidi
-, libunibreak
-, sqlite
-, zlib
+{ stdenv, fetchFromGitHub, fetchpatch, pkgconfig
+, bzip2, curl, expat, fribidi, libunibreak, sqlite, zlib
 , uiTarget ? if !stdenv.isDarwin then "desktop" else "macosx"
 , uiType ? if !stdenv.isDarwin then "qt4" else "cocoa"
-, qt4
-, gtk2
-, AppKit
-, Cocoa
+, qt4, gtk2
+, AppKit, Cocoa
 }:
 
-with lib;
+with stdenv.lib;
 
 assert elem uiTarget [ "desktop" "macosx" ];
 assert elem uiType [ "qt4" "gtk" "cocoa" ];
@@ -28,8 +16,7 @@ assert uiTarget == "macosx" -> uiType == "cocoa";
 # which is way to old and no longer in nixpkgs.
 
 stdenv.mkDerivation {
-  pname = "fbreader-${uiType}";
-  version = "0.99.6";
+  name = "fbreader-${uiType}-0.99.6";
 
   src = fetchFromGitHub {
     owner = "geometer";
@@ -63,16 +50,10 @@ stdenv.mkDerivation {
       --replace -llinebreak -lunibreak
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [
-    bzip2
-    curl
-    expat
-    fribidi
-    libunibreak
-    sqlite
-    zlib
+    bzip2 curl expat fribidi libunibreak sqlite zlib
   ]
   ++ optional (uiType == "qt4") qt4
   ++ optional (uiType == "gtk") gtk2
@@ -82,12 +63,12 @@ stdenv.mkDerivation {
 
   NIX_CFLAGS_COMPILE = "-Wno-error=narrowing";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An e-book reader for Linux";
     homepage = "http://www.fbreader.org/";
     license = licenses.gpl3;
     broken = stdenv.isDarwin  # untested, might work
-      || uiType == "gtk"; # builds, but the result is unusable, hangs a lot
+          || uiType == "gtk"; # builds, but the result is unusable, hangs a lot
     platforms = platforms.unix;
     maintainers = [ maintainers.coroa ];
   };

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , fetchpatch
 , lvm2
@@ -11,16 +11,15 @@
 , python3
 , util-linux
 , check
-, enableStatic ? stdenv.hostPlatform.isStatic
+, enableStatic ? false
 }:
 
 stdenv.mkDerivation rec {
-  pname = "parted";
-  version = "3.4";
+  name = "parted-3.3";
 
   src = fetchurl {
-    url = "mirror://gnu/parted/parted-${version}.tar.xz";
-    sha256 = "sha256-4SmAIkctpVibfyvh1e48G2bsPZbfutA9xkKv0AnaU0I=";
+    url = "mirror://gnu/parted/${name}.tar.xz";
+    sha256 = "0i1xp367wpqw75b20c3jnism3dg3yqj4a7a22p2jb1h1hyyv9qjp";
   };
 
   outputs = [ "out" "dev" "man" "info" ];
@@ -30,16 +29,16 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [ libuuid ]
-    ++ lib.optional (readline != null) readline
-    ++ lib.optional (gettext != null) gettext
-    ++ lib.optional (lvm2 != null) lvm2;
+    ++ stdenv.lib.optional (readline != null) readline
+    ++ stdenv.lib.optional (gettext != null) gettext
+    ++ stdenv.lib.optional (lvm2 != null) lvm2;
 
   configureFlags =
        (if (readline != null)
         then [ "--with-readline" ]
         else [ "--without-readline" ])
-    ++ lib.optional (lvm2 == null) "--disable-device-mapper"
-    ++ lib.optional enableStatic "--enable-static";
+    ++ stdenv.lib.optional (lvm2 == null) "--disable-device-mapper"
+    ++ stdenv.lib.optional enableStatic "--enable-static";
 
   # Tests were previously failing due to Hydra running builds as uid 0.
   # That should hopefully be fixed now.
@@ -60,13 +59,13 @@ stdenv.mkDerivation rec {
     '';
 
     homepage = "https://www.gnu.org/software/parted/";
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
     maintainers = [
       # Add your name here!
     ];
 
     # GNU Parted requires libuuid, which is part of util-linux-ng.
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

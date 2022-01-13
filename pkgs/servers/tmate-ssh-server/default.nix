@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, cmake, libtool, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, cmake, libtool, pkgconfig
 , zlib, openssl, libevent, ncurses, ruby, msgpack, libssh }:
 
 stdenv.mkDerivation rec {
@@ -15,15 +15,15 @@ stdenv.mkDerivation rec {
   dontUseCmakeConfigure = true;
 
   buildInputs = [ libtool zlib openssl libevent ncurses ruby msgpack libssh ];
-  nativeBuildInputs = [ autoreconfHook cmake pkg-config ];
+  nativeBuildInputs = [ autoreconfHook cmake pkgconfig ];
+  enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "https://tmate.io/";
     description = "tmate SSH Server";
     license     = licenses.mit;
     platforms   = platforms.unix;
     maintainers = with maintainers; [ ];
-    knownVulnerabilities = [ "CVE-2021-44513" "CVE-2021-44512" ];
   };
 }
 

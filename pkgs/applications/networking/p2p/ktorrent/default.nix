@@ -22,6 +22,8 @@ mkDerivation rec {
     libktorrent taglib libgcrypt kplotting
   ];
 
+  enableParallelBuilding = true;
+
   meta = with lib; {
     description = "KDE integrated BtTorrent client";
     homepage    = "https://www.kde.org/applications/internet/ktorrent/";

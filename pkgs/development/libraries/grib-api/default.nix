@@ -1,6 +1,6 @@
-{ fetchurl, fetchpatch, lib, stdenv,
+{ fetchurl, fetchpatch, stdenv,
   cmake, netcdf, gfortran, libpng, openjpeg,
-  enablePython ? false, pythonPackages ? null }:
+  enablePython ? false, pythonPackages }:
 
 stdenv.mkDerivation rec {
   pname = "grib-api";
@@ -23,15 +23,16 @@ stdenv.mkDerivation rec {
     substituteInPlace "src/grib_jasper_encoding.c" --replace "image.inmem_    = 1;" ""
   '';
 
-  nativeBuildInputs = [ cmake gfortran ];
-  buildInputs = [ netcdf
+  buildInputs = [ cmake
+                  netcdf
+                  gfortran
                   libpng
                   openjpeg
-                ] ++ lib.optionals enablePython [
+                ] ++ stdenv.lib.optionals enablePython [
                   pythonPackages.python
                 ];
 
-  propagatedBuildInputs = lib.optionals enablePython [
+  propagatedBuildInputs = stdenv.lib.optionals enablePython [
                   pythonPackages.numpy
                 ];
 
@@ -41,19 +42,21 @@ stdenv.mkDerivation rec {
                  "-DOPENJPEG_INCLUDE_DIR=${openjpeg.dev}/include/${openjpeg.incDir}"
                ];
 
+  enableParallelBuilding = true;
+
   doCheck = true;
 
   # Only do tests that don't require downloading 120MB of testdata
   # We fix the darwin checkPhase, which searches for libgrib_api.dylib
   # in /nix/store by setting DYLD_LIBRARY_PATH
-  checkPhase = lib.optionalString (stdenv.isDarwin) ''
+  checkPhase = stdenv.lib.optionalString (stdenv.isDarwin) ''
     substituteInPlace "tests/include.sh" --replace "set -ea" "set -ea; export DYLD_LIBRARY_PATH=$(pwd)/lib"
   '' + ''
     ctest -R "t_definitions|t_calendar|t_unit_tests" -VV
   '';
 
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://software.ecmwf.int/wiki/display/GRIB/Home";
     license = licenses.asl20;
     platforms = with platforms; linux ++ darwin;

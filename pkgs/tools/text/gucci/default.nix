@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "gucci";
@@ -15,11 +15,11 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  ldflags = [
-    "-X main.AppVersion=${version}"
-  ];
+  buildFlagsArray = ''
+    -ldflags=-X main.AppVersion=${version}
+  '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple CLI templating tool written in golang";
     homepage = "https://github.com/noqcks/gucci";
     license = licenses.mit;
@@ -27,3 +27,4 @@ buildGoPackage rec {
     platforms = platforms.unix;
   };
 }
+

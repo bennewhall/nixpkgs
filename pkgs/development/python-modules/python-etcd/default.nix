@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , nose
@@ -28,7 +28,7 @@ buildPythonPackage rec {
   # Some issues with etcd not in path even though most tests passed
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A python client for Etcd";
     homepage = "https://github.com/jplana/python-etcd";
     license = licenses.mit;

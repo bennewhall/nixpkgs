@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, zlib, nettools, nixosTests }:
+{ stdenv, fetchFromGitHub, zlib, nettools, nixosTests }:
 
 stdenv.mkDerivation rec {
   pname = "iodine";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://code.kryo.se/iodine/";
     description = "Tool to tunnel IPv4 data through a DNS server";
-    license = lib.licenses.isc;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.isc;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

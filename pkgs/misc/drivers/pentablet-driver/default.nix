@@ -1,4 +1,4 @@
-{ lib, stdenv, mkDerivation, fetchzip, autoPatchelfHook, libusb1, libX11, libXtst, qtbase, libglvnd }:
+{ stdenv, mkDerivation, fetchzip, autoPatchelfHook, libusb1, libX11, libXtst, qtbase, libglvnd }:
 
 mkDerivation rec {
   pname = "pentablet-driver";
@@ -28,7 +28,7 @@ mkDerivation rec {
     cp config.xml $out/bin/config.xml
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.xp-pen.com/download-46.html";
     description = "Driver for XP-PEN Pentablet drawing tablets";
     license = licenses.unfree;

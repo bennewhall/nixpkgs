@@ -1,31 +1,29 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
 , pkg-config
 , gettext
-, alsa-lib
+, alsaLib
 , acpid
 , bc
 , ddcutil
 , efl
-, libexif
 , pam
 , xkeyboard_config
 , udisks2
 
-, waylandSupport ? false, wayland-protocols, xwayland
 , bluetoothSupport ? true, bluez5
 , pulseSupport ? !stdenv.isDarwin, libpulseaudio
 }:
 
 stdenv.mkDerivation rec {
   pname = "enlightenment";
-  version = "0.25.1";
+  version = "0.24.2";
 
   src = fetchurl {
     url = "http://download.enlightenment.org/rel/apps/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "0i1424vsc929h36hx04646pbrjiya6nc1nqr6s15xwvfv7imzw1c";
+    sha256 = "1wfz0rwwsx7c1mkswn4hc9xw1i6bsdirhxiycf7ha2vcipqy465y";
   };
 
   nativeBuildInputs = [
@@ -36,19 +34,17 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     acpid # for systems with ACPI for lid events, AC/Battery plug in/out etc
     bc # for the Everything module calculator mode
     ddcutil # specifically libddcutil.so.2 for backlight control
     efl
-    libexif
     pam
     xkeyboard_config
     udisks2 # for removable storage mounting/unmounting
   ]
-  ++ lib.optional bluetoothSupport bluez5 # for bluetooth configuration and control
-  ++ lib.optional pulseSupport libpulseaudio # for proper audio device control and redirection
-  ++ lib.optionals waylandSupport [ wayland-protocols xwayland ]
+  ++ stdenv.lib.optional bluetoothSupport bluez5 # for bluetooth configuration and control
+  ++ stdenv.lib.optional pulseSupport libpulseaudio # for proper audio device control and redirection
   ;
 
   patches = [
@@ -66,11 +62,11 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-D systemdunitdir=lib/systemd/user"
-  ] ++ lib.optional waylandSupport "-Dwl=true";
+  ];
 
   passthru.providedSessions = [ "enlightenment" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The Compositing Window Manager and Desktop Shell";
     homepage = "https://www.enlightenment.org";
     license = licenses.bsd2;

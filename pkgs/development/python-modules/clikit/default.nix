@@ -1,6 +1,6 @@
 { lib, buildPythonPackage, fetchPypi
 , isPy27, pythonAtLeast
-, pylev, pastel, typing ? null, enum34 ? null, crashtest }:
+, pylev, pastel, typing, enum34, crashtest }:
 
 buildPythonPackage rec {
   pname = "clikit";

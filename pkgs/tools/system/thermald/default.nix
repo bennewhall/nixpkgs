@@ -10,15 +10,15 @@
 , libevdev
 , libtool
 , libxml2
-, xz
-, pkg-config
-, lib, stdenv
+, lzma
+, pkgconfig
+, stdenv
 , upower
 }:
 
 stdenv.mkDerivation rec {
   pname = "thermald";
-  version = "2.4.6";
+  version = "2.4.1";
 
   outputs = [ "out" "devdoc" ];
 
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     owner = "intel";
     repo = "thermal_daemon";
     rev = "v${version}";
-    sha256 = "sha256-ZknZznoYVX3dNBIUvER6odv5eNrCV3//CXH1ypCf6tE=";
+    sha256 = "0rlac7v1b59m7gh767hkd8a0r4p001nd24786fnmryygbxynd2s6";
   };
 
   nativeBuildInputs = [
@@ -37,7 +37,7 @@ stdenv.mkDerivation rec {
     docbook_xml_dtd_412
     gtk-doc
     libtool
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
     dbus-glib
     libevdev
     libxml2
-    xz
+    lzma
     upower
   ];
 
@@ -63,7 +63,7 @@ stdenv.mkDerivation rec {
     cp ./data/thermal-conf.xml $out/etc/thermald/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Thermal Daemon";
     homepage = "https://01.org/linux-thermal-daemon";
     changelog = "https://github.com/intel/thermal_daemon/blob/master/README.txt";

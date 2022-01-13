@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch }:
+{ stdenv, fetchurl, fetchpatch }:
 
 stdenv.mkDerivation rec {
   pname = "mcpp";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://mcpp.sourceforge.net/";
     description = "A portable c preprocessor";
     license = licenses.bsd2;

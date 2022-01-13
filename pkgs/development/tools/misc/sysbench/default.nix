@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
 , libmysqlclient, libaio
 }:
 
@@ -6,7 +6,7 @@ stdenv.mkDerivation rec {
   pname = "sysbench";
   version = "1.0.20";
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ libmysqlclient libaio ];
 
   src = fetchFromGitHub {
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Modular, cross-platform and multi-threaded benchmark tool";
     homepage = "https://github.com/akopytov/sysbench";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

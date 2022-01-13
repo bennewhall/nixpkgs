@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchhg, pidgin, glib, json-glib, autoreconfHook }:
+{ stdenv, fetchFromGitHub, fetchhg, pidgin, glib, json-glib, autoreconfHook }:
 
 
 let
@@ -10,13 +10,12 @@ let
   };
 
 in stdenv.mkDerivation rec {
-  pname = "purple-facebook";
-  version = "0.9.5";
+  name = "purple-facebook-0.9.5";
 
   src = fetchFromGitHub {
     owner = "dequis";
     repo = "purple-facebook";
-    rev = "v${version}-9ff9acf9fa14";
+    rev = "v0.9.5-9ff9acf9fa14";
     sha256 = "0a1860bkzrmyxahm9rlxi80z335w491wzdaqaw6j9ccavbymhwhs";
   };
 
@@ -56,7 +55,7 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [ pidgin glib json-glib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Facebook protocol plugin for libpurple";
     license = licenses.gpl2;

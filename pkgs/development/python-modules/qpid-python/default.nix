@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchurl
 , isPy3k
@@ -17,8 +17,8 @@ buildPythonPackage rec {
   # needs a broker running and then ./qpid-python-test
   doCheck = false;
 
-  meta = with lib; {
-    homepage = "https://qpid.apache.org/";
+  meta = with stdenv.lib; {
+    homepage = "http://qpid.apache.org/";
     description = "Python client implementation and AMQP conformance tests for Apache Qpid";
     license = licenses.asl20;
   };

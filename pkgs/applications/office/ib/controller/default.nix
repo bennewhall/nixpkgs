@@ -1,18 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, unzip, jdk, ib-tws, xpra }:
+{ stdenv, fetchurl, unzip, jdk, ib-tws, xpra }:
 
 stdenv.mkDerivation rec {
   version = "2.14.0";
   pname = "ib-controller";
 
-  src = fetchFromGitHub {
-    owner = "ib-controller";
-    repo = "ib-controller";
-    rev = version;
-    sha256 = "sha256-R175CKb3uErjBNe73HEFMI+bNmmuH2nWGraCSh5bXwc=";
+  src = fetchurl {
+    url = "https://github.com/ib-controller/ib-controller/archive/${version}.tar.gz";
+    sha256 = "17a8bcgg9z3b4y38k035hm2lgvhmf8srlz59c7n2q3fdw2i95i68";
   };
 
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [ jdk ib-tws ];
+  phases = [ "unpackPhase" "installPhase" ];
+
+  buildInputs = [ unzip jdk ib-tws ];
 
   installPhase = ''
     mkdir -p $out $out/bin $out/etc/ib/controller $out/share/IBController
@@ -150,10 +149,10 @@ stdenv.mkDerivation rec {
     fi
     EOF
     chmod u+x $out/bin/ib-gw-c
-  '';
+    '';
 
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Automation Controller for the Trader Work Station of Interactive Brokers";
     homepage = "https://github.com/ib-controller/ib-controller";
     license = licenses.gpl3;

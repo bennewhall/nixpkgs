@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, gamin }:
+{ stdenv, fetchurl, gamin }:
 
 stdenv.mkDerivation rec {
-  pname = "fileschanged";
-  version = "0.6.9";
+  name = "fileschanged-0.6.9";
 
   src = fetchurl {
-    url = "mirror://savannah/fileschanged/fileschanged-${version}.tar.gz";
+    url = "mirror://savannah/fileschanged/${name}.tar.gz";
     sha256 = "0ajc9h023vzpnlqqjli4wbvs0q36nr5p9msc3wzbic8rk687qcxc";
   };
 
@@ -18,7 +17,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://www.nongnu.org/fileschanged/";
     description = "A command-line utility that reports when files have been altered";
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
     longDescription = ''
       This utility is a client to FAM (File Alteration Monitor) servers
@@ -28,6 +27,6 @@ stdenv.mkDerivation rec {
       standard-output or executes a given command.
     '';
 
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -1,13 +1,15 @@
 { stdenv, lib, fetchurl, fetchpatch
-, withGUI ? false, gtk2, pkg-config, sqlite # compile GUI
+, withGUI ? false, gtk2, pkgconfig, sqlite # compile GUI
 }:
 
+let numVersion = "02.18"; # :(
+in
 stdenv.mkDerivation rec {
-  pname = "lshw";
-  version = "B.02.18";
+  name = "lshw-${numVersion}b";
+  version = numVersion;
 
   src = fetchurl {
-    url = "https://ezix.org/software/files/lshw-${version}.tar.gz";
+    url = "https://ezix.org/software/files/lshw-B.${version}.tar.gz";
     sha256 = "0brwra4jld0d53d7jsgca415ljglmmx1l2iazpj4ndilr48yy8mf";
   };
 
@@ -24,7 +26,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = lib.optionals withGUI [ gtk2 sqlite ];
 
@@ -42,11 +44,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://ezix.org/project/wiki/HardwareLiSter";
     description = "Provide detailed information on the hardware configuration of the machine";
     license = licenses.gpl2;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ phreedom ];
     platforms = platforms.linux;
   };
 }

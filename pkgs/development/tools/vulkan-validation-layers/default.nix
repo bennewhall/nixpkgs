@@ -1,108 +1,105 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
-, glslang
-, libX11
-, libxcb
-, libXrandr
+, writeText
+, python3
 , spirv-headers
 , spirv-tools
 , vulkan-headers
+, vulkan-loader
+, glslang
+, pkgconfig
+, xlibsWrapper
+, libxcb
+, libXrandr
 , wayland
 }:
+# vulkan-validation-layers requires a custom glslang version, while glslang requires
+# custom versions for spirv-tools and spirv-headers. The git hashes required for all
+# of these deps is documented upstream here:
+# https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/scripts/known_good.json
 
 let
-  # vulkan-validation-layers requires a custom glslang & robin-hood-hashing
-  # version, while glslang requires custom versions for spirv-tools and spirv-headers.
-  #
-  # The git hashes required for all of these deps is documented upstream here:
-  # https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/scripts/known_good.json
-  # and https://github.com/KhronosGroup/glslang/blob/master/known_good.json
-  localSpirvHeaders = spirv-headers.overrideAttrs (_: {
-    src = fetchFromGitHub {
-      owner = "KhronosGroup";
-      repo = "SPIRV-Headers";
-      rev = "449bc986ba6f4c5e10e32828783f9daef2a77644"; # pin
-      sha256 = "1249pvk4iz09caxm3kwckzwcx2hbw97cr2h8h770l6c061kb14z5";
-    };
-  });
   localGlslang = (glslang.override {
     argSpirv-tools = spirv-tools.overrideAttrs (_: {
       src = fetchFromGitHub {
         owner = "KhronosGroup";
         repo = "SPIRV-Tools";
-        rev = "1fbed83c8aab8517d821fcb4164c08567951938f"; # pin
-        sha256 = "0faz468bnxpvbg1np13gnbwf35s0hl9ad7r2p9wi9si5k336qjmj";
+        rev = "e128ab0d624ce7beb08eb9656bb260c597a46d0a";
+        sha256 = "0jj8zrl3dh9fq71jc8msx3f3ifb2vjcb37nl0w4sa8sdhfff74pv";
       };
     });
-    argSpirv-headers = localSpirvHeaders;
+    argSpirv-headers = spirv-headers.overrideAttrs (_: {
+      src = fetchFromGitHub {
+        owner = "KhronosGroup";
+        repo = "SPIRV-Headers";
+        rev = "ac638f1815425403e946d0ab78bac71d2bdbf3be";
+        sha256 = "1lkhs7pxcrfkmiizcxl0w5ajx6swwjv7w3iq586ipgh571fc75gx";
+      };
+    });
   }).overrideAttrs (_: {
     src = fetchFromGitHub {
       owner = "KhronosGroup";
       repo = "glslang";
-      rev = "2fb89a0072ae7316af1c856f22663fde4928128a"; # pin
-      sha256 = "04kkmphv0a5mb5javhmkc4kab8r0n107kb7djakj5h238ni2j7q9";
+      rev = "e00d27c6d65b7d3e72506a311d7f053da4051295";
+      sha256 = "00lzvzk613gpm1vsdxffmx52z3c52ijwvzk4sfhh95p71kdydhgv";
     };
   });
-  robin-hood-hashing = fetchFromGitHub {
-    owner = "martinus";
-    repo = "robin-hood-hashing";
-    rev = "3.11.3"; # pin
-    sha256 = "1gm3lwjkh6h8m7lfykzd0jzhfqjmjchindkmxc008rwvxafsd1pl";
-  };
 in
+
 stdenv.mkDerivation rec {
   pname = "vulkan-validation-layers";
-  version = "1.2.189.1";
+  version = "1.2.141.0";
 
   # If we were to use "dev" here instead of headers, the setupHook would be
   # placed in that output instead of "out".
   outputs = ["out" "headers"];
   outputInclude = "headers";
 
-  src = (assert version == vulkan-headers.version;
-    fetchFromGitHub {
-      owner = "KhronosGroup";
-      repo = "Vulkan-ValidationLayers";
-      rev = "sdk-${version}";
-      sha256 = "0a5plvvffidgnqh5ymq315xscl08w298sn9da48b3x2rdbdqgw90";
-    });
-
-  # Include absolute paths to layer libraries in their associated
-  # layer definition json files.
-  postPatch = ''
-    sed "s|\([[:space:]]*set(INSTALL_DEFINES \''${INSTALL_DEFINES} -DRELATIVE_LAYER_BINARY=\"\)\(\$<TARGET_FILE_NAME:\''${TARGET_NAME}>\")\)|\1$out/lib/\2|" -i layers/CMakeLists.txt
-  '';
+  src = fetchFromGitHub {
+    owner = "KhronosGroup";
+    repo = "Vulkan-ValidationLayers";
+    rev = "sdk-${version}";
+    sha256 = "1yfas7q122kx74nbjk3wxlyacysgncvlvq081a5dp238m88vkmbj";
+  };
 
   nativeBuildInputs = [
+    pkgconfig
     cmake
+    python3
   ];
 
   buildInputs = [
-    libX11
+    localGlslang
+    localGlslang.spirv-headers
+    vulkan-headers
+    vulkan-loader
     libxcb
     libXrandr
-    vulkan-headers
     wayland
   ];
 
+  enableParallelBuilding = true;
+
   cmakeFlags = [
     "-DGLSLANG_INSTALL_DIR=${localGlslang}"
-    "-DSPIRV_HEADERS_INSTALL_DIR=${localSpirvHeaders}"
-    "-DROBIN_HOOD_HASHING_INSTALL_DIR=${robin-hood-hashing}"
     "-DBUILD_LAYER_SUPPORT_FILES=ON"
-    # Hide dev warnings that are useless for packaging
-    "-Wno-dev"
   ];
 
-  # Tests require access to vulkan-compatible GPU, which isn't
-  # available in Nix sandbox. Fails with VK_ERROR_INCOMPATIBLE_DRIVER.
-  doCheck = false;
+  # Help vulkan-loader find the validation layers
+  setupHook = writeText "setup-hook" ''
+    export XDG_DATA_DIRS=@out@/share:$XDG_DATA_DIRS
+  '';
 
-  meta = with lib; {
-    description = "The official Khronos Vulkan validation layers";
-    homepage    = "https://github.com/KhronosGroup/Vulkan-ValidationLayers";
+  # Include absolute paths to layer libraries in their associated
+  # layer definition json files.
+  patchPhase = ''
+    sed "s|\([[:space:]]*set(INSTALL_DEFINES \''${INSTALL_DEFINES} -DRELATIVE_LAYER_BINARY=\"\)\(\$<TARGET_FILE_NAME:\''${TARGET_NAME}>\")\)|\1$out/lib/\2|" -i layers/CMakeLists.txt
+  '';
+
+  meta = with stdenv.lib; {
+    description = "LunarG Vulkan loader";
+    homepage    = "https://www.lunarg.com";
     platforms   = platforms.linux;
     license     = licenses.asl20;
     maintainers = [ maintainers.ralith ];

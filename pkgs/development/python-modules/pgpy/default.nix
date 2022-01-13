@@ -1,29 +1,38 @@
-{ lib, pythonOlder, fetchFromGitHub, buildPythonPackage
-, six, enum34, pyasn1, cryptography
-, pytestCheckHook }:
+{ lib, isPy3k, fetchFromGitHub, buildPythonPackage
+, six, enum34, pyasn1, cryptography, singledispatch
+, fetchPypi
+, gpgme, flake8, pytest, pytestcov, pep8-naming, pytest-ordering }:
 
 buildPythonPackage rec {
   pname = "pgpy";
-  version = "0.5.4";
+  version = "0.5.2";
 
   src = fetchFromGitHub {
     owner = "SecurityInnovation";
     repo = "PGPy";
-    rev = "v${version}";
-    sha256 = "03pch39y3hi4ici6y6lvz0j0zram8dw2wvnmq1zyjy3vyvm1ms4a";
+    rev = version;
+    sha256 = "1v2b1dyq1sl48d2gw7vn4hv6sasd9ihpzzcq8yvxj9dgfak2y663";
   };
 
   propagatedBuildInputs = [
     six
     pyasn1
     cryptography
-  ] ++ lib.optionals (pythonOlder "3.4") [
-    enum34
-  ];
+    singledispatch
+  ] ++ lib.optional (!isPy3k) enum34;
 
   checkInputs = [
-    pytestCheckHook
+    gpgme
+    flake8
+    pytest
+    pytestcov
+    pep8-naming
+    pytest-ordering
   ];
+
+  checkPhase = ''
+    pytest
+  '';
 
   meta = with lib; {
     homepage = "https://github.com/SecurityInnovation/PGPy";
@@ -34,6 +43,6 @@ buildPythonPackage rec {
       4880.
     '';
     license = licenses.bsd3;
-    maintainers = with maintainers; [ eadwu dotlambda ];
+    maintainers = with maintainers; [ eadwu ];
   };
 }

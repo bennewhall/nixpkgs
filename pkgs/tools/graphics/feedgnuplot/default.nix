@@ -1,6 +1,5 @@
-{ lib, fetchFromGitHub, makeWrapper, gawk
+{ stdenv, fetchFromGitHub, makeWrapper, gawk
 , makeFontsConf, freefont_ttf, gnuplot, perl, perlPackages
-, stdenv, shortenPerlShebang
 }:
 
 let
@@ -11,18 +10,18 @@ in
 
 perlPackages.buildPerlPackage rec {
   pname = "feedgnuplot";
-  version = "1.58";
+  version = "1.51";
 
   src = fetchFromGitHub {
     owner = "dkogan";
     repo = "feedgnuplot";
     rev = "v${version}";
-    sha256 = "1qix4lwwyhqibz0a6q2rrb497rmk00v1fvmdyinj0dqmgjw155zr";
+    sha256 = "0npk2l032cnmibjj5zf3ii09mpxciqn32lx6g5bal91bkxwn7r5i";
   };
 
   outputs = [ "out" ];
 
-  nativeBuildInputs = [ makeWrapper gawk ] ++ lib.optional stdenv.isDarwin shortenPerlShebang;
+  nativeBuildInputs = [ makeWrapper gawk ];
 
   buildInputs = [ gnuplot perl ]
     ++ (with perlPackages; [ ListMoreUtils IPCRun StringShellQuote ]);
@@ -37,9 +36,7 @@ perlPackages.buildPerlPackage rec {
   # Tests require gnuplot 4.6.4 and are completely skipped with gnuplot 5.
   doCheck = false;
 
-  postInstall = lib.optionalString stdenv.isDarwin ''
-    shortenPerlShebang $out/bin/feedgnuplot
-  '' + ''
+  postInstall = ''
     wrapProgram $out/bin/feedgnuplot \
         --prefix "PATH" ":" "$PATH" \
         --prefix "PERL5LIB" ":" "$PERL5LIB"
@@ -49,7 +46,7 @@ perlPackages.buildPerlPackage rec {
         completions/zsh/_feedgnuplot
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "General purpose pipe-oriented plotting tool";
     homepage = "https://github.com/dkogan/feedgnuplot/";
     license = with licenses; [ artistic1 gpl1Plus ];

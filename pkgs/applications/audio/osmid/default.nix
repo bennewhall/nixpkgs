@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
-, alsa-lib
+, alsaLib
 , libX11
 }:
 
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  buildInputs = [ alsa-lib libX11 ];
+  buildInputs = [ alsaLib libX11 ];
 
   installPhase = ''
     runHook preInstall
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/llloret/osmid";
     description = "A lightweight, portable, easy to use tool to convert MIDI to OSC and OSC to MIDI";
     license = licenses.mit;

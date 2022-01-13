@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl }:
+{ stdenv, fetchurl, perl }:
 stdenv.mkDerivation rec {
   pname = "xmlformat";
   version = "1.04";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "a configurable formatter (or 'pretty-printer') for XML documents";
     homepage = "http://www.kitebird.com/software/xmlformat/";
-    license = lib.licenses.bsd3;
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.bsd3;
+    platforms = stdenv.lib.platforms.all;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "progressbar33";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # no tests implemented
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pypi.python.org/pypi/progressbar33";
     description = "Text progressbar library for python";
     license = licenses.lgpl3Plus;

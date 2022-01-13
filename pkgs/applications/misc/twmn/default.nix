@@ -1,8 +1,7 @@
-{ lib, mkDerivation, fetchFromGitHub, qtbase, qtx11extras, qmake, pkg-config, boost }:
+{ lib, mkDerivation, fetchFromGitHub, qtbase, qtx11extras, qmake, pkgconfig, boost }:
 
 mkDerivation {
-  pname = "twmn";
-  version = "unstable-2018-10-01";
+  name = "twmn-git-2018-10-01";
 
   src = fetchFromGitHub {
     owner = "sboli";
@@ -11,7 +10,7 @@ mkDerivation {
     sha256 = "0mpjvp800x07lp9i3hfcc5f4bqj1fj4w3dyr0zwaxc6wqmm0fdqz";
   };
 
-  nativeBuildInputs = [ pkg-config qmake ];
+  nativeBuildInputs = [ pkgconfig qmake ];
   buildInputs = [ qtbase qtx11extras boost ];
 
   postPatch = ''

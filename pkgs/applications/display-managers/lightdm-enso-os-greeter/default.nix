@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchgit, pkg-config, linkFarm, lightdm-enso-os-greeter
-, dbus, pcre, libepoxy, libXdmcp, at-spi2-core, libxklavier, libxkbcommon, libpthreadstubs
+{ stdenv, fetchgit, pkgconfig, linkFarm, lightdm-enso-os-greeter
+, dbus, pcre, epoxy, libXdmcp, at-spi2-core, libxklavier, libxkbcommon, libpthreadstubs
 , gtk3, vala, cmake, libgee, libX11, lightdm, gdk-pixbuf, clutter-gtk, wrapGAppsHook, librsvg }:
 
 stdenv.mkDerivation {
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
     vala
     wrapGAppsHook
   ];
@@ -27,7 +27,7 @@ stdenv.mkDerivation {
     dbus
     gtk3
     pcre
-    libepoxy
+    epoxy
     libgee
     libX11
     lightdm
@@ -55,7 +55,7 @@ stdenv.mkDerivation {
       --replace "pantheon-greeter" "$out/bin/pantheon-greeter"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       A fork of pantheon greeter that positions elements in a central and
       vertigal manner and adds a blur effect to the background

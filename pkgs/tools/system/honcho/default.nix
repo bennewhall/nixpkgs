@@ -1,28 +1,38 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, pythonPackages }:
 
 let
-  inherit (python3Packages) python;
+  inherit (pythonPackages) python;
   pname = "honcho";
 
 in
 
-python3Packages.buildPythonApplication rec {
+pythonPackages.buildPythonApplication rec {
   name = "${pname}-${version}";
-  version = "1.1.0";
+  version = "1.0.1";
+  namePrefix = "";
 
   src = fetchFromGitHub {
     owner = "nickstenning";
     repo = "honcho";
     rev = "v${version}";
-    sha256 = "1y0r8dw4pqcq7r4n58ixjdg1iy60lp0gxsd7d2jmhals16ij71rj";
+    sha256 = "11bd87474qpif20xdcn0ra1idj5k16ka51i658wfpxwc6nzsn92b";
   };
 
-  propagatedBuildInputs = [ python3Packages.setuptools ];
+  checkInputs = with pythonPackages; [ jinja2 pytest mock coverage ];
 
-  checkInputs = with python3Packages; [ jinja2 pytest mock coverage ];
+  buildPhase = ''
+    ${python.interpreter} setup.py build
+  '';
 
-  # missing plugins
-  doCheck = false;
+  installPhase = ''
+    mkdir -p "$out/${python.sitePackages}"
+
+    export PYTHONPATH="$out/${python.sitePackages}:$PYTHONPATH"
+
+    ${python.interpreter} setup.py install \
+      --install-lib=$out/${python.sitePackages} \
+      --prefix="$out"
+  '';
 
   checkPhase = ''
     runHook preCheck
@@ -30,7 +40,7 @@ python3Packages.buildPythonApplication rec {
     runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Python clone of Foreman, a tool for managing Procfile-based applications";
     license = licenses.mit;
     homepage = "https://github.com/nickstenning/honcho";

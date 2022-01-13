@@ -1,11 +1,11 @@
-{ lib, stdenv
+{ stdenv
 , substituteAll
 , fetchurl
 , fetchFromGitHub
 , autoreconfHook
 , gettext
 , makeWrapper
-, pkg-config
+, pkgconfig
 , vala
 , wrapGAppsHook
 , dbus
@@ -36,7 +36,7 @@
 
 assert withWayland -> wayland != null && libxkbcommon != null;
 
-with lib;
+with stdenv.lib;
 
 let
   python3Runtime = python3.withPackages (ps: with ps; [ pygobject3 ]);
@@ -60,13 +60,13 @@ in
 
 stdenv.mkDerivation rec {
   pname = "ibus";
-  version = "1.5.24";
+  version = "1.5.23";
 
   src = fetchFromGitHub {
     owner = "ibus";
     repo = "ibus";
     rev = version;
-    sha256 = "sha256-1qx06MlEUjSS067FdQG1Bdi4ZAh3hPcNjUX5PIiC3Sk=";
+    sha256 = "0qnblqhz8wyhchnm36zrxhbvi9g4fcwcgmw7p60yjybdlhq4asc7";
   };
 
   patches = [
@@ -101,8 +101,8 @@ stdenv.mkDerivation rec {
   ];
 
   makeFlags = [
-    "test_execsdir=${placeholder "installedTests"}/libexec/installed-tests/ibus"
-    "test_sourcesdir=${placeholder "installedTests"}/share/installed-tests/ibus"
+    "test_execsdir=${placeholder ''installedTests''}/libexec/installed-tests/ibus"
+    "test_sourcesdir=${placeholder ''installedTests''}/share/installed-tests/ibus"
   ];
 
   nativeBuildInputs = [
@@ -110,7 +110,7 @@ stdenv.mkDerivation rec {
     gtk-doc
     gettext
     makeWrapper
-    pkg-config
+    pkgconfig
     python3BuildEnv
     vala
     wrapGAppsHook
@@ -169,6 +169,6 @@ stdenv.mkDerivation rec {
     description = "Intelligent Input Bus, input method framework";
     license = licenses.lgpl21Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ttuegel yana ];
+    maintainers = with maintainers; [ ttuegel yegortimoshenko ];
   };
 }

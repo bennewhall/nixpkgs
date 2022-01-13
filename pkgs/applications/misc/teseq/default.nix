@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 let
   version = "1.1.1";
@@ -15,9 +15,9 @@ stdenv.mkDerivation {
   meta = {
     homepage = "https://www.gnu.org/software/teseq/";
     description = "Escape sequence illuminator";
-    license = lib.licenses.gpl3;
+    license = stdenv.lib.licenses.gpl3;
 
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.vaibhavsagar ];
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.vaibhavsagar ];
   };
 }

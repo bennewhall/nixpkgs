@@ -1,21 +1,7 @@
-{ lib
-, stdenv
-, fetchurl
-, gconf
-, glib
-, gnome_vfs
-, gtk2
-, guile
-, guile-cairo
-, guile-lib
-, gwrap
-, libglade
-, libgnome
-, libgnomecanvas
-, libgnomeui
-, pango
-, pkg-config
-, texinfo
+{ fetchurl, stdenv, guile, guile-lib, gwrap
+, pkgconfig, gconf, glib, gnome_vfs, gtk2
+, libglade, libgnome, libgnomecanvas, libgnomeui
+, pango, guile-cairo, texinfo
 }:
 
 stdenv.mkDerivation rec {
@@ -24,37 +10,20 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "mirror://gnu/guile-gnome/${pname}/${pname}-${version}.tar.gz";
-    hash = "sha256-ravUjtWZPYUo/WBOCqDZatgaYdBtps3WgyNXKtbCFsM=";
+    sha256 = "adabd48ed5993d8528fd604e0aa0d96ad81a61d06da6cdd68323572ad6c216c3";
   };
 
-  nativeBuildInputs = [
-    pkg-config
-    texinfo
-  ];
   buildInputs = [
-    gconf
-    glib
-    gnome_vfs
-    gtk2
-    guile
-    guile-cairo
-    gwrap
-    libglade
-    libgnome
-    libgnomecanvas
-    libgnomeui
-    pango
-  ] ++ lib.optional doCheck guile-lib;
+    texinfo guile gwrap pkgconfig gconf glib gnome_vfs gtk2
+    libglade libgnome libgnomecanvas libgnomeui pango guile-cairo
+  ] ++ stdenv.lib.optional doCheck guile-lib;
 
   # The test suite tries to open an X display, which fails.
   doCheck = false;
 
-  makeFlags = [
-    "GUILE_AUTO_COMPILE=0"
-  ];
+  GUILE_AUTO_COMPILE = 0;
 
-  meta = with lib; {
-    homepage = "https://www.gnu.org/software/guile-gnome/";
+  meta = with stdenv.lib; {
     description = "GNOME bindings for GNU Guile";
     longDescription = ''
       GNU guile-gnome brings the power of Scheme to your graphical application.
@@ -63,6 +32,7 @@ stdenv.mkDerivation rec {
       guile-gnome a comprehensive environment for developing modern
       applications.
     '';
+    homepage = "https://www.gnu.org/software/guile-gnome/";
     license = licenses.gpl2Plus;
     maintainers = with maintainers; [ vyp ];
     platforms = platforms.linux;

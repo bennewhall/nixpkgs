@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, pkg-config, doxygen, cmake, readline }:
+{ stdenv, fetchurl, pkgconfig, doxygen, cmake, readline }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
 
   pname = "lolcode";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1li7ikcrs7wqah7gqkirg0k61n6pm12w7pydin966x1sdn9na46b";
   };
 
-  nativeBuildInputs = [ pkg-config cmake doxygen ];
+  nativeBuildInputs = [ pkgconfig cmake doxygen ];
   buildInputs = [ readline ];
 
   # Maybe it clashes with lci scientific logic software package...
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     '';
     license = licenses.gpl3;
     maintainers = [ maintainers.AndersonTorres ];
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 
 }

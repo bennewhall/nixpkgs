@@ -2,6 +2,7 @@
 , buildPythonPackage
 , fetchFromGitHub
 , numpy
+, pytest
 }:
 
 buildPythonPackage rec {

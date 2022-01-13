@@ -1,39 +1,36 @@
-{ stdenv, lib, buildPackages, fetchurl, attr, perl, runtimeShell
-, usePam ? !isStatic, pam ? null
-, isStatic ? stdenv.hostPlatform.isStatic
-}:
-
-assert usePam -> pam != null;
+{ stdenv, buildPackages, fetchurl, attr, perl, pam }:
 
 stdenv.mkDerivation rec {
   pname = "libcap";
-  version = "2.49";
+  version = "2.44";
 
   src = fetchurl {
     url = "mirror://kernel/linux/libs/security/linux-privs/libcap2/${pname}-${version}.tar.xz";
-    sha256 = "sha256-6YvE2TZFCC7Hh3MLD9GnErOIgkZcUFd33hfDOIMe4YE=";
+    sha256 = "1qf80lifygbnxwvqjf8jz5j24n6fqqx4ixnkbf76xs2vrmcq664j";
   };
 
-  outputs = [ "out" "dev" "lib" "man" "doc" ]
-    ++ lib.optional usePam "pam";
+  outputs = [ "out" "dev" "lib" "man" "doc" "pam" ];
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl ];
 
-  buildInputs = lib.optional usePam pam;
+  buildInputs = [ pam ];
 
   propagatedBuildInputs = [ attr ];
 
   makeFlags = [
     "lib=lib"
-    "PAM_CAP=${if usePam then "yes" else "no"}"
+    "PAM_CAP=yes"
     "BUILD_CC=$(CC_FOR_BUILD)"
     "CC:=$(CC)"
-  ] ++ lib.optional isStatic "SHARED=no";
+  ];
 
   prePatch = ''
-    # use full path to bash
-    substituteInPlace progs/capsh.c --replace "/bin/bash" "${runtimeShell}"
+    # use relative bash path
+    substituteInPlace progs/capsh.c --replace "/bin/bash" "bash"
+
+    # ensure capsh can find bash in $PATH
+    substituteInPlace progs/capsh.c --replace execve execvpe
 
     # set prefixes
     substituteInPlace Make.Rules \
@@ -47,10 +44,10 @@ stdenv.mkDerivation rec {
   installFlags = [ "RAISE_SETFCAP=no" ];
 
   postInstall = ''
-    ${lib.optionalString (!isStatic) ''rm "$lib"/lib/*.a''}
+    rm "$lib"/lib/*.a
     mkdir -p "$doc/share/doc/${pname}-${version}"
     cp License "$doc/share/doc/${pname}-${version}/"
-  '' + lib.optionalString usePam ''
+  '' + stdenv.lib.optionalString (pam != null) ''
     mkdir -p "$pam/lib/security"
     mv "$lib"/lib/security "$pam/lib"
   '';
@@ -58,7 +55,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Library for working with POSIX capabilities";
     homepage = "https://sites.google.com/site/fullycapable";
-    platforms = lib.platforms.linux;
-    license = lib.licenses.bsd3;
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.bsd3;
   };
 }

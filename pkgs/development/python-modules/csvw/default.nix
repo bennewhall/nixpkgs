@@ -1,10 +1,10 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
-, pythonOlder
+, isPy27
 , attrs
 , isodate
-, python-dateutil
+, dateutil
 , rfc3986
 , uritemplate
 , mock
@@ -14,14 +14,14 @@
 
 buildPythonPackage rec {
   pname = "csvw";
-  version = "1.11.0";
-  disabled = pythonOlder "3.6";
+  version = "1.8.1";
+  disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "cldf";
     repo = "csvw";
     rev = "v${version}";
-    sha256 = "1393xwqawaxsflbq62vks92vv4zch8p6dd1mdvdi7j4vvf0zljkg";
+    sha256 = "1cafwgkspkc299shsa5x8wfzkx1d63p9rvslj9jwr68fipd1830w";
   };
 
   patchPhase = ''
@@ -31,7 +31,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     attrs
     isodate
-    python-dateutil
+    dateutil
     rfc3986
     uritemplate
   ];
@@ -40,12 +40,6 @@ buildPythonPackage rec {
     mock
     pytestCheckHook
     pytest-mock
-  ];
-
-  disabledTests = [
-    # this test is flaky on darwin because it depends on the resolution of filesystem mtimes
-    # https://github.com/cldf/csvw/blob/45584ad63ff3002a9b3a8073607c1847c5cbac58/tests/test_db.py#L257
-    "test_write_file_exists"
   ];
 
   meta = with lib; {

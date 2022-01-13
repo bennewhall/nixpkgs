@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , dos2unix
 , edid-decode
@@ -6,10 +6,11 @@
 , zsh
 , modelines ? [] # Modeline "1280x800"   83.50  1280 1352 1480 1680  800 803 809 831 -hsync +vsync
 }:
-
-stdenv.mkDerivation rec {
-  pname = "edid-generator";
+let
   version = "unstable-2018-03-15";
+in stdenv.mkDerivation {
+  pname = "edid-generator";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "akatrevorjay";
@@ -24,7 +25,7 @@ stdenv.mkDerivation rec {
     patchShebangs modeline2edid
   '';
 
-  configurePhase = (lib.concatMapStringsSep "\n" (m: "echo \"${m}\" | ./modeline2edid -") modelines);
+  configurePhase = (stdenv.lib.concatMapStringsSep "\n" (m: "echo \"${m}\" | ./modeline2edid -") modelines);
 
   installPhase = ''
     install -Dm 444 *.bin -t "$out/lib/firmware/edid"
@@ -33,9 +34,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Hackerswork to generate an EDID blob from given Xorg Modelines";
     homepage = "https://github.com/akatrevorjay/edid-generator";
-    license = lib.licenses.mit;
-    maintainers = [ lib.maintainers.flokli ];
-    platforms = lib.platforms.all;
-    broken = stdenv.isDarwin; # never built on Hydra https://hydra.nixos.org/job/nixpkgs/trunk/edid-generator.x86_64-darwin
+    license = stdenv.lib.licenses.mit;
+    maintainers = [ stdenv.lib.maintainers.flokli ];
+    platforms = stdenv.lib.platforms.all;
   };
 }

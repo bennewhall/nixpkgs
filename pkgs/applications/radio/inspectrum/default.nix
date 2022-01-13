@@ -1,15 +1,17 @@
 { lib
-, gnuradio3_8Minimal
-, thrift
+, mkDerivation
 , fetchFromGitHub
-, pkg-config
+, pkgconfig
 , cmake
+, boost
 , fftwFloat
-, qt5
+, gnuradio
 , liquid-dsp
+, qtbase
+, wrapQtAppsHook
 }:
 
-gnuradio3_8Minimal.pkgs.mkDerivation rec {
+mkDerivation rec {
   pname = "inspectrum";
   version = "0.2.3";
 
@@ -20,18 +22,13 @@ gnuradio3_8Minimal.pkgs.mkDerivation rec {
     sha256 = "1x6nyn429pk0f7lqzskrgsbq09mq5787xd4piic95add6n1cc355";
   };
 
-  nativeBuildInputs = [
-    cmake
-    qt5.wrapQtAppsHook
-    pkg-config
-  ];
+  nativeBuildInputs = [ cmake pkgconfig wrapQtAppsHook ];
   buildInputs = [
     fftwFloat
+    boost
+    gnuradio
     liquid-dsp
-    qt5.qtbase
-  ] ++ lib.optionals (gnuradio3_8Minimal.hasFeature "gr-ctrlport") [
-    thrift
-    gnuradio3_8Minimal.unwrapped.python.pkgs.thrift
+    qtbase
   ];
 
   meta = with lib; {

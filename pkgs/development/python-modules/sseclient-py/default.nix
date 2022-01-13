@@ -2,13 +2,13 @@
 
 buildPythonPackage rec {
   pname = "sseclient-py";
-  version = "1.7.2";
+  version = "1.7";
 
   src = fetchFromGitHub {
     owner = "mpetazzoni";
     repo = "sseclient";
     rev = "sseclient-py-${version}";
-    sha256 = "096spyv50jir81xiwkg9l88ycp1897d3443r6gi1by8nkp4chvix";
+    sha256 = "0iar4w8gryhjzqwy5k95q9gsv6xpmnwxkpz33418nw8hxlp86wfl";
   };
 
   # based on tox.ini

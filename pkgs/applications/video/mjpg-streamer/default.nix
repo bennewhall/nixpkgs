@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, libjpeg }:
+{ stdenv, fetchFromGitHub, cmake, libjpeg }:
 
 stdenv.mkDerivation {
   pname = "mjpg-streamer";
@@ -22,7 +22,7 @@ stdenv.mkDerivation {
     patchelf --set-rpath "$(patchelf --print-rpath $out/bin/mjpg_streamer):$out/lib/mjpg-streamer" $out/bin/mjpg_streamer
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jacksonliam/mjpg-streamer";
     description = "Takes JPGs from Linux-UVC compatible webcams, filesystem or other input plugins and streams them as M-JPEG via HTTP to webbrowsers, VLC and other software";
     platforms = platforms.linux;

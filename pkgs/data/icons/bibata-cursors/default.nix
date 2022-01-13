@@ -1,54 +1,51 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, fetchurl
-, clickgen
-, unzip
-}:
+{ stdenvNoCC, fetchFromGitHub, gnome-themes-extra, inkscape, xcursorgen, python3 }:
 
-stdenv.mkDerivation rec {
+let
+  py = python3.withPackages(ps: [ ps.pillow ]);
+in stdenvNoCC.mkDerivation rec {
   pname = "bibata-cursors";
-  version = "1.1.2";
+  version = "0.4.2";
 
   src = fetchFromGitHub {
-    owner = "ful1e5";
+    owner = "KaizIqbal";
     repo = "Bibata_Cursor";
     rev = "v${version}";
-    sha256 = "1q2wdbrmdnr9mwiilm5cc9im3zwbl7yaj1zpy5wwn44ypq3hcngy";
+    sha256 = "1f7i5jkl21fvrr45zpcj40avkc7camjb1ddrrdlaabbplgz5mcgn";
   };
 
-  bitmaps = fetchurl {
-    url = "https://github.com/ful1e5/Bibata_Cursor/releases/download/v${version}/bitmaps.zip";
-    sha256 = "1pcn6par0f0syyhzpzmqr3c6b9ri4lprkdd2ncwzdas01p2d9v1i";
-  };
+  postPatch = ''
+    patchShebangs .
+    substituteInPlace build.sh --replace "sudo" ""
 
-  nativeBuildInputs = [ unzip ];
+    # Don't generate windows cursors,
+    # they aren't used and aren't installed
+    # by the project's install script anyway.
+    echo "exit 0" > w32-make.sh
+  '';
 
-  buildInputs = [ clickgen ];
+  nativeBuildInputs  = [
+    gnome-themes-extra
+    inkscape
+    xcursorgen
+    py
+  ];
 
   buildPhase = ''
-    mkdir bitmaps
-    unzip $bitmaps -d bitmaps
-    rm -rf themes
-    cd builder && make build_unix
+    HOME="$NIX_BUILD_ROOT" ./build.sh
   '';
 
   installPhase = ''
     install -dm 0755 $out/share/icons
-    cd ../
-    cp -rf themes/* $out/share/icons/
+    for x in Bibata_*; do
+      cp -pr $x/out/X11/$x $out/share/icons/
+    done
   '';
 
-  postPatch = ''
-    substituteInPlace "builder/Makefile" \
-      --replace "/bin/bash" "bash"
-  '';
-
-  meta = with lib; {
-    description = "Material Based Cursor Theme";
-    homepage = "https://github.com/ful1e5/Bibata_Cursor";
+  meta = with stdenvNoCC.lib; {
+    description = "Material Based Cursor";
+    homepage = "https://github.com/KaizIqbal/Bibata_Cursor";
     license = licenses.gpl3;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ rawkode AdsonCicilioti ];
+    maintainers = with maintainers; [ rawkode ];
   };
 }

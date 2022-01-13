@@ -3,12 +3,12 @@
 , fetchPypi
 , pytestCheckHook
 , pytest
-, pytest-cov
+, pytestcov
 , flaky
 , numpy
 , pandas
 , pytorch
-, scikit-learn
+, scikitlearn
 , scipy
 , tabulate
 , tqdm
@@ -16,23 +16,20 @@
 
 buildPythonPackage rec {
   pname = "skorch";
-  version = "0.11.0";
+  version = "0.9.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "b35cb4e50045742f0ffcfad33044af691d5d36b50212573753a804483a947ca9";
+    sha256 = "bdce9370153fd80c5c4ec499a639f55eef0620e45d4b15fbf7d7ff2a225a3d40";
   };
 
-  propagatedBuildInputs = [ numpy pytorch scikit-learn scipy tabulate tqdm ];
-  checkInputs = [ pytest pytest-cov flaky pandas pytestCheckHook ];
+  propagatedBuildInputs = [ numpy pytorch scikitlearn scipy tabulate tqdm ];
+  checkInputs = [ pytest pytestcov flaky pandas pytestCheckHook ];
 
+  # on CPU, these expect artifacts from previous GPU run
   disabledTests = [
-    # on CPU, these expect artifacts from previous GPU run
     "test_load_cuda_params_to_cpu"
-    # failing tests
     "test_pickle_load"
-    "test_grid_search_with_slds_"
-    "test_grid_search_with_dict_works"
   ];
 
   meta = with lib; {
@@ -41,7 +38,5 @@ buildPythonPackage rec {
     changelog = "https://github.com/skorch-dev/skorch/blob/master/CHANGES.md";
     license = licenses.bsd3;
     maintainers = with maintainers; [ bcdarwin ];
-    # TypeError: __init__() got an unexpected keyword argument 'iid'
-    broken = true;
   };
 }

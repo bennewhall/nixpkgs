@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage }:
+{ stdenv, fetchPypi, buildPythonPackage }:
 
 buildPythonPackage rec {
   pname = "ed25519";
@@ -9,7 +9,7 @@ buildPythonPackage rec {
     sha256 = "0n1k83ww0pr4q6z0h7p8hvy21hcgb96jvgllfbwhvvyf37h3w182";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Ed25519 public-key signatures";
     homepage = "https://github.com/warner/python-ed25519";
     license = licenses.mit;

@@ -1,34 +1,6 @@
-{ lib
-, stdenv
-, fetchurl
-, cmake
-, ninja
-, p7zip
-, pkg-config
-, asciidoctor
-, gettext
-
-, SDL2
-, libtheora
-, libvorbis
-, openal
-, openalSoft
-, physfs
-, miniupnpc
-, libsodium
-, curl
-, libpng
-, freetype
-, harfbuzz
-, sqlite
-, which
-, vulkan-headers
-, vulkan-loader
-, shaderc
-
-, testVersion
-, warzone2100
-
+{ stdenv, mkDerivation, fetchurl, autoconf, automake
+, perl, unzip, zip, which, pkgconfig, qtbase, qtscript
+, SDL2, libtheora, openal, glew, physfs, fribidi, libXrandr
 , withVideos ? false
 }:
 
@@ -40,78 +12,42 @@ let
   };
 in
 
-stdenv.mkDerivation rec {
+mkDerivation rec {
   inherit pname;
-  version  = "4.2.4";
+  version  = "3.3.0";
 
   src = fetchurl {
-    url = "mirror://sourceforge/${pname}/releases/${version}/${pname}_src.tar.xz";
-    sha256 = "sha256-IkD1WkeKas9qtUUTTo9w4cEoGAoX+d+Cr2C5PTUFaEg=";
+    url = "mirror://sourceforge/${pname}/releases/${version}/${pname}-${version}_src.tar.xz";
+    sha256 = "1s0n67rh32g0bgq72p4qzkcqjlw58gc70r4r6gl9k90pil9chj6c";
   };
 
   buildInputs = [
-    SDL2
-    libtheora
-    libvorbis
-    openal
-    openalSoft
-    physfs
-    miniupnpc
-    libsodium
-    curl
-    libpng
-    freetype
-    harfbuzz
-    sqlite
-  ] ++ lib.optionals (!stdenv.isDarwin) [
-    vulkan-headers
-    vulkan-loader
+    qtbase qtscript SDL2 libtheora openal
+    glew physfs fribidi libXrandr
+  ];
+  nativeBuildInputs = [
+    perl zip unzip pkgconfig autoconf automake
   ];
 
-  nativeBuildInputs = [
-    pkg-config
-    cmake
-    ninja
-    p7zip
-    asciidoctor
-    gettext
-    shaderc
-  ];
+  preConfigure = "./autogen.sh";
 
   postPatch = ''
     substituteInPlace lib/exceptionhandler/dumpinfo.cpp \
-                      --replace '"which "' '"${which}/bin/which "'
+                      --replace "which %s" "${which}/bin/which %s"
     substituteInPlace lib/exceptionhandler/exceptionhandler.cpp \
                       --replace "which %s" "${which}/bin/which %s"
   '';
 
-  cmakeFlags = [
-    "-DWZ_DISTRIBUTOR=NixOS"
-    # The cmake builder automatically sets CMAKE_INSTALL_BINDIR to an absolute
-    # path, but this results in an error:
-    #
-    # > An absolute CMAKE_INSTALL_BINDIR path cannot be used if the following
-    # > are not also absolute paths: WZ_DATADIR
-    #
-    # WZ_DATADIR is based on CMAKE_INSTALL_DATAROOTDIR, so we set that.
-    #
-    # Alternatively, we could have set CMAKE_INSTALL_BINDIR to "bin".
-    "-DCMAKE_INSTALL_DATAROOTDIR=${placeholder "out"}/share"
-  ] ++ lib.optional stdenv.isDarwin "-P../configure_mac.cmake";
+  configureFlags = [ "--with-distributor=NixOS" ];
 
-  postInstall = lib.optionalString withVideos ''
-    cp ${sequences_src} $out/share/warzone2100/sequences.wz
-  '';
+  hardeningDisable = [ "format" ];
 
-  passthru.tests = {
-    version = testVersion {
-      package = warzone2100;
-      # The command always exits with code 1
-      command = "(warzone2100 --version || [ $? -eq 1 ])";
-    };
-  };
+  enableParallelBuilding = true;
 
-  meta = with lib; {
+  postInstall = stdenv.lib.optionalString withVideos
+    "cp ${sequences_src} $out/share/warzone2100/sequences.wz";
+
+  meta = with stdenv.lib; {
     description = "A free RTS game, originally developed by Pumpkin Studios";
     longDescription = ''
         Warzone 2100 is an open source real-time strategy and real-time tactics
@@ -124,12 +60,9 @@ stdenv.mkDerivation rec {
       technologies, combined with the unit design system, allows for a wide
       variety of possible units and tactics.
     '';
-    homepage = "https://wz2100.net";
+    homepage = "http://wz2100.net";
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ astsmtl fgaz ];
-    platforms = platforms.all;
-    # configure_mac.cmake tries to download stuff
-    # https://github.com/Warzone2100/warzone2100/blob/master/macosx/README.md
-    broken = stdenv.isDarwin;
+    maintainers = [ maintainers.astsmtl ];
+    platforms = platforms.linux;
   };
 }

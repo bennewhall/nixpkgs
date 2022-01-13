@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config
+{ stdenv, fetchFromGitHub, pkgconfig
 , freetype, glib, imagemagick, libjpeg, libpng, libxml2, zlib
 }:
 
@@ -15,11 +15,11 @@ stdenv.mkDerivation rec {
     sha256 = "0i2w5hg8mbgmgabxyd48qp1gx2mhk33hgr3jqvg72k0nhkd2jhf6";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ zlib imagemagick libpng glib freetype libjpeg libxml2 ];
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "WMF library from wvWare";
     homepage = "http://wvware.sourceforge.net/libwmf.html";
     downloadPage = "https://github.com/caolanm/libwmf/releases";

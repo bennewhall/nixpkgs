@@ -1,24 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, libX11, cairo, lv2, pkg-config, libsndfile }:
+{ stdenv, fetchFromGitHub, libX11, cairo, lv2, pkgconfig, libsndfile }:
 
 stdenv.mkDerivation rec {
-  pname = "bjumblr";
-  version = "1.6.8";
+  pname = "BJumblr";
+  version = "1.4.2";
 
   src = fetchFromGitHub {
     owner = "sjaehn";
-    repo = "BJumblr";
+    repo = pname;
     rev = version;
-    sha256 = "sha256-qSoGmWUGaMjx/bkiCJ/qb4LBbuFPXXlJ0e9hrFBXzwE=";
+    sha256 = "0kl6hrxmqrdf0195bfnzsa2h1073fgiqrfhg2276fm1954sm994v";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     libX11 cairo lv2 libsndfile
   ];
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/sjaehn/BJumblr";
     description = "Pattern-controlled audio stream / sample re-sequencer LV2 plugin";
     maintainers = [ maintainers.magnetophon ];

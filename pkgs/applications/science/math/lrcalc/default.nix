@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromBitbucket
 , fetchpatch
 , autoreconfHook
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Littlewood-Richardson calculator";
     homepage = "http://math.rutgers.edu/~asbuch/lrcalc/";
     license = licenses.gpl2Plus;

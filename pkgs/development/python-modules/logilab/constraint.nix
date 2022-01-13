@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, logilab_common, six }:
+{ stdenv, buildPythonPackage, fetchPypi, logilab_common, six }:
 
 buildPythonPackage rec {
   pname = "logilab-constraint";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
   ];
 
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "logilab-database provides some classes to make unified access to different";
     homepage = "https://www.logilab.org/project/logilab-database";
   };

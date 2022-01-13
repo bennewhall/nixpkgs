@@ -1,23 +1,23 @@
-{ lib, stdenv, cmake, fetchgit, libubox, libjson }:
+{ stdenv, cmake, fetchgit, libubox, libjson }:
 
 stdenv.mkDerivation {
   pname = "ubus";
-  version = "unstable-2021-02-15";
+  version = "unstable-2020-01-05";
 
   src = fetchgit {
     url = "https://git.openwrt.org/project/ubus.git";
-    rev = "2537be01858710e714c329153760c64fe3f8a73e";
-    sha256 = "03ljxsn4w87bfrilccxhrkzqmd30hy6ihkvsinw0i3l7rpp5m4a7";
+    rev = "d35df8adda873dc75d876f72b78e84db8cfa72ee";
+    sha256 = "1ksrih5vfyixaafzsrs6ab88qw34d0197wvw201jl5p1fc7drgn4";
   };
 
-  cmakeFlags = [ "-DBUILD_LUA=OFF" ];
+  cmakeFlags = [ "-D BUILD_LUA:BOOL=OFF" ];
   buildInputs = [ libubox libjson ];
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "OpenWrt system message/RPC bus";
     homepage = "https://git.openwrt.org/?p=project/ubus.git;a=summary";
-    license = licenses.lgpl21Only;
+    license = licenses.lgpl21;
     platforms = platforms.all;
     maintainers = with maintainers; [ petabyteboy ];
   };

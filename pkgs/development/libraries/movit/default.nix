@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, SDL2, eigen, libepoxy, fftw, gtest, pkg-config }:
+{ stdenv, fetchurl, SDL2, eigen, epoxy, fftw, gtest, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "movit";
@@ -13,14 +13,14 @@ stdenv.mkDerivation rec {
 
   GTEST_DIR = "${gtest.src}/googletest";
 
-  propagatedBuildInputs = [ eigen libepoxy ];
+  propagatedBuildInputs = [ eigen epoxy ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ SDL2 fftw gtest ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "High-performance, high-quality video filters for the GPU";
     homepage = "https://movit.sesse.net";
     license = licenses.gpl2Plus;

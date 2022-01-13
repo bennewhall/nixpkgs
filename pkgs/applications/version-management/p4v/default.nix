@@ -48,8 +48,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Perforce Visual Client";
     homepage = "https://www.perforce.com";
-    license = lib.licenses.unfreeRedistributable;
+    license = stdenv.lib.licenses.unfreeRedistributable;
     platforms = [ "x86_64-linux" ];
-    maintainers = with lib.maintainers; [ nathyong nioncode ];
+    maintainers = with stdenv.lib.maintainers; [ nathyong nioncode ];
   };
 }

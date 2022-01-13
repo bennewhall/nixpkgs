@@ -6,7 +6,7 @@
 }:
 
 mkDerivation {
-  pname = "akonadi-calendar";
+  name = "akonadi-calendar";
   meta = {
     license = with lib.licenses; [ gpl2 lgpl21 ];
     maintainers = kdepimTeam;

@@ -1,25 +1,25 @@
-{ lib, fetchurl, ocaml, buildDunePackage
-, cmdliner, dap, fmt, iter, logs, lru, lwt_ppx, lwt_react, menhir, menhirLib, path_glob, ppx_deriving_yojson
-}:
+{ lib, fetchurl, ocaml, buildDunePackage, angstrom, angstrom-lwt-unix,
+  batteries, cmdliner, lwt_ppx, ocaml_lwt, ppx_deriving_yojson,
+  ppx_tools_versioned, yojson }:
 
-if lib.versionAtLeast ocaml.version "4.13"
+if lib.versionAtLeast ocaml.version "4.08"
 then throw "earlybird is not available for OCaml ${ocaml.version}"
 else
 
 buildDunePackage rec {
   pname = "earlybird";
-  version = "1.1.0";
+  version = "0.1.5";
 
   useDune2 = true;
 
-  minimumOCamlVersion = "4.11";
+  minimumOCamlVersion = "4.04";
 
   src = fetchurl {
     url = "https://github.com/hackwaly/ocamlearlybird/releases/download/${version}/${pname}-${version}.tbz";
-    sha256 = "1pwzhcr3pw24ra4j4d23vz71h0psz4xkyp7b12l2wl1slxzjbrxa";
+    sha256 = "10yflmsicw4sdmm075zjpbmxpwm9fvibnl3sl18zjpwnm6l9sv7d";
   };
 
-  buildInputs = [ cmdliner dap fmt iter logs lru lwt_ppx lwt_react menhir menhirLib path_glob ppx_deriving_yojson ];
+  buildInputs = [ angstrom angstrom-lwt-unix batteries cmdliner lwt_ppx ocaml_lwt ppx_deriving_yojson ppx_tools_versioned yojson ];
 
   meta = {
     homepage = "https://github.com/hackwaly/ocamlearlybird";

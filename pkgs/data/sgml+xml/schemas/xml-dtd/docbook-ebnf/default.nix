@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation {
   name = "docbook-xml-ebnf-1.2b1";
@@ -20,6 +20,6 @@ stdenv.mkDerivation {
   '';
 
   meta = {
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

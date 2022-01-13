@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi, nose
 , six
@@ -21,7 +21,7 @@ buildPythonPackage rec {
   # not relevant for me, if releavnt for you, fix it...
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple HTML cleanup utilities";
     license = licenses.bsd3;
     homepage = "https://pypi.org/project/htmllaundry/";

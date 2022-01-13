@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, apacheHttpd, openssl, openldap, apr, aprutil }:
+{ stdenv, fetchurl, pkgconfig, apacheHttpd, openssl, openldap, apr, aprutil }:
 
 stdenv.mkDerivation rec {
   pname = "mod_ca";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0gs66br3aig749rzifxn6j1rz2kps4hc4jppscly48lypgyygy8s";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ apacheHttpd openssl openldap apr aprutil ];
 
   # Note that configureFlags and installFlags are inherited by
@@ -20,11 +20,11 @@ stdenv.mkDerivation rec {
   ];
 
   installFlags = [
-    "INCLUDEDIR=${placeholder "out"}/include"
-    "LIBEXECDIR=${placeholder "out"}/modules"
+    "INCLUDEDIR=${placeholder ''out''}/include"
+    "LIBEXECDIR=${placeholder ''out''}/modules"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "RedWax CA service module";
 
     homepage = "https://redwax.eu";

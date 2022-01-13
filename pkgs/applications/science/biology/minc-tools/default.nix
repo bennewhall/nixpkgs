@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, makeWrapper, flex, bison, perl, TextFormat,
+{ stdenv, fetchFromGitHub, cmake, makeWrapper, flex, bison, perl, TextFormat,
   libminc, libjpeg, nifticlib, zlib }:
 
 stdenv.mkDerivation rec {
@@ -26,7 +26,9 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     homepage = "https://github.com/BIC-MNI/minc-tools";
     description = "Command-line utilities for working with MINC files";
     maintainers = with maintainers; [ bcdarwin ];

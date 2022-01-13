@@ -1,6 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, perlPackages }:
-
-stdenv.mkDerivation rec {
+{ stdenv, fetchurl, makeWrapper, perlPackages }: stdenv.mkDerivation rec {
   pname = "schema2ldif";
   version = "1.3";
 
@@ -23,7 +21,7 @@ stdenv.mkDerivation rec {
        --prefix PERL5PATH : "${perlPackages.makePerlPath [ perlPackages.GetoptLong ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utilities to manage schema in .schema and .ldif format";
     homepage = "https://www.fusiondirectory.org/schema2ldif-project-and-components/";
     license = licenses.bsd3;

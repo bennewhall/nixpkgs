@@ -1,21 +1,22 @@
-{ lib, stdenv, fetchurl, autoreconfHook, gtk-doc, gettext
-, pkg-config, glib, libxml2, gobject-introspection, gnome-common, unzip
+{stdenv, fetchurl, fetchFromBitbucket, autoreconfHook, gtk-doc, gettext
+, pkgconfig, glib, libxml2, gobject-introspection, gnome-common, unzip
 }:
 
 stdenv.mkDerivation rec {
   pname = "liblangtag";
-  version = "0.6.3";
+  version = "0.6.1";
 
-  # Artifact tarball contains lt-localealias.h needed for darwin
-  src = fetchurl {
-    url = "https://bitbucket.org/tagoh/liblangtag/downloads/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-HxKiCgLsOo0i5U3tuLaDpDycFgvaG6M3vxBgYHrnM70=";
+  src = fetchFromBitbucket {
+    owner = "tagoh";
+    repo = pname;
+    rev = version;
+    sha256 = "19dk2qsg7f3ig9xz8d73jvikmf5kvrwi008wrz2psxinbdml442g";
   };
 
   core_zip = fetchurl {
     # please update if an update is available
-    url = "http://www.unicode.org/Public/cldr/37/core.zip";
-    sha256 = "0myswkvvaxvrz9zwq4zh65sygfd9n72cd5rk4pwacqba4nxgb4xs";
+    url = "http://www.unicode.org/Public/cldr/33.1/core.zip";
+    sha256 = "0f195aald02ng3ch2q1wf59b5lwp2bi1cd8ia7572pbyy2w8w8cp";
   };
 
   language_subtag_registry = fetchurl {
@@ -30,19 +31,20 @@ stdenv.mkDerivation rec {
     cp "${language_subtag_registry}" data/language-subtag-registry
   '';
 
-  configureFlags =
-    lib.optional
-      (stdenv.hostPlatform.libc == "glibc")
-      "--with-locale-alias=${stdenv.cc.libc}/share/locale/locale.alias";
+  configureFlags = [
+    ''--with-locale-alias=${stdenv.cc.libc}/share/locale/locale.alias''
+  ];
 
-  buildInputs = [ gettext glib libxml2 gobject-introspection gnome-common ];
-  nativeBuildInputs = [ autoreconfHook gtk-doc gettext pkg-config unzip ];
+  buildInputs = [ gettext glib libxml2 gobject-introspection gnome-common
+    unzip ];
+  nativeBuildInputs = [ autoreconfHook gtk-doc gettext pkgconfig ];
 
-  meta = with lib; {
+  meta = {
+    inherit version;
     description = "An interface library to access tags for identifying languages";
-    license = licenses.mpl20;
-    maintainers = [ maintainers.raskin ];
-    platforms = platforms.unix;
+    license = stdenv.lib.licenses.mpl20;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
     # There are links to a homepage that are broken by a BitBucket change
     homepage = "https://bitbucket.org/tagoh/liblangtag/overview";
   };

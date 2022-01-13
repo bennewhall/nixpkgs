@@ -1,8 +1,8 @@
 {
-  lib,
+  stdenv,
   fetchgit,
   python3Packages,
-  pkg-config,
+  pkgconfig,
   gcc8Stdenv,
   boost,
   git,
@@ -44,7 +44,7 @@ gcc8Stdenv.mkDerivation {
   patches = [ ./seastar-configure-script-paths.patch ./configure-etc-osrelease.patch ];
 
   nativeBuildInputs = [
-   pkg-config
+   pkgconfig
    cmake
    makeWrapper
    ninja
@@ -91,13 +91,12 @@ gcc8Stdenv.mkDerivation {
 
   requiredSystemFeatures = [ "big-parallel" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "NoSQL data store using the seastar framework, compatible with Apache Cassandra";
     homepage = "https://scylladb.com";
     license = licenses.agpl3;
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
     hydraPlatforms = []; # It's huge ATM, about 18 GB.
-    maintainers = [ lib.maintainers.farlion ];
-    broken = true;
+    maintainers = [ stdenv.lib.maintainers.farlion ];
   };
 }

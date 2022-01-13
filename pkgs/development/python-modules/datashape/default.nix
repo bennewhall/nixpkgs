@@ -5,7 +5,7 @@
 , mock
 , numpy
 , multipledispatch
-, python-dateutil
+, dateutil
 }:
 
 let
@@ -29,7 +29,7 @@ in buildPythonPackage rec {
   };
 
   checkInputs = [ pytest mock ];
-  propagatedBuildInputs = [ numpy multipledispatch python-dateutil ];
+  propagatedBuildInputs = [ numpy multipledispatch dateutil ];
 
   # Disable several tests
   # https://github.com/blaze/datashape/issues/232

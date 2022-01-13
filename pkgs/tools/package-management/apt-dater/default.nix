@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub
-, autoreconfHook, pkg-config, gettext
+{ stdenv, fetchFromGitHub
+, autoreconfHook, pkgconfig, gettext
 , vim, glib, libxml2, ncurses, popt, screen
 }:
 
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config autoreconfHook gettext
+    pkgconfig autoreconfHook gettext
   ];
 
   buildInputs = [
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/DE-IBH/apt-dater";
     description = "Terminal-based remote package update manager";
     longDescription = ''

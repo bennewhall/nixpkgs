@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libpcap, bison, flex, cyrus_sasl, tcp_wrappers, pkg-config, perl, libtirpc, libnsl }:
+{ stdenv, fetchurl, libpcap, bison, flex, cyrus_sasl, tcp_wrappers, pkgconfig, perl }:
 
 stdenv.mkDerivation rec {
   pname = "argus-clients";
@@ -9,9 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1c9vj6ma00gqq9h92fg71sxcsjzz912166sdg90ahvnmvmh3l1rj";
   };
 
-  NIX_CFLAGS_COMPILE = [ "-I${libtirpc.dev}/include/tirpc" ];
-
-  postPatch = ''
+  patchPhase = ''
     for file in ./examples/*/*.pl; do
       substituteInPlace $file \
         --subst-var-by PERLBIN ${perl}/bin/perl
@@ -20,10 +18,10 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--with-perl=${perl}/bin/perl" ];
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ libpcap bison cyrus_sasl tcp_wrappers flex libnsl ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ libpcap bison cyrus_sasl tcp_wrappers flex ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Clients for ARGUS";
     longDescription = ''Clients for Audit Record Generation and
     Utilization System (ARGUS). The Argus Project is focused on developing all

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   version = "0.9.2";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1700y121lhvpna49bjpssb7jq1abj9qw5wxgjn8gzp6jm4kpj7rb";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Userland stateless NAT64 daemon";
     longDescription = ''
       TAYGA is an out-of-kernel stateless NAT64 implementation

@@ -1,61 +1,40 @@
-{ lib, callPackage, stdenv, makeWrapper, fetchFromGitHub, ocaml, findlib, dune_2
-, fix, menhir, menhirLib, menhirSdk, merlin-extend, ppxlib, utop, cppo, ppx_derivers
+{ stdenv, makeWrapper, fetchFromGitHub, ocaml, findlib, dune
+, fix, menhir, merlin-extend, ppx_tools_versioned, utop, cppo
 }:
 
 stdenv.mkDerivation rec {
-  pname = "ocaml${ocaml.version}-reason";
-  version = "3.7.0";
+  name = "ocaml${ocaml.version}-reason-${version}";
+  version = "3.6.2";
 
   src = fetchFromGitHub {
     owner = "facebook";
     repo = "reason";
-    rev = "daa11255cb4716ce1c370925251021bd6e3bd974";
-    sha256 = "0m6ldrci1a4j0qv1cbwh770zni3al8qxsphl353rv19f6rblplhs";
+    rev = "6017d6dd930f4989177c3f7c3c20cffbaabaa49a";
+    sha256 = "17wkcl3r0ckhlki9fk0mcwbnd7kpkqm1h0xjw2j2x1097n470df0";
   };
 
-  nativeBuildInputs = [
-    makeWrapper
-    menhir
-  ];
+  nativeBuildInputs = [ makeWrapper ];
 
-  buildInputs = [
-    cppo
-    dune_2
-    findlib
-    fix
-    menhir
-    menhirSdk
-    ocaml
-    ppxlib
-    utop
-  ];
+  propagatedBuildInputs = [ menhir merlin-extend ppx_tools_versioned ];
 
-  propagatedBuildInputs = [
-    menhirLib
-    merlin-extend
-    ppx_derivers
-  ];
+  buildInputs = [ ocaml findlib dune cppo fix utop menhir ];
 
   buildFlags = [ "build" ]; # do not "make tests" before reason lib is installed
 
-  installPhase = ''
-    dune install --prefix=$out --libdir=$OCAMLFIND_DESTDIR
+  inherit (dune) installPhase;
+
+  postInstall = ''
     wrapProgram $out/bin/rtop \
       --prefix PATH : "${utop}/bin" \
       --prefix CAML_LD_LIBRARY_PATH : "$CAML_LD_LIBRARY_PATH" \
       --prefix OCAMLPATH : "$OCAMLPATH:$OCAMLFIND_DESTDIR"
   '';
 
-  passthru.tests = {
-    hello = callPackage ./tests/hello { };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://reasonml.github.io/";
-    downloadPage = "https://github.com/reasonml/reason";
     description = "Facebook's friendly syntax to OCaml";
     license = licenses.mit;
     inherit (ocaml.meta) platforms;
-    maintainers = with maintainers; [ ];
+    maintainers = [ maintainers.volth ];
   };
 }

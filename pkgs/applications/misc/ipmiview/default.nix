@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , makeDesktopItem
 , makeWrapper
@@ -13,12 +13,12 @@
 
 stdenv.mkDerivation rec {
   pname = "IPMIView";
-  version = "2.19.0";
-  buildVersion = "210401";
+  version = "2.17.0";
+  buildVersion = "200505";
 
   src = fetchurl {
     url = "https://www.supermicro.com/wftp/utility/IPMIView/Linux/IPMIView_${version}_build.${buildVersion}_bundleJRE_Linux_x64.tar.gz";
-    sha256 = "sha256-6hxOu/Wkcrp9MaMYlxOR2DZW21Wi3BIFZp3Vm8NRBWs=";
+    sha256 = "0ba0694krj2q77zwdn22v2qzjdy52a7ryhgc3m51s7p17ahigz97";
   };
 
   nativeBuildInputs = [ patchelf makeWrapper ];
@@ -29,14 +29,12 @@ stdenv.mkDerivation rec {
       else throw "IPMIView is not supported on this platform";
     in
   ''
-    runHook preBuild
-
-    patchelf --set-rpath "${lib.makeLibraryPath [ libX11 libXext libXrender libXtst libXi ]}" ./jre/lib/libawt_xawt.so
-    patchelf --set-rpath "${lib.makeLibraryPath [ freetype ]}" ./jre/lib/libfontmanager.so
-    patchelf --set-rpath "${gcc.cc}/lib:$out/jre/lib/jli" --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" ./jre/bin/java
+    patchelf --set-rpath "${stdenv.lib.makeLibraryPath [ libX11 libXext libXrender libXtst libXi ]}" ./jre/lib/amd64/libawt_xawt.so
+    patchelf --set-rpath "${stdenv.lib.makeLibraryPath [ freetype ]}" ./jre/lib/amd64/libfontmanager.so
+    patchelf --set-rpath "${gcc-unwrapped.lib}/lib" ./libiKVM64.so
+    patchelf --set-rpath "${gcc-unwrapped.lib}/lib" ./libiKVM_v11_64.so
+    patchelf --set-rpath "${gcc.cc}/lib:$out/jre/lib/amd64/jli" --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" ./jre/bin/java
     patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" ./BMCSecurity/${stunnelBinary}
-
-    runHook postBuild
   '';
 
   desktopItem = makeDesktopItem rec {
@@ -48,8 +46,6 @@ stdenv.mkDerivation rec {
   };
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out/bin
     cp -R . $out/
 
@@ -60,18 +56,16 @@ stdenv.mkDerivation rec {
     # WORK_DIR: unfortunately the ikvm related binaries are loaded from
     #           and user configuration is written to files in the CWD
     makeWrapper $out/jre/bin/java $out/bin/IPMIView \
-      --set LD_LIBRARY_PATH "${lib.makeLibraryPath [ fontconfig gcc-unwrapped.lib ]}" \
+      --set LD_LIBRARY_PATH "${stdenv.lib.makeLibraryPath [ fontconfig ]}" \
       --prefix PATH : "$out/jre/bin:${iputils}/bin:${psmisc}/bin" \
       --add-flags "-jar $out/IPMIView20.jar" \
       --run 'WORK_DIR=''${XDG_DATA_HOME:-~/.local/share}/ipmiview
              mkdir -p $WORK_DIR
              ln -snf '$out'/iKVM.jar '$out'/iKVM_ssl.jar '$out'/libiKVM* '$out'/libSharedLibrary* $WORK_DIR
              cd $WORK_DIR'
-
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.unfree;
     maintainers = with maintainers; [ vlaci ];
     platforms = [ "x86_64-linux" "i686-linux" ];

@@ -1,24 +1,24 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , pkg-config, autoreconfHook
 , gtk3, gobject-introspection, gtk-doc, vala
 }:
 
 stdenv.mkDerivation rec {
   pname = "ayatana-ido";
-  version = "0.8.2";
+  version = "0.8.1";
 
   src = fetchFromGitHub {
     owner = "AyatanaIndicators";
     repo = pname;
     rev = version;
-    sha256 = "sha256-nJ4F2faK0XZPj9GzUk3Ueap5h6rALFXISHqFQ30RuoU=";
+    sha256 = "1mcw6gmacrzx4cyg4223dpwcmj3qf8l30mxsg43292lajzwsm2hz";
   };
 
   nativeBuildInputs = [ pkg-config autoreconfHook gtk-doc vala gobject-introspection ];
 
   buildInputs = [ gtk3 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Ayatana Display Indicator Objects";
     homepage = "https://github.com/AyatanaIndicators/ayatana-ido";
     changelog = "https://github.com/AyatanaIndicators/ayatana-ido/blob/${version}/ChangeLog";

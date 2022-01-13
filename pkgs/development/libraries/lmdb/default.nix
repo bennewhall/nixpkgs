@@ -1,15 +1,13 @@
-{ lib, stdenv, fetchFromGitLab }:
+{ stdenv, fetchgit }:
 
 stdenv.mkDerivation rec {
   pname = "lmdb";
-  version = "0.9.29";
+  version = "0.9.25";
 
-  src = fetchFromGitLab {
-    domain = "git.openldap.org";
-    owner = "openldap";
-    repo = "openldap";
+  src = fetchgit {
+    url = "https://git.openldap.org/openldap/openldap.git";
     rev = "LMDB_${version}";
-    sha256 = "19zq5s1amrv1fhw1aszcn2w2xjrk080l6jj5hc9f46yiqf98jjg3";
+    sha256 = "0i60zlca8r6fib23gdgl4c80gxpx24772ggpvz94yr7zaai4k11w";
   };
 
   postUnpack = "sourceRoot=\${sourceRoot}/libraries/liblmdb";
@@ -24,10 +22,10 @@ stdenv.mkDerivation rec {
     "CC=${stdenv.cc.targetPrefix}cc"
     "AR=${stdenv.cc.targetPrefix}ar"
   ]
-    ++ lib.optional stdenv.isDarwin "LDFLAGS=-Wl,-install_name,$(out)/lib/liblmdb.so";
+    ++ stdenv.lib.optional stdenv.isDarwin "LDFLAGS=-Wl,-install_name,$(out)/lib/liblmdb.so";
 
   doCheck = true;
-  checkTarget = "test";
+  checkPhase = "make test";
 
   postInstall = ''
     moveToOutput bin "$bin"
@@ -45,7 +43,7 @@ stdenv.mkDerivation rec {
     EOF
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lightning memory-mapped database";
     longDescription = ''
       LMDB is an ultra-fast, ultra-compact key-value embedded data store
@@ -54,7 +52,7 @@ stdenv.mkDerivation rec {
       offering the persistence of standard disk-based databases, and is only
       limited to the size of the virtual address space.
     '';
-    homepage = "https://symas.com/lmdb/";
+    homepage = "http://symas.com/mdb/";
     maintainers = with maintainers; [ jb55 vcunat ];
     license = licenses.openldap;
     platforms = platforms.all;

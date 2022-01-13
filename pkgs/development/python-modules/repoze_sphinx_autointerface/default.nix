@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , zope_interface
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ zope_interface sphinx ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/repoze/repoze.sphinx.autointerface";
     description = "Auto-generate Sphinx API docs from Zope interfaces";
     license = licenses.bsd0;

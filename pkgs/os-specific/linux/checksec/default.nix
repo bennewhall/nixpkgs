@@ -1,23 +1,23 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, file, findutils
+{ stdenv, fetchFromGitHub, makeWrapper, file, findutils
 , binutils-unwrapped, glibc, coreutils, sysctl, openssl
 }:
 
 stdenv.mkDerivation rec {
   pname = "checksec";
-  version = "2.5.0";
+  version = "2.4.0";
 
   src = fetchFromGitHub {
     owner = "slimm609";
     repo = "checksec.sh";
     rev = version;
-    sha256 = "sha256-GxWXocz+GCEssRrIQP6E9hjVIhVh2EmZrefELxQlV1Q=";
+    sha256 = "1gbbq85d3g3mnm3xvgvi2085aba7qc3cmsbwn76al50ax1518j2q";
   };
 
   patches = [ ./0001-attempt-to-modprobe-config-before-checking-kernel.patch ];
   nativeBuildInputs = [ makeWrapper ];
 
   installPhase = let
-    path = lib.makeBinPath [
+    path = stdenv.lib.makeBinPath [
       findutils file binutils-unwrapped sysctl openssl
     ];
   in ''
@@ -29,9 +29,9 @@ stdenv.mkDerivation rec {
       --prefix PATH : ${path}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool for checking security bits on executables";
-    homepage    = "https://www.trapkit.de/tools/checksec/";
+    homepage    = "http://www.trapkit.de/tools/checksec.html";
     license     = licenses.bsd3;
     platforms   = platforms.linux;
     maintainers = with maintainers; [ thoughtpolice globin ];

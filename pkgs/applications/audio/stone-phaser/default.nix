@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, xorg, cairo, lv2, libjack2, mesa, pkg-config }:
+{ stdenv, fetchFromGitHub, xorg, cairo, lv2, libjack2, mesa, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "stone-phaser";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     xorg.libX11 cairo lv2 libjack2 mesa
   ];
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jpcima/stone-phaser";
     description = "A classic analog phaser effect, made with DPF and Faust";
     maintainers = [ maintainers.magnetophon ];

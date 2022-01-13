@@ -1,20 +1,18 @@
-{ lib, stdenv, fetchurl, qt4, cmake }:
+{ stdenv, fetchurl, qt4, cmake }:
 
 stdenv.mkDerivation rec {
-  pname = "grantlee";
-  version = "0.5.1";
+  name = "grantlee-0.5.1";
 
 # Upstream download server has country code firewall, so I made a mirror.
   src = fetchurl {
     urls = [
-      "http://downloads.grantlee.org/grantlee-${version}.tar.gz"
-      "http://www.loegria.net/grantlee/grantlee-${version}.tar.gz"
+      "http://downloads.grantlee.org/${name}.tar.gz"
+      "http://www.loegria.net/grantlee/${name}.tar.gz"
     ];
     sha256 = "1b501xbimizmbmysl1j5zgnp48qw0r2r7lhgmxvzhzlv9jzhj60r";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ qt4 ];
+  buildInputs = [ cmake qt4 ];
 
   meta = {
     description = "Qt4 port of Django template system";
@@ -27,8 +25,8 @@ stdenv.mkDerivation rec {
       The syntax is intended to follow the syntax of the Django template system,
       and the design of Django is reused in Grantlee.'';
 
-    homepage = "https://github.com/steveire/grantlee";
-    license = lib.licenses.lgpl21;
+    homepage = "http://gitorious.org/grantlee";
+    license = stdenv.lib.licenses.lgpl21;
     inherit (qt4.meta) platforms;
   };
 }

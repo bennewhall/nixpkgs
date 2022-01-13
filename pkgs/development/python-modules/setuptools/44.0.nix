@@ -2,6 +2,9 @@
 , buildPythonPackage
 , fetchFromGitHub
 , python
+, wrapPython
+, unzip
+, callPackage
 , bootstrapped-pip
 , lib
 , pipInstallHook
@@ -58,7 +61,7 @@ in buildPythonPackage rec {
     (setuptoolsBuildHook.override{setuptools=null; wheel=null;})
   ];
 
-  preBuild = lib.optionalString (!stdenv.hostPlatform.isWindows) ''
+  preBuild = lib.strings.optionalString (!stdenv.hostPlatform.isWindows) ''
     export SETUPTOOLS_INSTALL_WINDOWS_SPECIFIC_FILES=0
   '';
 
@@ -70,7 +73,7 @@ in buildPythonPackage rec {
   # Requires pytest, causing infinite recursion.
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utilities to facilitate the installation of Python packages";
     homepage = "https://pypi.python.org/pypi/setuptools";
     license = with licenses; [ psfl zpl20 ];

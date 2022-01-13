@@ -4,7 +4,7 @@ let
   cfg = config.services.zabbixAgent;
 
   inherit (lib) mkDefault mkEnableOption mkIf mkMerge mkOption;
-  inherit (lib) attrValues concatMapStringsSep literalExpression optionalString types;
+  inherit (lib) attrValues concatMapStringsSep literalExample optionalString types;
   inherit (lib.generators) toKeyValue;
 
   user = "zabbix-agent";
@@ -34,15 +34,15 @@ in
       package = mkOption {
         type = types.package;
         default = pkgs.zabbix.agent;
-        defaultText = literalExpression "pkgs.zabbix.agent";
+        defaultText = "pkgs.zabbix.agent";
         description = "The Zabbix package to use.";
       };
 
       extraPackages = mkOption {
         type = types.listOf types.package;
         default = with pkgs; [ nettools ];
-        defaultText = literalExpression "with pkgs; [ nettools ]";
-        example = literalExpression "with pkgs; [ nettools mysql ]";
+        defaultText = "[ nettools ]";
+        example = "[ nettools mysql ]";
         description = ''
           Packages to be added to the Zabbix <envar>PATH</envar>.
           Typically used to add executables for scripts, but can be anything.
@@ -53,7 +53,7 @@ in
         type = types.attrsOf types.package;
         description = "A set of modules to load.";
         default = {};
-        example = literalExpression ''
+        example = literalExample ''
           {
             "dummy.so" = pkgs.stdenv.mkDerivation {
               name = "zabbix-dummy-module-''${cfg.package.version}";
@@ -128,16 +128,11 @@ in
       {
         LogType = "console";
         Server = cfg.server;
+        ListenIP = cfg.listen.ip;
         ListenPort = cfg.listen.port;
-      }
-      (mkIf (cfg.modules != {}) {
         LoadModule = builtins.attrNames cfg.modules;
-        LoadModulePath = "${moduleEnv}/lib";
-      })
-
-      # the default value for "ListenIP" is 0.0.0.0 but zabbix agent 2 cannot accept configuration files which
-      # explicitly set "ListenIP" to the default value...
-      (mkIf (cfg.listen.ip != "0.0.0.0") { ListenIP = cfg.listen.ip; })
+      }
+      (mkIf (cfg.modules != {}) { LoadModulePath = "${moduleEnv}/lib"; })
     ];
 
     networking.firewall = mkIf cfg.openFirewall {
@@ -157,10 +152,7 @@ in
 
       wantedBy = [ "multi-user.target" ];
 
-      # https://www.zabbix.com/documentation/current/manual/config/items/userparameters
-      # > User parameters are commands executed by Zabbix agent.
-      # > /bin/sh is used as a command line interpreter under UNIX operating systems.
-      path = with pkgs; [ bash "/run/wrappers" ] ++ cfg.extraPackages;
+      path = [ "/run/wrappers" ] ++ cfg.extraPackages;
 
       serviceConfig = {
         ExecStart = "@${cfg.package}/sbin/zabbix_agentd zabbix_agentd -f --config ${configFile}";

@@ -1,16 +1,16 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , qtbase, qtdeclarative, qmake, which
 }:
 
 stdenv.mkDerivation rec {
   pname = "libcommuni";
-  version = "3.6.0";
+  version = "3.5.0";
 
   src = fetchFromGitHub {
     owner = "communi";
     repo = "libcommuni";
     rev = "v${version}";
-    sha256 = "sha256-ABvrMoOVSycbQ8iRDzi7zkFnuSgHMMBgm9cDUWlD4uc=";
+    sha256 = "15crqc7a4kwrfbxs121rpdysw0694hh7dr290gg7pm61akvnrqcm";
   };
 
   buildInputs = [ qtbase qtdeclarative ];
@@ -19,11 +19,7 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   dontUseQmakeConfigure = true;
-  configureFlags = [ "-config" "release" ]
-    # Build mixes up dylibs/frameworks if one is not explicitely specified.
-    ++ lib.optionals stdenv.isDarwin [ "-config" "qt_framework" ];
-
-  dontWrapQtApps = true;
+  configureFlags = [ "-config" "release" ];
 
   preConfigure = ''
     sed -i -e 's|/bin/pwd|pwd|g' configure
@@ -38,7 +34,7 @@ stdenv.mkDerivation rec {
   # Hack to avoid TMPDIR in RPATHs.
   preFixup = "rm -rf lib";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A cross-platform IRC framework written with Qt";
     homepage = "https://communi.github.io";
     license = licenses.bsd3;

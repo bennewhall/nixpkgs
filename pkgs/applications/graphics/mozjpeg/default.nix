@@ -1,20 +1,18 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, libpng, zlib, nasm }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, libpng, nasm }:
 
 stdenv.mkDerivation rec {
-  version = "4.0.3";
+  version = "3.3.1";
   pname = "mozjpeg";
 
   src = fetchFromGitHub {
     owner = "mozilla";
     repo = "mozjpeg";
     rev = "v${version}";
-    sha256 = "1wb2ys0yjy6hgpb9qvzjxs7sb2zzs44p6xf7n026mx5nx85hjbyv";
+    sha256 = "1na68860asn8b82ny5ilwbhh4nyl9gvx2yxmm4wr2v1v95v51fky";
   };
 
-  cmakeFlags = [ "-DENABLE_STATIC=NO" "-DPNG_SUPPORTED=TRUE" ]; # See https://github.com/mozilla/mozjpeg/issues/351
-
-  nativeBuildInputs = [ cmake pkg-config ];
-  buildInputs = [ libpng zlib nasm ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
+  buildInputs = [ libpng nasm ];
 
   meta = {
     description = "Mozilla JPEG Encoder Project";
@@ -25,8 +23,8 @@ stdenv.mkDerivation rec {
       The idea is to reduce transfer times for JPEGs on the Web, thus reducing page load times.
     '';
     homepage = "https://github.com/mozilla/mozjpeg";
-    license = lib.licenses.bsd3;
-    maintainers = [ lib.maintainers.aristid ];
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.bsd3;
+    maintainers = [ stdenv.lib.maintainers.aristid ];
+    platforms = stdenv.lib.platforms.all;
   };
 }

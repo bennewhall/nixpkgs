@@ -1,19 +1,17 @@
-{ lib, stdenv, fetchurl }:
+{stdenv, fetchurl, unzip} :
 
-stdenv.mkDerivation rec {
-  pname = "httpunit";
-  version = "1.7";
+stdenv.mkDerivation {
+  name = "httpunit-1.7";
+  builder = ./builder.sh;
 
   src = fetchurl {
-    url = "mirror://sourceforge/httpunit/httpunit-${version}.zip";
+    url = "mirror://sourceforge/httpunit/httpunit-1.7.zip";
     sha256 = "09gnayqgizd8cjqayvdpkxrc69ipyxawc96aznfrgdhdiwv8l5zf";
   };
 
-  buildCommand = ''
-    cp ./* $out
-  '';
+  inherit unzip;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://httpunit.sourceforge.net";
     platforms = platforms.unix;
     license = licenses.mit;

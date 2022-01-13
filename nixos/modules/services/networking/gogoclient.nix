@@ -28,7 +28,6 @@ in
 
       username = mkOption {
         default = "";
-        type = types.str;
         description = ''
           Your Gateway6 login name, if any.
         '';
@@ -43,7 +42,6 @@ in
       };
 
       server = mkOption {
-        type = types.str;
         default = "anonymous.freenet6.net";
         example = "broker.freenet6.net";
         description = "The Gateway6 server to be used.";

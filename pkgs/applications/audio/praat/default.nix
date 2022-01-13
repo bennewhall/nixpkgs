@@ -1,34 +1,30 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, wrapGAppsHook, alsa-lib, gtk3, libpulseaudio }:
+{ stdenv, fetchurl, alsaLib, gtk2, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "praat";
-  version = "6.2.03";
+  version = "6.0.43";
 
-  src = fetchFromGitHub {
-    owner = "praat";
-    repo = "praat";
-    rev = "v${version}";
-    sha256 = "sha256-0WTbLEPEqPm7BI02mjlwcsewkrmIsHtNlhccqK1d6SI=";
+  src = fetchurl {
+    url = "https://github.com/praat/praat/archive/v${version}.tar.gz";
+    sha256 = "1l13bvnl7sv8v6s5z63201bhzavnj6bnqcj446akippsam13z4sf";
   };
 
   configurePhase = ''
-    cp makefiles/makefile.defs.linux.pulse makefile.defs
+    cp makefiles/makefile.defs.linux.alsa makefile.defs
   '';
 
   installPhase = ''
-    install -Dt $out/bin praat
+    mkdir -p $out/bin
+    cp praat $out/bin
   '';
 
-  nativeBuildInputs = [ pkg-config wrapGAppsHook ];
-  buildInputs = [ alsa-lib gtk3 libpulseaudio ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ alsaLib gtk2 ];
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = {
     description = "Doing phonetics by computer";
     homepage = "https://www.fon.hum.uva.nl/praat/";
-    license = licenses.gpl2Plus; # Has some 3rd-party code in it though
-    maintainers = with maintainers; [ orivej ];
-    platforms = platforms.linux;
+    license = stdenv.lib.licenses.gpl2Plus; # Has some 3rd-party code in it though
+    platforms = stdenv.lib.platforms.linux;
   };
 }

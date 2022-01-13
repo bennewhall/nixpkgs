@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 
 , fetchurl
 , coreutils
@@ -34,7 +34,7 @@ grimshot = stdenv.mkDerivation rec {
 
     install -Dm 0755 contrib/grimshot $out/bin/grimshot
     wrapProgram $out/bin/grimshot --set PATH \
-      "${lib.makeBinPath [
+      "${stdenv.lib.makeBinPath [
         sway-unwrapped
         wl-clipboard
         coreutils
@@ -55,7 +55,7 @@ grimshot = stdenv.mkDerivation rec {
     fi
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A helper for screenshots within sway";
     homepage = "https://github.com/swaywm/sway/tree/master/contrib";
     license = licenses.mit;

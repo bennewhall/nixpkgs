@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, robotframework-seleniumlibrary }:
+{ stdenv, buildPythonPackage, fetchPypi, robotframework-seleniumlibrary }:
 
 buildPythonPackage rec {
   version = "3.0.0";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ robotframework-seleniumlibrary ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Web testing library for Robot Framework";
     homepage = "https://github.com/robotframework/Selenium2Library";
     license = licenses.asl20;

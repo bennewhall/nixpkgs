@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "python-mnist";
@@ -9,7 +9,7 @@ buildPythonPackage rec {
     sha256 = "a0cced01e83b5b844cff86109280df7a672a8e4e38fc19fa68999a17f8a9fbd8";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/sorki/python-mnist";
     description = "Simple MNIST data parser written in Python";
     license = licenses.bsd3;

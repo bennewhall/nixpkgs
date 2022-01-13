@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gawk, cmake }:
+{ stdenv, fetchurl, gawk, cmake }:
 
 stdenv.mkDerivation rec {
   name = "ilbc-rfc3951";
@@ -20,6 +20,6 @@ stdenv.mkDerivation rec {
     '';
 
   meta = {
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

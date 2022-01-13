@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage }:
+{ stdenv, fetchPypi, buildPythonPackage }:
 
 buildPythonPackage rec {
   pname = "pytzdata";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # No tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Timezone database for Python";
     homepage = "https://github.com/sdispater/pytzdata";
     license = licenses.mit;

@@ -1,29 +1,20 @@
-{ lib, stdenv, fetchFromGitLab, pkg-config, scdoc, openssl, zlib
-, luaSupport ? stdenv.hostPlatform == stdenv.buildPlatform, lua
-}:
+{ stdenv, lib, fetchurl, lua, openssl, pkg-config, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "apk-tools";
-  version = "2.12.9";
+  version = "2.10.5";
 
-  src = fetchFromGitLab {
-    domain = "gitlab.alpinelinux.org";
-    owner = "alpine";
-    repo = "apk-tools";
-    rev = "v${version}";
-    sha256 = "sha256-WmL2sjBUwk9qw8+vHgaufaElQnbDAtOCZHoBXLcvJ18=";
+  src = fetchurl {
+    url = "https://dev.alpinelinux.org/archive/apk-tools/apk-tools-${version}.tar.xz";
+    sha256 = "00z3fqnv8vk2czdm4p2q4sldq0n8sxyf2qfwppyk7wj59d2sq8dp";
   };
 
-  nativeBuildInputs = [ pkg-config scdoc ]
-    ++ lib.optionals luaSupport [ lua lua.pkgs.lua-zlib ];
-  buildInputs = [ openssl zlib ] ++ lib.optional luaSupport lua;
-  strictDeps = true;
+  nativeBuildInputs = [ pkg-config ];
+  buildInputs = [ lua openssl zlib ];
 
   makeFlags = [
-    "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
     "SBINDIR=$(out)/bin"
     "LIBDIR=$(out)/lib"
-    "LUA=${if luaSupport then "lua" else "no"}"
     "LUA_LIBDIR=$(out)/lib/lua/${lib.versions.majorMinor lua.version}"
     "MANDIR=$(out)/share/man"
     "DOCDIR=$(out)/share/doc/apk"
@@ -39,7 +30,7 @@ stdenv.mkDerivation rec {
     homepage = "https://gitlab.alpinelinux.org/alpine/apk-tools";
     description = "Alpine Package Keeper";
     maintainers = with maintainers; [ qyliss ];
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.unix;
     broken = stdenv.isDarwin;
   };

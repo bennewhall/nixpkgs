@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , glib
 , gmime3
@@ -15,7 +15,7 @@
 , libnotify
 , libsecret
 , openssl
-, pkg-config
+, pkgconfig
 , webkitgtk
 , wrapGAppsHook
 }:
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     intltool
     gobject-introspection
     wrapGAppsHook
@@ -67,7 +67,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://pawsa.fedorapeople.org/balsa/";
     description = "An e-mail client for GNOME";
     license = licenses.gpl2Plus;

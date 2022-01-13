@@ -1,4 +1,4 @@
-{ lib, stdenv, pkg-config, autoreconfHook,
+{ stdenv, pkgconfig, autoreconfHook,
 glib, check, python3, dsview
 }:
 
@@ -11,13 +11,13 @@ stdenv.mkDerivation {
     export sourceRoot=$sourceRoot/libsigrokdecode4DSL
   '';
 
-  nativeBuildInputs = [ pkg-config autoreconfHook ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
   buildInputs = [
     python3 glib check
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fork of the sigrokdecode library for usage with DSView";
     homepage = "https://www.dreamsourcelab.com/";
     license = licenses.gpl3Plus;

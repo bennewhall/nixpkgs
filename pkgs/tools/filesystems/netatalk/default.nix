@@ -1,28 +1,22 @@
-{ fetchurl, lib, stdenv, autoreconfHook, pkg-config, perl, python3
+{ fetchurl, stdenv, autoreconfHook, pkgconfig, perl, python
 , db, libgcrypt, avahi, libiconv, pam, openssl, acl
-, ed, libtirpc, libevent, fetchpatch
+, ed, libtirpc, libevent
 }:
 
 stdenv.mkDerivation rec {
-  pname = "netatalk";
-  version = "3.1.12";
+  name = "netatalk-3.1.12";
 
   src = fetchurl {
-    url = "mirror://sourceforge/netatalk/netatalk/netatalk-${version}.tar.bz2";
+    url = "mirror://sourceforge/netatalk/netatalk/${name}.tar.bz2";
     sha256 = "1ld5mnz88ixic21m6f0xcgf8v6qm08j6xabh1dzfj6x47lxghq0m";
   };
 
   patches = [
     ./no-suid.patch
     ./omitLocalstatedirCreation.patch
-    (fetchpatch {
-      name = "make-afpstats-python3-compatible.patch";
-      url = "https://github.com/Netatalk/Netatalk/commit/916b515705cf7ba28dc53d13202811c6e1fe6a9e.patch";
-      sha256 = "sha256-DAABpYjQPJLsQBhmtP30gA357w0Qn+AsnFgAeyDC/Rg=";
-    })
   ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config perl python3 python3.pkgs.wrapPython ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig perl python python.pkgs.wrapPython ];
 
   buildInputs = [ db libgcrypt avahi libiconv pam openssl acl libevent ];
 
@@ -51,7 +45,7 @@ stdenv.mkDerivation rec {
   '';
 
   postInstall = ''
-    buildPythonPath ${python3.pkgs.dbus-python}
+    buildPythonPath ${python.pkgs.dbus-python}
     patchPythonScript $out/bin/afpstats
   '';
 
@@ -60,8 +54,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Apple Filing Protocol Server";
     homepage = "http://netatalk.sourceforge.net/";
-    license = lib.licenses.gpl3;
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ jcumming ];
+    license = stdenv.lib.licenses.gpl3;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ jcumming ];
   };
 }

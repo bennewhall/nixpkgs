@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook,
-  libtool, pkg-config, re2, texinfo }:
+{ stdenv, fetchFromGitHub, autoreconfHook,
+  libtool, pkgconfig, re2, texinfo }:
 
 stdenv.mkDerivation rec {
   pname = "cre2";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     autoreconfHook
     libtool
-    pkg-config
+    pkgconfig
   ];
   buildInputs = [ re2 texinfo ];
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     "--enable-maintainer-mode"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://marcomaggi.github.io/docs/cre2.html";
     description = "C Wrapper for RE2";
     license = licenses.bsd3;

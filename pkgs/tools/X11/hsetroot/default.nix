@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , pkg-config
 , imlib2
@@ -24,17 +24,13 @@ stdenv.mkDerivation rec {
     libXinerama
   ];
 
-  postPatch = lib.optionalString (!stdenv.cc.isGNU) ''
-    sed -i -e '/--no-as-needed/d' Makefile
-  '';
-
   makeFlags = [ "PREFIX=$(out)" ];
 
   preInstall = ''
     mkdir -p "$out/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Allows you to compose wallpapers ('root pixmaps') for X";
     homepage = "https://github.com/himdel/hsetroot";
     license = licenses.gpl2Plus;

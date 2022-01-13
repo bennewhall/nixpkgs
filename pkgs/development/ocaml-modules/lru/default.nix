@@ -1,10 +1,8 @@
-{ lib, fetchurl, buildDunePackage, ocaml, psq, qcheck-alcotest }:
+{ lib, fetchurl, buildDunePackage, psq }:
 
 buildDunePackage rec {
   pname = "lru";
   version = "0.3.0";
-
-  useDune2 = true;
 
   src = fetchurl {
     url = "https://github.com/pqwy/lru/releases/download/v${version}/lru-v${version}.tbz";
@@ -12,9 +10,6 @@ buildDunePackage rec {
   };
 
   propagatedBuildInputs = [ psq ];
-
-  doCheck = lib.versionAtLeast ocaml.version "4.08";
-  checkInputs = [ qcheck-alcotest ];
 
   meta = {
     homepage = "https://github.com/pqwy/lru";

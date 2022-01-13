@@ -1,16 +1,19 @@
-{ lib, stdenv, kernel, fetchFromGitHub, autoreconfHook, bison, flex, p7zip, rsync }:
+{ stdenv, kernel, fetchFromGitHub, autoreconfHook, yacc, flex, p7zip, rsync }:
 
-stdenv.mkDerivation rec {
+assert kernel != null -> stdenv.lib.versionAtLeast kernel.version "4.0";
+
+let
+  version = "1.0.beta1-9e810b1";
+in stdenv.mkDerivation {
   pname = "ply";
-  version = "2.1.1-${lib.substring 0 7 src.rev}";
-
-  nativeBuildInputs = [ autoreconfHook flex bison p7zip rsync ];
+  inherit version;
+  nativeBuildInputs = [ autoreconfHook flex yacc p7zip rsync ];
 
   src = fetchFromGitHub {
     owner = "iovisor";
     repo = "ply";
-    rev = "e25c9134b856cc7ffe9f562ff95caf9487d16b59";
-    sha256 = "1178z7vvnjwnlxc98g2962v16878dy7bd0b2njsgn4vqgrnia7i5";
+    rev = "9e810b157ba079c32c430a7d4c6034826982056e";
+    sha256 = "15cp6iczawaqlhsa0af6i37zn5iq53kh6ya8s2hzd018yd7mhg50";
   };
 
   preAutoreconf = ''
@@ -30,11 +33,10 @@ stdenv.mkDerivation rec {
     ./autogen.sh --prefix=$out
   '';
 
-  meta = with lib; {
-    description = "Dynamic tracing in Linux";
+  meta = with stdenv.lib; {
+    description = "dynamic Tracing in Linux";
     homepage = "https://wkz.github.io/ply/";
-    license = [ licenses.gpl2Only ];
+    license = [ licenses.gpl2 ];
     maintainers = with maintainers; [ mic92 mbbx6spp ];
-    broken = lib.versionOlder kernel.version "4.0";
   };
 }

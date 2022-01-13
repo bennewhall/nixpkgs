@@ -1,7 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchgit
+, fetchpatch
 , autoreconfHook
-, pkg-config
+, pkgconfig
 , ell
 , coreutils
 , docutils
@@ -12,21 +13,20 @@
 
 stdenv.mkDerivation rec {
   pname = "iwd";
-  version = "1.20";
+  version = "1.10";
 
   src = fetchgit {
     url = "https://git.kernel.org/pub/scm/network/wireless/iwd.git";
     rev = version;
-    sha256 = "sha256-GcqmMqrZSgvSrsY8FJbPynNWTzSi5A6kmyq+xJ+2i3Y=";
+    sha256 = "0gzpdgfwzlqj2n3amf2zhi2hlpa412878yphgx79y6b5gn1y1lm2";
   };
 
-  outputs = [ "out" "man" ]
-    ++ lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) "test";
+  outputs = [ "out" "man" "test" ];
 
   nativeBuildInputs = [
     autoreconfHook
     docutils
-    pkg-config
+    pkgconfig
     python3Packages.wrapPython
   ];
 
@@ -38,9 +38,7 @@ stdenv.mkDerivation rec {
 
   checkInputs = [ openssl ];
 
-  # wrapPython wraps the scripts in $test. They pull in gobject-introspection,
-  # which doesn't cross-compile.
-  pythonPath = lib.optionals (stdenv.hostPlatform == stdenv.buildPlatform) [
+  pythonPath = [
     python3Packages.dbus-python
     python3Packages.pygobject3
   ];
@@ -57,20 +55,17 @@ stdenv.mkDerivation rec {
   ];
 
   postUnpack = ''
-    mkdir -p iwd/ell
-    ln -s ${ell.src}/ell/useful.h iwd/ell/useful.h
     patchShebangs .
   '';
 
   doCheck = true;
 
   postInstall = ''
+    mkdir -p $test/bin
+    cp -a test/* $test/bin/
     mkdir -p $out/share
     cp -a doc $out/share/
     cp -a README AUTHORS TODO $out/share/doc/
-  '' + lib.optionalString (stdenv.hostPlatform == stdenv.buildPlatform) ''
-    mkdir -p $test/bin
-    cp -a test/* $test/bin/
   '';
 
   preFixup = ''
@@ -86,11 +81,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://git.kernel.org/pub/scm/network/wireless/iwd.git";
     description = "Wireless daemon for Linux";
-    license = licenses.lgpl21Plus;
+    license = licenses.lgpl21;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ dtzWill fpletz maxeaubrey ];
+    maintainers = with maintainers; [ dtzWill fpletz ];
   };
 }

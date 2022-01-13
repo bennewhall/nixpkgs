@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ncurses }:
+{ stdenv, fetchFromGitHub, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "gopher";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   preConfigure = "export LIBS=-lncurses";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://gopher.quux.org:70/devel/gopher";
     description = "A ncurses gopher client";
     platforms = platforms.linux; # clang doesn't like local regex.h

@@ -1,73 +1,37 @@
-{ lib
-, Babel
-, buildPythonPackage
-, cssselect
-, fetchFromGitHub
-, glibcLocales
-, isodate
-, leather
-, lxml
-, nose
-, parsedatetime
-, PyICU
-, python-slugify
-, pytimeparse
-, pythonOlder
-, pytz
-, six
-}:
+{ lib, fetchFromGitHub, buildPythonPackage, isPy3k
+, six, pytimeparse, parsedatetime, Babel
+, isodate, python-slugify, leather
+, glibcLocales, nose, lxml, cssselect, unittest2 }:
 
 buildPythonPackage rec {
   pname = "agate";
-  version = "1.6.3";
-  format = "setuptools";
+  version = "1.6.1";
 
-  disabled = pythonOlder "3.6";
-
+  # PyPI tarball does not include all test files
+  # https://github.com/wireservice/agate/pull/716
   src = fetchFromGitHub {
     owner = "wireservice";
     repo = pname;
     rev = version;
-    sha256 = "sha256-tuUoLvztCYHIPJTBgw1eByM0zfaHDyc+h7SWsxutKos=";
+    sha256 = "077zj8xad8hsa3nqywvf7ircirmx3krxdipl8wr3dynv3l3khcpl";
   };
 
   propagatedBuildInputs = [
-    Babel
-    isodate
-    leather
-    parsedatetime
-    python-slugify
-    pytimeparse
-    six
+    six pytimeparse parsedatetime Babel
+    isodate python-slugify leather
   ];
 
-  checkInputs = [
-    cssselect
-    glibcLocales
-    lxml
-    nose
-    PyICU
-    pytz
-  ];
-
-  postPatch = ''
-    # No Python 2 support, thus constraint is not needed
-    substituteInPlace setup.py \
-      --replace "'parsedatetime>=2.1,!=2.5,!=2.6'," "'parsedatetime>=2.1',"
-  '';
+  checkInputs = [ glibcLocales nose lxml cssselect ]
+    ++ lib.optional (!isPy3k) unittest2;
 
   checkPhase = ''
     LC_ALL="en_US.UTF-8" nosetests tests
   '';
 
-  pythonImportsCheck = [
-    "agate"
-  ];
-
   meta = with lib; {
-    description = "Python data analysis library that is optimized for humans instead of machines";
-    homepage = "https://github.com/wireservice/agate";
-    license = with licenses; [ mit ];
+    description = "A Python data analysis library that is optimized for humans instead of machines";
+    homepage    = "https://github.com/wireservice/agate";
+    license     = with licenses; [ mit ];
     maintainers = with maintainers; [ vrthra ];
   };
 }

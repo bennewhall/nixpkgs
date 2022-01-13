@@ -1,11 +1,11 @@
-{ lib, stdenv
+{ stdenv
 , fetchgit
 , automake
 , autoreconfHook
 , lv2
 , pkg-config
 , qt5
-, alsa-lib
+, alsaLib
 , libjack2
 }:
 
@@ -26,14 +26,14 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     lv2
     libjack2
   ] ++ (with qt5; [
     qttools
   ]);
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An advanced MIDI arpeggiator";
     longDescription = ''
       An advanced MIDI arpeggiator, programmable step sequencer and LFO for Linux.

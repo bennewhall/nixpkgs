@@ -1,17 +1,19 @@
-{ lib, stdenvNoCC, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
-stdenvNoCC.mkDerivation {
+stdenv.mkDerivation {
   pname = "google-fonts";
-  version = "unstable-2021-06-12";
+  version = "2019-07-14";
 
   outputs = [ "out" "adobeBlank" ];
 
   src = fetchFromGitHub {
     owner = "google";
     repo = "fonts";
-    rev = "370c795d7e5f9b02db9a793c2779e2c8f94c6adc";
-    sha256 = "sha256-XKjxmupY2KuefCtKZMXWaba1TnNwdYM/P0xGXOtBGmM=";
+    rev = "f113126dc4b9b1473d9354a86129c9d7b837aa1a";
+    sha256 = "0safw5prpa63mqcyfw3gr3a535w4c9hg5ayw5pkppiwil7n3pyxs";
   };
+
+  phases = [ "unpackPhase" "patchPhase" "installPhase" ];
 
   patchPhase = ''
     # These directories need to be removed because they contain
@@ -19,17 +21,24 @@ stdenvNoCC.mkDerivation {
     # directories. This causes non-determinism in the install since
     # the installation order of font files with the same name is not
     # fixed.
-    rm -rv ofl/cabincondensed \
-           ofl/signikanegative \
-           ofl/signikanegativesc
+    rm -rv ofl/alefhebrew \
+      ofl/misssaintdelafield \
+      ofl/mrbedford \
+      ofl/siamreap \
+      ofl/terminaldosislight
+
+    # See comment above, the structure of these is a bit odd
+    # We keep the ofl/<font>/static/ variants
+    rm -rv ofl/comfortaa/*.ttf \
+      ofl/mavenpro/*.ttf \
+      ofl/muli/*.ttf \
+      ofl/oswald/*.ttf
 
     if find . -name "*.ttf" | sed 's|.*/||' | sort | uniq -c | sort -n | grep -v '^.*1 '; then
       echo "error: duplicate font names"
       exit 1
     fi
   '';
-
-  dontBuild = true;
 
   installPhase = ''
     adobeBlankDest=$adobeBlank/share/fonts/truetype
@@ -39,7 +48,7 @@ stdenvNoCC.mkDerivation {
     find . -name '*.ttf' -exec install -m 444 -Dt $dest '{}' +
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://fonts.google.com";
     description = "Font files available from Google Fonts";
     license = with licenses; [ asl20 ofl ufl ];

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, autoconf, automake, libtool, pkg-config
+{ stdenv, fetchgit, autoconf, automake, libtool, pkgconfig
 , xorg, gnum4, libxcb, gperf }:
 
 stdenv.mkDerivation {
@@ -11,7 +11,7 @@ stdenv.mkDerivation {
     sha256 = "127zfmihd8nqlj8jjaja06xb84xdgl263w0av1xnprx05mkbkcyc";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "XCB cursor library (libxcursor port)";
     homepage    = "https://cgit.freedesktop.org/xcb/util-cursor";
     license     = licenses.mit;
@@ -28,7 +28,7 @@ stdenv.mkDerivation {
     gperf
     libtool
     libxcb
-    pkg-config
+    pkgconfig
     xorg.utilmacros
     xorg.xcbutilimage
     xorg.xcbutilrenderutil

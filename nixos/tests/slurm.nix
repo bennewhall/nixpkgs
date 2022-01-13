@@ -43,7 +43,7 @@ let
           return EXIT_SUCCESS;
         }
       '';
-    in pkgs.runCommand "mpitest" {} ''
+    in pkgs.runCommandNoCC "mpitest" {} ''
       mkdir -p $out/bin
       ${pkgs.openmpi}/bin/mpicc ${mpitestC} -o $out/bin/mpitest
     '';
@@ -86,16 +86,14 @@ in {
 
     dbd =
       { pkgs, ... } :
-      let
-        passFile = pkgs.writeText "dbdpassword" "password123";
-      in {
+      {
         networking.firewall.enable = false;
         systemd.tmpfiles.rules = [
           "f /etc/munge/munge.key 0400 munge munge - mungeverryweakkeybuteasytointegratoinatest"
         ];
         services.slurm.dbdserver = {
           enable = true;
-          storagePassFile = "${passFile}";
+          storagePass = "password123";
         };
         services.mysql = {
           enable = true;
@@ -109,12 +107,12 @@ in {
             ensurePermissions = { "slurm_acct_db.*" = "ALL PRIVILEGES"; };
             name = "slurm";
           }];
-          settings.mysqld = {
+          extraOptions = ''
             # recommendations from: https://slurm.schedmd.com/accounting.html#mysql-configuration
-            innodb_buffer_pool_size="1024M";
-            innodb_log_file_size="64M";
-            innodb_lock_wait_timeout=900;
-          };
+            innodb_buffer_pool_size=1024M
+            innodb_log_file_size=64M
+            innodb_lock_wait_timeout=900
+          '';
         };
       };
 

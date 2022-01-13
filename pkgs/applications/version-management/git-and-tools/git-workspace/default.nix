@@ -1,28 +1,27 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , rustPlatform
-, libiconv, Security
-, pkg-config, openssl
+, Security
+, pkgconfig, openssl
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "git-workspace";
-  version = "0.8.0";
+  version = "0.7.0";
 
   src = fetchFromGitHub {
     owner = "orf";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-//EyGhuE8rMRL03TtECIi0X51/p/GvTqvr2FRQEIqFA=";
+    sha256 = "1ckfk221ag6yhbqxfz432wpgbhddgzgdsaxhl1ymw90pwpnz717y";
   };
 
-  cargoSha256 = "sha256-X0jRwDUVzS1s2tG6N2RDaFqwUUAT+mPMEft11VkJy5A=";
+  cargoSha256 = "0zkns037vgy96ybmn80px515ivz6yhj5br5mwbvxgl73va92wd9v";
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ openssl ]
-    ++ lib.optionals stdenv.isDarwin [ libiconv Security ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ openssl ] ++ stdenv.lib.optional stdenv.isDarwin Security;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Sync personal and work git repositories from multiple providers";
     homepage = "https://github.com/orf/git-workspace";
     license = with licenses; [ mit ];

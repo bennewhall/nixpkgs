@@ -1,38 +1,28 @@
-{ lib, stdenv, fetchFromGitHub, alsa-lib, fetchpatch }:
+{ stdenv, fetchFromGitHub, alsaLib }:
 
-stdenv.mkDerivation rec {
-  pname = "flite";
-  version = "2.2";
+stdenv.mkDerivation {
+  name = "flite-2.1.0";
 
   src = fetchFromGitHub {
-    owner = "festvox";
-    repo = "flite";
-    rev = "v${version}";
-    sha256 = "1n0p81jzndzc1rzgm66kw9ls189ricy5v1ps11y0p2fk1p56kbjf";
+    owner  = "festvox";
+    repo   = "flite";
+    rev    = "d673f65b2c4a8cd3da7447079309a6dc4bcf1a5e";
+    sha256 = "1kx43jvdln370590gfjhxxz3chxfi6kq18504wmdpljib2l0grjq";
   };
 
-  buildInputs = lib.optionals stdenv.isLinux [ alsa-lib ];
-
-  # https://github.com/festvox/flite/pull/60.
-  # Replaces `ar` with `$(AR)` in config/common_make_rules.
-  # Improves cross-compilation compatibility.
-  patches = [
-    (fetchpatch {
-      url = "https://github.com/festvox/flite/commit/54c65164840777326bbb83517568e38a128122ef.patch";
-      sha256 = "sha256-hvKzdX7adiqd9D+9DbnfNdqEULg1Hhqe1xElYxNM1B8=";
-    })
-  ];
+  buildInputs = [ alsaLib ];
 
   configureFlags = [
     "--enable-shared"
-  ] ++ lib.optionals stdenv.isLinux [ "--with-audio=alsa" ];
+    "--with-audio=alsa"
+  ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = {
     description = "A small, fast run-time speech synthesis engine";
     homepage = "http://www.festvox.org/flite/";
-    license = licenses.bsdOriginal;
-    platforms = platforms.all;
+    license = stdenv.lib.licenses.free;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -1,59 +1,45 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , curtsies
-, cwcwidth
 , greenlet
-, jedi
+, mock
 , pygments
-, pytestCheckHook
-, pyperclip
-, pyxdg
 , requests
 , substituteAll
-, typing-extensions
 , urwid
-, watchdog
-}:
+, which }:
 
 buildPythonPackage rec {
   pname = "bpython";
-  version = "0.22.1";
+  version = "0.20.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1fb1e0a52332579fc4e3dcf75e21796af67aae2be460179ecfcce9530a49a200";
+    sha256 = "6e7738806013b469be57b0117082b9c4557ed7c92c70ceb79f96d674d89c7503";
   };
 
-  propagatedBuildInputs = [
-    curtsies
-    cwcwidth
-    greenlet
-    jedi
-    pygments
-    pyperclip
-    pyxdg
-    requests
-    typing-extensions
-    urwid
-    watchdog
-  ];
+  patches = [ (substituteAll {
+    src = ./clipboard-make-which-substitutable.patch;
+    which = "${which}/bin/which";
+  })];
+
+  propagatedBuildInputs = [ curtsies greenlet pygments requests urwid ];
 
   postInstall = ''
     substituteInPlace "$out/share/applications/org.bpython-interpreter.bpython.desktop" \
       --replace "Exec=/usr/bin/bpython" "Exec=$out/bin/bpython"
   '';
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  checkInputs = [ mock ];
 
-  pythonImportsCheck = [ "bpython" ];
+  # tests fail: https://github.com/bpython/bpython/issues/712
+  doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fancy curses interface to the Python interactive interpreter";
     homepage = "https://bpython-interpreter.org/";
     license = licenses.mit;
-    maintainers = with maintainers; [ flokli dotlambda ];
+    maintainers = with maintainers; [ flokli ];
   };
 }

@@ -1,17 +1,19 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ lib, buildGoPackage, fetchFromGitHub }:
 
-buildGoModule rec {
+buildGoPackage rec {
   pname = "ssh-chat";
-  version = "1.10.1";
+  version = "1.10";
+
+  goPackagePath = "github.com/shazow/ssh-chat";
 
   src = fetchFromGitHub {
     owner = "shazow";
     repo = "ssh-chat";
     rev = "v${version}";
-    sha256 = "LgrqIuM/tLC0JqDai2TLu6G/edZ5Q7WFXjX5bzc0Bcc=";
+    sha256 = "e4COAyheY+mE5zltR1Ms2OJ3I8iG/N1CZ6D7I9PDW5U=";
   };
 
-  vendorSha256 = "QTUBorUAsWDOpNP3E/Y6ht7ZXZViWBbrMPtLl7lHtgE=";
+  goDeps = ./deps.nix;
 
   meta = with lib; {
     description = "Chat over SSH";

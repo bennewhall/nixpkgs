@@ -1,6 +1,4 @@
-{ lib, stdenv, fetchurl
-, enableShared ? !stdenv.hostPlatform.isStatic
-}:
+{ stdenv, fetchurl, enableShared ? true }:
 
 stdenv.mkDerivation (rec {
   version = "4.11.0";
@@ -20,7 +18,7 @@ stdenv.mkDerivation (rec {
 
   NIX_CFLAGS_COMPILE = "-Wno-error";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Helper library to program the performance monitoring events";
     longDescription = ''
       This package provides a library, called libpfm4 which is used to
@@ -32,7 +30,7 @@ stdenv.mkDerivation (rec {
     maintainers = [ maintainers.pierron ];
     platforms = platforms.linux;
   };
-} // lib.optionalAttrs ( ! enableShared )
+} // stdenv.lib.optionalAttrs ( ! enableShared )
 {
   CONFIG_PFMLIB_SHARED = "n";
 }

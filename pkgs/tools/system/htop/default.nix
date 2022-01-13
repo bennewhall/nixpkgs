@@ -1,52 +1,28 @@
 { lib, fetchFromGitHub, stdenv, autoreconfHook
-, ncurses
-, IOKit
-, sensorsSupport ? stdenv.isLinux, lm_sensors
-, systemdSupport ? stdenv.isLinux, systemd
+, ncurses, IOKit
 }:
-
-with lib;
-
-assert systemdSupport -> stdenv.isLinux;
 
 stdenv.mkDerivation rec {
   pname = "htop";
-  version = "3.1.2";
+  version = "3.0.3";
 
   src = fetchFromGitHub {
     owner = "htop-dev";
     repo = pname;
     rev = version;
-    sha256 = "sha256-RKYS8UYZTVKMR/3DG31eqkG4knPRl8WXsZU/XGmGmAg=";
+    sha256 = "0ylig6g2w4r3qfb16cf922iriqyn64frkzpk87vpga16kclvf08y";
   };
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  buildInputs = [ ncurses ]
-    ++ optional stdenv.isDarwin IOKit
-    ++ optional sensorsSupport lm_sensors
-    ++ optional systemdSupport systemd
-  ;
+  buildInputs = [ ncurses
+  ] ++ lib.optionals stdenv.isDarwin [ IOKit ];
 
-  configureFlags = [ "--enable-unicode" "--sysconfdir=/etc" ]
-    ++ optional sensorsSupport "--with-sensors"
-  ;
-
-  postFixup =
-    let
-      optionalPatch = pred: so: optionalString pred "patchelf --add-needed ${so} $out/bin/htop";
-    in
-    ''
-      ${optionalPatch sensorsSupport "${lm_sensors}/lib/libsensors.so"}
-      ${optionalPatch systemdSupport "${systemd}/lib/libsystemd.so"}
-    '';
-
-  meta = {
+  meta = with stdenv.lib; {
     description = "An interactive process viewer for Linux";
     homepage = "https://htop.dev";
     license = licenses.gpl2Only;
-    platforms = platforms.all;
+    platforms = with platforms; linux ++ freebsd ++ openbsd ++ darwin;
     maintainers = with maintainers; [ rob relrod ];
-    changelog = "https://github.com/htop-dev/${pname}/blob/${version}/ChangeLog";
   };
 }

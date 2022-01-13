@@ -1,19 +1,18 @@
-{ lib, fetchzip }:
+{ stdenv, fetchzip }:
 
-let version = "4.202";
-in fetchzip {
-  name = "fira-mono-${version}";
+fetchzip {
+  name = "fira-mono-3.206";
 
-  url = "https://github.com/mozilla/Fira/archive/${version}.zip";
+  url = "https://github.com/mozilla/Fira/archive/4.106.zip";
 
   postFetch = ''
     mkdir -p $out/share/fonts
-    unzip -j $downloadedFile Fira-${version}/otf/FiraMono\*.otf -d $out/share/fonts/opentype
+    unzip -j $downloadedFile Fira-4.106/otf/FiraMono\*.otf -d $out/share/fonts/opentype
   '';
 
   sha256 = "1ci3fxhdwabvfj4nl16pwcgqnh7s2slp8vblribk8zkpx8cbp1dj";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://mozilla.github.io/Fira/";
     description = "Monospace font for Firefox OS";
     longDescription = ''

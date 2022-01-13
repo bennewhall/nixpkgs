@@ -1,18 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, coreutils, gfortran, gnused
+{ stdenv, fetchFromGitHub, coreutils, gfortran, gnused
 , python3, util-linux, which
 
-, enableStatic ? stdenv.hostPlatform.isStatic
+, enableStatic ? false
 }:
 
-stdenv.mkDerivation rec {
+let
+  version = "1.16.1";
+in stdenv.mkDerivation {
   pname = "libxsmm";
-  version = "1.16.3";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "hfp";
     repo = "libxsmm";
     rev = version;
-    sha256 = "sha256-PpMiD/PeQ0pe5hqFG6VFHWpR8y3wnO2z1dJfHHeItlQ=";
+    sha256 = "1c1qj6hcdfx11bvilnly92vgk1niisd2bjw1s8vfyi2f7ws1wnp0";
   };
 
   nativeBuildInputs = [
@@ -40,11 +42,11 @@ stdenv.mkDerivation rec {
     patchShebangs .
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library targeting Intel Architecture for specialized dense and sparse matrix operations, and deep learning primitives";
     license = licenses.bsd3;
     homepage = "https://github.com/hfp/libxsmm";
     platforms = platforms.linux;
-    maintainers = with lib.maintainers; [ chessai ];
+    maintainers = with stdenv.lib.maintainers; [ chessai ];
   };
 }

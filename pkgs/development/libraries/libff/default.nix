@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, cmake, boost, gmp, openssl, pkg-config }:
+{ stdenv, fetchFromGitHub, cmake, boost, gmp, openssl, pkg-config }:
 
 stdenv.mkDerivation rec {
   pname = "libff";
-  version = "0.2.1";
+  version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "scipr-lab";
@@ -12,19 +12,12 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  cmakeFlags = [ "-DWITH_PROCPS=Off" ]
-    ++ lib.optional stdenv.isAarch64 [ "-DCURVE=ALT_BN128" "-DUSE_ASM=OFF" ];
-
-  # CMake is hardcoded to always build static library which causes linker
-  # failure for Haskell applications depending on haskellPackages.hevm on macOS.
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace libff/CMakeLists.txt --replace "STATIC" "SHARED"
-  '';
+  cmakeFlags = [ "-DWITH_PROCPS=Off" ];
 
   nativeBuildInputs = [ cmake pkg-config ];
   buildInputs = [ boost gmp openssl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ library for Finite Fields and Elliptic Curves";
     changelog = "https://github.com/scipr-lab/libff/blob/develop/CHANGELOG.md";
     homepage = "https://github.com/scipr-lab/libff";

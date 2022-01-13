@@ -1,5 +1,5 @@
-{ lib, fetchFromGitHub, mkDerivation
-, pkg-config, qtbase, qttools, qmake, qtmultimedia, qtx11extras, alsa-lib, libv4l, libXrandr
+{ stdenv, fetchFromGitHub, mkDerivation
+, pkgconfig, qtbase, qttools, qmake, qtmultimedia, qtx11extras, alsaLib, libv4l, libXrandr
 , ffmpeg
 }:
 
@@ -15,9 +15,9 @@ mkDerivation rec {
     sha256  = "1a85vbsi53mhzva49smqwcs61c51wv3ic410nvb9is9nlsbifwan";
   };
 
-  nativeBuildInputs = [ pkg-config qmake ];
+  nativeBuildInputs = [ pkgconfig qmake ];
   buildInputs = [
-    alsa-lib
+    alsaLib
     libv4l
     qtbase
     qtmultimedia
@@ -38,7 +38,7 @@ mkDerivation rec {
     substituteInPlace settings/QvkSettings.cpp --subst-var-by ffmpeg ${ffmpeg}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple GUI screencast recorder, using ffmpeg";
     homepage = "https://linuxecke.volkoh.de/vokoscreen/vokoscreen.html";
     longDescription = ''

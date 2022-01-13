@@ -1,7 +1,6 @@
 { fetchFromGitHub
 , cinnamon-desktop
 , cinnamon-settings-daemon
-, cinnamon-translations
 , dbus-glib
 , docbook_xsl
 , docbook_xml_dtd_412
@@ -13,28 +12,28 @@
 , makeWrapper
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , python3
-, lib
 , stdenv
 , systemd
 , wrapGAppsHook
 , xapps
 , xmlto
 , xorg
+, cmake
 , libexecinfo
 , pango
 }:
 
 stdenv.mkDerivation rec {
   pname = "cinnamon-session";
-  version = "5.2.0";
+  version = "4.8.0";
 
   src = fetchFromGitHub {
     owner = "linuxmint";
     repo = pname;
     rev = version;
-    hash = "sha256-E5ascwLnpa5NSBAPo9dXRhoraUntzDPHVV32uDU4U8k=";
+    sha256 = "0sbfd1d4kjiccaq9s36r2cvdcmvd1x2087nkfgl32gwxakqi3g4n";
   };
 
   patches = [
@@ -76,18 +75,13 @@ stdenv.mkDerivation rec {
     docbook_xsl
     docbook_xml_dtd_412
     python3
-    pkg-config
+    pkgconfig
     libxslt
     xmlto
   ];
 
-  mesonFlags = [
-    # TODO: https://github.com/NixOS/nixpkgs/issues/36468
-    "-Dc_args=-I${glib.dev}/include/gio-unix-2.0"
-    "-Dgconf=false"
-    # use locales from cinnamon-translations
-    "--localedir=${cinnamon-translations}/share/locale"
-  ];
+  # TODO: https://github.com/NixOS/nixpkgs/issues/36468
+  mesonFlags = [ "-Dc_args=-I${glib.dev}/include/gio-unix-2.0" "-Dgconf=false" "-DENABLE_IPV6=true" ];
 
   postPatch = ''
     chmod +x data/meson_install_schemas.py # patchShebangs requires executable file
@@ -101,7 +95,7 @@ stdenv.mkDerivation rec {
     )
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/linuxmint/cinnamon-session";
     description = "The Cinnamon session manager";
     license = licenses.gpl2;

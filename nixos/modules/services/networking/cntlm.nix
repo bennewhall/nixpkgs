@@ -36,21 +36,19 @@ in
     enable = mkEnableOption "cntlm, which starts a local proxy";
 
     username = mkOption {
-      type = types.str;
       description = ''
         Proxy account name, without the possibility to include domain name ('at' sign is interpreted literally).
       '';
     };
 
     domain = mkOption {
-      type = types.str;
-      description = "Proxy account domain/workgroup name.";
+      description = ''Proxy account domain/workgroup name.'';
     };
 
     password = mkOption {
       default = "/etc/cntlm.password";
       type = types.str;
-      description = "Proxy account password. Note: use chmod 0600 on /etc/cntlm.password for security.";
+      description = ''Proxy account password. Note: use chmod 0600 on /etc/cntlm.password for security.'';
     };
 
     netbios_hostname = mkOption {
@@ -62,7 +60,6 @@ in
     };
 
     proxy = mkOption {
-      type = types.listOf types.str;
       description = ''
         A list of NTLM/NTLMv2 authenticating HTTP proxies.
 
@@ -78,13 +75,11 @@ in
         A list of domains where the proxy is skipped.
       '';
       default = [];
-      type = types.listOf types.str;
       example = [ "*.example.com" "example.com" ];
     };
 
     port = mkOption {
       default = [3128];
-      type = types.listOf types.port;
       description = "Specifies on which ports the cntlm daemon listens.";
     };
 

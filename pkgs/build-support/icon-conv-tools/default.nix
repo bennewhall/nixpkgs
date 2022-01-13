@@ -1,8 +1,7 @@
-{ lib, stdenv, icoutils }:
+{ stdenv, icoutils }:
 
 stdenv.mkDerivation {
-  pname = "icon-conv-tools";
-  version = "0.0.0";
+  name = "icon-conv-tools-0.0.0";
 
   src = ./bin;
 
@@ -24,9 +23,9 @@ stdenv.mkDerivation {
   dontPatchELF = true;
   dontStrip = true;
 
-  meta = with lib; {
+  meta = {
     description = "Tools for icon conversion specific to nix package manager";
-    maintainers = with maintainers; [ jraygauthier ];
-    platforms = platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ jraygauthier ];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

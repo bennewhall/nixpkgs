@@ -37,6 +37,7 @@ import ./make-test-python.nix {
     };
 
     client = { pkgs, lib, ... }: {
+      virtualisation.memorySize = 512;
       environment.systemPackages = let
         testRunner = pkgs.writers.writePython3Bin "test-runner" {
           libraries = [ pkgs.python3Packages.selenium ];
@@ -75,7 +76,7 @@ import ./make-test-python.nix {
 
     server.wait_for_unit("nginx.service")
     client.wait_for_unit("multi-user.target")
-    client.execute("test-runner >&2 &")
+    client.execute("test-runner &")
     client.wait_for_file("/tmp/passed_stage1")
 
     server.succeed(

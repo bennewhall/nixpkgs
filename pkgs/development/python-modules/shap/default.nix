@@ -1,11 +1,11 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , isPy27
 , pytestCheckHook
 , numpy
 , scipy
-, scikit-learn
+, scikitlearn
 , pandas
 , tqdm
 , slicer
@@ -17,20 +17,20 @@
 
 buildPythonPackage rec {
   pname = "shap";
-  version = "0.40.0";
+  version = "0.36.0";
   disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "slundberg";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0ra0dp319qj13wxaqh2vz4xhn59m9h3bfg1m6wf3cxsix737b1k4";
+    sha256 = "1wxnxvbz6avzzfqjfbcqd4v879hvpq4021v31fhdpccr2q317rr9";
   };
 
   propagatedBuildInputs = [
     numpy
     scipy
-    scikit-learn
+    scikitlearn
     pandas
     tqdm
     slicer
@@ -60,13 +60,11 @@ buildPythonPackage rec {
     "test_single_row_gradient_boosting_regressor"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A unified approach to explain the output of any machine learning model";
     homepage = "https://github.com/slundberg/shap";
     license = licenses.mit;
     maintainers = with maintainers; [ evax ];
     platforms = platforms.unix;
-    # ModuleNotFoundError: No module named 'sklearn.ensemble.iforest'
-    broken = true;
   };
 }

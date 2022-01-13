@@ -3,90 +3,81 @@
 , buildPythonPackage
 , fetchPypi
 , pythonOlder
-# install_requires
 , attrs
-, charset-normalizer
+, chardet
 , multidict
 , async-timeout
 , yarl
-, frozenlist
-, aiosignal
-, aiodns
-, brotli
-, cchardet
-, asynctest
-, typing-extensions
 , idna-ssl
-# tests_require
-, async_generator
-, freezegun
-, gunicorn
-, pytest-mock
+, typing-extensions
+, pytestrunner
 , pytestCheckHook
-, re-assert
+, gunicorn
+, async_generator
+, pytest_xdist
+, pytestcov
+, pytest-mock
 , trustme
+, brotlipy
+, freezegun
+, isPy38
+, re-assert
 }:
 
 buildPythonPackage rec {
   pname = "aiohttp";
-  version = "3.8.1";
-  disabled = pythonOlder "3.6";
+  version = "3.7.3";
+  # https://github.com/aio-libs/aiohttp/issues/4525 python3.8 failures
+  disabled = pythonOlder "3.5";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "fc5471e1a54de15ef71c1bc6ebe80d4dc681ea600e68bfd1cbce40427f0b7578";
+    sha256 = "9c1a81af067e72261c9cbe33ea792893e83bc6aa987bfbd6fdc1e5e7b22777c4";
   };
 
-  postPatch = ''
-    sed -i '/--cov/d' setup.cfg
-  '';
+  checkInputs = [
+    pytestrunner pytestCheckHook gunicorn async_generator pytest_xdist
+    pytest-mock pytestcov trustme brotlipy freezegun
+    re-assert
+  ];
 
   propagatedBuildInputs = [
     attrs
-    charset-normalizer
+    chardet
     multidict
     async-timeout
+    typing-extensions
     yarl
-    typing-extensions
-    frozenlist
-    aiosignal
-    aiodns
-    brotli
-    cchardet
-  ] ++ lib.optionals (pythonOlder "3.8") [
-    asynctest
-    typing-extensions
   ] ++ lib.optionals (pythonOlder "3.7") [
     idna-ssl
   ];
 
-  checkInputs = [
-    async_generator
-    freezegun
-    gunicorn
-    pytest-mock
-    pytestCheckHook
-    re-assert
-    trustme
-  ];
-
   disabledTests = [
-    # Disable tests that require network access
-    "test_client_session_timeout_zero"
+    # disable tests which attempt to do loopback connections
+    "get_valid_log_format_exc"
+    "test_access_logger_atoms"
+    "aiohttp_request_coroutine"
+    "server_close_keepalive_connection"
+    "connector"
+    "client_disconnect"
+    "handle_keepalive_on_closed_connection"
+    "proxy_https_bad_response"
+    "partially_applied_handler"
+    "middleware"
     "test_mark_formdata_as_processed"
-    "test_requote_redirect_url_default"
+    # no longer compatible with pytest>=6
+    "aiohttp_plugin_async_fixture"
   ] ++ lib.optionals stdenv.is32bit [
     "test_cookiejar"
+  ] ++ lib.optionals isPy38 [
+    # Python 3.8  https://github.com/aio-libs/aiohttp/issues/4525
+    "test_read_boundary_with_incomplete_chunk"
+    "test_read_incomplete_chunk"
+    "test_request_tracing_exception"
   ] ++ lib.optionals stdenv.isDarwin [
-    "test_addresses"  # https://github.com/aio-libs/aiohttp/issues/3572, remove >= v4.0.0
+    "test_addresses"  # https://github.com/aio-libs/aiohttp/issues/3572
     "test_close"
   ];
-
-  disabledTestPaths = [
-    "test_proxy_functional.py" # FIXME package proxy.py
-  ];
-
-  __darwinAllowLocalNetworking = true;
 
   # aiohttp in current folder shadows installed version
   # Probably because we run `python -m pytest` instead of `pytest` in the hook.

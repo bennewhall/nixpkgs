@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , mkDerivation
 , dbus
 , dbus_cplusplus
@@ -11,7 +11,7 @@
 , libiec61883
 , libraw1394
 , libxmlxx3
-, pkg-config
+, pkgconfig
 , python3
 , sconsPackages
 , which
@@ -46,7 +46,7 @@ mkDerivation rec {
   nativeBuildInputs = [
     desktop-file-utils
     sconsPackages.scons_3_1_2
-    pkg-config
+    pkgconfig
     which
     python
     pyqt5
@@ -98,7 +98,7 @@ mkDerivation rec {
     wrapQtApp $bin/bin/ffado-mixer
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.ffado.org";
     description = "FireWire audio drivers";
     license = licenses.gpl3;

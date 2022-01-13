@@ -1,4 +1,5 @@
-{ lib
+{ stdenv
+, lib
 , isPy3k
 , buildPythonPackage
 , fetchPypi

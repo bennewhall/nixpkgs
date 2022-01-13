@@ -1,61 +1,59 @@
-{ lib
-, fetchFromGitHub
-, buildPythonPackage
+{ lib, fetchPypi, buildPythonPackage, isPy27
 , awkward
-, numpy
+, backports_lzma
+, cachetools
 , lz4
+, pandas
+, pytestrunner
+, pytest
+, pkgconfig
+, mock
+, numpy
+, requests
+, uproot-methods
 , xxhash
-, zstandard
-, pytestCheckHook
-, scikit-hep-testdata
 }:
 
 buildPythonPackage rec {
   pname = "uproot";
-  version = "4.1.5";
+  version = "3.13.1";
 
-  # fetch from github for tests
-  src = fetchFromGitHub {
-    owner = "scikit-hep";
-    repo = "uproot4";
-    rev = version;
-    sha256 = "sha256-zsmAdqoWvFhRRRw4fdbRhhKkDV5oP/eYsfpA0AVqAnI=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "099b0b274dc000faf724df835579c76306e60200a5ba7b600a0c4b76dabbf344";
   };
 
-  propagatedBuildInputs = [
-    awkward
-    numpy
-    lz4
-    xxhash
-    zstandard
-  ];
+  nativeBuildInputs = [ pytestrunner ];
 
   checkInputs = [
-    pytestCheckHook
-    scikit-hep-testdata
+    lz4
+    mock
+    pandas
+    pkgconfig
+    pytest
+    requests
+    xxhash
+  ] ++ lib.optional isPy27 backports_lzma;
+
+  propagatedBuildInputs = [
+    numpy
+    cachetools
+    uproot-methods
+    awkward
   ];
-  preCheck = ''
-    export HOME="$(mktemp -d)"
+
+  # skip tests which do network calls
+  # test_compression.py is missing zstandard package
+  checkPhase = ''
+    pytest tests -k 'not hist_in_tree \
+      and not branch_auto_interpretation' \
+      --ignore=tests/test_compression.py
   '';
-  disabledTests = [
-    # tests that try to download files
-    "test_http"
-    "test_no_multipart"
-    "test_fallback"
-    "test_pickle_roundtrip_http"
-  ];
-  disabledTestPaths = [
-    # tests that try to download files
-    "tests/test_0066-fix-http-fallback-freeze.py"
-    "tests/test_0088-read-with-http.py"
-    "tests/test_0220-contiguous-byte-ranges-in-http.py"
-  ];
-  pythonImportsCheck = [ "uproot" ];
 
   meta = with lib; {
-    homepage = "https://github.com/scikit-hep/uproot4";
+    homepage = "https://github.com/scikit-hep/uproot";
     description = "ROOT I/O in pure Python and Numpy";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ veprbl ];
+    maintainers = with maintainers; [ ktf ];
   };
 }

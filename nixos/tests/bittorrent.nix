@@ -26,7 +26,7 @@ let
       enable = true;
       settings = {
         dht-enabled = false;
-        message-level = 2;
+        message-level = 3;
         inherit download-dir;
       };
     };
@@ -35,7 +35,7 @@ in
 
 {
   name = "bittorrent";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ domenkozar eelco rob bobvanderlinden ];
   };
 

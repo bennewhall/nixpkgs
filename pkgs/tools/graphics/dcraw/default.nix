@@ -1,15 +1,14 @@
-{lib, stdenv, fetchurl, libjpeg, lcms2, gettext, libiconv }:
+{stdenv, fetchurl, libjpeg, lcms2, gettext, libiconv }:
 
 stdenv.mkDerivation rec {
-  pname = "dcraw";
-  version = "9.28.0";
+  name = "dcraw-9.28.0";
 
   src = fetchurl {
-    url = "https://www.dechifro.org/dcraw/archive/dcraw-${version}.tar.gz";
+    url = "https://www.dechifro.org/dcraw/archive/${name}.tar.gz";
     sha256 = "1fdl3xa1fbm71xzc3760rsjkvf0x5jdjrvdzyg2l9ka24vdc7418";
   };
 
-  nativeBuildInputs = lib.optional stdenv.isDarwin libiconv;
+  nativeBuildInputs = stdenv.lib.optional stdenv.isDarwin libiconv;
   buildInputs = [ libjpeg lcms2 gettext ];
 
   # Jasper is disabled because the library is abandoned and has many
@@ -29,8 +28,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://www.dechifro.org/dcraw/";
     description = "Decoder for many camera raw picture formats";
-    license = lib.licenses.free;
-    platforms = lib.platforms.unix; # Once had cygwin problems
+    license = stdenv.lib.licenses.free;
+    platforms = stdenv.lib.platforms.unix; # Once had cygwin problems
     maintainers = [ ];
     knownVulnerabilities = [
       "CVE-2018-19655"

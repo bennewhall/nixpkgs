@@ -1,31 +1,30 @@
-{ lib, stdenv, fetchgit, autoreconfHook, pkg-config, cmocka, acl, libuuid, lzo, zlib, zstd }:
+{ stdenv, fetchurl, autoreconfHook, pkgconfig, cmocka, acl, libuuid, lzo, zlib, zstd }:
 
 stdenv.mkDerivation rec {
   pname = "mtd-utils";
-  version = "2.1.3";
+  version = "2.1.1";
 
-  src = fetchgit {
-    url = "git://git.infradead.org/mtd-utils.git";
-    rev = "v${version}";
-    sha256 = "sha256-w20Zp1G0WbNvEJwqpLw2f8VvmW8ZBEL0GSHze8qpPWg";
+  src = fetchurl {
+    url = "ftp://ftp.infradead.org/pub/${pname}/${pname}-${version}.tar.bz2";
+    sha256 = "1lijl89l7hljx8xx70vrz9srd3h41v5gh4b0lvqnlv831yvyh5cd";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ] ++ lib.optional doCheck cmocka;
+  nativeBuildInputs = [ autoreconfHook pkgconfig ] ++ stdenv.lib.optional doCheck cmocka;
   buildInputs = [ acl libuuid lzo zlib zstd ];
 
-  configureFlags = with lib; [
-    (enableFeature doCheck "unit-tests")
-    (enableFeature doCheck "tests")
+  configureFlags = [
+    (stdenv.lib.enableFeature doCheck "unit-tests")
+    (stdenv.lib.enableFeature doCheck "tests")
   ];
+  enableParallelBuilding = true;
 
   doCheck = stdenv.hostPlatform == stdenv.buildPlatform;
 
-  meta = with lib; {
+  meta = {
     description = "Tools for MTD filesystems";
-    downloadPage = "https://git.infradead.org/mtd-utils.git";
-    license = licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     homepage = "http://www.linux-mtd.infradead.org/";
-    maintainers = with maintainers; [ viric ];
-    platforms = with platforms; linux;
+    maintainers = with stdenv.lib.maintainers; [ viric ];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "mhash";
@@ -23,6 +23,6 @@ stdenv.mkDerivation rec {
     '';
     homepage = "http://mhash.sourceforge.net";
     license = "LGPL";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

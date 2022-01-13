@@ -1,27 +1,28 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , readline, cmake
 }:
 
 stdenv.mkDerivation rec {
   pname   = "abc-verifier";
-  version = "2021.11.12";
+  version = "2020.11.24";
 
   src = fetchFromGitHub {
-    owner = "yosyshq";
-    repo  = "abc";
-    rev   = "f6fa2ddcfc89099726d60386befba874c7ac1e0d";
-    hash  = "sha256-0rvMPZ+kL0m/GjlCLx3eXYQ0osQ2wQiS3+csqPl3U9s=";
+    owner  = "yosyshq";
+    repo   = "abc";
+    rev    = "4f5f73d18b137930fb3048c0b385c82fa078db38";
+    sha256 = "0z1kp223kix7i4r7mbj2bzawkdzc55nsgc41m85dmbajl9fsj1m0";
   };
 
   nativeBuildInputs = [ cmake ];
   buildInputs = [ readline ];
 
+  enableParallelBuilding = true;
   installPhase = "mkdir -p $out/bin && mv abc $out/bin";
 
   # needed by yosys
   passthru.rev = src.rev;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool for squential logic synthesis and formal verification";
     homepage    = "https://people.eecs.berkeley.edu/~alanmi/abc";
     license     = licenses.mit;

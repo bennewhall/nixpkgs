@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoconf, automake, libtool, gettext }:
 
 stdenv.mkDerivation rec {
 
@@ -12,32 +12,20 @@ stdenv.mkDerivation rec {
     sha256 = "1p05vry940mrjp6236c0z83yizmw9pk6ly2lb7d8rpb7j9h03glr";
   };
 
-  nativeBuildInputs = [ autoreconfHook ];
+  buildInputs = [ autoconf automake gettext libtool ];
 
-  configureFlags = [
-    "--enable-openmp=${if stdenv.isLinux then "yes" else "no"}"
-    "--enable-examples=no"
-  ];
-
-  postInstall = ''
-    # Remove libtool archive
-    rm $out/lib/*.la
-
-    # Remove compiled examples (Basic examples get compiled anyway)
-    rm -r $out/examples
-
-    # Copy the example sources (Basic tree contains scripts and object files)
-    mkdir -p $out/share/ColPack/examples/Basic
-    cp SampleDrivers/Basic/*.cpp $out/share/ColPack/examples/Basic
-    cp -r SampleDrivers/Matrix* $out/share/ColPack/examples
+  configurePhase = ''
+    autoreconf -vif
+    ./configure --prefix=$out --enable-openmp
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A package comprising of implementations of algorithms for
     vertex coloring and derivative computation";
     homepage = "http://cscapes.cs.purdue.edu/coloringpage/software.htm#functionalities";
-    license = licenses.lgpl3Plus;
-    platforms = platforms.unix;
+    license = licenses.lgpl3;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ edwtjo ];
   };
+
 }

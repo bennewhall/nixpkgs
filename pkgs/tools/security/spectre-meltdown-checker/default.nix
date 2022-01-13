@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, coreutils, binutils-unwrapped }:
+{ stdenv, fetchFromGitHub, makeWrapper, coreutils, binutils-unwrapped }:
 
 stdenv.mkDerivation rec {
   pname = "spectre-meltdown-checker";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
-  installPhase = with lib; ''
+  installPhase = with stdenv.lib; ''
     runHook preInstall
 
     install -Dm755 spectre-meltdown-checker.sh $out/bin/spectre-meltdown-checker
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Spectre & Meltdown vulnerability/mitigation checker for Linux";
     homepage = "https://github.com/speed47/spectre-meltdown-checker";
     license = licenses.gpl3;

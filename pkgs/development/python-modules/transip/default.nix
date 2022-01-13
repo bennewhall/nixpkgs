@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , isPy27
@@ -32,7 +32,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ requests cryptography suds-jurko ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "TransIP API Connector";
     homepage = "https://github.com/benkonrath/transip-api";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pytest }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest }:
 
 buildPythonPackage rec {
   pname = "Whoosh";
@@ -20,11 +20,11 @@ buildPythonPackage rec {
     py.test -k "not test_timelimit and not test_minimize_dfa"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast, pure-Python full text indexing, search, and spell
 checking library.";
     homepage    = "https://bitbucket.org/mchaput/whoosh";
     license     = licenses.bsd2;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ nand0p ];
   };
 }

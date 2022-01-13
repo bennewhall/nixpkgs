@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation {
-  pname = "micro-httpd";
-  version = "20140814";
+  name = "micro-httpd-20140814";
 
   src = fetchurl {
     url   = "https://acme.com/software/micro_httpd/micro_httpd_14Aug2014.tar.gz";
@@ -15,7 +14,7 @@ stdenv.mkDerivation {
     mkdir -p $out/share/man/man8
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "http://acme.com/software/micro_httpd/";
     description = "A really small HTTP server";
     license     = licenses.bsd2;

@@ -1,9 +1,7 @@
-{ pkgs, config, buildPackages, lib, stdenv, libiconv, gawk, gnused, gixy }:
+{ pkgs, lib, gawk, gnused, gixy }:
 
-let
-  aliases = if (config.allowAliases or true) then (import ./aliases.nix lib) else prev: {};
-
-  writers = with lib; rec {
+with lib;
+rec {
   # Base implementation for non-compiled executables.
   # Takes an interpreter, for example `${pkgs.bash}/bin/bash`
   #
@@ -65,7 +63,7 @@ let
   #
   # Examples:
   #   writeSimpleC = makeBinWriter { compileScript = name: "gcc -o $out $contentPath"; }
-  makeBinWriter = { compileScript, strip ? true }: nameOrPath: content:
+  makeBinWriter = { compileScript }: nameOrPath: content:
     assert lib.or (types.path.check nameOrPath) (builtins.match "([0-9A-Za-z._])[0-9A-Za-z._-]*" nameOrPath != null);
     assert lib.or (types.path.check content) (types.str.check content);
     let
@@ -78,12 +76,6 @@ let
       contentPath = content;
     }) ''
       ${compileScript}
-      ${lib.optionalString strip
-          "${lib.getBin buildPackages.bintools-unwrapped}/bin/${buildPackages.bintools-unwrapped.targetPrefix}strip -S $out"}
-      # Sometimes binaries produced for darwin (e. g. by GHC) won't be valid
-      # mach-o executables from the get-go, but need to be corrected somehow
-      # which is done by fixupPhase.
-      ${lib.optionalString pkgs.stdenvNoCC.hostPlatform.isDarwin "fixupPhase"}
       ${optionalString (types.path.check nameOrPath) ''
         mv $out tmp
         mkdir -p $out/$(dirname "${nameOrPath}")
@@ -104,6 +96,48 @@ let
   # Like writeScriptBIn but the first line is a shebang to bash
   writeBashBin = name:
     writeBash "/bin/${name}";
+
+  # writeC writes an executable c package called `name` to `destination` using `libraries`.
+  #
+  #  Examples:
+  #    writeC "hello-world-ncurses" { libraries = [ pkgs.ncurses ]; } ''
+  #      #include <ncurses.h>
+  #      int main() {
+  #        initscr();
+  #        printw("Hello World !!!");
+  #        refresh(); endwin();
+  #        return 0;
+  #      }
+  #    ''
+  writeC = name: { libraries ? [] }:
+    makeBinWriter {
+      compileScript = ''
+        PATH=${makeBinPath [
+          pkgs.binutils-unwrapped
+          pkgs.coreutils
+          pkgs.findutils
+          pkgs.gcc
+          pkgs.pkgconfig
+        ]}
+        export PKG_CONFIG_PATH=${concatMapStringsSep ":" (pkg: "${pkg}/lib/pkgconfig") libraries}
+        gcc \
+            ${optionalString (libraries != [])
+              "$(pkg-config --cflags --libs ${
+                concatMapStringsSep " " (pkg: "$(find ${escapeShellArg pkg}/lib/pkgconfig -name \\*.pc)") libraries
+              })"
+            } \
+            -O \
+            -o "$out" \
+            -Wall \
+            -x c \
+            "$contentPath"
+        strip --strip-unneeded "$out"
+      '';
+    } name;
+
+  # writeCBin takes the same arguments as writeC but outputs a directory (like writeScriptBin)
+  writeCBin = name:
+    writeC "/bin/${name}";
 
   # Like writeScript but the first line is a shebang to dash
   #
@@ -131,40 +165,20 @@ let
   writeHaskell = name: {
     libraries ? [],
     ghc ? pkgs.ghc,
-    ghcArgs ? [],
-    strip ? true
+    ghcArgs ? []
   }:
     makeBinWriter {
       compileScript = ''
         cp $contentPath tmp.hs
         ${ghc.withPackages (_: libraries )}/bin/ghc ${lib.escapeShellArgs ghcArgs} tmp.hs
         mv tmp $out
+        ${pkgs.binutils-unwrapped}/bin/strip --strip-unneeded "$out"
       '';
-      inherit strip;
     } name;
 
   # writeHaskellBin takes the same arguments as writeHaskell but outputs a directory (like writeScriptBin)
   writeHaskellBin = name:
     writeHaskell "/bin/${name}";
-
-  writeRust = name: {
-      rustc ? pkgs.rustc,
-      rustcArgs ? [],
-      strip ? true
-  }:
-  let
-    darwinArgs = lib.optionals stdenv.isDarwin [ "-L${lib.getLib libiconv}/lib" ];
-  in
-    makeBinWriter {
-      compileScript = ''
-        cp "$contentPath" tmp.rs
-        PATH=${makeBinPath [pkgs.gcc]} ${lib.getBin rustc}/bin/rustc ${lib.escapeShellArgs rustcArgs} ${lib.escapeShellArgs darwinArgs} -o "$out" tmp.rs
-      '';
-      inherit strip;
-    } name;
-
-  writeRustBin = name:
-    writeRust "/bin/${name}";
 
   # writeJS takes a name an attributeset with libraries and some JavaScript sourcecode and
   # returns an executable
@@ -221,9 +235,18 @@ let
   #     print "Howdy!\n" if true;
   #   ''
   writePerl = name: { libraries ? [] }:
-    makeScriptWriter {
-      interpreter = "${pkgs.perl.withPackages (p: libraries)}/bin/perl";
-    } name;
+  let
+    perl-env = pkgs.buildEnv {
+      name = "perl-environment";
+      paths = libraries;
+      pathsToLink = [
+        "/${pkgs.perl.libPrefix}"
+      ];
+    };
+  in
+  makeScriptWriter {
+    interpreter = "${pkgs.perl}/bin/perl -I ${perl-env}/${pkgs.perl.libPrefix}";
+  } name;
 
   # writePerlBin takes the same arguments as writePerl but outputs a directory (like writeScriptBin)
   writePerlBin = name:
@@ -242,16 +265,16 @@ let
       then "${python}/bin/python"
       else "${python.withPackages (ps: libraries)}/bin/python"
     ;
-    check = optionalString python.isPy3k (writeDash "pythoncheck.sh" ''
+    check = writeDash "python2check.sh" ''
       exec ${pythonPackages.flake8}/bin/flake8 --show-source ${ignoreAttribute} "$1"
-    '');
+    '';
   } name;
 
-  # writePyPy2 takes a name an attributeset with libraries and some pypy2 sourcecode and
+  # writePython2 takes a name an attributeset with libraries and some python2 sourcecode and
   # returns an executable
   #
   # Example:
-  # writePyPy2 "test_pypy2" { libraries = [ pkgs.pypy2Packages.enum ]; } ''
+  # writePython2 "test_python2" { libraries = [ pkgs.python2Packages.enum ]; } ''
   #   from enum import Enum
   #
   #   class Test(Enum):
@@ -259,11 +282,11 @@ let
   #
   #   print Test.a
   # ''
-  writePyPy2 = makePythonWriter pkgs.pypy2 pkgs.pypy2Packages;
+  writePython2 = makePythonWriter pkgs.python2 pkgs.python2Packages;
 
-  # writePyPy2Bin takes the same arguments as writePyPy2 but outputs a directory (like writeScriptBin)
-  writePyPy2Bin = name:
-    writePyPy2 "/bin/${name}";
+  # writePython2Bin takes the same arguments as writePython2 but outputs a directory (like writeScriptBin)
+  writePython2Bin = name:
+    writePython2 "/bin/${name}";
 
   # writePython3 takes a name an attributeset with libraries and some python3 sourcecode and
   # returns an executable
@@ -282,25 +305,4 @@ let
   # writePython3Bin takes the same arguments as writePython3 but outputs a directory (like writeScriptBin)
   writePython3Bin = name:
     writePython3 "/bin/${name}";
-
-  # writePyPy3 takes a name an attributeset with libraries and some pypy3 sourcecode and
-  # returns an executable
-  #
-  # Example:
-  # writePyPy3 "test_pypy3" { libraries = [ pkgs.pypy3Packages.pyyaml ]; } ''
-  #   import yaml
-  #
-  #   y = yaml.load("""
-  #     - test: success
-  #   """)
-  #   print(y[0]['test'])
-  # ''
-  writePyPy3 = makePythonWriter pkgs.pypy3 pkgs.pypy3Packages;
-
-  # writePyPy3Bin takes the same arguments as writePyPy3 but outputs a directory (like writeScriptBin)
-  writePyPy3Bin = name:
-    writePyPy3 "/bin/${name}";
-
-};
-in
-writers // (aliases writers)
+}

@@ -1,13 +1,13 @@
-{ lib, stdenv
+{ stdenv
 , bzip2
 , cmake
 , doxygen
 , fetchurl
 , fuse
 , libevent
-, xz
+, lzma
 , openssl
-, pkg-config
+, pkgconfig
 , systemd
 , tcp_wrappers
 , zlib
@@ -15,17 +15,17 @@
 
 stdenv.mkDerivation rec {
   pname = "apt-cacher-ng";
-  version = "3.6.3";
+  version = "3.5";
 
   src = fetchurl {
     url = "http://ftp.debian.org/debian/pool/main/a/apt-cacher-ng/apt-cacher-ng_${version}.orig.tar.xz";
-    sha256 = "sha256-P4ArWpxjOjBi9EiDp/ord17GfUOFwpiTKGvSEuZljGA=";
+    sha256 = "0h76n02nnpg7ir9247qrxb8p4d4p282nh13zrv5bb9sfm12pril2";
   };
 
-  nativeBuildInputs = [ cmake doxygen pkg-config ];
-  buildInputs = [ bzip2 fuse libevent xz openssl systemd tcp_wrappers zlib ];
+  nativeBuildInputs = [ cmake doxygen pkgconfig ];
+  buildInputs = [ bzip2 fuse libevent lzma openssl systemd tcp_wrappers zlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A caching proxy specialized for linux distribution files";
     homepage = "https://www.unix-ag.uni-kl.de/~bloch/acng/";
     license = licenses.gpl2;

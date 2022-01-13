@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pygments
@@ -22,7 +22,7 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "pygments_better_html" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Kwpolska/pygments_better_html";
     description = "Improved line numbering for Pygments’ HTML formatter.";
     license = licenses.bsd3;

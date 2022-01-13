@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, libsndfile, libsamplerate, liblo, libjack2 }:
+{ stdenv, fetchFromGitHub, libsndfile, libsamplerate, liblo, libjack2 }:
 
 stdenv.mkDerivation {
-  pname = "dirt";
-  version = "unstable-2018-01-01";
+  name = "dirt-2018-01-01";
   src = fetchFromGitHub {
     repo = "Dirt";
     owner = "tidalcycles";
@@ -20,7 +19,7 @@ stdenv.mkDerivation {
     cp -r samples $out/share/dirt/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An unimpressive thingie for playing bits of samples with some level of accuracy";
     homepage = "https://github.com/tidalcycles/Dirt";
     license = licenses.gpl3;

@@ -13,9 +13,7 @@ in
     ./berry.nix
     ./bspwm.nix
     ./cwm.nix
-    ./clfswm.nix
     ./dwm.nix
-    ./e16.nix
     ./evilwm.nix
     ./exwm.nix
     ./fluxbox.nix
@@ -26,7 +24,6 @@ in
     ./leftwm.nix
     ./lwm.nix
     ./metacity.nix
-    ./mlvwm.nix
     ./mwm.nix
     ./openbox.nix
     ./pekwm.nix
@@ -39,7 +36,6 @@ in
     ./tinywm.nix
     ./twm.nix
     ./windowmaker.nix
-    ./wmderland.nix
     ./wmii.nix
     ./xmonad.nix
     ./yeahwm.nix

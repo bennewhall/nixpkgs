@@ -20,10 +20,10 @@ buildPythonApplication rec {
   '';
 
   propagatedBuildInputs = [
-    python-dateutil gflags httplib2 parsedatetime six vobject
-    google-api-python-client oauth2client uritemplate
+    dateutil gflags httplib2 parsedatetime six vobject
+    google_api_python_client oauth2client uritemplate
     libnotify
-  ];
+  ] ++ lib.optional (!isPy3k) futures;
 
   # There are no tests as of 4.0.0a4
   doCheck = false;
@@ -33,5 +33,6 @@ buildPythonApplication rec {
     homepage = "https://github.com/insanum/gcalcli";
     license = licenses.mit;
     maintainers = with maintainers; [ nocoolnametom ];
+    inherit version;
   };
 }

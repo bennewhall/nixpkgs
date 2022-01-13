@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, boost, flac, id3lib, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, boost, flac, id3lib, pkg-config
 , taglib, zlib }:
 
 stdenv.mkDerivation rec {
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--with-boost-libdir=${boost.out}/lib" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A DSD to FLAC transcoding tool";
     homepage = "https://github.com/hank/dsf2flac";
     license = licenses.gpl2;

@@ -1,12 +1,14 @@
-{ lib, stdenv, fetchurl, meson, ninja, gettext, appstream-glib, gnome }:
+{ stdenv, fetchurl, meson, ninja, gettext, appstream-glib, gnome3 }:
 
-stdenv.mkDerivation rec {
+let
   pname = "cantarell-fonts";
-  version = "0.301";
+  version = "0.111";
+in stdenv.mkDerivation rec {
+  name = "${pname}-${version}";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "3d35db0ac03f9e6b0d5a53577591b714238985f4cfc31a0aa17f26cd74675e83";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${name}.tar.xz";
+    sha256 = "05hpnhihwm9sxlq1qn993g03pwkmpjbn0dvnba71r1gfjv0jp2w5";
   };
 
   nativeBuildInputs = [ meson ninja gettext appstream-glib ];
@@ -19,18 +21,18 @@ stdenv.mkDerivation rec {
 
   outputHashAlgo = "sha256";
   outputHashMode = "recursive";
-  outputHash = "1sczskw2kv3qy39i9mzw2lkl94a90bjgv5ln9acy5kh4gb2zmy7z";
+  outputHash = "12ps2gjv1lmzbmkv16vgjmaahl3ayadpniyrx0z31sqn443r57hq";
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
   meta = {
     description = "Default typeface used in the user interface of GNOME since version 3.0";
-    platforms = lib.platforms.all;
-    license = lib.licenses.ofl;
-    maintainers = with lib.maintainers; [ ];
+    platforms = stdenv.lib.platforms.all;
+    license = stdenv.lib.licenses.ofl;
+    maintainers = with stdenv.lib.maintainers; [ ];
   };
 }

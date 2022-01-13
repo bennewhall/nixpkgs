@@ -1,24 +1,23 @@
 { lib, buildPythonPackage, fetchFromGitHub, pythonOlder
-, trio, async_generator, hypothesis, outcome, pytest }:
+, trio, python, async_generator, hypothesis, outcome, pytest }:
 
 buildPythonPackage rec {
   pname = "pytest-trio";
-  version = "0.7.0";
-  disabled = pythonOlder "3.6";
+  version = "0.6.0";
+  disabled = pythonOlder "3.5";
 
   src = fetchFromGitHub {
     owner = "python-trio";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0bhh2nknhp14jzsx4zzpqm4qnfaihyi65cjf6kf6qgdhc0ax6nf4";
+    sha256 = "09v2031yxm8ryhq12205ldcck76n3wwqhjjsgfmn6dxfiqb0vbw9";
   };
-
-  buildInputs = [ pytest ];
 
   propagatedBuildInputs = [
     trio
     async_generator
     outcome
+    pytest
   ];
 
   checkInputs = [

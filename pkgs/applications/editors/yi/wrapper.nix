@@ -1,6 +1,6 @@
 # To use this for hacking of your Yi config file, drop into a shell
 # with env attribute.
-{ lib, stdenv, makeWrapper
+{ stdenv, makeWrapper
 , haskellPackages
 , extraPackages ? (s: [])
 }:
@@ -23,7 +23,7 @@ stdenv.mkDerivation {
   # For hacking purposes
   passthru.env = yiEnv;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Allows Yi to find libraries and the compiler easily";
     # This wrapper and wrapper only is under PD
     license = licenses.publicDomain;

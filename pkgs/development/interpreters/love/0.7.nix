@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config
+{ stdenv, fetchurl, pkgconfig
 , SDL, libGLU, libGL, openal, lua
 , libdevil, freetype, physfs
 , libmodplug, mpg123, libvorbis, libogg
@@ -6,18 +6,16 @@
 }:
 
 stdenv.mkDerivation rec {
-  pname = "love";
-  version = "0.7.2";
-
+  name = "love-0.7.2";
   src = fetchurl {
-    url = "https://bitbucket.org/rude/love/downloads/love-${version}-linux-src.tar.gz";
+    url = "https://bitbucket.org/rude/love/downloads/${name}-linux-src.tar.gz";
     sha256 = "0s7jywkvydlshlgy11ilzngrnybmq5xlgzp2v2dhlffwrfqdqym5";
   };
 
   # see discussion on arch linux user repository (https://aur.archlinux.org/packages/love07/?setlang=cs#comment-684696)
   patches = [ ./0.7-gl-prototypes.patch ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     SDL libGLU libGL openal lua
     libdevil freetype physfs libmodplug mpg123 libvorbis libogg libmng
@@ -50,9 +48,9 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://love2d.org";
     description = "A Lua-based 2D game engine/scripting language";
-    license = lib.licenses.zlib;
+    license = stdenv.lib.licenses.zlib;
 
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.raskin ];
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.raskin ];
   };
 }

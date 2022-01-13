@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }: let
+{ stdenv, fetchurl }: let
   version = "1.2.0";
 in stdenv.mkDerivation {
   pname = "long-shebang";
@@ -14,8 +14,8 @@ in stdenv.mkDerivation {
 
     homepage = "https://github.com/shlevy/long-shebang";
 
-    license = lib.licenses.mit;
+    license = stdenv.lib.licenses.mit;
 
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

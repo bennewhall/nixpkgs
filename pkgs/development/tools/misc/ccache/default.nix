@@ -3,69 +3,43 @@
 , fetchFromGitHub
 , substituteAll
 , binutils
-, asciidoctor
+, asciidoc
 , cmake
 , perl
 , zstd
-, bashInteractive
 , xcodebuild
 , makeWrapper
-, nix-update-script
 }:
 
 let ccache = stdenv.mkDerivation rec {
   pname = "ccache";
-  version = "4.5.1";
+  version = "4.1";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-AmzfBuase3RDoRVswyIgBnyL5TK0LXEGmYIpDzsCwgs=";
+    sha256 = "1az11q3wmr8wc7alx9l70wq9am41cm0y17g5gsaqmahws3dxfi8m";
   };
+
+  patches = lib.optional stdenv.isDarwin (substituteAll {
+    src = ./force-objdump-on-darwin.patch;
+    objdump = "${binutils.bintools}/bin/objdump";
+  });
+
+  nativeBuildInputs = [ asciidoc cmake perl ];
+
+  buildInputs = [ zstd ];
 
   outputs = [ "out" "man" ];
 
-  patches = [
-    # When building for Darwin, test/run uses dwarfdump, whereas on
-    # Linux it uses objdump. We don't have dwarfdump packaged for
-    # Darwin, so this patch updates the test to also use objdump on
-    # Darwin.
-    (substituteAll {
-      src = ./force-objdump-on-darwin.patch;
-      objdump = "${binutils.bintools}/bin/objdump";
-    })
-  ];
-
-  nativeBuildInputs = [ asciidoctor cmake perl ];
-  buildInputs = [ zstd ];
-
-  cmakeFlags = [
-    # Build system does not autodetect redis library presence.
-    # Requires explicit flag.
-    "-DREDIS_STORAGE_BACKEND=OFF"
-  ];
-
   doCheck = true;
-  checkInputs = [
-    # test/run requires the compgen function which is available in
-    # bashInteractive, but not bash.
-    bashInteractive
-  ] ++ lib.optional stdenv.isDarwin xcodebuild;
-
-  checkPhase = let
-    badTests = [
-      "test.trim_dir" # flaky on hydra (possibly filesystem-specific?)
-    ] ++ lib.optionals stdenv.isDarwin [
-      "test.basedir"
-      "test.multi_arch"
-      "test.nocpp2"
-    ];
-  in ''
-    runHook preCheck
+  checkInputs = lib.optional stdenv.isDarwin xcodebuild;
+  checkPhase = ''
     export HOME=$(mktemp -d)
-    ctest --output-on-failure -E '^(${lib.concatStringsSep "|" badTests})$'
-    runHook postCheck
+    ctest --output-on-failure ${lib.optionalString stdenv.isDarwin ''
+      -E '^(test.nocpp2|test.modules)$'
+    ''}
   '';
 
   passthru = {
@@ -86,7 +60,7 @@ let ccache = stdenv.mkDerivation rec {
           local cname="$1"
           if [ -x "${unwrappedCC}/bin/$cname" ]; then
             makeWrapper ${ccache}/bin/ccache $out/bin/$cname \
-              --run ${lib.escapeShellArg extraConfig} \
+              --run ${stdenv.lib.escapeShellArg extraConfig} \
               --add-flags ${unwrappedCC}/bin/$cname
           fi
         }
@@ -110,16 +84,12 @@ let ccache = stdenv.mkDerivation rec {
     };
   };
 
-  passthru.updateScript = nix-update-script {
-    attrPath = pname;
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Compiler cache for fast recompilation of C/C++ code";
     homepage = "https://ccache.dev";
     downloadPage = "https://ccache.dev/download.html";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ kira-bruneau r-burns ];
+    maintainers = with maintainers; [ metadark r-burns ];
     platforms = platforms.unix;
   };
 };

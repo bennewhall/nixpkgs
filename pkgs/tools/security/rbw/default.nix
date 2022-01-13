@@ -2,52 +2,44 @@
 , stdenv
 , rustPlatform
 , fetchCrate
+, pinentry
 , openssl
-, pkg-config
+, pkgconfig
 , makeWrapper
-, installShellFiles
 , Security
-, libiconv
 
-  # rbw-fzf
-, withFzf ? false
-, fzf
-, perl
+# rbw-fzf
+, withFzf ? false, fzf, perl
 
-  # rbw-rofi
-, withRofi ? false
-, rofi
-, xclip
+# rbw-rofi
+, withRofi ? false, rofi, xclip
 
-  # pass-import
-, withPass ? false
-, pass
+# pass-import
+, withPass ? false, pass
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "rbw";
-  version = "1.4.1";
+  version = "0.5.0";
 
   src = fetchCrate {
     inherit version;
     crateName = pname;
-    sha256 = "sha256-RNdxAp3Q/xNrK1XcKZPMfuqxWzDtdhwT+nqG25SjJhI=";
+    sha256 = "0p37kwkp153mkns4bh7k7gnksk6c31214wlw3faf42daav32mmgw";
   };
 
-  cargoSha256 = "sha256-I0KwHCmfYxgSF5IMHiPooaf2bypd6eYCOPSB+qnEBJY=";
+  cargoSha256 = "1vkgh0995xx0hr96mnzmdgd15gs6da7ynywqcjgcw5kr48bf1063";
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     makeWrapper
-    installShellFiles
   ];
 
-  buildInputs = lib.optionals stdenv.isDarwin [ Security libiconv ];
+  buildInputs = lib.optionals stdenv.isDarwin [ Security ];
 
   postPatch = ''
-    patchShebangs bin/git-credential-rbw
-    substituteInPlace bin/git-credential-rbw \
-        --replace rbw $out/bin/rbw
+    substituteInPlace src/pinentry.rs \
+      --replace 'Command::new("pinentry")' 'Command::new("${pinentry}/${pinentry.binaryPath or "bin/pinentry"}")'
   '' + lib.optionalString withFzf ''
     patchShebangs bin/rbw-fzf
     substituteInPlace bin/rbw-fzf \
@@ -69,13 +61,7 @@ rustPlatform.buildRustPackage rec {
     export OPENSSL_LIB_DIR="${openssl.out}/lib"
   '';
 
-  postInstall = ''
-    for shell in bash zsh fish; do
-      $out/bin/rbw gen-completions $shell > rbw.$shell
-      installShellCompletion rbw.$shell
-    done
-    cp bin/git-credential-rbw $out/bin
-  '' + lib.optionalString withFzf ''
+  postInstall = lib.optionalString withFzf ''
     cp bin/rbw-fzf $out/bin
   '' + lib.optionalString withRofi ''
     cp bin/rbw-rofi $out/bin
@@ -86,7 +72,6 @@ rustPlatform.buildRustPackage rec {
   meta = with lib; {
     description = "Unofficial command line client for Bitwarden";
     homepage = "https://crates.io/crates/rbw";
-    changelog = "https://git.tozt.net/rbw/plain/CHANGELOG.md?id=${version}";
     license = licenses.mit;
     maintainers = with maintainers; [ albakham luc65r marsam ];
   };

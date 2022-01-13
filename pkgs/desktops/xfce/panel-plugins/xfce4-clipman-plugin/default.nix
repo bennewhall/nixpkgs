@@ -1,15 +1,14 @@
-{ lib, mkXfceDerivation, libXtst, libxfce4ui, xfce4-panel, xfconf }:
+{ mkXfceDerivation, gtk3, libXtst, libxfce4ui, libxfce4util, xfce4-panel, xfconf, exo }:
 
 mkXfceDerivation {
   category = "panel-plugins";
   pname = "xfce4-clipman-plugin";
-  version = "1.6.2";
-  sha256 = "sha256-RpFVJSq/DxyA5ne1h+Nr3xfL+DTzg1cTqIDVOPC/pF4=";
+  version = "1.6.1";
+  sha256 = "03akijvry1n1fkziyvxwcksl4vy4lmnpgd5izjs8jai5sndhsszl";
 
-  buildInputs = [ libXtst libxfce4ui xfce4-panel xfconf ];
+  buildInputs = [ exo gtk3 libXtst libxfce4ui libxfce4util xfce4-panel xfconf ];
 
-  meta = with lib; {
+  meta = {
     description = "Clipboard manager for Xfce panel";
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
   };
 }

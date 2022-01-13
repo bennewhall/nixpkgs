@@ -1,19 +1,19 @@
 {
   mkDerivation, lib, kdepimTeam,
   extra-cmake-modules, kdoctools,
-  akonadi, kcalendarcore, kholidays, kidentitymanagement,
+  akonadi, kcalendarcore, kdelibs4support, kholidays, kidentitymanagement,
   kpimtextedit, kcalutils
 }:
 
 mkDerivation {
-  pname = "kalarmcal";
+  name = "kalarmcal";
   meta = {
     license = with lib.licenses; [ gpl2 lgpl21 fdl12 ];
     maintainers = kdepimTeam;
   };
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
   propagatedBuildInputs = [
-    akonadi kcalendarcore kholidays kidentitymanagement kpimtextedit kcalutils
+    akonadi kcalendarcore kdelibs4support kholidays kidentitymanagement kpimtextedit kcalutils
   ];
   outputs = [ "out" "dev" ];
 }

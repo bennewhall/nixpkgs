@@ -1,4 +1,4 @@
-{ mkDerivation, base, concatenative, lib, mtl, parsec }:
+{ mkDerivation, base, concatenative, mtl, parsec, stdenv }:
 mkDerivation {
   pname = "indents";
   version = "0.3.3";
@@ -7,5 +7,5 @@ mkDerivation {
   doCheck = false;
   homepage = "http://patch-tag.com/r/salazar/indents";
   description = "indentation sensitive parser-combinators for parsec";
-  license = lib.licenses.bsd3;
+  license = stdenv.lib.licenses.bsd3;
 }

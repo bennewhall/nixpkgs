@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ... }:
+{ stdenv, fetchurl, ... }:
 
 let
   arch = {
@@ -6,7 +6,7 @@ let
     i686-linux = "i386";
     aarch64-linux = "arm64";
   }.${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
-  libPath = lib.makeLibraryPath [ stdenv.cc.libc ];
+  libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.libc ];
 
 in stdenv.mkDerivation rec {
   pname = "resilio-sync";
@@ -31,7 +31,7 @@ in stdenv.mkDerivation rec {
       --set-rpath ${libPath} "$out/bin/rslsync"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Automatically sync files via secure, distributed technology";
     homepage    = "https://www.resilio.com/";
     license     = licenses.unfreeRedistributable;

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, fetchpatch, pythonOlder, numpy, pandas, pytz, six
+{ stdenv, buildPythonPackage, fetchPypi, fetchpatch, pythonOlder, numpy, pandas, pytz, six
 , pytestCheckHook, flaky, mock, pytest-mock, requests }:
 
 buildPythonPackage rec {
@@ -45,7 +45,7 @@ buildPythonPackage rec {
     "backtrack"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pvlib-python.readthedocs.io";
     description = "Simulate the performance of photovoltaic energy systems";
     license = licenses.bsd3;

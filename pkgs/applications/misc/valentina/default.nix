@@ -1,10 +1,10 @@
-{ mkDerivation, lib, fetchhg
+{ mkDerivation, stdenv, fetchhg
 , qmake, qttools
 , qtbase, qtsvg, qtxmlpatterns
 , poppler_utils
 }:
 
-with lib;
+with stdenv.lib;
 
 mkDerivation rec {
   pname = "valentina";

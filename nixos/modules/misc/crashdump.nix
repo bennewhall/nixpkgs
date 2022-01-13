@@ -26,7 +26,6 @@ in
         };
         reservedMemory = mkOption {
           default = "128M";
-          type = types.str;
           description = ''
             The amount of memory reserved for the crashdump kernel.
             If you choose a too high value, dmesg will mention
@@ -50,10 +49,10 @@ in
     boot = {
       postBootCommands = ''
         echo "loading crashdump kernel...";
-        ${pkgs.kexec-tools}/sbin/kexec -p /run/current-system/kernel \
+        ${pkgs.kexectools}/sbin/kexec -p /run/current-system/kernel \
         --initrd=/run/current-system/initrd \
         --reset-vga --console-vga \
-        --command-line="init=$(readlink -f /run/current-system/init) irqpoll maxcpus=1 reset_devices ${kernelParams}"
+        --command-line="systemConfig=$(readlink -f /run/current-system) init=$(readlink -f /run/current-system/init) irqpoll maxcpus=1 reset_devices ${kernelParams}"
       '';
       kernelParams = [
        "crashkernel=${crashdump.reservedMemory}"

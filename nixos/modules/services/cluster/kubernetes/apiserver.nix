@@ -1,10 +1,9 @@
-  { config, lib, options, pkgs, ... }:
+  { config, lib, pkgs, ... }:
 
 with lib;
 
 let
   top = config.services.kubernetes;
-  otop = options.services.kubernetes;
   cfg = top.apiserver;
 
   isRBACEnabled = elem "RBAC" cfg.authorizationMode;
@@ -85,7 +84,6 @@ in
     clientCaFile = mkOption {
       description = "Kubernetes apiserver CA file for client auth.";
       default = top.caFile;
-      defaultText = literalExpression "config.${otop.caFile}";
       type = nullOr path;
     };
 
@@ -140,7 +138,6 @@ in
       caFile = mkOption {
         description = "Etcd ca file.";
         default = top.caFile;
-        defaultText = literalExpression "config.${otop.caFile}";
         type = types.nullOr types.path;
       };
     };
@@ -148,7 +145,7 @@ in
     extraOpts = mkOption {
       description = "Kubernetes apiserver extra command line options.";
       default = "";
-      type = separatedString " ";
+      type = str;
     };
 
     extraSANs = mkOption {
@@ -160,7 +157,6 @@ in
     featureGates = mkOption {
       description = "List set of feature gates";
       default = top.featureGates;
-      defaultText = literalExpression "config.${otop.featureGates}";
       type = listOf str;
     };
 
@@ -179,7 +175,6 @@ in
     kubeletClientCaFile = mkOption {
       description = "Path to a cert file for connecting to kubelet.";
       default = top.caFile;
-      defaultText = literalExpression "config.${otop.caFile}";
       type = nullOr path;
     };
 
@@ -193,6 +188,12 @@ in
       description = "Key to use for connections to kubelet.";
       default = null;
       type = nullOr path;
+    };
+
+    kubeletHttps = mkOption {
+      description = "Whether to use https for connections to kubelet.";
+      default = true;
+      type = bool;
     };
 
     preferredAddressTypes = mkOption {
@@ -237,40 +238,14 @@ in
       type = int;
     };
 
-    apiAudiences = mkOption {
-      description = ''
-        Kubernetes apiserver ServiceAccount issuer.
-      '';
-      default = "api,https://kubernetes.default.svc";
-      type = str;
-    };
-
-    serviceAccountIssuer = mkOption {
-      description = ''
-        Kubernetes apiserver ServiceAccount issuer.
-      '';
-      default = "https://kubernetes.default.svc";
-      type = str;
-    };
-
-    serviceAccountSigningKeyFile = mkOption {
-      description = ''
-        Path to the file that contains the current private key of the service
-        account token issuer. The issuer will sign issued ID tokens with this
-        private key.
-      '';
-      type = path;
-    };
-
     serviceAccountKeyFile = mkOption {
       description = ''
-        File containing PEM-encoded x509 RSA or ECDSA private or public keys,
-        used to verify ServiceAccount tokens. The specified file can contain
-        multiple keys, and the flag can be specified multiple times with
-        different files. If unspecified, --tls-private-key-file is used.
-        Must be specified when --service-account-signing-key is provided
+        Kubernetes apiserver PEM-encoded x509 RSA private or public key file,
+        used to verify ServiceAccount tokens. By default tls private key file
+        is used.
       '';
-      type = path;
+      default = null;
+      type = nullOr path;
     };
 
     serviceClusterIpRange = mkOption {
@@ -364,6 +339,7 @@ in
                 "--feature-gates=${concatMapStringsSep "," (feature: "${feature}=true") cfg.featureGates}"} \
               ${optionalString (cfg.basicAuthFile != null)
                 "--basic-auth-file=${cfg.basicAuthFile}"} \
+              --kubelet-https=${boolToString cfg.kubeletHttps} \
               ${optionalString (cfg.kubeletClientCaFile != null)
                 "--kubelet-certificate-authority=${cfg.kubeletClientCaFile}"} \
               ${optionalString (cfg.kubeletClientCertFile != null)
@@ -381,10 +357,8 @@ in
               ${optionalString (cfg.runtimeConfig != "")
                 "--runtime-config=${cfg.runtimeConfig}"} \
               --secure-port=${toString cfg.securePort} \
-              --api-audiences=${toString cfg.apiAudiences} \
-              --service-account-issuer=${toString cfg.serviceAccountIssuer} \
-              --service-account-signing-key-file=${cfg.serviceAccountSigningKeyFile} \
-              --service-account-key-file=${cfg.serviceAccountKeyFile} \
+              ${optionalString (cfg.serviceAccountKeyFile!=null)
+                "--service-account-key-file=${cfg.serviceAccountKeyFile}"} \
               --service-cluster-ip-range=${cfg.serviceClusterIpRange} \
               --storage-backend=${cfg.storageBackend} \
               ${optionalString (cfg.tlsCertFile != null)
@@ -402,10 +376,6 @@ in
             AmbientCapabilities = "cap_net_bind_service";
             Restart = "on-failure";
             RestartSec = 5;
-          };
-
-          unitConfig = {
-            StartLimitIntervalSec = 0;
           };
         };
 

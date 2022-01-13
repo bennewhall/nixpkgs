@@ -1,24 +1,24 @@
-{ lib, stdenv, buildPackages, fetchurl, zlib, bzip2, perl, cpio, gawk, coreutils, ApplicationServices }:
+{ lib, stdenv, fetchurl, zlib, bzip2, perl, cpio, gawk, coreutils, ApplicationServices }:
 
 stdenv.mkDerivation rec {
   pname = "blast";
-  version = "2.12.0";
+  version = "2.10.0";
 
   src = fetchurl {
-    url = "https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${version}/ncbi-blast-${version}+-src.tar.gz";
-    sha256 = "122bf45cyj3s3zv2lw1y1rhz7g22v0va560ai30xdjl8sk4wk8zx";
+    url = "ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${version}/ncbi-blast-${version}+-src.tar.gz";
+    sha256 = "09nry5knj5hhxpn0a5ww1gb1704grd4r1y7adbjl6kqwq37dkk9s";
   };
 
   sourceRoot = "ncbi-blast-${version}+-src/c++";
-
-  configureFlags = [
+  
+  configureFlags = [ 
     # With flat Makefile we can use all_projects in order not to build extra.
     # These extra cause clang to hang on Darwin.
     "--with-flat-makefile"
-    "--without-makefile-auto-update"
+    "--without-makefile-auto-update" 
     "--with-dll"  # build dynamic libraries (static are default)
     ];
-
+  
   makeFlags = [ "all_projects=app/" ];
 
   preConfigure = ''
@@ -75,7 +75,6 @@ stdenv.mkDerivation rec {
         --replace /bin/date ${coreutils}/bin/date
   '';
 
-  depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl ];
 
   # perl is necessary in buildInputs so that installed perl scripts get patched
@@ -95,7 +94,7 @@ stdenv.mkDerivation rec {
   # Many tests require either network access or locally available databases
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''Basic Local Alignment Search Tool (BLAST) finds regions of
     similarity between biological sequences'';
     homepage = "https://blast.ncbi.nlm.nih.gov/Blast.cgi";

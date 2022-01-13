@@ -5,54 +5,48 @@
 , makeWrapper
 , nixosTests
 , systemd
+, fetchpatch
 }:
 
 buildGoModule rec {
-  version = "2.4.1";
+  version = "2.0.0";
   pname = "grafana-loki";
 
   src = fetchFromGitHub {
     rev = "v${version}";
     owner = "grafana";
     repo = "loki";
-    sha256 = "sha256-QLHhGAeTtXe/76uMombWBORXGvfaUQMGCgkeGCnI0Ag=";
+    sha256 = "09a0mqdmk754vigd1xqijzwazwrmfaqcgdr2c6dz25p7a65568hj";
   };
 
   vendorSha256 = null;
 
-  subPackages = [
-    # TODO split every executable into its own package
-    "cmd/loki"
-    "cmd/loki-canary"
-    "clients/cmd/promtail"
-    "cmd/logcli"
+  subPackages = [ "..." ];
+
+  patches = [
+    (fetchpatch {
+      # Fix expected return value in Test_validateDropConfig
+      # https://github.com/grafana/loki/issues/2519
+      url = "https://github.com/grafana/loki/commit/1316c0f0c5cda7c272c4873ea910211476fc1db8.patch";
+      sha256 = "06hwga58qpmivbhyjgyqzb75602hy8212a4b5vh99y9pnn6c913h";
+    })
   ];
 
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = lib.optionals stdenv.isLinux [ systemd.dev ];
+  buildInputs = stdenv.lib.optionals stdenv.isLinux [ systemd.dev ];
 
-  preFixup = lib.optionalString stdenv.isLinux ''
+  preFixup = stdenv.lib.optionalString stdenv.isLinux ''
     wrapProgram $out/bin/promtail \
       --prefix LD_LIBRARY_PATH : "${lib.getLib systemd}/lib"
   '';
 
   passthru.tests = { inherit (nixosTests) loki; };
 
-  ldflags = let t = "github.com/grafana/loki/pkg/util/build"; in [
-    "-s"
-    "-w"
-    "-X ${t}.Version=${version}"
-    "-X ${t}.BuildUser=nix@nixpkgs"
-    "-X ${t}.BuildDate=unknown"
-    "-X ${t}.Branch=unknown"
-    "-X ${t}.Revision=unknown"
-  ];
-
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Like Prometheus, but for logs";
-    license = with licenses; [ agpl3Only asl20 ];
+    license = licenses.asl20;
     homepage = "https://grafana.com/oss/loki/";
     maintainers = with maintainers; [ willibutz globin mmahut ];
     platforms = platforms.unix;

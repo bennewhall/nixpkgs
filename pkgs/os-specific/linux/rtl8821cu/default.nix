@@ -1,14 +1,13 @@
-{ lib, stdenv, fetchFromGitHub, kernel, bc }:
-
+{ stdenv, fetchFromGitHub, kernel, bc }:
 stdenv.mkDerivation rec {
-  pname = "rtl8821cu";
-  version = "${kernel.version}-unstable-2021-10-21";
+  name = "rtl8821cu-${kernel.version}-${version}";
+  version = "unstable-2020-08-21";
 
   src = fetchFromGitHub {
-    owner = "morrownr";
-    repo = "8821cu";
-    rev = "4e2d84c5e70245f850877f355e8bf293f252f61c";
-    sha256 = "1j32psvfgzfs5b1pdff6xk76iz7j8scakji6zm3vgqb2ssbxx1k1";
+    owner = "brektrou";
+    repo = "rtl8821cu";
+    rev = "45a8b4393e3281b969822c81bd93bdb731d58472";
+    sha256 = "1995zs1hvlxjhbh2w7zkwr824z19cgc91s00g7yhm5d7zjav14rd";
   };
 
   hardeningDisable = [ "pic" ];
@@ -28,12 +27,10 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/lib/modules/${kernel.modDirVersion}/kernel/net/wireless/"
   '';
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Realtek rtl8821cu driver";
-    homepage = "https://github.com/morrownr/8821cu";
-    license = licenses.gpl2Only;
+    homepage = "https://github.com/brektrou/rtl8821CU";
+    license = licenses.gpl2;
     platforms = platforms.linux;
     maintainers = [ maintainers.contrun ];
   };

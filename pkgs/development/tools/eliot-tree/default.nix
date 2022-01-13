@@ -1,4 +1,4 @@
-{ lib, python3Packages }:
+{ stdenv, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   pname = "eliot-tree";
@@ -29,7 +29,7 @@ python3Packages.buildPythonApplication rec {
     pytest
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jonathanj/eliottree";
     description = "Render Eliot logs as an ASCII tree";
     license = licenses.mit;

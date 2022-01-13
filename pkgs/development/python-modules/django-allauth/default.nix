@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, requests, requests_oauthlib
+{ stdenv, buildPythonPackage, fetchFromGitHub, requests, requests_oauthlib
 , django, python3-openid, mock, coverage }:
 
 buildPythonPackage rec {
@@ -23,7 +23,7 @@ buildPythonPackage rec {
     coverage run manage.py test allauth
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication";
     homepage = "https://www.intenct.nl/projects/django-allauth";
     license = licenses.mit;

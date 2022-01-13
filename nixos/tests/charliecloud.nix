@@ -11,7 +11,7 @@ import ./make-test-python.nix ({ pkgs, ...} : let
 
 in {
   name = "charliecloud";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ bzizou ];
   };
 

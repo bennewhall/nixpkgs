@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, gtk3, rgbds, SDL2, wrapGAppsHook, glib }:
+{ stdenv, fetchFromGitHub, gtk3, rgbds, SDL2, wrapGAppsHook, glib }:
 
 stdenv.mkDerivation rec {
   pname = "sameboy";
-  version = "0.14.7";
+  version = "0.13.6";
 
   src = fetchFromGitHub {
     owner = "LIJI32";
     repo = "SameBoy";
     rev = "v${version}";
-    sha256 = "sha256-rvcR1mp+lJ6ZFc9WYUK9FBVcG2vD5MoX6lY+AJsMaeQ=";
+    sha256 = "04w8lybi7ssnax37ka4qw7pmcm7cgnmk90p9m73zbyp5chgpqqzc";
   };
 
   enableParallelBuilding = true;
@@ -16,18 +16,23 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ rgbds glib wrapGAppsHook ];
   buildInputs = [ SDL2 ];
 
-  makeFlags = [
-    "CONF=release"
-    "FREEDESKTOP=true"
-    "PREFIX=$(out)"
-  ];
+  makeFlags = "CONF=release DATA_DIR=$(out)/share/sameboy/";
 
-  postPatch = ''
-    substituteInPlace OpenDialog/gtk.c \
-      --replace '"libgtk-3.so"' '"${gtk3}/lib/libgtk-3.so"'
+  patchPhase = ''
+    sed 's/-Werror //g' -i Makefile
+    sed 's@"libgtk-3.so"@"${gtk3}/lib/libgtk-3.so"@g' -i OpenDialog/gtk.c
   '';
 
-  meta = with lib; {
+  installPhase = ''
+    pushd build/bin/SDL
+    install -Dm755 sameboy $out/bin/sameboy
+    rm sameboy
+    mkdir -p $out/share/sameboy
+    cp -r * $out/share/sameboy
+    popd
+  '';
+
+  meta = with stdenv.lib; {
     homepage = "https://sameboy.github.io";
     description = "Game Boy, Game Boy Color, and Super Game Boy emulator";
 

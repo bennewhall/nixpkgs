@@ -1,41 +1,29 @@
-{ stdenv, lib, fetchzip, bash, makeWrapper, coreutils, gnugrep, ncurses, doCheck ? true }:
+{ stdenv, fetchzip, coreutils, gnugrep }:
 
 stdenv.mkDerivation rec {
   pname = "bats";
-  version = "1.5.0";
+  version = "1.2.0";
 
   src = fetchzip {
     url = "https://github.com/bats-core/bats-core/archive/v${version}.tar.gz";
-    hash = "sha256-MEkMi2w8G9FZhE3JvzzbqObcErQ9WFXy5mtKwQOoxbk=";
+    sha256 = "0f59zh4d4pa1a7ybs5zl6h0csbqqv11lbnq0jl1dgwm1s6p49bsq";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-
   patchPhase = ''
-    patchShebangs .
+    patchShebangs ./install.sh
+
+    substituteInPlace ./libexec/bats-core/bats \
+        --replace 'type -p greadlink readlink' 'type -p ${coreutils}/bin/readlink'
+    substituteInPlace ./libexec/bats-core/bats-format-tap-stream \
+        --replace grep ${gnugrep}/bin/grep
   '';
 
-  installPhase = ''
-    ./install.sh $out
-    wrapProgram $out/bin/bats --suffix PATH : "${lib.makeBinPath [ bash coreutils gnugrep ]}"
-  '';
+  installPhase = "./install.sh $out";
 
-  inherit doCheck;
-  checkInputs = [ ncurses ];
-  checkPhase = ''
-    # TODO: cut if https://github.com/bats-core/bats-core/issues/418 allows
-    sed -i '/test works even if PATH is reset/a skip' test/bats.bats
-
-    # test generates file with absolute shebang dynamically
-    substituteInPlace test/install.bats --replace \
-      "/usr/bin/env bash" "${bash}/bin/bash"
-    bin/bats test
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/bats-core/bats-core";
     description = "Bash Automated Testing System";
-    maintainers = with maintainers; [ abathur ];
+    maintainers = [ maintainers.lnl7 ];
     license = licenses.mit;
     platforms = platforms.unix;
   };

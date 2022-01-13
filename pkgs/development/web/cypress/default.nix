@@ -1,53 +1,28 @@
-{ alsa-lib
-, autoPatchelfHook
-, callPackage
-, fetchzip
-, gnome2
-, gtk2
-, gtk3
-, lib
-, mesa
-, nss
-, stdenv
-, udev
-, unzip
-, wrapGAppsHook
-, xorg
-}:
+{ stdenv, lib, fetchzip, autoPatchelfHook, xorg, gtk2, gnome2, gtk3, nss, alsaLib, udev, unzip, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
   pname = "cypress";
-  version = "9.2.0";
+  version = "6.0.0";
 
   src = fetchzip {
     url = "https://cdn.cypress.io/desktop/${version}/linux-x64/cypress.zip";
-    sha256 = "sha256-NxmGMHAEVuFl/3YgcHSbg+yWHB2tRpVTWlP5p5nGtPc=";
+    sha256 = "0hii7kp48ba07gsd521wwl288p808xr2wqgk1iidxkzj2v6g71by";
   };
 
   # don't remove runtime deps
   dontPatchELF = true;
 
-  nativeBuildInputs = [ autoPatchelfHook wrapGAppsHook unzip ];
+  nativeBuildInputs = [ autoPatchelfHook wrapGAppsHook ];
 
   buildInputs = with xorg; [
-    libXScrnSaver
-    libXdamage
-    libXtst
-    libxshmfence
+    libXScrnSaver libXdamage libXtst
   ] ++ [
-    nss
-    gtk2
-    alsa-lib
-    gnome2.GConf
-    gtk3
-    mesa # for libgbm
+    nss gtk2 alsaLib gnome2.GConf gtk3 unzip
   ];
 
   runtimeDependencies = [ (lib.getLib udev) ];
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out/bin $out/opt/cypress
     cp -vr * $out/opt/cypress/
     # Let's create the file binary_state ourselves to make the npm package happy on initial verification.
@@ -57,23 +32,13 @@ stdenv.mkDerivation rec {
     # Cypress now looks for binary_state.json in bin
     echo '{"verified": true}' > $out/binary_state.json
     ln -s $out/opt/cypress/Cypress $out/bin/Cypress
-
-    runHook postInstall
   '';
 
-  passthru = {
-    updateScript = ./update.sh;
-
-    tests = {
-      example = callPackage ./cypress-example-kitchensink { };
-    };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast, easy and reliable testing for anything that runs in a browser";
     homepage = "https://www.cypress.io";
     license = licenses.mit;
-    platforms = [ "x86_64-linux" ];
+    platforms = ["x86_64-linux"];
     maintainers = with maintainers; [ tweber mmahut ];
   };
 }

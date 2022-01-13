@@ -1,46 +1,31 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, rustPlatform
-, cargo
-, sphinx
+{ stdenv, fetchFromGitHub, rustPlatform, cargo, cmake, sphinx, lib, prefix ? "uutils-"
 , Security
-, libiconv
-, prefix ? "uutils-"
-, buildMulticallBinary ? true
 }:
 
-stdenv.mkDerivation rec {
-  pname = "uutils-coreutils";
-  version = "0.0.8";
-
+rustPlatform.buildRustPackage {
+  name = "uutils-coreutils-2019-05-03";
   src = fetchFromGitHub {
     owner = "uutils";
     repo = "coreutils";
-    rev = version;
-    sha256 = "0hx5ypy58d182gxpgs0dxcw03pdgvrcikbhczg6yqpdjjh7163as";
+    rev = "036dd812958ace22d973acf7b370f58072049dac";
+    sha256 = "0d9w3iiphhsk7l5l34682wayp90rgq5a3d94l3qdvhcqkfmpg727";
   };
-
-  cargoDeps = rustPlatform.fetchCargoTarball {
-    inherit src;
-    name = "${pname}-${version}";
-    hash = "sha256:1ynw97dr40yg18jaqgvz3shs0s0j6pvvlkrbka2ganiv8c9fvbyw";
-  };
-
-  nativeBuildInputs = [ rustPlatform.cargoSetupHook sphinx ];
-
-  buildInputs = lib.optionals stdenv.isDarwin [ Security libiconv ];
-
-  makeFlags = [
-    "CARGO=${cargo}/bin/cargo"
-    "PREFIX=${placeholder "out"}"
-    "PROFILE=release"
-    "INSTALLDIR_MAN=${placeholder "out"}/share/man/man1"
-  ] ++ lib.optionals (prefix != null) [ "PROG_PREFIX=${prefix}" ]
-  ++ lib.optionals buildMulticallBinary [ "MULTICALL=y" ];
 
   # too many impure/platform-dependent tests
   doCheck = false;
+
+  cargoSha256 = "186hwzdpy7j0gw7491qx02vy4di5md47hipf1xxi1qccvmcfghwh";
+
+  makeFlags =
+    [ "CARGO=${cargo}/bin/cargo" "PREFIX=$(out)" "PROFILE=release" "INSTALLDIR_MAN=$(out)/share/man/man1" ]
+    ++ lib.optional (prefix != null) [ "PROG_PREFIX=${prefix}" ];
+
+  nativeBuildInputs = [ cmake cargo sphinx ];
+  buildInputs = lib.optional stdenv.isDarwin Security;
+
+  # empty {build,install}Phase to use defaults of `stdenv.mkDerivation` rather than rust defaults
+  buildPhase = "";
+  installPhase = "";
 
   meta = with lib; {
     description = "Cross-platform Rust rewrite of the GNU coreutils";
@@ -49,7 +34,7 @@ stdenv.mkDerivation rec {
       CLI utils in Rust. This repo is to aggregate the GNU coreutils rewrites.
     '';
     homepage = "https://github.com/uutils/coreutils";
-    maintainers = with maintainers; [ siraben SuperSandro2000 ];
+    maintainers = with maintainers; [ ];
     license = licenses.mit;
     platforms = platforms.unix;
   };

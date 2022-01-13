@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, callPackage, libpng12, imagemagick
-, autoreconfHook, glib, pstoedit, pkg-config, gettext, gd, darwin
+{ stdenv, fetchurl, callPackage, libpng12, imagemagick
+, autoreconfHook, glib, pstoedit, pkgconfig, gettext, gd, darwin
 , runtimeShell }:
 
 # TODO: Figure out why the resultant binary is somehow linked against
@@ -34,9 +34,9 @@ stdenv.mkDerivation rec {
   #'';
 
   autofig = callPackage ./autofig.nix {};
-  nativeBuildInputs = [ autoreconfHook glib autofig pkg-config gettext ];
+  nativeBuildInputs = [ autoreconfHook glib autofig pkgconfig gettext ];
   buildInputs = [ libpng12 imagemagick pstoedit ]
-    ++ lib.optionals stdenv.isDarwin
+    ++ stdenv.lib.optionals stdenv.isDarwin
        (with darwin.apple_sdk.frameworks; [ gd ApplicationServices ]);
 
   postUnpack = ''
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
     export PATH="$PATH:$PWD/wrappers"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://autotrace.sourceforge.net/";
     description = "Utility for converting bitmap into vector graphics";
     platforms = platforms.unix;

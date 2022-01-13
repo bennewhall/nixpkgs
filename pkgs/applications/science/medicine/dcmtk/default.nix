@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, zlib, libtiff, libxml2, openssl, libiconv, libpng, cmake }:
+{ stdenv, fetchFromGitHub, zlib, libtiff, libxml2, openssl, libiconv, libpng, cmake }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "dcmtk";
-  version = "3.6.6";
+  version = "3.6.5";
   src = fetchFromGitHub {
     owner = "DCMTK";
     repo = pname;
     rev = "DCMTK-${version}";
-    sha256 = "sha256-bpvf2JJXikV/CqmXZb3w4Ua3VBEQcQk7PXw9ie0t8xo=";
+    sha256 = "0i38k1s0wdpbxxpiwsx490mszhxi45wp0z67iksvh60wfkaw54na";
   };
 
   nativeBuildInputs = [ cmake ];
@@ -26,6 +26,6 @@ stdenv.mkDerivation rec {
     homepage = "https://dicom.offis.de/dcmtk";
     license = licenses.bsd3;
     maintainers = with maintainers; [ iimog ];
-    platforms = with platforms; linux ++ darwin;
+    platforms = platforms.linux;
   };
 }

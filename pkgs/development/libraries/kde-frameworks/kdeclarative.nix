@@ -1,14 +1,15 @@
 {
-  mkDerivation, extra-cmake-modules,
-  libepoxy, kconfig, kglobalaccel, kguiaddons, ki18n, kiconthemes, kio, kpackage,
+  mkDerivation, lib, extra-cmake-modules,
+  epoxy, kconfig, kglobalaccel, kguiaddons, ki18n, kiconthemes, kio, kpackage,
   kwidgetsaddons, kwindowsystem, qtdeclarative
 }:
 
 mkDerivation {
   name = "kdeclarative";
+  meta = { maintainers = [ lib.maintainers.ttuegel ]; };
   nativeBuildInputs = [ extra-cmake-modules ];
   buildInputs = [
-    libepoxy kglobalaccel kguiaddons ki18n kiconthemes kio kwidgetsaddons
+    epoxy kglobalaccel kguiaddons ki18n kiconthemes kio kwidgetsaddons
     kwindowsystem
   ];
   propagatedBuildInputs = [ kconfig kpackage qtdeclarative ];

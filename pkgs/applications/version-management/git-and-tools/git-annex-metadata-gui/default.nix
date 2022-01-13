@@ -1,4 +1,4 @@
-{ lib, buildPythonApplication, fetchFromGitHub, pyqt5, qt5, git-annex-adapter }:
+{ stdenv, buildPythonApplication, fetchFromGitHub, pyqt5, qt5, git-annex-adapter }:
 
 buildPythonApplication rec {
   pname = "git-annex-metadata-gui";
@@ -23,7 +23,7 @@ buildPythonApplication rec {
 
   propagatedBuildInputs = [ pyqt5 git-annex-adapter ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/alpernebbi/git-annex-metadata-gui";
     description = "Graphical interface for git-annex metadata commands";
     maintainers = with maintainers; [ dotlambda ];

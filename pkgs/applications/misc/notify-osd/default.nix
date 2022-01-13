@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, glib, libwnck, libnotify, dbus-glib, makeWrapper, gsettings-desktop-schemas }:
+{ stdenv, fetchurl, pkgconfig, glib, libwnck3, libnotify, dbus-glib, makeWrapper, gsettings-desktop-schemas }:
 
 stdenv.mkDerivation rec {
   pname = "notify-osd";
@@ -9,9 +9,9 @@ stdenv.mkDerivation rec {
     sha256 = "0g5a7a680b05x27apz0y1ldl5csxpp152wqi42s107jymbp0s20j";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    glib libwnck libnotify dbus-glib makeWrapper
+    glib libwnck3 libnotify dbus-glib makeWrapper
     gsettings-desktop-schemas
   ];
 
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
       --prefix XDG_DATA_DIRS : "$GSETTINGS_SCHEMAS_PATH"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Daemon that displays passive pop-up notifications";
     homepage = "https://launchpad.net/notify-osd";
     license = licenses.gpl3;

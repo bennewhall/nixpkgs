@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, isPy36, flake8, click, pyyaml, six, pytestCheckHook, pytest-cov }:
+{ stdenv, lib, buildPythonPackage, fetchFromGitHub, isPy36, flake8, click, pyyaml, six, pytestCheckHook, pytestcov }:
 
 buildPythonPackage rec {
   pname = "clickclick";
@@ -11,7 +11,7 @@ buildPythonPackage rec {
     sha256 = "1rij9ws9nhsmagiy1vclzliiqfkxi006rf65qvrw1k3sm2s8p5g0";
   };
 
-  checkInputs = [ pytestCheckHook pytest-cov ];
+  checkInputs = [ pytestCheckHook pytestcov ];
   propagatedBuildInputs = [ flake8 click pyyaml six ];
 
   # test_cli asserts on exact quoting style of output
@@ -21,7 +21,7 @@ buildPythonPackage rec {
     "test_choice_default"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Click command line utilities";
     homepage = "https://github.com/hjacobs/python-clickclick/";
     license = licenses.asl20;

@@ -1,8 +1,7 @@
 { stdenv, lib, fetchFromGitHub, coreutils, ubootOdroidXU3, runtimeShell }:
 
 stdenv.mkDerivation {
-  pname = "odroid-xu3-bootloader";
-  version = "unstable-2015-12-04";
+  name = "odroid-xu3-bootloader-2015-12-04";
 
   src = fetchFromGitHub {
     owner = "hardkernel";
@@ -26,7 +25,7 @@ stdenv.mkDerivation {
       $out/bin/sd_fuse-xu3
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     platforms = platforms.linux;
     license = licenses.unfreeRedistributableFirmware;
     description = "Secure boot enabled boot loader for ODROID-XU{3,4}";

@@ -1,3 +1,5 @@
+# Test for NixOS' container support.
+
 let
   hostIp = "192.168.0.1";
   hostPort = 10080;
@@ -5,16 +7,17 @@ let
   containerPort = 80;
 in
 
-import ./make-test-python.nix ({ pkgs, lib, ... }: {
+import ./make-test-python.nix ({ pkgs, ...} : {
   name = "containers-portforward";
-  meta = {
-    maintainers = with lib.maintainers; [ aristid aszlig eelco kampfschlaefer ianwookim ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ aristid aszlig eelco kampfschlaefer ianwookim ];
   };
 
   machine =
     { pkgs, ... }:
     { imports = [ ../modules/installer/cd-dvd/channel.nix ];
       virtualisation.writableStore = true;
+      virtualisation.memorySize = 768;
 
       containers.webserver =
         { privateNetwork = true;
@@ -28,7 +31,7 @@ import ./make-test-python.nix ({ pkgs, lib, ... }: {
             };
         };
 
-      virtualisation.additionalPaths = [ pkgs.stdenv ];
+      virtualisation.pathsInNixDB = [ pkgs.stdenv ];
     };
 
   testScript =

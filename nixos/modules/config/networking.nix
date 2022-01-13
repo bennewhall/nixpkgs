@@ -1,13 +1,12 @@
 # /etc files related to networking, such as /etc/services.
 
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
 
   cfg = config.networking;
-  opt = options.networking;
 
   localhostMultiple = any (elem "localhost") (attrValues (removeAttrs cfg.hosts [ "127.0.0.1" "::1" ]));
 
@@ -22,7 +21,7 @@ in
 
     networking.hosts = lib.mkOption {
       type = types.attrsOf (types.listOf types.str);
-      example = literalExpression ''
+      example = literalExample ''
         {
           "127.0.0.1" = [ "foo.bar.baz" ];
           "192.168.0.2" = [ "fileserver.local" "nameserver.local" ];
@@ -35,8 +34,8 @@ in
 
     networking.hostFiles = lib.mkOption {
       type = types.listOf types.path;
-      defaultText = literalDocBook "Hosts from <option>networking.hosts</option> and <option>networking.extraHosts</option>";
-      example = literalExpression ''[ "''${pkgs.my-blocklist-package}/share/my-blocklist/hosts" ]'';
+      defaultText = lib.literalExample "Hosts from `networking.hosts` and `networking.extraHosts`";
+      example = lib.literalExample ''[ "''${pkgs.my-blocklist-package}/share/my-blocklist/hosts" ]'';
       description = ''
         Files that should be concatenated together to form <filename>/etc/hosts</filename>.
       '';
@@ -59,7 +58,6 @@ in
         "2.nixos.pool.ntp.org"
         "3.nixos.pool.ntp.org"
       ];
-      type = types.listOf types.str;
       description = ''
         The set of NTP servers from which to synchronise.
       '';
@@ -79,7 +77,6 @@ in
       httpProxy = lib.mkOption {
         type = types.nullOr types.str;
         default = cfg.proxy.default;
-        defaultText = literalExpression "config.${opt.proxy.default}";
         description = ''
           This option specifies the http_proxy environment variable.
         '';
@@ -89,7 +86,6 @@ in
       httpsProxy = lib.mkOption {
         type = types.nullOr types.str;
         default = cfg.proxy.default;
-        defaultText = literalExpression "config.${opt.proxy.default}";
         description = ''
           This option specifies the https_proxy environment variable.
         '';
@@ -99,7 +95,6 @@ in
       ftpProxy = lib.mkOption {
         type = types.nullOr types.str;
         default = cfg.proxy.default;
-        defaultText = literalExpression "config.${opt.proxy.default}";
         description = ''
           This option specifies the ftp_proxy environment variable.
         '';
@@ -109,7 +104,6 @@ in
       rsyncProxy = lib.mkOption {
         type = types.nullOr types.str;
         default = cfg.proxy.default;
-        defaultText = literalExpression "config.${opt.proxy.default}";
         description = ''
           This option specifies the rsync_proxy environment variable.
         '';
@@ -119,7 +113,6 @@ in
       allProxy = lib.mkOption {
         type = types.nullOr types.str;
         default = cfg.proxy.default;
-        defaultText = literalExpression "config.${opt.proxy.default}";
         description = ''
           This option specifies the all_proxy environment variable.
         '';
@@ -196,12 +189,9 @@ in
         protocols.source  = pkgs.iana-etc + "/etc/protocols";
 
         # /etc/hosts: Hostname-to-IP mappings.
-        hosts.source = pkgs.runCommand "hosts" {} ''
+        hosts.source = pkgs.runCommandNoCC "hosts" {} ''
           cat ${escapeShellArgs cfg.hostFiles} > $out
         '';
-
-        # /etc/netgroup: Network-wide groups.
-        netgroup.text = mkDefault "";
 
         # /etc/host.conf: resolver configuration file
         "host.conf".text = ''

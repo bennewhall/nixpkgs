@@ -11,7 +11,7 @@ let
     '';
 in {
   name = "google-oslogin";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ adisbladis flokli ];
   };
 

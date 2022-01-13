@@ -1,10 +1,9 @@
-{ lib
-, buildPythonPackage
+{ buildPythonPackage
 , fetchurl
 , meson
 , ninja
-
-, pkg-config
+, stdenv
+, pkgconfig
 , python3
 , pygobject3
 , gobject-introspection
@@ -14,7 +13,7 @@
 
 buildPythonPackage rec {
   pname = "gst-python";
-  version = "1.18.4";
+  version = "1.18.0";
 
   format = "other";
 
@@ -22,7 +21,7 @@ buildPythonPackage rec {
 
   src = fetchurl {
     url = "${meta.homepage}/src/gst-python/${pname}-${version}.tar.xz";
-    sha256 = "13h9qzfz8s1gyj2ar9q2gf5346sgdv6jv8hj7aw0hpl2gs5f0s6b";
+    sha256 = "0ifx2s2j24sj2w5jm7cxyg1kinnhbxiz4x0qp3gnsjlwbawfigvn";
   };
 
   # Python 2.x is not supported.
@@ -31,7 +30,7 @@ buildPythonPackage rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     gobject-introspection
     gst-plugins-base
@@ -52,9 +51,11 @@ buildPythonPackage rec {
   # https://github.com/NixOS/nixpkgs/issues/47390
   installCheckPhase = "meson test --print-errorlogs";
 
-  meta = with lib; {
+  meta = {
     homepage = "https://gstreamer.freedesktop.org";
+
     description = "Python bindings for GStreamer";
-    license = licenses.lgpl2Plus;
+
+    license = stdenv.lib.licenses.lgpl2Plus;
   };
 }

@@ -1,16 +1,14 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchurl
 , attr, judy, keyutils, libaio, libapparmor, libbsd, libcap, libgcrypt, lksctp-tools, zlib
 }:
 
 stdenv.mkDerivation rec {
   pname = "stress-ng";
-  version = "0.13.09";
+  version = "0.11.19";
 
-  src = fetchFromGitHub {
-    owner = "ColinIanKing";
-    repo = pname;
-    rev = "V${version}";
-    hash = "sha256-BOOB5fA/Cy1gsRA4j8aj3lVY2y4OvIfoiRqOIY9nZzM=";
+  src = fetchurl {
+    url = "https://kernel.ubuntu.com/~cking/tarballs/${pname}/${pname}-${version}.tar.xz";
+    sha256 = "0s08qahjc68h5qhnahmb9z19l51p5sw2pmzrlknq1j5900zpa2x5";
   };
 
   postPatch = ''
@@ -19,7 +17,7 @@ stdenv.mkDerivation rec {
 
   # All platforms inputs then Linux-only ones
   buildInputs = [ judy libbsd libgcrypt zlib ]
-    ++ lib.optionals stdenv.hostPlatform.isLinux [
+    ++ stdenv.lib.optionals stdenv.hostPlatform.isLinux [
       attr keyutils libaio libapparmor libcap lksctp-tools
     ];
 
@@ -30,7 +28,7 @@ stdenv.mkDerivation rec {
     "BASHDIR=${placeholder "out"}/share/bash-completion/completions"
   ];
 
-  NIX_CFLAGS_COMPILE = lib.optionalString stdenv.hostPlatform.isMusl "-D_LINUX_SYSINFO_H=1";
+  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.hostPlatform.isMusl "-D_LINUX_SYSINFO_H=1";
 
   # Won't build on i686 because the binary will be linked again in the
   # install phase without checking the dependencies. This will prevent
@@ -38,7 +36,7 @@ stdenv.mkDerivation rec {
   # mystery, though. :-(
   enableParallelBuilding = (!stdenv.isi686);
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Stress test a computer system";
     longDescription = ''
       stress-ng will stress test a computer system in various selectable ways. It
@@ -64,9 +62,9 @@ stdenv.mkDerivation rec {
       hardware. However, it has never been intended to be used as a precise benchmark
       test suite, so do NOT use it in this manner.
     '';
-    homepage = "https://github.com/ColinIanKing/stress-ng";
-    downloadPage = "https://github.com/ColinIanKing/stress-ng/tags";
-    changelog = "https://github.com/ColinIanKing/stress-ng/raw/V${version}/debian/changelog";
+    homepage = "https://kernel.ubuntu.com/~cking/stress-ng/";
+    downloadPage = "https://kernel.ubuntu.com/~cking/tarballs/stress-ng/";
+    changelog = "https://kernel.ubuntu.com/git/cking/stress-ng.git/plain/debian/changelog?h=V${version}";
     license = licenses.gpl2Plus;
     maintainers = with maintainers; [ c0bw3b ];
     platforms = platforms.unix;

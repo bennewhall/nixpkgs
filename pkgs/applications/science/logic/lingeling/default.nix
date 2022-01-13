@@ -1,17 +1,18 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , aiger
 }:
 
 stdenv.mkDerivation {
   pname = "lingeling";
-  # This is the version used in satcomp2020
-  version = "pre1_708beb26";
+  # This is the version used in satcomp2018, which was
+  # relicensed, and also known as version 'bcj'
+  version = "pre1_03b4860d";
 
   src = fetchFromGitHub {
     owner  = "arminbiere";
     repo   = "lingeling";
-    rev    = "708beb26a7d5b5d5e7abd88d6f552fb1946b07c1";
-    sha256 = "1lb2g37nd8qq5hw5g6l691nx5095336yb2zlbaw43mg56hkj8357";
+    rev    = "03b4860d14016f42213ea271014f2f13d181f504";
+    sha256 = "1lw1yfy219p7rrk88sbq4zl24b70040zapbjdrpv5a6i0jsblksx";
   };
 
   configurePhase = ''
@@ -38,7 +39,7 @@ stdenv.mkDerivation {
 
   outputs = [ "out" "dev" "lib" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast SAT solver";
     homepage    = "http://fmv.jku.at/lingeling/";
     license     = licenses.mit;

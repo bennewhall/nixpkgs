@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, openssl, libevent, libasr,
-  python2, pkg-config, lua5, perl, libmysqlclient, postgresql, sqlite, hiredis,
+{ stdenv, fetchurl, openssl, libevent, libasr,
+  python2, pkgconfig, lua5, perl, libmysqlclient, postgresql, sqlite, hiredis,
   enablePython ? true,
   enableLua ? true,
   enablePerl ? true,
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     sha256 = "1b1mx71bvmv92lbm08wr2p60g3qhikvv3n15zsr6dcwbk9aqahzq";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ openssl libevent
     libasr python2 lua5 perl libmysqlclient postgresql sqlite hiredis ];
 
@@ -48,40 +48,40 @@ stdenv.mkDerivation rec {
     "--with-scheduler-ram"
     "--with-scheduler-stub"
 
-  ] ++ lib.optionals enablePython [
+  ] ++ stdenv.lib.optionals enablePython [
     "--with-python=${python2}"
     "--with-filter-python"
     "--with-queue-python"
     "--with-table-python"
     "--with-scheduler-python"
 
-  ] ++ lib.optionals enableLua [
-    "--with-lua=${pkg-config}"
+  ] ++ stdenv.lib.optionals enableLua [
+    "--with-lua=${pkgconfig}"
     "--with-filter-lua"
 
-  ] ++ lib.optionals enablePerl [
+  ] ++ stdenv.lib.optionals enablePerl [
     "--with-perl=${perl}"
     "--with-filter-perl"
 
-  ] ++ lib.optionals enableMysql [
+  ] ++ stdenv.lib.optionals enableMysql [
     "--with-table-mysql"
 
-  ] ++ lib.optionals enablePostgres [
+  ] ++ stdenv.lib.optionals enablePostgres [
     "--with-table-postgres"
 
-  ] ++ lib.optionals enableSqlite [
+  ] ++ stdenv.lib.optionals enableSqlite [
     "--with-table-sqlite"
 
-  ] ++ lib.optionals enableRedis [
+  ] ++ stdenv.lib.optionals enableRedis [
     "--with-table-redis"
   ];
 
-  NIX_CFLAGS_COMPILE = lib.optionalString enableRedis
+  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString enableRedis
       "-I${hiredis}/include/hiredis -lhiredis"
-    + lib.optionalString enableMysql
+    + stdenv.lib.optionalString enableMysql
       " -L${libmysqlclient}/lib/mysql";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.opensmtpd.org/";
     description = "Extra plugins for the OpenSMTPD mail server";
     license = licenses.isc;

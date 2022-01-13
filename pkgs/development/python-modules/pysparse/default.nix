@@ -2,6 +2,7 @@
 , buildPythonPackage
 , fetchFromGitHub
 , numpy
+, setuptools
 , blas
 , lapack
 , isPy27

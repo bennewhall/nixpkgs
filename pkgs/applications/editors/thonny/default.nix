@@ -1,28 +1,17 @@
-{ lib, fetchFromGitHub, python3, makeDesktopItem, copyDesktopItems }:
+{ stdenv, fetchFromGitHub, python3 }:
 
 with python3.pkgs;
 
 buildPythonApplication rec {
   pname = "thonny";
-  version = "3.3.14";
+  version = "3.3.1";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = "v${version}";
-    sha256 = "13l8blq7y6p7a235x2lfiqml1bd4ba2brm3vfvs8wasjh3fvm9g5";
+    sha256 = "0nk4kx6apmnd6fyd9zw77yprjzgjf7micvcws2i2sci0d9fff34c";
   };
-
-  nativeBuildInputs = [ copyDesktopItems ];
-
-  desktopItems = [ (makeDesktopItem {
-    name = "Thonny";
-    exec = "thonny";
-    icon = "thonny";
-    desktopName = "Thonny";
-    comment     = "Python IDE for beginners";
-    categories  = "Development;IDE";
-  }) ];
 
   propagatedBuildInputs = with python3.pkgs; [
     jedi
@@ -45,14 +34,10 @@ buildPythonApplication rec {
        --prefix PYTHONPATH : $PYTHONPATH:$(toPythonPath ${python3.pkgs.jedi})
   '';
 
-  postInstall = ''
-    install -Dm644 ./packaging/icons/thonny-48x48.png $out/share/icons/hicolor/48x48/apps/thonny.png
-  '';
-
   # Tests need a DISPLAY
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python IDE for beginners";
     longDescription = ''
       Thonny is a Python IDE for beginners. It supports different ways

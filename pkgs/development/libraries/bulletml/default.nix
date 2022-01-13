@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchpatch, fetchurl, bison, perl }:
+{ stdenv, fetchpatch, fetchurl, bison, perl }:
 
 let
   version = "0.0.6";
@@ -58,7 +58,7 @@ in stdenv.mkDerivation {
     install -m 644 README.en "$out"/share/licenses/libbulletml
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ library to handle BulletML easily";
     longDescription = ''
       BulletML is the Bullet Markup Language. BulletML can describe the barrage

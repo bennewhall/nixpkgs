@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , makeDesktopItem
 , jre
 , gtk3
 , glib
-, gnome
+, gnome3
 , wrapGAppsHook
 , libXtst
 , which
@@ -12,18 +12,18 @@
 
 stdenv.mkDerivation rec {
   pname = "smartgithg";
-  version = "20.2.5";
+  version = "19.1.1";
 
   src = fetchurl {
     url = "https://www.syntevo.com/downloads/smartgit/smartgit-linux-${builtins.replaceStrings [ "." ] [ "_" ] version}.tar.gz";
-    sha256 = "05f3yhzf6mvr6c5v6qvjrx97pzrrnkh9mp444zlkbnpgnrsmdc6v";
+    sha256 = "0i0dvyy9d63f4hk8czlyk83ai0ywhqp7wbdkq3s87l7irwgs42jy";
   };
 
   nativeBuildInputs = [ wrapGAppsHook ];
 
-  buildInputs = [ jre gnome.adwaita-icon-theme gtk3 ];
+  buildInputs = [ jre gnome3.adwaita-icon-theme gtk3 ];
 
-  preFixup = with lib; ''
+  preFixup = with stdenv.lib; ''
     gappsWrapperArgs+=( \
       --prefix PATH : ${makeBinPath [ jre which ]} \
       --prefix LD_LIBRARY_PATH : ${makeLibraryPath [
@@ -59,7 +59,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  desktopItem = with lib; makeDesktopItem rec {
+  desktopItem = with stdenv.lib; makeDesktopItem rec {
     name = "smartgit";
     exec = "smartgit";
     comment = meta.description;
@@ -84,11 +84,11 @@ stdenv.mkDerivation rec {
     '';
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GUI for Git, Mercurial, Subversion";
     homepage = "https://www.syntevo.com/smartgit/";
     license = licenses.unfree;
     platforms = platforms.linux;
-    maintainers = with lib.maintainers; [ jraygauthier ];
+    maintainers = with stdenv.lib.maintainers; [ jraygauthier ];
   };
 }

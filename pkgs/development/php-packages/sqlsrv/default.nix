@@ -1,19 +1,16 @@
-{ stdenv, buildPecl, lib, unixODBC, libiconv }:
+{ buildPecl, lib, pkgs }:
 
 buildPecl {
   pname = "sqlsrv";
 
-  version = "5.9.0";
-  sha256 = "1css440b4qrbblmcswd5wdr2v1rjxlj2iicbmvjq9fg81028w40a";
+  version = "5.8.1";
+  sha256 = "0c9a6ghch2537vi0274vx0mn6nb1xg2qv7nprnf3xdfqi5ww1i9r";
 
   buildInputs = [
-    unixODBC
-  ] ++ lib.optionals stdenv.isDarwin [ libiconv ];
+    pkgs.unixODBC
+  ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+    pkgs.libiconv
+  ];
 
-  meta = with lib; {
-    description = "Microsoft Drivers for PHP for SQL Server";
-    license = licenses.mit;
-    homepage = "https://github.com/Microsoft/msphpsql";
-    maintainers = teams.php.members;
-  };
+  meta.maintainers = lib.teams.php.members;
 }

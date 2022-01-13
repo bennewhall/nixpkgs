@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, nose }:
+{ stdenv, buildPythonPackage, fetchPypi, nose }:
 
 buildPythonPackage rec {
   pname = "nose-pattern-exclude";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
   # There are no tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Exclude specific files and directories from nosetests runs";
     homepage = "https://github.com/jakubroztocil/nose-pattern-exclude";
     license = licenses.bsd3;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libusb1 }:
+{ stdenv, fetchFromGitHub, libusb1 }:
 
 stdenv.mkDerivation rec {
   pname = "whsniff";
@@ -15,11 +15,11 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/homewsn/whsniff";
     description = "Packet sniffer for 802.15.4 wireless networks";
     maintainers = with maintainers; [ snicket2100 ];
     platforms = platforms.linux;
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
   };
 }

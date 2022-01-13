@@ -1,22 +1,19 @@
-{ lib, stdenv, fetchurl, xorg, pkg-config, ncurses }:
+{ stdenv, fetchurl, xorg, pkgconfig, ncurses }:
+stdenv.mkDerivation {
 
-stdenv.mkDerivation rec {
   pname = "xrestop";
-  version = "0.5";
+  version = "0.4";
 
   src = fetchurl {
-    url = "https://xorg.freedesktop.org/archive/individual/app/xrestop-${version}.tar.bz2";
-    sha256 = "06ym32famav8qhdms5k7y5i14nfq89hhvfn5g452jjqzkpcsbl49";
+    url = "mirror://gentoo/distfiles/xrestop-0.4.tar.gz";
+    sha256 = "0mz27jpij8am1s32i63mdm58znfijcpfhdqq1npbmvgclyagrhk7";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ xorg.libX11 xorg.libXres xorg.libXext ncurses ];
 
-  meta = with lib; {
-    description = "A 'top' like tool for monitoring X Client server resource usage";
-    homepage = "https://gitlab.freedesktop.org/xorg/app/xrestop";
-    maintainers = with maintainers; [ qyliss ];
-    platforms = platforms.unix;
-    license = licenses.gpl2Plus;
+  meta = {
+    platforms = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

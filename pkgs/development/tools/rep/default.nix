@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, asciidoc-full }:
+{ stdenv, fetchFromGitHub, asciidoc-full }:
 
 stdenv.mkDerivation rec {
   pname = "rep";
-  version = "0.2.2";
+  version = "0.2.1";
 
   src = fetchFromGitHub {
     owner = "eraserhd";
     repo = pname;
     rev = "v${version}";
-    sha256 = "pqmISVm3rYGxRuwKieVpRwXE8ufWnBHEA6h2hrob51s=";
+    sha256 = "1p0dbaj7f4irzzw1m44x3b3j3jjij9i4rs83wkrpiamlq61077di";
   };
 
   nativeBuildInputs = [
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
   '';
   makeFlags = [ "prefix=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Single-shot nREPL client";
     homepage = "https://github.com/eraserhd/rep";
     license = licenses.epl10;

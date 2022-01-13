@@ -1,15 +1,15 @@
-{ lib, stdenv, fetchgit
+{ stdenv, fetchgit
 , fetchpatch
 }:
 
 stdenv.mkDerivation rec {
   pname = "liburing";
-  version = "2.1";
+  version = "0.7";
 
   src = fetchgit {
     url    = "http://git.kernel.dk/${pname}";
     rev    = "liburing-${version}";
-    sha256 = "sha256-7wSpKqjIdQeOdsQu4xN3kFHV49n6qQ3xVbjUcY1tmas=";
+    sha256 = "15z44l7y4c6s6dlf7v8lq4znlsjbja2r4ifbni0l8cdcnq0w3zh3";
   };
 
   separateDebugInfo = true;
@@ -33,17 +33,18 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "bin" "dev" "man" ];
 
-  postInstall = ''
-    # Copy the examples into $bin. Most reverse dependency of this package should
-    # reference only the $out output
+  postInstall =
+  # Copy the examples into $bin. Most reverse dependency of this package should
+  # reference only the $out output
+  ''
     mkdir -p $bin/bin
     cp ./examples/io_uring-cp examples/io_uring-test $bin/bin
     cp ./examples/link-cp $bin/bin/io_uring-link-cp
-  '' + lib.optionalString stdenv.hostPlatform.isGnu ''
     cp ./examples/ucontext-cp $bin/bin/io_uring-ucontext-cp
-  '';
+  ''
+  ;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Userspace library for the Linux io_uring API";
     homepage    = "https://git.kernel.dk/cgit/liburing/";
     license     = licenses.lgpl21;

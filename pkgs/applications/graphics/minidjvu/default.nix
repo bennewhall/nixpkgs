@@ -1,11 +1,9 @@
-{ lib, stdenv, fetchurl, libtiff, gettext }:
+{stdenv, fetchurl, libtiff, gettext }:
 
-stdenv.mkDerivation rec {
-  pname = "minidjvu";
-  version = "0.8";
-
+stdenv.mkDerivation {
+  name = "minidjvu-0.8";
   src = fetchurl {
-    url = "mirror://sourceforge/minidjvu/minidjvu-${version}.tar.gz";
+    url = "mirror://sourceforge/minidjvu/minidjvu-0.8.tar.gz";
     sha256 = "0jmpvy4g68k6xgplj9zsl6brg6vi81mx3nx2x9hfbr1f4zh95j79";
   };
 
@@ -13,7 +11,7 @@ stdenv.mkDerivation rec {
     sed -i s,/usr/bin/gzip,gzip, Makefile.in
   '';
 
-  buildInputs = [ libtiff gettext ];
+  buildInputs = [ libtiff gettext];
 
   preInstall = ''
     mkdir -p $out/lib
@@ -22,8 +20,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://djvu.sourceforge.net/djview4.html";
     description = "Black-and-white djvu page encoder and decoder that use interpage information";
-    license = lib.licenses.gpl2Plus;
-    maintainers = [ lib.maintainers.viric ];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    maintainers = [ stdenv.lib.maintainers.viric ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

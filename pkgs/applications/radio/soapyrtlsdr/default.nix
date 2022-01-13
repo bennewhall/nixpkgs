@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config
+{ stdenv, fetchFromGitHub, cmake, pkgconfig
 , rtl-sdr, soapysdr
 } :
 
@@ -16,16 +16,16 @@ in stdenv.mkDerivation {
     sha256 = "15j0s7apbg9cjr6rcbr058kl0r3szwzf00ixcbykxb77fh7c6r9w";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ rtl-sdr soapysdr ];
 
   cmakeFlags = [ "-DSoapySDR_DIR=${soapysdr}/share/cmake/SoapySDR/" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pothosware/SoapyRTLSDR";
     description = "SoapySDR plugin for RTL-SDR devices";
     license = licenses.mit;
     maintainers = with maintainers; [ ragge ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

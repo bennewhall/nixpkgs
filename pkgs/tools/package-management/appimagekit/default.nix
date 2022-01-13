@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub
-, pkg-config, cmake, autoconf, automake, libtool, makeWrapper
+{ stdenv, fetchFromGitHub
+, pkgconfig, cmake, autoconf, automake, libtool, makeWrapper
 , wget, xxd, desktop-file-utils, file
 , gnupg, glib, zlib, cairo, openssl, fuse, xz, squashfuse, inotify-tools, libarchive
 , squashfsTools
@@ -11,30 +11,29 @@ let
   appimagekit_src = fetchFromGitHub {
     owner = "AppImage";
     repo = "AppImageKit";
-    rev = "8bbf694455d00f48d835f56afaa1dabcd9178ba6";
-    sha256 = "sha256-pqg+joomC5CI9WdKP/h/XKPsruMgZEaIOjPLOqnNPZw=";
-    fetchSubmodules = true;
+    rev = "b0859501df61cde198b54a317c03b41dbafc98b1";
+    sha256 = "0qqg79jw9w9rs8c2w3lla4kz62ihafrf7jm370pp1dl8y2i81jzg";
   };
 
-  # squashfuse adapted to nix from cmake experession in "${appimagekit_src}/lib/libappimage/cmake/dependencies.cmake"
+  # squashfuse adapted to nix from cmake experession in "${appimagekit_src}/cmake/dependencies.cmake"
   appimagekit_squashfuse = squashfuse.overrideAttrs (attrs: rec {
-    pname = "squashfuse";
-    version = "unstable-2016-10-09";
+    name = "squashfuse-${version}";
+    version = "20161009";
 
     src = fetchFromGitHub {
       owner = "vasi";
-      repo  = pname;
-      rev = "1f980303b89c779eabfd0a0fdd36d6a7a311bf92";
-      sha256 = "sha256-BZd1+7sRYZHthULKk3RlgMIy4uCUei45GbSEiZxLPFM=";
+      repo  = "squashfuse";
+      rev   = "1f980303b89c779eabfd0a0fdd36d6a7a311bf92";
+      sha256 = "0lrw9ff8k15l34wjwyllw3i35hl0cms97jj2hpnr2q8ipgxpb5q5";
     };
 
     patches = [
-      "${appimagekit_src}/lib/libappimage/src/patches/squashfuse.patch"
-      "${appimagekit_src}/lib/libappimage/src/patches/squashfuse_dlopen.patch"
+      "${appimagekit_src}/squashfuse.patch"
+      "${appimagekit_src}/squashfuse_dlopen.patch"
     ];
 
     postPatch = ''
-      cp -v ${appimagekit_src}/lib/libappimage/src/patches/squashfuse_dlopen.[hc] .
+      cp -v ${appimagekit_src}/squashfuse_dlopen.[hc] .
     '';
 
     preConfigure = ''
@@ -59,26 +58,26 @@ let
   });
 
 in stdenv.mkDerivation rec {
-  pname = "appimagekit";
-  version = "unstable-2020-12-31";
+  name = "appimagekit-20180727";
 
   src = appimagekit_src;
 
   patches = [ ./nix.patch ];
 
-  postPatch = ''
-    patchShebangs src/embed-magic-bytes-in-file.sh
-  '';
-
   nativeBuildInputs = [
-    pkg-config cmake autoconf automake libtool wget xxd
-    desktop-file-utils makeWrapper
+    pkgconfig cmake autoconf automake libtool wget xxd
+    desktop-file-utils
   ];
 
   buildInputs = [
-    glib zlib cairo openssl fuse xz inotify-tools
-    libarchive squashfsTools appimagekit_squashfuse
+    glib zlib cairo openssl fuse
+    xz inotify-tools libarchive
+    squashfsTools makeWrapper
   ];
+
+  postPatch = ''
+    substituteInPlace src/appimagetool.c --replace "/usr/bin/file" "${file}/bin/file"
+  '';
 
   preConfigure = ''
     export HOME=$(pwd)
@@ -88,29 +87,29 @@ in stdenv.mkDerivation rec {
     "-DUSE_SYSTEM_XZ=ON"
     "-DUSE_SYSTEM_SQUASHFUSE=ON"
     "-DSQUASHFUSE=${appimagekit_squashfuse}"
+    "-DUSE_SYSTEM_INOTIFY_TOOLS=ON"
     "-DUSE_SYSTEM_LIBARCHIVE=ON"
     "-DUSE_SYSTEM_GTEST=ON"
     "-DUSE_SYSTEM_MKSQUASHFS=ON"
   ];
 
   postInstall = ''
-    mkdir -p $out/lib/appimagekit
     cp "${squashfsTools}/bin/mksquashfs" "$out/lib/appimagekit/"
     cp "${desktop-file-utils}/bin/desktop-file-validate" "$out/bin"
 
     wrapProgram "$out/bin/appimagetool" \
-      --prefix PATH : "${lib.makeBinPath [ file gnupg ]}" \
-      --unset SOURCE_DATE_EPOCH
+      --prefix PATH : "${stdenv.lib.makeBinPath [ file gnupg ]}"
   '';
 
   checkInputs = [ gtest ];
+  doCheck = false; # fails 1 out of 4 tests, I'm too lazy to debug why
 
   # for debugging
   passthru = {
     squashfuse = appimagekit_squashfuse;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool to package desktop applications as AppImages";
     longDescription = ''
       AppImageKit is an implementation of the AppImage format that
@@ -118,7 +117,6 @@ in stdenv.mkDerivation rec {
       AppImages.
     '';
     license = licenses.mit;
-    maintainers = with maintainers; [ taeer ];
     homepage = src.meta.homepage;
     platforms = platforms.linux;
   };

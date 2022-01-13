@@ -1,33 +1,28 @@
 { lib
 , buildPythonPackage
-, fetchFromGitHub
+, fetchurl
 , stdenv
-, AudioToolbox
-, AudioUnit
-, CoreServices
+, darwin
 }:
 
 buildPythonPackage rec {
   pname = "audiotools";
   version = "3.1.1";
 
-  buildInputs = lib.optionals stdenv.isDarwin [
+  buildInputs = lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
     AudioToolbox
     AudioUnit
     CoreServices
-  ];
+  ]);
 
-  src = fetchFromGitHub {
-    owner = "tuffy";
-    repo = "python-audio-tools";
-    rev = "v${version}";
-    sha256 = "sha256-y+EiK9BktyTWowOiJvOb2YjtbPa7R62Wb5zinkyt1OM=";
+  src = fetchurl {
+    url = "https://github.com/tuffy/python-audio-tools/archive/v${version}.tar.gz";
+    sha256 = "0ymlxvqkqhzk4q088qwir3dq0zgwqlrrdfnq7f0iq97g05qshm2c";
   };
 
-  meta = with lib; {
+  meta = {
     description = "Utilities and Python modules for handling audio";
     homepage = "http://audiotools.sourceforge.net/";
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ];
+    license = lib.licenses.gpl2Plus;
   };
 }

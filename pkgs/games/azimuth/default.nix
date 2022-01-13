@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, SDL, which, installTool ? false }:
+{ stdenv, fetchFromGitHub, SDL, which, installTool ? false }:
 
 stdenv.mkDerivation rec {
   pname = "azimuth";
@@ -41,10 +41,10 @@ stdenv.mkDerivation rec {
       bosses to tangle with.
     '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
     homepage = "https://mdsteele.games/azimuth/index.html";
-    maintainers = with lib.maintainers; [ marius851000 ];
-    platforms = lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ marius851000 ];
+    platforms = stdenv.lib.platforms.linux;
   };
 
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, nettools, gettext, flex
+{ stdenv, fetchFromGitHub, pkgconfig, nettools, gettext, flex
 , readline ? null, openssl ? null, python2 ? null, ncurses ? null, rocksdb
 , sqlite ? null, postgresql ? null, libmysqlclient ? null, zlib ? null, lzo ? null
 , jansson ? null, acl ? null, glusterfs ? null, libceph ? null, libcap ? null
@@ -6,7 +6,7 @@
 
 assert sqlite != null || postgresql != null || libmysqlclient != null;
 
-with lib;
+with stdenv.lib;
 let
   withGlusterfs = "\${with_glusterfs_directory}";
 in
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     sha256 = "1awf5i4mw2nfd7z0dmqnywapnx9nz6xwqv8rxp0y2mnrhzdpbrbz";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     nettools gettext readline openssl python2 flex ncurses sqlite postgresql
     libmysqlclient zlib lzo jansson acl glusterfs libceph libcap rocksdb
@@ -72,7 +72,7 @@ stdenv.mkDerivation rec {
     "sbindir=\${out}/bin"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.bareos.org/";
     description = "A fork of the bacula project";
     license = licenses.agpl3;

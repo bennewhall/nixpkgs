@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchurl
 , mmpython
@@ -57,7 +57,7 @@ buildPythonPackage rec {
     echo '${setup}' > $sourceRoot/setup.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for automatic download/upload subtitles for videofiles using fast hashing";
     homepage = "https://www.subdownloader.net";
     license = licenses.gpl3;

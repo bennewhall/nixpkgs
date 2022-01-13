@@ -1,25 +1,23 @@
 { buildPythonPackage
-, lib
+, stdenv
 , fetchgit
 , requests
-, distro
 , makeWrapper
 , extraHandlers ? []
 }:
 
 buildPythonPackage rec {
   pname = "ssh-import-id";
-  version = "5.11";
+  version = "5.8";
 
   src = fetchgit {
     url = "https://git.launchpad.net/ssh-import-id";
     rev = version;
-    sha256 = "sha256-tYbaJGH59qyvjp4kwo3ZFVs0EaE0Lsd2CQ6iraFkAdI=";
+    sha256 = "0l9gya1hyf2qfidlmvg2cgfils1fp9rn5r8sihwvx4qfsfp5yaak";
   };
 
   propagatedBuildInputs = [
     requests
-    distro
   ] ++ extraHandlers;
 
   nativeBuildInputs = [
@@ -29,7 +27,7 @@ buildPythonPackage rec {
   # handlers require main bin, main bin requires handlers
   makeWrapperArgs = [ "--prefix" ":" "$out/bin" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Retrieves an SSH public key and installs it locally";
     license = licenses.gpl3;
     maintainers = with maintainers; [ mkg20001 ];

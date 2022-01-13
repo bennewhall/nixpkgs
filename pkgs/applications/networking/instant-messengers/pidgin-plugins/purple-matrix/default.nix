@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, pidgin, json-glib, glib, http-parser, sqlite, olm, libgcrypt } :
+{ stdenv, fetchFromGitHub, pkgconfig, pidgin, json-glib, glib, http-parser, sqlite, olm, libgcrypt } :
 
 stdenv.mkDerivation rec {
   pname = "purple-matrix-unstable";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     "-O3" "-Wno-error"
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ pidgin json-glib glib http-parser sqlite olm libgcrypt ];
 
   makeFlags = [
@@ -26,9 +26,9 @@ stdenv.mkDerivation rec {
     "DATA_ROOT_DIR_PURPLE=${placeholder "out"}/share"
   ];
 
-  buildFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ]; # fix build on darwin
+  buildFlags = [ "CC=cc" ]; # fix build on darwin
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/matrix-org/purple-matrix";
     description = "Matrix support for Pidgin / libpurple";
     license = licenses.gpl2;

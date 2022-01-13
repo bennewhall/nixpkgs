@@ -1,4 +1,4 @@
-{ fetchFromGitHub, lib, python3Packages, gnupg, perl }:
+{ fetchFromGitHub, stdenv, python3Packages, gnupg, perl }:
 
 let version = "3.0.0"; in
 python3Packages.buildPythonApplication {
@@ -33,9 +33,9 @@ python3Packages.buildPythonApplication {
          to the process.
       '';
 
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
 
-    platforms = lib.platforms.gnu ++ lib.platforms.linux;
-    maintainers = with lib.maintainers; [ kierdavis ];
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ kierdavis ];
   };
 }

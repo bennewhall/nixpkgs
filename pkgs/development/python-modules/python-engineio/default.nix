@@ -1,32 +1,31 @@
-{ lib
-, stdenv
+{ stdenv, buildPythonPackage, fetchFromGitHub
 , aiohttp
-, buildPythonPackage
 , eventlet
-, fetchFromGitHub
 , iana-etc
 , libredirect
 , mock
-, pytestCheckHook
-, pythonOlder
 , requests
+, six
 , tornado
-, websocket-client
+, websocket_client
+, websockets
+, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "python-engineio";
-  version = "4.3.0";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
+  version = "3.13.2";
 
   src = fetchFromGitHub {
     owner = "miguelgrinberg";
     repo = "python-engineio";
     rev = "v${version}";
-    sha256 = "sha256-ohNRtceh0bHBlnGSFUckG5KzoLY8Q1jvpFee7T78Vto=";
+    sha256 = "1hn5nnxp7y2dpf52vrwdxza2sqmzj8admcnwgjkmcxk65s2dhvy1";
   };
+
+  propagatedBuildInputs = [
+    six
+  ];
 
   checkInputs = [
     aiohttp
@@ -34,39 +33,25 @@ buildPythonPackage rec {
     mock
     requests
     tornado
-    websocket-client
+    websocket_client
+    websockets
     pytestCheckHook
   ];
 
-  doCheck = !stdenv.isDarwin;
-
-  preCheck = lib.optionalString stdenv.isLinux ''
+  preCheck = stdenv.lib.optionalString stdenv.isLinux ''
     echo "nameserver 127.0.0.1" > resolv.conf
     export NIX_REDIRECTS=/etc/protocols=${iana-etc}/etc/protocols:/etc/resolv.conf=$(realpath resolv.conf) \
       LD_PRELOAD=${libredirect}/lib/libredirect.so
   '';
-
-  postCheck = ''
-    unset NIX_REDIRECTS LD_PRELOAD
-  '';
+  postCheck = "unset NIX_REDIRECTS LD_PRELOAD";
 
   # somehow effective log level does not change?
-  disabledTests = [
-    "test_logger"
-  ];
+  disabledTests = [ "test_logger" ];
 
-  pythonImportsCheck = [
-    "engineio"
-  ];
-
-  meta = with lib; {
-    description = "Python based Engine.IO client and server";
-    longDescription = ''
-      Engine.IO is a lightweight transport protocol that enables real-time
-      bidirectional event-based communication between clients and a server.
-    '';
+  meta = with stdenv.lib; {
+    description = "Engine.IO server";
     homepage = "https://github.com/miguelgrinberg/python-engineio/";
-    license = with licenses; [ mit ];
-    maintainers = with maintainers; [ mic92 ];
+    license = licenses.mit;
+    maintainers = [ maintainers.mic92 ];
   };
 }

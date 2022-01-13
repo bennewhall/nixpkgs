@@ -1,8 +1,12 @@
-{ mkDerivation
+{ mkDerivation, callPackage, buildPackages
 , async, base, bytestring, containers, fetchFromGitLab, mtl
-, parallel-io, parsec, lib, stm, transformers, sbv_7_13, z3
+, parallel-io, parsec, stdenv, stm, transformers
 }:
-
+let
+  z3 = callPackage ./z3.nix { gomp = null; z3 = buildPackages.z3; };
+in let
+  sbv = callPackage ./sbv-7.13.nix { inherit z3; };
+in
 mkDerivation rec {
   pname = "petrinizer";
   version = "0.9.1.1";
@@ -18,11 +22,10 @@ mkDerivation rec {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    async base bytestring containers mtl parallel-io parsec sbv_7_13 stm
+    async base bytestring containers mtl parallel-io parsec sbv stm
     transformers
   ];
   description = "Safety and Liveness Analysis of Petri Nets with SMT solvers";
-  license = lib.licenses.gpl3;
-  maintainers = with lib.maintainers; [ raskin ];
-  inherit (sbv_7_13.meta) platforms;
+  license = stdenv.lib.licenses.gpl3;
+  maintainers = with stdenv.lib.maintainers; [ raskin ];
 }

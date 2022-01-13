@@ -1,18 +1,11 @@
-{ lib, stdenv, fetchFromGitHub, substituteAll, perl, file, ncurses, bash }:
+{ stdenv, fetchFromGitHub, substituteAll, perl, file, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "lesspipe";
   version = "1.85";
 
-  nativeBuildInputs = [ perl ];
-  buildInputs = [ perl bash ];
-  strictDeps = true;
-  preConfigure = ''
-    patchShebangs --build configure
-  '';
-  configureFlags = [ "--shell=${bash}/bin/bash" "--yes" ];
-  configurePlatforms = [];
-  dontBuild = true;
+  buildInputs = [ perl ];
+  preConfigure = "patchShebangs .";
 
   src = fetchFromGitHub {
     owner = "wofr06";
@@ -27,10 +20,9 @@ stdenv.mkDerivation rec {
       file = "${file}/bin/file";
       tput = "${ncurses}/bin/tput";
     })
-    ./override-shell-detection.patch
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A preprocessor for less";
     longDescription = ''
       Usually lesspipe.sh is called as an input filter to less. With the help

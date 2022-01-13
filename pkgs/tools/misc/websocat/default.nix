@@ -1,40 +1,33 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, openssl, rustPlatform, libiconv
-, Security, makeWrapper, bash }:
+{ stdenv, fetchFromGitHub, pkgconfig, openssl, rustPlatform, Security, makeWrapper, bash }:
 
 rustPlatform.buildRustPackage rec {
   pname = "websocat";
-  version = "1.9.0";
+  version = "1.6.0";
 
   src = fetchFromGitHub {
     owner = "vi";
-    repo = pname;
+    repo = "websocat";
     rev = "v${version}";
-    sha256 = "sha256-aQWLsdYHmju7tCJfg3a1aOlFYui7qsQ8vJfhyMawXWo=";
+    sha256 = "0iilq96bxcb2fsljvlgy47pg514w0jf72ckz39yy3k0gwc1yfcja";
   };
 
-  cargoSha256 = "sha256-b/B+K/LMP1XK1QEtFKY4nmy2fAqEmLTN+qL+XlrqA5w=";
+  cargoBuildFlags = [ "--features=ssl" ];
+  cargoSha256 = "1hsms8rlnds8npr8m0dm21h04ci5ljda09pqb598v7ny3j2dldiq";
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
-  buildInputs = [ openssl ]
-    ++ lib.optionals stdenv.isDarwin [ libiconv Security ];
-
-  buildFeatures = [ "ssl" ];
-
-  # Needed to get openssl-sys to use pkg-config.
-  OPENSSL_NO_VENDOR=1;
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
+  buildInputs = [ openssl ] ++ stdenv.lib.optional stdenv.isDarwin Security;
 
   # The wrapping is required so that the "sh-c" option of websocat works even
   # if sh is not in the PATH (as can happen, for instance, when websocat is
   # started as a systemd service).
   postInstall = ''
     wrapProgram $out/bin/websocat \
-      --prefix PATH : ${lib.makeBinPath [ bash ]}
+      --prefix PATH : ${stdenv.lib.makeBinPath [ bash ]}
   '';
 
-  meta = with lib; {
-    homepage = "https://github.com/vi/websocat";
+  meta = with stdenv.lib; {
     description = "Command-line client for WebSockets (like netcat/socat)";
-    changelog = "https://github.com/vi/websocat/releases/tag/v${version}";
+    homepage = "https://github.com/vi/websocat";
     license = licenses.mit;
     maintainers = with maintainers; [ thoughtpolice Br1ght0ne ];
   };

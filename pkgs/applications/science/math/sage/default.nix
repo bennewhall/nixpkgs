@@ -9,19 +9,33 @@
 let
   inherit (pkgs) symlinkJoin callPackage nodePackages;
 
-  python3 = pkgs.python3.override {
+  # https://trac.sagemath.org/ticket/15980 for tracking of python3 support
+  python = pkgs.python2.override {
     packageOverrides = self: super: {
-      # `sagelib`, i.e. all of sage except some wrappers and runtime dependencies
-      sagelib = self.callPackage ./sagelib.nix {
-        inherit flint arb;
-        inherit sage-src env-locations pynac singular;
-        inherit (maxima) lisp-compiler;
-        linbox = pkgs.linbox.override { withSage = true; };
-        pkg-config = pkgs.pkg-config; # not to confuse with pythonPackages.pkg-config
+      # python packages that appear unmaintained and were not accepted into the nixpkgs
+      # tree because of that. These packages are only dependencies of the more-or-less
+      # deprecated sagenb. However sagenb is still a default dependency and the doctests
+      # depend on it.
+      # See https://github.com/NixOS/nixpkgs/pull/38787 for a discussion.
+      # The dependency on the sage notebook (and therefore these packages) will be
+      # removed in the future:
+      # https://trac.sagemath.org/ticket/25837
+      flask-oldsessions = self.callPackage ./flask-oldsessions.nix {};
+      flask-openid = self.callPackage ./flask-openid.nix {};
+      python-openid = self.callPackage ./python-openid.nix {};
+      sagenb = self.callPackage ./sagenb.nix {
+        mathjax = nodePackages.mathjax;
       };
 
-      sage_docbuild = self.callPackage ./sage_docbuild.nix {
-        inherit sage-src;
+      # Package with a cyclic dependency with sage
+      pybrial = self.callPackage ./pybrial.nix {};
+
+      # `sagelib`, i.e. all of sage except some wrappers and runtime dependencies
+      sagelib = self.callPackage ./sagelib.nix {
+        inherit flint ecl arb;
+        inherit sage-src env-locations pynac singular;
+        linbox = pkgs.linbox.override { withSage = true; };
+        pkg-config = pkgs.pkgconfig; # not to confuse with pythonPackages.pkgconfig
       };
     };
   };
@@ -38,45 +52,42 @@ let
     ];
     language = "sagemath";
     # just one 16x16 logo is available
-    logo32 = "${sage-src}/src/doc/common/themes/sage/static/sageicon.png";
-    logo64 = "${sage-src}/src/doc/common/themes/sage/static/sageicon.png";
+    logo32 = "${sage-src}/doc/common/themes/sage/static/sageicon.png";
+    logo64 = "${sage-src}/doc/common/themes/sage/static/sageicon.png";
   };
-
-  three = callPackage ./threejs-sage.nix { };
 
   # A bash script setting various environment variables to tell sage where
   # the files its looking fore are located. Also see `sage-env`.
   env-locations = callPackage ./env-locations.nix {
-    inherit pari_data;
-    inherit singular maxima;
-    inherit three;
-    cysignals = python3.pkgs.cysignals;
+    inherit pari_data ecl;
+    inherit singular maxima-ecl;
+    cysignals = python.pkgs.cysignals;
+    three = nodePackages.three;
     mathjax = nodePackages.mathjax;
   };
 
   # The shell file that gets sourced on every sage start. Will also source
   # the env-locations file.
   sage-env = callPackage ./sage-env.nix {
-    sagelib = python3.pkgs.sagelib;
-    sage_docbuild = python3.pkgs.sage_docbuild;
+    sagelib = python.pkgs.sagelib;
     inherit env-locations;
-    inherit python3 singular palp flint pynac pythonEnv maxima;
-    pkg-config = pkgs.pkg-config; # not to confuse with pythonPackages.pkg-config
+    inherit python ecl singular palp flint pynac pythonEnv maxima-ecl;
+    pkg-config = pkgs.pkgconfig; # not to confuse with pythonPackages.pkgconfig
   };
 
   # The documentation for sage, building it takes a lot of ram.
   sagedoc = callPackage ./sagedoc.nix {
     inherit sage-with-env;
-    inherit python3 maxima;
+    inherit python maxima-ecl;
   };
 
   # sagelib with added wrappers and a dependency on sage-tests to make sure thet tests were run.
   sage-with-env = callPackage ./sage-with-env.nix {
-    inherit python3 pythonEnv;
+    inherit pythonEnv;
     inherit sage-env;
-    inherit pynac singular maxima;
-    inherit three;
-    pkg-config = pkgs.pkg-config; # not to confuse with pythonPackages.pkg-config
+    inherit pynac singular maxima-ecl;
+    pkg-config = pkgs.pkgconfig; # not to confuse with pythonPackages.pkgconfig
+    three = nodePackages.three;
   };
 
   # Doesn't actually build anything, just runs sages testsuite. This is a
@@ -89,9 +100,10 @@ let
 
   sage-src = callPackage ./sage-src.nix {};
 
-  pythonRuntimeDeps = with python3.pkgs; [
+  pythonRuntimeDeps = with python.pkgs; [
     sagelib
-    sage_docbuild
+    pybrial
+    sagenb
     cvxopt
     networkx
     service-identity
@@ -104,10 +116,11 @@ let
     ipywidgets
     rpy2
     sphinx
+    typing
     pillow
   ];
 
-  pythonEnv = python3.buildEnv.override {
+  pythonEnv = python.buildEnv.override {
     extraLibs = pythonRuntimeDeps;
     ignoreCollisions = true;
   } // { extraLibs = pythonRuntimeDeps; }; # make the libs accessible
@@ -116,21 +129,8 @@ let
 
   singular = pkgs.singular.override { inherit flint; };
 
-  maxima = pkgs.maxima.override {
-    lisp-compiler = pkgs.ecl.override {
-      # "echo syntax error | ecl > /dev/full 2>&1" segfaults in
-      # ECL. We apply a patch to fix it (write_error.patch), but it
-      # only works if threads are disabled.  sage 9.2 tests this
-      # (src/sage/interfaces/tests.py) and ships ecl like so.
-      # https://gitlab.com/embeddable-common-lisp/ecl/-/merge_requests/1#note_1657275
-      threadSupport = false;
-
-      # if we don't use the system boehmgc, sending a SIGINT to ecl
-      # can segfault if we it happens during memory allocation.
-      # src/sage/libs/ecl.pyx would intermittently fail in this case.
-      useBoehmgc = true;
-    };
-  };
+  # https://trac.sagemath.org/ticket/26625
+  maxima-ecl = pkgs.maxima-ecl;
 
   # *not* to confuse with the python package "pynac"
   pynac = pkgs.pynac.override { inherit singular flint; };
@@ -161,6 +161,9 @@ let
       pari-seadata-small
     ];
   };
+
+  # https://trac.sagemath.org/ticket/22191
+  ecl = pkgs.ecl_16_1_2;
 in
 # A wrapper around sage that makes sure sage finds its docs (if they were build).
 callPackage ./sage.nix {

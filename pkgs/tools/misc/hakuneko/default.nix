@@ -70,7 +70,7 @@ stdenv.mkDerivation rec {
       "''${gappsWrapperArgs[@]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Manga & Anime Downloader";
     homepage = "https://sourceforge.net/projects/hakuneko/";
     license = licenses.unlicense;

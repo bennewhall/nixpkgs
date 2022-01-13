@@ -1,5 +1,5 @@
 { stdenv, lib, rustPlatform, fetchgit, runCommand, symlinkJoin
-, pkg-config, minijail, dtc, libusb1, libcap, linux
+, pkgconfig, minijail, dtc, libusb1, libcap, linux
 }:
 
 let
@@ -53,9 +53,9 @@ in
       ./default-seccomp-policy-dir.diff
     ];
 
-    cargoSha256 = "0aax0slg59afbyn3ygswwap2anv11k6sr9hfpysb4f8rvymvx7hd";
+    cargoSha256 = "0lhivwvdihslwp81i3sa5q88p5hr83bzkvklrcgf6x73arwk8kdz";
 
-    nativeBuildInputs = [ pkg-config ];
+    nativeBuildInputs = [ pkgconfig ];
 
     buildInputs = [ dtc libcap libusb1 minijail ];
 
@@ -75,7 +75,7 @@ in
 
     CROSVM_CARGO_TEST_KERNEL_BINARY =
       lib.optionalString (stdenv.buildPlatform == stdenv.hostPlatform)
-        "${linux}/${stdenv.hostPlatform.linux-kernel.target}";
+        "${linux}/${stdenv.hostPlatform.platform.kernelTarget}";
 
     passthru = {
       inherit adhdSrc;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "thttpd";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Tiny/turbo/throttling HTTP server";
     homepage = "http://www.acme.com/software/thttpd/";
-    license = lib.licenses.bsd2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.bsd2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

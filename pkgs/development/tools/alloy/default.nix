@@ -1,20 +1,16 @@
-{ lib, stdenv, fetchurl, jre, makeWrapper, makeDesktopItem }:
+{ stdenv, fetchurl, jre, makeWrapper, makeDesktopItem }:
 
-let generic = { version, sha256 }:
+let generic = { major, version, src }:
+
   stdenv.mkDerivation rec {
-    pname = "alloy${lib.versions.major version}";
-    inherit version;
-
-    src = fetchurl {
-      inherit sha256;
-      url = "https://github.com/AlloyTools/org.alloytools.alloy/releases/download/v${version}/org.alloytools.alloy.dist.jar";
-    };
+    name = "${nameMajor}-${version}";
+    nameMajor = "alloy${major}";
 
     desktopItem = makeDesktopItem rec {
-      name = pname;
+      name = nameMajor;
       exec = name;
       icon = name;
-      desktopName = "Alloy ${lib.versions.major version}";
+      desktopName = "Alloy ${major}";
       genericName = "Relational modelling tool";
       comment = meta.description;
       categories = "Development;IDE;Education;";
@@ -23,18 +19,18 @@ let generic = { version, sha256 }:
     nativeBuildInputs = [ makeWrapper ];
 
     buildCommand = ''
-      jar=$out/share/alloy/${pname}.jar
+      jar=$out/share/alloy/${nameMajor}.jar
       install -Dm644 ${src} $jar
 
       mkdir -p $out/bin
-      makeWrapper ${jre}/bin/java $out/bin/${pname} --add-flags \
-        "-jar $jar"
+      makeWrapper ${jre}/bin/java $out/bin/${nameMajor} --add-flags \
+       "-jar $jar"
 
-      install -Dm644 ${./icon.png} $out/share/pixmaps/${pname}.png
+      install -Dm644 ${./icon.png} $out/share/pixmaps/${nameMajor}.png
       cp -r ${desktopItem}/share/applications $out/share
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Language & tool for relational models";
       longDescription = ''
         Alloy is a language for describing structures and a tool for exploring
@@ -54,14 +50,22 @@ let generic = { version, sha256 }:
   };
 
 in rec {
-  alloy5 = generic rec {
-    version = "5.1.0";
-    sha256 = "02k9khs4k5nc86x9pp5k3vcb0kiwdgcin46mlap4fycnr673xd53";
+  alloy4 = let version = "4.2_2015-02-22"; in generic {
+    major = "4";
+    inherit version;
+    src = fetchurl {
+      sha256 = "0p93v8jwx9prijpikkgmfdzb9qn8ljmvga5d9wvrkxddccjx9k28";
+      url = "http://alloytools.org/download/alloy${version}.jar";
+    };
   };
 
-  alloy6 = generic rec {
-    version = "6.0.0";
-    sha256 = "sha256-rA7mNxcu0DWkykMyfV4JwFmQqg0HOIcwjjD4jCRxNww=";
+  alloy5 = let version = "5.1.0"; in generic {
+    major = "5";
+    inherit version;
+    src = fetchurl {
+      sha256 = "02k9khs4k5nc86x9pp5k3vcb0kiwdgcin46mlap4fycnr673xd53";
+      url = "https://github.com/AlloyTools/org.alloytools.alloy/releases/download/v${version}/org.alloytools.alloy.dist.jar";
+    };
   };
 
   alloy = alloy5;

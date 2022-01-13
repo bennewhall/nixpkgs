@@ -1,11 +1,12 @@
 { fetchurl
-, lib
+, stdenv
 , substituteAll
 , aspellWithDicts
 , at-spi2-core ? null
 , atspiSupport ? true
 , bash
 , glib
+, glibcLocales
 , dconf
 , gobject-introspection
 , gsettings-desktop-schemas
@@ -15,12 +16,11 @@
 , hunspellWithDicts
 , intltool
 , isocodes
-, libappindicator-gtk3
 , libcanberra-gtk3
 , mousetweaks
 , udev
 , libxkbcommon
-, pkg-config
+, pkgconfig
 , procps
 , python3
 , wrapGAppsHook
@@ -59,7 +59,7 @@ python3.pkgs.buildPythonApplication rec {
   nativeBuildInputs = [
     gobject-introspection
     intltool
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -71,16 +71,15 @@ python3.pkgs.buildPythonApplication rec {
     gtk3
     hunspell
     isocodes
-    libappindicator-gtk3
     libcanberra-gtk3
     libxkbcommon
     mousetweaks
     udev
     xorg.libXtst
     xorg.libxkbfile
-  ] ++ lib.optional atspiSupport at-spi2-core;
+  ] ++ stdenv.lib.optional atspiSupport at-spi2-core;
 
-  pythonPath = with python3.pkgs; [
+  propagatedBuildInputs = with python3.pkgs; [
     dbus-python
     distutils_extra
     pyatspi
@@ -131,7 +130,8 @@ python3.pkgs.buildPythonApplication rec {
       --replace "/etc" "$out/etc"
 
     substituteInPlace  ./Onboard/LanguageSupport.py \
-      --replace "/usr/share/xml/iso-codes" "${isocodes}/share/xml/iso-codes"
+      --replace "/usr/share/xml/iso-codes" "${isocodes}/share/xml/iso-codes" \
+      --replace "/usr/bin/yelp" "${yelp}/bin/yelp"
 
     substituteInPlace  ./Onboard/Indicator.py \
       --replace   "/usr/bin/yelp" "${yelp}/bin/yelp"
@@ -172,7 +172,7 @@ python3.pkgs.buildPythonApplication rec {
     rm -rf  $out/share/icons/ubuntu-mono-*
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://launchpad.net/onboard";
     description = "Onscreen keyboard useful for tablet PC users and for mobility impaired users";
     maintainers = with maintainers; [ johnramsden ];

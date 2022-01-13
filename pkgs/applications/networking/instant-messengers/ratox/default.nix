@@ -1,14 +1,13 @@
-{ lib, stdenv, fetchgit, libtoxcore
+{ stdenv, fetchgit, libtoxcore
 , conf ? null }:
 
-with lib;
+with stdenv.lib;
 
 let
   configFile = optionalString (conf!=null) (builtins.toFile "config.h" conf);
 
 in stdenv.mkDerivation {
-  pname = "ratox";
-  version = "0.4.20180303";
+  name = "ratox-0.4.20180303";
 
   src = fetchgit {
     url = "git://git.2f30.org/ratox.git";

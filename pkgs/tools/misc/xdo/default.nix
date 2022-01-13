@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libxcb, xcbutil, xcbutilwm }:
+{ stdenv, fetchFromGitHub, libxcb, xcbutil, xcbutilwm }:
 
 stdenv.mkDerivation rec {
    pname = "xdo";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
    buildInputs = [ libxcb xcbutilwm xcbutil ];
 
-   meta = with lib; {
+   meta = with stdenv.lib; {
      description = "Small X utility to perform elementary actions on windows";
      homepage = "https://github.com/baskerville/xdo";
      maintainers = with maintainers; [ meisternu ];

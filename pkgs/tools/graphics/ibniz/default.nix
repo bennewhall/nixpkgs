@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, SDL }:
+{ stdenv, fetchurl, SDL }:
 
 stdenv.mkDerivation rec {
   pname = "ibniz";
@@ -16,9 +16,9 @@ stdenv.mkDerivation rec {
     cp ibniz $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Virtual machine designed for extremely compact low-level audiovisual programs";
-    homepage = "https://github.com/viznut/IBNIZ";
+    homepage = "http://www.pelulamu.net/ibniz/";
     license = licenses.zlib;
     platforms = platforms.linux;
     maintainers = [ maintainers.dezgeg ];

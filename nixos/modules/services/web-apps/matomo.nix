@@ -1,4 +1,4 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 with lib;
 let
   cfg = config.services.matomo;
@@ -12,7 +12,10 @@ let
   phpExecutionUnit = "phpfpm-${pool}";
   databaseService = "mysql.service";
 
-  fqdn = if config.networking.domain != null then config.networking.fqdn else config.networking.hostName;
+  fqdn =
+    let
+      join = hostName: domain: hostName + optionalString (domain != null) ".${domain}";
+     in join config.networking.hostName config.networking.domain;
 
 in {
   imports = [
@@ -21,7 +24,6 @@ in {
     (mkRemovedOptionModule [ "services" "piwik" "phpfpmProcessManagerConfig" ] "Use services.phpfpm.pools.<name>.settings")
     (mkRemovedOptionModule [ "services" "matomo" "phpfpmProcessManagerConfig" ] "Use services.phpfpm.pools.<name>.settings")
     (mkRenamedOptionModule [ "services" "piwik" "nginx" ] [ "services" "matomo" "nginx" ])
-    (mkRenamedOptionModule [ "services" "matomo" "periodicArchiveProcessingUrl" ] [ "services" "matomo" "hostname" ])
   ];
 
   options = {
@@ -46,7 +48,7 @@ in {
           as they don't get backported if they are not security-relevant.
         '';
         default = pkgs.matomo;
-        defaultText = literalExpression "pkgs.matomo";
+        defaultText = "pkgs.matomo";
       };
 
       webServerUser = mkOption {
@@ -75,21 +77,6 @@ in {
         '';
       };
 
-      hostname = mkOption {
-        type = types.str;
-        default = "${user}.${fqdn}";
-        defaultText = literalExpression ''
-          if config.${options.networking.domain} != null
-          then "${user}.''${config.${options.networking.fqdn}}"
-          else "${user}.''${config.${options.networking.hostName}}"
-        '';
-        example = "matomo.yourdomain.org";
-        description = ''
-          URL of the host, without https prefix. You may want to change it if you
-          run Matomo on a different URL than matomo.yourdomain.
-        '';
-      };
-
       nginx = mkOption {
         type = types.nullOr (types.submodule (
           recursiveUpdate
@@ -103,15 +90,13 @@ in {
         )
         );
         default = null;
-        example = literalExpression ''
-          {
-            serverAliases = [
-              "matomo.''${config.networking.domain}"
-              "stats.''${config.networking.domain}"
-            ];
-            enableACME = false;
-          }
-        '';
+        example = {
+          serverAliases = [
+            "matomo.\${config.networking.domain}"
+            "stats.\${config.networking.domain}"
+          ];
+          enableACME = false;
+        };
         description = ''
             With this option, you can customize an nginx virtualHost which already has sensible defaults for Matomo.
             Either this option or the webServerUser option is mandatory.
@@ -173,19 +158,6 @@ in {
         fi
         chown -R ${user}:${user} ${dataDir}
         chmod -R ug+rwX,o-rwx ${dataDir}
-
-        if [ -e ${dataDir}/current-package ]; then
-          CURRENT_PACKAGE=$(readlink ${dataDir}/current-package)
-          NEW_PACKAGE=${cfg.package}
-          if [ "$CURRENT_PACKAGE" != "$NEW_PACKAGE" ]; then
-            # keeping tmp arround between upgrades seems to bork stuff, so delete it
-            rm -rf ${dataDir}/tmp
-          fi
-        elif [ -e ${dataDir}/tmp ]; then
-          # upgrade from 4.4.1
-          rm -rf ${dataDir}/tmp
-        fi
-        ln -sfT ${cfg.package} ${dataDir}/current-package
         '';
       script = ''
             # Use User-Private Group scheme to protect Matomo data, but allow administration / backup via 'matomo' group
@@ -218,7 +190,7 @@ in {
         UMask = "0007";
         CPUSchedulingPolicy = "idle";
         IOSchedulingClass = "idle";
-        ExecStart = "${cfg.package}/bin/matomo-console core:archive --url=https://${cfg.hostname}";
+        ExecStart = "${cfg.package}/bin/matomo-console core:archive --url=https://${user}.${fqdn}";
       };
     };
 
@@ -274,7 +246,7 @@ in {
       # References:
       # https://fralef.me/piwik-hardening-with-nginx-and-php-fpm.html
       # https://github.com/perusio/piwik-nginx
-      "${cfg.hostname}" = mkMerge [ cfg.nginx {
+      "${user}.${fqdn}" = mkMerge [ cfg.nginx {
         # don't allow to override the root easily, as it will almost certainly break Matomo.
         # disadvantage: not shown as default in docs.
         root = mkForce "${cfg.package}/share";

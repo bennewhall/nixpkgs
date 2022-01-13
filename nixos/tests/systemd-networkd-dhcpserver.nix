@@ -3,7 +3,7 @@
 # reachable via the DHCP allocated address.
 import ./make-test-python.nix ({pkgs, ...}: {
   name = "systemd-networkd-dhcpserver";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ tomfitzhenry ];
   };
   nodes = {

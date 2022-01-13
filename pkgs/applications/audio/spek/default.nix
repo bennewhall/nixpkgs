@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, intltool, pkg-config, ffmpeg, wxGTK30-gtk3, wrapGAppsHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook, intltool, pkgconfig, ffmpeg, wxGTK30-gtk3, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
   pname = "spek";
@@ -14,11 +14,11 @@ stdenv.mkDerivation rec {
   # needed for autoreconfHook
   AUTOPOINT="intltoolize --automake --copy";
 
-  nativeBuildInputs = [ autoreconfHook intltool pkg-config wrapGAppsHook ];
+  nativeBuildInputs = [ autoreconfHook intltool pkgconfig wrapGAppsHook ];
 
   buildInputs = [ ffmpeg wxGTK30-gtk3 wxGTK30-gtk3.gtk ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Analyse your audio files by showing their spectrogram";
     homepage = "http://spek.cc/";
     license = licenses.gpl3;

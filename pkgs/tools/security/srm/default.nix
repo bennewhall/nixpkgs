@@ -1,15 +1,16 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "srm";
+
+  name = "srm-" + version;
   version = "1.2.15";
 
   src = fetchurl {
-    url = "mirror://sourceforge/project/srm/${version}/srm-${version}.tar.gz";
+    url = "mirror://sourceforge/project/srm/${version}/${name}.tar.gz";
     sha256 = "10sjarhprs6s4zandndg720528rcnd4xk8dl48pjj7li1q9c30vm";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Delete files securely";
     longDescription = ''
       srm (secure rm) is a command-line compatible rm(1) which

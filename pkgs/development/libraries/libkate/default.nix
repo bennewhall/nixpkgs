@@ -1,17 +1,16 @@
-{ lib, stdenv, fetchurl, libogg, libpng }:
+{ stdenv, fetchurl, libogg, libpng }:
 
 stdenv.mkDerivation rec {
-  pname = "libkate";
-  version = "0.4.1";
+  name = "libkate-0.4.1";
 
   src = fetchurl {
-    url = "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/libkate/${pname}-${version}.tar.gz";
+    url = "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/libkate/${name}.tar.gz";
     sha256 = "0s3vr2nxfxlf1k75iqpp4l78yf4gil3f0v778kvlngbchvaq23n4";
   };
 
   buildInputs = [ libogg libpng ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for encoding and decoding Kate streams";
     longDescription = ''
       This is libkate, the reference implementation of a codec for the Kate

@@ -1,20 +1,18 @@
-{ lib, stdenv, fetchurl, ocaml, findlib
+{ stdenv, fetchurl, ocaml, findlib, dune
 , lambdaTerm, cppo, makeWrapper, buildDunePackage
 }:
 
-if !lib.versionAtLeast ocaml.version "4.03"
+if !stdenv.lib.versionAtLeast ocaml.version "4.03"
 then throw "utop is not available for OCaml ${ocaml.version}"
 else
 
 buildDunePackage rec {
   pname = "utop";
-  version = "2.8.0";
-
-  useDune2 = true;
+  version = "2.4.3";
 
   src = fetchurl {
     url = "https://github.com/ocaml-community/utop/releases/download/${version}/utop-${version}.tbz";
-    sha256 = "0mi571ifjzq4wcjarn8q1b7yl8nxjm1jfx3afac224lqwn6bhb2d";
+    sha256 = "107al0l3x4a5kkjka7glmhsqlm7pwzzc6shspiv5gsjb49pblc2f";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -34,7 +32,7 @@ buildDunePackage rec {
 
        buildInputs = [ findlib ] ++ propagatedBuildInputs;
 
-       dontUnpack = true;
+       phases = [ "installPhase" ];
 
        installPhase = ''
          mkdir -p "$out"/${path}
@@ -58,7 +56,7 @@ buildDunePackage rec {
       --prefix CAML_LD_LIBRARY_PATH ":" "${get "CAML_LD_LIBRARY_PATH"}" \
       --prefix OCAMLPATH ":" "${get "OCAMLPATH"}" \
       --prefix OCAMLPATH ":" $(unset OCAMLPATH; addOCamlPath "$out"; printf %s "$OCAMLPATH") \
-      --add-flags "-I ${findlib}/lib/ocaml/${lib.getVersion ocaml}/site-lib"
+      --add-flags "-I ${findlib}/lib/ocaml/${stdenv.lib.getVersion ocaml}/site-lib"
    done
    '';
 
@@ -70,10 +68,10 @@ buildDunePackage rec {
     It integrates with the tuareg mode in Emacs.
     '';
     homepage = "https://github.com/diml/utop";
-    license = lib.licenses.bsd3;
+    license = stdenv.lib.licenses.bsd3;
     platforms = ocaml.meta.platforms or [];
     maintainers = [
-      lib.maintainers.gal_bolle
+      stdenv.lib.maintainers.gal_bolle
     ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An HTML/XML templating engine used by supervisor";
     homepage = "https://github.com/supervisor/meld3";
     license = licenses.free;

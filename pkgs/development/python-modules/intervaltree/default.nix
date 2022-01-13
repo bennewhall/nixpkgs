@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , python, pytest, sortedcontainers }:
 
 buildPythonPackage rec {
@@ -21,7 +21,7 @@ buildPythonPackage rec {
     runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Editable interval tree data structure for Python 2 and 3";
     homepage =  "https://github.com/chaimleib/intervaltree";
     license = [ licenses.asl20 ];

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl , taktuk}:
+{ stdenv, fetchurl, perl , taktuk}:
 
 stdenv.mkDerivation rec {
   version = "1.2.2";
@@ -26,9 +26,9 @@ stdenv.mkDerivation rec {
       remote files or directories locally ('kaget' command). It relies on TakTuk
       for efficiency and scalability.'';
     homepage = "http://taktuk.gforge.inria.fr/kanif";
-    license = lib.licenses.gpl2;
-    maintainers = [ lib.maintainers.bzizou ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = [ stdenv.lib.maintainers.bzizou ];
+    platforms = stdenv.lib.platforms.linux;
   };
 
 }

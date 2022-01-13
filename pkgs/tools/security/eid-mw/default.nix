@@ -1,37 +1,24 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, autoreconfHook
-, autoconf-archive
-, pkg-config
+{ stdenv, fetchFromGitHub
+, autoreconfHook, pkgconfig
+, gtk3, nssTools, pcsclite
+, libxml2, libproxy
+, openssl, curl
 , makeWrapper
-, curl
-, gtk3
-, libassuan
-, libbsd
-, libproxy
-, libxml2
-, openssl
-, p11-kit
-, pcsclite
-, nssTools
-, substituteAll
-}:
+, substituteAll }:
 
 stdenv.mkDerivation rec {
   pname = "eid-mw";
-  # NOTE: Don't just blindly update to the latest version/tag. Releases are always for a specific OS.
-  version = "5.0.28";
+  version = "4.4.27";
 
   src = fetchFromGitHub {
-    owner = "Fedict";
-    repo = "eid-mw";
     rev = "v${version}";
-    sha256 = "rrrzw8i271ZZkwY3L6aRw2Nlz+GmDr/1ahYYlUBvtzo=";
+    sha256 = "17lw8iwp7h5cs3db80sysr84ffi333cf2vrhncs9l6hy6glfl2v1";
+    repo = "eid-mw";
+    owner = "Fedict";
   };
 
-  nativeBuildInputs = [ autoreconfHook autoconf-archive pkg-config makeWrapper ];
-  buildInputs = [ curl gtk3 libassuan libbsd libproxy libxml2 openssl p11-kit pcsclite ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig makeWrapper ];
+  buildInputs = [ gtk3 pcsclite libxml2 libproxy curl openssl ];
   preConfigure = ''
     mkdir openssl
     ln -s ${openssl.out}/lib openssl
@@ -40,39 +27,39 @@ stdenv.mkDerivation rec {
     export SSL_PREFIX=$(realpath openssl)
     substituteInPlace plugins_tools/eid-viewer/Makefile.in \
       --replace "c_rehash" "openssl rehash"
-  '';
-  # pinentry uses hardcoded `/usr/bin/pinentry`, so use the built-in (uglier) dialogs for pinentry.
-  configureFlags = [ "--disable-pinentry" ];
+    '';
 
   postPatch = ''
     sed 's@m4_esyscmd_s(.*,@[${version}],@' -i configure.ac
   '';
 
-  postInstall =
-    let
-      eid-nssdb-in = substituteAll {
-        inherit (stdenv) shell;
-        isExecutable = true;
-        src = ./eid-nssdb.in;
-      };
-    in
-    ''
-      install -D ${eid-nssdb-in} $out/bin/eid-nssdb
-      substituteInPlace $out/bin/eid-nssdb \
-        --replace "modutil" "${nssTools}/bin/modutil"
+  configureFlags = [ "--enable-dialogs=yes" ];
 
-      rm $out/bin/about-eid-mw
-      wrapProgram $out/bin/eid-viewer --prefix XDG_DATA_DIRS : "$out/share/gsettings-schemas/$name"
-    '';
+  postInstall =
+  let
+    eid-nssdb-in = substituteAll {
+      inherit (stdenv) shell;
+      isExecutable = true;
+      src = ./eid-nssdb.in;
+    };
+  in
+  ''
+    install -D ${eid-nssdb-in} $out/bin/eid-nssdb
+    substituteInPlace $out/bin/eid-nssdb \
+      --replace "modutil" "${nssTools}/bin/modutil"
+
+    rm $out/bin/about-eid-mw
+    wrapProgram $out/bin/eid-viewer --prefix XDG_DATA_DIRS : "$out/share/gsettings-schemas/$name"
+  '';
 
   enableParallelBuilding = true;
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Belgian electronic identity card (eID) middleware";
     homepage = "https://eid.belgium.be/en/using_your_eid/installing_the_eid_software/linux/";
-    license = licenses.lgpl3Only;
+    license = licenses.lgpl3;
     longDescription = ''
       Allows user authentication and digital signatures with Belgian ID cards.
       Also requires a running pcscd service and compatible card reader.
@@ -96,6 +83,6 @@ stdenv.mkDerivation rec {
           firefox.override { pkcs11Modules = [ pkgs.eid-mw ]; }
     '';
     platforms = platforms.linux;
-    maintainers = with maintainers; [ bfortz chvp ];
+    maintainers = with maintainers; [ bfortz ];
   };
 }

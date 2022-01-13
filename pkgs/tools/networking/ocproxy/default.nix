@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, libevent }:
+{ stdenv, fetchFromGitHub, autoconf, automake, libevent }:
 
 stdenv.mkDerivation rec {
   version = "1.60";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     ./autogen.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "OpenConnect proxy";
     longDescription = ''
       ocproxy is a user-level SOCKS and port forwarding proxy for OpenConnect

@@ -1,46 +1,39 @@
-{ lib, stdenv, fetchFromGitHub, installShellFiles,
-  qmake, qtbase, qtmultimedia, wrapQtAppsHook,
-  poppler, mupdf, freetype, jbig2dec, openjpeg, gumbo,
-  renderer ? "mupdf" }:
+{ stdenv, mkDerivation, fetchFromGitHub, installShellFiles,
+  qmake, qtbase, poppler, qtmultimedia }:
 
-let
-  renderers = {
-    mupdf.buildInputs = [ mupdf freetype jbig2dec openjpeg gumbo ];
-    poppler.buildInputs = [ poppler ];
-  };
-
-in
-
-stdenv.mkDerivation rec {
+mkDerivation rec {
   pname = "beamerpresenter";
-  version = "0.2.1";
+  version = "0.1.2";
 
   src = fetchFromGitHub {
     owner = "stiglers-eponym";
     repo = "BeamerPresenter";
     rev = "v${version}";
-    sha256 = "sha256-+ZxllYL2wco4bG2pqInIbL9qfOoqoUJJUReqDyEBRcI=";
+    sha256 = "12xngnhwa3haf0pdxczgvhq1j20zbsr30y2bfn9qwmlhbwklhkj2";
   };
 
-  nativeBuildInputs = [ qmake installShellFiles wrapQtAppsHook ];
-  buildInputs = [ qtbase qtmultimedia ] ++ renderers.${renderer}.buildInputs;
-
-  qmakeFlags = [ "RENDERER=${renderer}" ];
+  nativeBuildInputs = [ qmake installShellFiles ];
+  buildInputs = [ qtbase qtmultimedia poppler ];
 
   postPatch = ''
+    # Fix location of poppler-*.h
     shopt -s globstar
-    for f in **/*.{pro,conf,h,cpp}; do
-      substituteInPlace "$f" \
-        --replace "/usr/" "$out/" \
-        --replace "/etc/" "$out/etc/" \
-        --replace '$${GUI_CONFIG_PATH}' "$out/etc/xdg/beamerpresenter/gui.json"
+    for f in **/*.{h,cpp}; do
+      substituteInPlace $f --replace '#include <poppler-' '#include <poppler/qt5/poppler-'
     done
   '';
 
-  meta = with lib; {
-    description = "Modular multi screen pdf presentation software respecting your window manager";
+  installPhase = ''
+    install -m755 beamerpresenter -Dt $out/bin/
+    install -m644 src/icons/beamerpresenter.svg -Dt $out/share/icons/hicolor/scalable/apps/
+    install -m644 share/applications/beamerpresenter.desktop -Dt $out/share/applications/
+    installManPage man/*.{1,5}
+  '';
+
+  meta = with stdenv.lib; {
+    description = "Simple dual screen pdf presentation software";
     homepage = "https://github.com/stiglers-eponym/BeamerPresenter";
-    license = licenses.agpl3Plus;
+    license = licenses.gpl3Plus;
     platforms = platforms.all;
     maintainers = with maintainers; [ pacien ];
   };

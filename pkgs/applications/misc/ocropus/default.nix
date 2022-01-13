@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, fetchurl, pythonPackages, curl }:
+{ stdenv, fetchFromGitHub, fetchurl, pythonPackages, curl }:
 
 let
   getmodel = name: sha256: {
@@ -33,7 +33,7 @@ pythonPackages.buildPythonApplication rec {
 
   enableParallelBuilding = true;
 
-  preConfigure = with lib; ''
+  preConfigure = with stdenv.lib; ''
     ${concatStrings (map (x: "cp -R ${x.src} models/`basename ${x.name}`;")
       models)}
 
@@ -49,7 +49,7 @@ pythonPackages.buildPythonApplication rec {
     PATH=".:$PATH" ./run-test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Open source document analysis and OCR system";
     license = licenses.asl20;
     homepage = "https://github.com/tmbdev/ocropy/";

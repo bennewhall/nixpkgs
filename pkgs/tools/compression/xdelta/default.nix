@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook
+{ stdenv, fetchFromGitHub, autoreconfHook
 , lzmaSupport ? true, xz ? null
 }:
 
@@ -21,7 +21,7 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = []
-    ++ lib.optionals lzmaSupport [ xz ];
+    ++ stdenv.lib.optionals lzmaSupport [ xz ];
 
   postPatch = ''
     cd xdelta3
@@ -47,7 +47,7 @@ in stdenv.mkDerivation rec {
     install -D -m644 xdelta3.1 $out/share/man/man1/xdelta3.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Binary differential compression in VCDIFF (RFC 3284) format";
     longDescription = ''
       xdelta is a command line program for delta encoding, which generates two
@@ -56,6 +56,6 @@ in stdenv.mkDerivation rec {
     '';
     homepage = "http://xdelta.org/";
     license = licenses.gpl2Plus;
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

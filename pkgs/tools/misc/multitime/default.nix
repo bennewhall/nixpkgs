@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "multitime";
@@ -32,8 +32,8 @@ stdenv.mkDerivation rec {
       performance.
     '';
 
-    license = lib.licenses.mit;
+    license = stdenv.lib.licenses.mit;
     homepage = "https://tratt.net/laurie/src/multitime/";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

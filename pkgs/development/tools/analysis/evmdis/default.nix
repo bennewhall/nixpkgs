@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage {
   pname = "evmdis-unstable";
@@ -12,7 +12,7 @@ buildGoPackage {
     sha256 = "09y4j7ipgv8yd99g3xk3f079w8fqfj7kl1y7ry81ainysn0qlqrg";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Arachnid/evmdis";
     description = "Ethereum EVM disassembler";
     license = [ licenses.asl20 ];

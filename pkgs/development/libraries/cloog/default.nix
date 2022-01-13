@@ -1,11 +1,10 @@
-{ fetchurl, lib, stdenv, gmp, isl }:
+{ fetchurl, stdenv, gmp, isl }:
 
 stdenv.mkDerivation rec {
-  pname = "cloog";
-  version = "0.18.4";
+  name = "cloog-0.18.4";
 
   src = fetchurl {
-    url = "http://www.bastoul.net/cloog/pages/download/count.php3?url=./${pname}-${version}.tar.gz";
+    url = "http://www.bastoul.net/cloog/pages/download/count.php3?url=./${name}.tar.gz";
     sha256 = "03km1aqaiy3sbqc2f046ms9x0mlmacxlvs5rxsvjj8nf20vxynij";
   };
 
@@ -15,9 +14,8 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--with-isl=system" ];
 
-  enableParallelBuilding = true;
-  # Breaks the test cases as it reuses 'cloog_temp' file name for different tests.
-  enableParallelChecking = false;
+  # Breaks the test cases
+  #enableParallelBuilding = true;
 
   doCheck = true;
 
@@ -40,7 +38,7 @@ stdenv.mkDerivation rec {
 
     homepage = "http://www.cloog.org/";
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
     /* Leads to an ICE on Cygwin:
 
@@ -61,6 +59,6 @@ stdenv.mkDerivation rec {
        make[3]: *** [Box.lo] Error 1
 
     */
-    platforms = lib.platforms.unix; # Once had cygwin problems
+    platforms = stdenv.lib.platforms.unix; # Once had cygwin problems
   };
 }

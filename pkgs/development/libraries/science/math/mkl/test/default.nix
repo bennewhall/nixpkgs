@@ -1,14 +1,6 @@
-{ stdenv
-, pkg-config
-, mkl
+{ stdenv, pkg-config, mkl }:
 
-, enableStatic ? false
-, execution ? "seq"
-}:
-
-let
-  linkType = if enableStatic then "static" else "dynamic";
-in stdenv.mkDerivation {
+stdenv.mkDerivation {
   pname = "mkl-test";
   version = mkl.version;
 
@@ -16,19 +8,19 @@ in stdenv.mkDerivation {
 
   nativeBuildInputs = [ pkg-config ];
 
-  buildInputs = [ (mkl.override { inherit enableStatic; }) ];
+  buildInputs = [ mkl ];
 
   doCheck = true;
 
   buildPhase = ''
     # Check regular Nix build.
-    gcc test.c -o test $(pkg-config --cflags --libs mkl-${linkType}-ilp64-${execution})
+    gcc $(pkg-config --cflags --libs mkl-dynamic-ilp64-seq) test.c -o test
 
     # Clear flags to ensure that we are purely relying on options
     # provided by pkg-config.
     NIX_CFLAGS_COMPILE="" \
     NIX_LDFLAGS="" \
-      gcc test.c -o test $(pkg-config --cflags --libs mkl-${linkType}-ilp64-${execution})
+      gcc $(pkg-config --cflags --libs mkl-dynamic-ilp64-seq) test.c -o test
   '';
 
   installPhase = ''

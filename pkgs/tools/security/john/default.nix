@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchurl, openssl, nss, nspr, libkrb5, gmp, zlib, libpcap, re2
+{ stdenv, fetchurl, openssl, nss, nspr, kerberos, gmp, zlib, libpcap, re2
 , gcc, python3Packages, perl, perlPackages, makeWrapper
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "john";
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     "--with-systemwide"
   ];
 
-  buildInputs = [ openssl nss nspr libkrb5 gmp zlib libpcap re2 ];
+  buildInputs = [ openssl nss nspr kerberos gmp zlib libpcap re2 ];
   nativeBuildInputs = [ gcc python3Packages.wrapPython perl makeWrapper ];
   propagatedBuildInputs = (with python3Packages; [ dpkt scapy lxml ]) ++ # For pcap2john.py
                           (with perlPackages; [ DigestMD4 DigestSHA1 GetoptLong # For pass_gen.pl

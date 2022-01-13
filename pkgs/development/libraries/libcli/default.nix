@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchurl }:
+{ stdenv, fetchFromGitHub, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "libcli";
@@ -20,12 +20,12 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" "AR=${stdenv.cc.targetPrefix}ar" "PREFIX=$(out)" ];
+  makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Emulate a Cisco-style telnet command-line interface";
     homepage = "http://sites.dparrish.com/libcli";
     license = licenses.lgpl21Plus;
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }

@@ -1,4 +1,4 @@
-{ fetchFromGitHub, lib, stdenv, fetchpatch, pkg-config, exiv2, libxml2, gtk3
+{ fetchFromGitHub, stdenv, fetchpatch, pkgconfig, exiv2, libxml2, gtk3
 , libxslt, docbook_xsl, docbook_xml_dtd_42, desktop-file-utils, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     docbook_xml_dtd_42
     docbook_xsl
     libxslt
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -29,8 +29,8 @@ stdenv.mkDerivation rec {
 
   makeFlags = [
     "prefix=${placeholder "out"}"
-    "CC=${stdenv.cc.targetPrefix}cc"
-    "CXX=${stdenv.cc.targetPrefix}c++"
+    "CC=cc"
+    "CXX=c++"
     "CFLAGS=-DENABLE_NLS"
   ];
 
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
 
   installTargets = [ "install" "install-po" "install-desktop-file" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A GPS photo correlation tool, to add EXIF geotags";
 
     longDescription = ''
@@ -59,7 +59,7 @@ stdenv.mkDerivation rec {
 
     license = licenses.gpl2Plus;
     homepage = "https://dfandrich.github.io/gpscorrelate/";
-    platforms = platforms.unix;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ sikmir ];
   };
 }

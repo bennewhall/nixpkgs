@@ -5,15 +5,17 @@
 , pendulum
 , pprintpp
 , wrapt
+, pythonOlder
 }:
 
 buildPythonPackage rec {
   pname = "tbm-utils";
   version = "2.6.0";
+  disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1v7pb3yirkhzbv1z5i1qp74vl880f56zvzfj68p08b5jxv64hmr3";
+    sha256 = "235748cceeb22c042e32d2fdfd4d710021bac9b938c4f2c35e1fce1cfd58f7ec";
   };
 
   propagatedBuildInputs = [ attrs pendulum pprintpp wrapt ];
@@ -22,7 +24,7 @@ buildPythonPackage rec {
   # issues with package failing to build from source, but nixpkgs is better
   postPatch = ''
     substituteInPlace setup.py \
-      --replace "'attrs>=18.2,<19.4'" "'attrs'"
+      --replace "pendulum>=2.0,<=3.0,!=2.0.5,!=2.1.0" "pendulum>=2.0,<=3.0"
   '';
 
   # No tests in archive.

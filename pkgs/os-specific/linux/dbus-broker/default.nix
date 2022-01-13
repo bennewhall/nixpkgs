@@ -1,23 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, docutils, meson, ninja, pkg-config
+{ stdenv, fetchFromGitHub, docutils, meson, ninja, pkgconfig
 , dbus, linuxHeaders, systemd }:
 
 stdenv.mkDerivation rec {
   pname = "dbus-broker";
-  version = "29";
+  version = "22";
 
   src = fetchFromGitHub {
     owner  = "bus1";
     repo   = "dbus-broker";
     rev    = "v${version}";
-    sha256 = "1abbi8c0mgdqjidlp2wnmy0a88xv173hq88sh5m966c5r1h6alkq";
+    sha256 = "0vxr73afix5wjxy8g4cckwhl242rrlazm52673iwmdyfz5nskj2x";
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ docutils meson ninja pkg-config ];
+  nativeBuildInputs = [ docutils meson ninja pkgconfig ];
 
   buildInputs = [ dbus linuxHeaders systemd ];
-
-  mesonFlags = [ "-D=system-console-users=gdm,sddm,lightdm" ];
 
   PKG_CONFIG_SYSTEMD_SYSTEMDSYSTEMUNITDIR = "${placeholder "out"}/lib/systemd/system";
   PKG_CONFIG_SYSTEMD_SYSTEMDUSERUNITDIR = "${placeholder "out"}/lib/systemd/user";
@@ -32,7 +30,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Linux D-Bus Message Broker";
     homepage    = "https://github.com/bus1/dbus-broker/wiki";
     license     = licenses.asl20;

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, numpy, future }:
+{ stdenv, buildPythonPackage, fetchPypi, numpy, future }:
 
 buildPythonPackage rec {
   pname = "autograd";
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # fixed, enable testing. See: https://github.com/HIPS/autograd/issues/404
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/HIPS/autograd";
     description = "Compute derivatives of NumPy code efficiently";
     license = licenses.mit;

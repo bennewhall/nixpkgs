@@ -1,14 +1,14 @@
-{ lib, rustPlatform, fetchFromGitHub, boost, nix, pkg-config }:
+{ stdenv, rustPlatform, fetchFromGitHub, boost, nix, pkg-config }:
 
 rustPlatform.buildRustPackage rec {
   pname = "nix-doc";
-  version = "0.5.2";
+  version = "0.3.3";
 
   src = fetchFromGitHub {
     rev = "v${version}";
     owner = "lf-";
     repo = "nix-doc";
-    sha256 = "sha256-P4AX8ERsMHGkGowc05M7xE5HTFSmaJvD2z0Prz4emeQ=";
+    sha256 = "0vd7159y5w8jjgaw51kfr3z3r50299gvw7vjchpqx3nwmdink8bh";
   };
 
   doCheck = true;
@@ -16,13 +16,13 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ pkg-config ];
 
-  cargoSha256 = "sha256-RxsH4bSAzBslK8MVGmCJxduf6MYOtQEKxt9QjgUCg1o=";
+  cargoSha256 = "1xz3qngs8p0s62dq4d46c01z3k1vvgg856767g56b13c38pzfh28";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An interactive Nix documentation tool";
-    longDescription = "An interactive Nix documentation tool providing a CLI for function search, a Nix plugin for docs in the REPL, and a ctags implementation for Nix script";
+    longDescription = "An interactive Nix documentation tool providing a CLI for function search and a Nix plugin for docs in the REPL";
     homepage = "https://github.com/lf-/nix-doc";
-    license = licenses.lgpl3Plus;
+    license = licenses.lgpl3;
     maintainers = [ maintainers.lf- ];
     platforms = platforms.unix;
   };

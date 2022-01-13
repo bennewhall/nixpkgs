@@ -1,38 +1,36 @@
-{ stdenv, lib, fetchFromRepoOrCz, perl, texinfo, which }:
+{ stdenv, lib, fetchFromRepoOrCz, perl, texinfo }:
+with lib;
 
 stdenv.mkDerivation rec {
   pname = "tcc";
-  version = "unstable-2021-10-09";
+  version = "0.9.27";
+  upstreamVersion = "release_${concatStringsSep "_" (builtins.splitVersion version)}";
 
   src = fetchFromRepoOrCz {
     repo = "tinycc";
-    rev = "ca11849ebb88ef4ff87beda46bf5687e22949bd6";
-    sha256 = "sha256-xnUDyTYZxbxUCblACyX73boBhU073VRqSy1SWlWsvIw=";
+    rev = upstreamVersion;
+    sha256 = "12mm1lqywz0akr2yb2axjfbw8lwv57nh395vzsk534riz03ml977";
   };
 
-  nativeBuildInputs = [ perl texinfo which ];
+  nativeBuildInputs = [ perl texinfo ];
 
   hardeningDisable = [ "fortify" ];
 
-  postPatch = ''
-    patchShebangs texi2pod.pl
-  '';
+  enableParallelBuilding = true;
 
-  configureFlags = [
-    "--cc=$CC"
-    "--ar=$AR"
-    "--crtprefix=${lib.getLib stdenv.cc.libc}/lib"
-    "--sysincludepaths=${lib.getDev stdenv.cc.libc}/include:{B}/include"
-    "--libpaths=${lib.getLib stdenv.cc.libc}/lib"
-    # build cross compilers
-    "--enable-cross"
-  ] ++ lib.optionals stdenv.hostPlatform.isMusl [
-    "--config-musl"
-  ];
+  postPatch = ''
+    substituteInPlace "texi2pod.pl" \
+      --replace "/usr/bin/perl" "${perl}/bin/perl"
+  '';
 
   preConfigure = ''
     echo ${version} > VERSION
+
+    configureFlagsArray+=("--cc=cc")
     configureFlagsArray+=("--elfinterp=$(< $NIX_CC/nix-support/dynamic-linker)")
+    configureFlagsArray+=("--crtprefix=${getLib stdenv.cc.libc}/lib")
+    configureFlagsArray+=("--sysincludepaths=${getDev stdenv.cc.libc}/include:{B}/include")
+    configureFlagsArray+=("--libpaths=${getLib stdenv.cc.libc}/lib")
   '';
 
   postFixup = ''
@@ -49,8 +47,9 @@ stdenv.mkDerivation rec {
   doCheck = true;
   checkTarget = "test";
 
-  meta = with lib; {
+  meta = {
     description = "Small, fast, and embeddable C compiler and interpreter";
+
     longDescription = ''
       TinyCC (aka TCC) is a small but hyper fast C compiler.  Unlike
       other C compilers, it is meant to be self-sufficient: you do not
@@ -74,9 +73,11 @@ stdenv.mkDerivation rec {
       With libtcc, you can use TCC as a backend for dynamic code
       generation.
     '';
-    homepage = "https://repo.or.cz/tinycc.git";
-    license = licenses.lgpl21Only;
-    platforms = platforms.linux;
+
+    homepage = "http://www.tinycc.org/";
+    license = licenses.mit;
+
+    platforms = [ "x86_64-linux" ];
     maintainers = [ maintainers.joachifm ];
   };
 }

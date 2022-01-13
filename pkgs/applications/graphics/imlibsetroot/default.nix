@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libX11, libXinerama, imlib2 }:
+{ stdenv, fetchurl, libX11, libXinerama, imlib2 }:
 
 stdenv.mkDerivation {
   pname = "imlibsetroot";
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
     install -m 755 imlibsetroot $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Xinerama Aware Background Changer";
     homepage = "http://robotmonkeys.net/2010/03/30/imlibsetroot/";
     license = licenses.gpl2;

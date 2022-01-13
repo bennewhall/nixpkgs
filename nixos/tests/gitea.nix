@@ -61,7 +61,7 @@ let
           + "Please contact your site administrator.'"
       )
       server.succeed(
-          "su -l gitea -c 'GITEA_WORK_DIR=/var/lib/gitea gitea admin user create "
+          "su -l gitea -c 'GITEA_WORK_DIR=/var/lib/gitea gitea admin create-user "
           + "--username test --password totallysafe --email test@localhost'"
       )
 

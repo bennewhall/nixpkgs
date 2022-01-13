@@ -1,4 +1,4 @@
-{ lib, stdenv, pkgs }:
+{ stdenv, pkgs }:
 let
   version = "2.2.1";
 in
@@ -12,8 +12,8 @@ in
   meta = {
     description = "Command Line tool for Google Apps Script Projects";
     homepage = "https://developers.google.com/apps-script/guides/clasp";
-    license = lib.licenses.asl20;
-    maintainers = [ lib.maintainers.michojel ];
+    license = stdenv.lib.licenses.asl20;
+    maintainers = [ stdenv.lib.maintainers.michojel ];
     priority = 100;
   };
 }

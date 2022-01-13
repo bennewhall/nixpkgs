@@ -7,7 +7,6 @@
 , mock
 , ipython
 , ipykernel
-, jupyterlab-widgets
 , traitlets
 , notebook
 , widgetsnbextension
@@ -15,11 +14,11 @@
 
 buildPythonPackage rec {
   pname = "ipywidgets";
-  version = "7.6.5";
+  version = "7.5.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "00974f7cb4d5f8d494c19810fedb9fa9b64bffd3cda7c2be23c133a1ad3c99c5";
+    sha256 = "e945f6e02854a74994c596d9db83444a1850c01648f1574adf144fbbabe05c97";
   };
 
   # Tests are not distributed
@@ -29,7 +28,6 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     ipython
     ipykernel
-    jupyterlab-widgets
     traitlets
     notebook
     widgetsnbextension

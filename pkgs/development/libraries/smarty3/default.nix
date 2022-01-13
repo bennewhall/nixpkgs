@@ -1,14 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, ... }:
-
-stdenv.mkDerivation rec {
+{ stdenv, fetchFromGitHub, ... }: stdenv.mkDerivation rec {
   pname = "smarty3";
-  version = "3.1.39";
+  version = "3.1.36";
 
   src = fetchFromGitHub {
     owner = "smarty-php";
     repo = "smarty";
     rev = "v${version}";
-    sha256 = "0n5hmnw66gxqikp6frgfd9ywsvr2azyg5nl7ix89digqlzcljkbg";
+    sha256 = "0jljzw1xl2kjwf9cylp1ddnjhz7wbm499s03r479891max1m2mlf";
   };
 
   installPhase = ''
@@ -16,7 +14,7 @@ stdenv.mkDerivation rec {
     cp -r libs/* $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Smarty 3 template engine";
     longDescription = ''
       Smarty is a template engine for PHP, facilitating the

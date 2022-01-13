@@ -1,6 +1,5 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, fetchpatch
 , avahi
 , bluez
 , boost
@@ -11,20 +10,21 @@
 , glib
 , glib-networking
 , glibmm
-, gnome
+, gnome3
 , gsettings-desktop-schemas
 , gtk3
 , gtkmm3
 , hicolor-icon-theme
 , intltool
 , ladspaH
+, libav
 , libjack2
 , libsndfile
 , lilv
 , lrdf
 , lv2
-, pkg-config
-, python3
+, pkgconfig
+, python2
 , sassc
 , serd
 , sord
@@ -37,33 +37,24 @@
 }:
 
 let
-  inherit (lib) optional;
+  inherit (stdenv.lib) optional;
 in
 
 stdenv.mkDerivation rec {
   pname = "guitarix";
-  version = "0.42.1";
+  version = "0.41.0";
 
   src = fetchurl {
     url = "mirror://sourceforge/guitarix/guitarix2-${version}.tar.xz";
-    sha256 = "101c2hdpipj3s6rmva5wf3q9hfjv7bkyzi7s8sgaiys8f7h4czkr";
+    sha256 = "0qsfbyrrpb3bbdyq68k28mjql7kglxh8nqcw9jvja28x6x9ik5a0";
   };
-
-  patches = [
-    (fetchpatch {
-      name = "guitarix-gcc11.patch";
-      url = "https://github.com/brummer10/guitarix/commit/d8f003484c57d808682025dfb07a7a1fb848afdc.patch";
-      stripLen = 1;
-      sha256 = "1qhlbf18cn6m9jdz3741nrdfqvznjna3daqmn9l10k5nd3asy4il";
-    })
-  ];
 
   nativeBuildInputs = [
     gettext
     hicolor-icon-theme
     intltool
-    pkg-config
-    python3
+    pkgconfig
+    python2
     wafHook
     wrapGAppsHook
   ];
@@ -78,11 +69,12 @@ stdenv.mkDerivation rec {
     glib
     glib-networking.out
     glibmm
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
     gsettings-desktop-schemas
     gtk3
     gtkmm3
     ladspaH
+    libav
     libjack2
     libsndfile
     lilv
@@ -108,7 +100,7 @@ stdenv.mkDerivation rec {
     "--install-roboto-font"
   ] ++ optional optimizationSupport "--optimization";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A virtual guitar amplifier for Linux running with JACK";
     longDescription = ''
         guitarix is a virtual guitar amplifier for Linux running with

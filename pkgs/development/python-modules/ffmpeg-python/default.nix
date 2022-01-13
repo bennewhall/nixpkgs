@@ -2,10 +2,10 @@
 , buildPythonPackage
 , fetchFromGitHub
 , substituteAll
-, pytestCheckHook
-, ffmpeg
+, ffmpeg_3
 , future
-, pytest-runner
+, pytest
+, pytestrunner
 , pytest-mock
 }:
 
@@ -21,20 +21,23 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./ffmpeg-location.patch;
-      inherit ffmpeg;
-    })
+    (
+      substituteAll {
+        src = ./ffmpeg-location.patch;
+        ffmpeg = ffmpeg_3;
+      }
+    )
   ];
 
-  buildInputs = [ pytest-runner ];
+  buildInputs = [ pytestrunner ];
   propagatedBuildInputs = [ future ];
-  checkInputs = [ pytestCheckHook pytest-mock ];
+  checkInputs = [ pytest pytest-mock ];
 
   meta = with lib; {
     description = "Python bindings for FFmpeg - with complex filtering support";
     homepage = "https://github.com/kkroening/ffmpeg-python";
     license = licenses.asl20;
     maintainers = [ maintainers.AluisioASG ];
+    platforms = platforms.all;
   };
 }

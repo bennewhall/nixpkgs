@@ -1,24 +1,26 @@
-{ lib, stdenv, fetchurl, clang, llvmPackages, perl, makeWrapper, python3 }:
+{ stdenv, fetchurl, clang, llvmPackages, perl, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "clang-analyzer";
-  inherit (llvmPackages.clang-unwrapped) src version;
+  version = "3.4";
+
+  src = fetchurl {
+    url    = "http://llvm.org/releases/${version}/clang-${version}.src.tar.gz";
+    sha256 = "06rb4j1ifbznl3gfhl98s7ilj0ns01p7y7zap4p7ynmqnc6pia92";
+  };
 
   patches = [ ./0001-Fix-scan-build-to-use-NIX_CFLAGS_COMPILE.patch ];
-  buildInputs = [ clang llvmPackages.clang perl python3 ];
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ clang llvmPackages.clang perl makeWrapper ];
 
   dontBuild = true;
 
   installPhase = ''
-    mkdir -p $out/share/scan-view $out/bin
-    cp -R clang/tools/scan-view/share/* $out/share/scan-view
-    cp -R clang/tools/scan-view/bin/* $out/bin/scan-view
-    cp -R clang/tools/scan-build/* $out
+    mkdir -p $out/bin $out/libexec
+    cp -R tools/scan-view  $out/libexec
+    cp -R tools/scan-build $out/libexec
 
-    rm $out/bin/*.bat $out/libexec/*.bat $out/CMakeLists.txt
-
-    wrapProgram $out/bin/scan-build \
+    makeWrapper $out/libexec/scan-view/scan-view $out/bin/scan-view
+    makeWrapper $out/libexec/scan-build/scan-build $out/bin/scan-build \
       --add-flags "--use-cc=${clang}/bin/clang" \
       --add-flags "--use-c++=${clang}/bin/clang++" \
       --add-flags "--use-analyzer='${llvmPackages.clang}/bin/clang'"
@@ -26,13 +28,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Clang Static Analyzer";
-    longDescription = ''
-      The Clang Static Analyzer is a source code analysis tool that finds bugs
-      in C, C++, and Objective-C programs.
-    '';
-    homepage    = "https://clang-analyzer.llvm.org/";
-    license     = lib.licenses.bsd3;
-    platforms   = lib.platforms.unix;
-    maintainers = [ lib.maintainers.thoughtpolice ];
+    homepage    = "http://clang-analyzer.llvm.org";
+    license     = stdenv.lib.licenses.bsd3;
+    platforms   = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
   };
 }

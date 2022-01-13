@@ -1,23 +1,23 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , cmake, wrapGAppsHook
-, libX11, libzip, glfw, libpng, xorg, gnome
+, libX11, libzip, glfw, libpng, xorg, gnome3
 }:
 
 stdenv.mkDerivation rec {
   pname = "tev";
-  version = "1.19";
+  version = "1.16";
 
   src = fetchFromGitHub {
     owner = "Tom94";
     repo = pname;
     rev = "v${version}";
     fetchSubmodules = true;
-    sha256 = "sha256-laP47xOND6PMA6dwTcCupcTIW+9zCaxO6rHzvDSL9JU=";
+    sha256 = "0fn5j9klzrjvz3bq8p9yp9nqikn2fr7bp98c1sxwpwwaadkqy9xf";
   };
 
   nativeBuildInputs = [ cmake wrapGAppsHook ];
   buildInputs = [ libX11 libzip glfw libpng ]
-    ++ (with xorg; [ libXrandr libXinerama libXcursor libXi libXxf86vm libXext ]);
+    ++ (with xorg; [ libXrandr libXinerama libXcursor libXi libXxf86vm ]);
 
   dontWrapGApps = true; # We also need zenity (see below)
 
@@ -26,17 +26,13 @@ stdenv.mkDerivation rec {
       --replace "/usr/" "''${out}/"
   '';
 
-  cmakeFlags = [
-    "-DTEV_DEPLOY=1" # Only relevant not to append "dev" to the version
-  ];
-
   postInstall = ''
     wrapProgram $out/bin/tev \
       "''${gappsWrapperArgs[@]}" \
-      --prefix PATH ":" "${gnome.zenity}/bin"
+      --prefix PATH ":" "${gnome3.zenity}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A high dynamic range (HDR) image comparison tool";
     longDescription = ''
       A high dynamic range (HDR) image comparison tool for graphics people. tev
@@ -53,6 +49,6 @@ stdenv.mkDerivation rec {
     changelog = "https://github.com/Tom94/tev/releases/tag/v${version}";
     license = licenses.bsd3;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ primeos ];
   };
 }

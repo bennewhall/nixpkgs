@@ -1,19 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "metamath";
-  version = "0.198";
+  version = "0.193";
 
-  nativeBuildInputs = [ autoreconfHook ];
+  buildInputs = [ autoreconfHook ];
 
   src = fetchFromGitHub {
     owner = "metamath";
     repo = "metamath-exe";
-    rev = "v${version}";
-    sha256 = "sha256-Cg1dgz+uphDlGhKH3mTywtAccWinC5+pwNv4TB3YAnI=";
+    rev = "f973c81222ebe36580a24f0fa7bbb600990af7d6";
+    sha256 = "1s9hyknfvhj86g3giayyf3dxzg23iij0rs7bdvj075v9qbyhqn9b";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Interpreter for the metamath proof language";
     longDescription = ''
       The metamath program is an ASCII-based ANSI C program with a command-line
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     '';
     homepage = "http://us.metamath.org";
     downloadPage = "http://us.metamath.org/#downloads";
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
     maintainers = [ maintainers.taneb ];
     platforms = platforms.all;
   };

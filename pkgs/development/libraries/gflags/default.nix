@@ -1,6 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake
-, enableShared ? !stdenv.hostPlatform.isStatic
-}:
+{ stdenv, fetchFromGitHub, cmake, enableShared ? true}:
 
 stdenv.mkDerivation rec {
   pname = "gflags";
@@ -25,7 +23,7 @@ stdenv.mkDerivation rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A C++ library that implements commandline flags processing";
     longDescription = ''
       The gflags package contains a C++ library that implements commandline flags processing.

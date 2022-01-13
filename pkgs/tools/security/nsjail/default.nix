@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, bison, flex, libtool, pkg-config, which
+{ stdenv, fetchFromGitHub, autoconf, bison, flex, libtool, pkgconfig, which
 , libnl, protobuf, protobufc, shadow
 }:
 
 stdenv.mkDerivation rec {
   pname = "nsjail";
-  version = "3.0"; # Bumping? Remove the bison patch.
+  version = "3.0";
 
   src = fetchFromGitHub {
     owner           = "google";
@@ -14,14 +14,9 @@ stdenv.mkDerivation rec {
     sha256          = "1w6x8xcrs0i1y3q41gyq8z3cq9x24qablklc4jiydf855lhqn4dh";
   };
 
-  nativeBuildInputs = [ autoconf bison flex libtool pkg-config which ];
+  nativeBuildInputs = [ autoconf bison flex libtool pkgconfig which ];
   buildInputs = [ libnl protobuf protobufc ];
   enableParallelBuilding = true;
-
-  patches = [
-    # To remove after bumping 3.0
-    ./001-fix-bison-link-error.patch
-  ];
 
   preBuild = ''
     makeFlagsArray+=(USER_DEFINES='-DNEWUIDMAP_PATH=${shadow}/bin/newuidmap -DNEWGIDMAP_PATH=${shadow}/bin/newgidmap')
@@ -33,7 +28,7 @@ stdenv.mkDerivation rec {
     install nsjail.1 $out/share/man/man1/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A light-weight process isolation tool, making use of Linux namespaces and seccomp-bpf syscall filters";
     homepage    = "http://nsjail.com/";
     license     = licenses.asl20;

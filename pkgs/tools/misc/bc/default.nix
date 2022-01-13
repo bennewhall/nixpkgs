@@ -1,12 +1,11 @@
-{ lib, stdenv, autoreconfHook, buildPackages
+{ stdenv, autoreconfHook, buildPackages
 , fetchurl, flex, readline, ed, texinfo
 }:
 
 stdenv.mkDerivation rec {
-  pname = "bc";
-  version = "1.07.1";
+  name = "bc-1.07.1";
   src = fetchurl {
-    url = "mirror://gnu/bc/${pname}-${version}.tar.gz";
+    url = "mirror://gnu/bc/${name}.tar.gz";
     sha256 = "62adfca89b0a1c0164c2cdca59ca210c1d44c3ffc46daf9931cf4942664cb02a";
   };
 
@@ -31,10 +30,10 @@ stdenv.mkDerivation rec {
   # masss-rebuild.
   strictDeps = true;
 
-  meta = with lib; {
+  meta = {
     description = "GNU software calculator";
     homepage = "https://www.gnu.org/software/bc/";
-    license = licenses.gpl3Plus;
-    platforms = platforms.all;
+    license = stdenv.lib.licenses.gpl3;
+    platforms = stdenv.lib.platforms.all;
   };
 }

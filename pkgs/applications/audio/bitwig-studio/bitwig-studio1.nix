@@ -1,9 +1,9 @@
-{ stdenv, fetchurl, alsa-lib, bzip2, cairo, dpkg, freetype, gdk-pixbuf
+{ stdenv, fetchurl, alsaLib, bzip2, cairo, dpkg, freetype, gdk-pixbuf
 , wrapGAppsHook, gtk2, gtk3, harfbuzz, jdk, lib, xorg
-, libbsd, libjack2, libpng, ffmpeg
+, libbsd, libjack2, libpng, ffmpeg_3
 , libxkbcommon
 , makeWrapper, pixman, autoPatchelfHook
-, xdg-utils, zenity, zlib }:
+, xdg_utils, zenity, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "bitwig-studio";
@@ -22,13 +22,13 @@ stdenv.mkDerivation rec {
   dontWrapGApps = true; # we only want $gappsWrapperArgs here
 
   buildInputs = with xorg; [
-    alsa-lib bzip2.out cairo freetype gdk-pixbuf gtk2 gtk3 harfbuzz libX11 libXau
+    alsaLib bzip2.out cairo freetype gdk-pixbuf gtk2 gtk3 harfbuzz libX11 libXau
     libXcursor libXdmcp libXext libXfixes libXrender libbsd libjack2 libpng libxcb
     libxkbfile pixman xcbutil xcbutilwm zlib
   ];
 
   binPath = lib.makeBinPath [
-    xdg-utils zenity ffmpeg
+    xdg_utils zenity ffmpeg_3
   ];
 
   installPhase = ''
@@ -83,7 +83,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A digital audio workstation";
     longDescription = ''
       Bitwig Studio is a multi-platform music-creation system for

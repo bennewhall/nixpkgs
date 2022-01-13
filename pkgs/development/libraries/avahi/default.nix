@@ -1,6 +1,5 @@
-{ fetchurl, fetchpatch, lib, stdenv, pkg-config, libdaemon, dbus, perlPackages
+{ fetchurl, fetchpatch, stdenv, pkgconfig, libdaemon, dbus, perlPackages
 , expat, gettext, intltool, glib, libiconv, writeShellScriptBin, libevent
-, nixosTests
 , gtk3Support ? false, gtk3 ? null
 , qt4 ? null
 , qt4Support ? false
@@ -14,11 +13,11 @@ assert qt4Support -> qt4 != null;
 
 let
   # despite the configure script claiming it supports $PKG_CONFIG, it doesnt respect it
-  pkg-config-helper = writeShellScriptBin "pkg-config" ''exec $PKG_CONFIG "$@"'';
+  pkgconfig-helper = writeShellScriptBin "pkg-config" ''exec $PKG_CONFIG "$@"'';
 in
 
 stdenv.mkDerivation rec {
-  name = "avahi${lib.optionalString withLibdnssdCompat "-compat"}-${version}";
+  name = "avahi${stdenv.lib.optionalString withLibdnssdCompat "-compat"}-${version}";
   version = "0.8";
 
   src = fetchurl {
@@ -37,32 +36,32 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libdaemon dbus glib expat libiconv libevent ]
     ++ (with perlPackages; [ perl XMLParser ])
-    ++ (lib.optional gtk3Support gtk3)
-    ++ (lib.optional qt4Support qt4)
-    ++ (lib.optional qt5Support qt5);
+    ++ (stdenv.lib.optional gtk3Support gtk3)
+    ++ (stdenv.lib.optional qt4Support qt4)
+    ++ (stdenv.lib.optional qt5Support qt5);
 
   propagatedBuildInputs =
-    lib.optionals withPython (with python.pkgs; [ python pygobject3 dbus-python ]);
+    stdenv.lib.optionals withPython (with python.pkgs; [ python pygobject3 dbus-python ]);
 
-  nativeBuildInputs = [ pkg-config pkg-config-helper gettext intltool glib ];
+  nativeBuildInputs = [ pkgconfig pkgconfig-helper gettext intltool glib ];
 
   configureFlags =
     [ "--disable-qt3" "--disable-gdbm" "--disable-mono"
       "--disable-gtk" "--with-dbus-sys=${placeholder "out"}/share/dbus-1/system.d"
-      (lib.enableFeature gtk3Support "gtk3")
+      (stdenv.lib.enableFeature gtk3Support "gtk3")
       "--${if qt4Support then "enable" else "disable"}-qt4"
       "--${if qt5Support then "enable" else "disable"}-qt5"
-      (lib.enableFeature withPython "python")
+      (stdenv.lib.enableFeature withPython "python")
       "--localstatedir=/var" "--with-distro=none"
       # A systemd unit is provided by the avahi-daemon NixOS module
       "--with-systemdsystemunitdir=no" ]
-    ++ lib.optional withLibdnssdCompat "--enable-compat-libdns_sd"
+    ++ stdenv.lib.optional withLibdnssdCompat "--enable-compat-libdns_sd"
     # autoipd won't build on darwin
-    ++ lib.optional stdenv.isDarwin "--disable-autoipd";
+    ++ stdenv.lib.optional stdenv.isDarwin "--disable-autoipd";
 
   NIX_CFLAGS_COMPILE = "-DAVAHI_SERVICE_DIR=\"/etc/avahi/services\"";
 
-  preBuild = lib.optionalString stdenv.isDarwin ''
+  preBuild = stdenv.lib.optionalString stdenv.isDarwin ''
     sed -i '20 i\
     #define __APPLE_USE_RFC_2292' \
     avahi-core/socket.c
@@ -70,7 +69,7 @@ stdenv.mkDerivation rec {
 
   postInstall =
     # Maintain compat for mdnsresponder and howl
-    lib.optionalString withLibdnssdCompat ''
+    stdenv.lib.optionalString withLibdnssdCompat ''
       ln -s avahi-compat-libdns_sd/dns_sd.h "$out/include/dns_sd.h"
     '';
   /*  # these don't exist (anymore?)
@@ -78,12 +77,7 @@ stdenv.mkDerivation rec {
     ln -s avahi-compat-howl.pc $out/lib/pkgconfig/howl.pc
   */
 
-  passthru.tests = {
-    smoke-test = nixosTests.avahi;
-    smoke-test-resolved = nixosTests.avahi-with-resolved;
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "mDNS/DNS-SD implementation";
     homepage    = "http://avahi.org";
     license     = licenses.lgpl2Plus;

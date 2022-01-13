@@ -1,9 +1,8 @@
-{ lib, stdenv, fetchhg, openssl, pcre-cpp, qt4, boost, pkcs11helper }:
+{ stdenv, fetchhg, openssl, pcre-cpp, qt4, boost, pkcs11helper }:
 
 stdenv.mkDerivation {
-  pname = "meo";
-  version = "unstable-2012-11-13";
-
+  name = "meo-20121113";
+  
   src = fetchhg {
     url = "http://oss.stamfest.net/hg/meo";
     rev = "b48e5f16cff8";
@@ -25,12 +24,12 @@ stdenv.mkDerivation {
     cp meo-gui/meo-gui $out/bin
   '';
 
-  meta = with lib; {
+  meta = {
     homepage = "http://oss.stamfest.net/wordpress/meo-multiple-eyepairs-only";
     description = "Tools to use cryptography for things like four-eyes principles";
-    license = licenses.agpl3Plus;
-    maintainers = with maintainers; [ viric ];
-    platforms = platforms.linux;
+    license = stdenv.lib.licenses.agpl3Plus;
+    maintainers = with stdenv.lib.maintainers; [viric];
+    platforms = with stdenv.lib.platforms; linux;
     broken = true;
   };
 }

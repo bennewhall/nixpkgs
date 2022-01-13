@@ -1,10 +1,13 @@
-{ lib, stdenv, bzip2, zlib, autoconf, automake, cmake, gnumake, help2man , texinfo, libtool , cppzmq , libarchive, avro-cpp, boost, jansson, zeromq, openssl, pam, libiodbc, libkrb5, gcc, libcxx, which, catch2 }:
+{ stdenv, bzip2, zlib, autoconf, automake, cmake, gnumake, help2man , texinfo, libtool , cppzmq , libarchive, avro-cpp, boost, jansson, zeromq, openssl, pam, libiodbc, kerberos, gcc, libcxx, which, catch2 }:
 
 # Common attributes of irods packages
 
+with stdenv;
+
 {
-  nativeBuildInputs = [ autoconf automake cmake gnumake help2man texinfo which gcc ];
-  buildInputs = [ bzip2 zlib libtool cppzmq libarchive avro-cpp jansson zeromq openssl pam libiodbc libkrb5 boost libcxx catch2 ];
+  enableParallelBuilding = true;
+
+  buildInputs = [ bzip2 zlib autoconf automake cmake gnumake help2man texinfo libtool cppzmq libarchive avro-cpp jansson zeromq openssl pam libiodbc kerberos gcc boost libcxx which catch2 ];
 
   cmakeFlags = [
     "-DIRODS_EXTERNALS_FULLPATH_CLANG=${stdenv.cc}"
@@ -19,7 +22,7 @@
     "-DIRODS_LINUX_DISTRIBUTION_NAME=nix"
     "-DIRODS_LINUX_DISTRIBUTION_VERSION_MAJOR=${builtins.nixVersion}"
     "-DCPACK_GENERATOR=TGZ"
-    "-DCMAKE_CXX_FLAGS=-I${lib.getDev libcxx}/include/c++/v1"
+    "-DCMAKE_CXX_FLAGS=-I${libcxx}/include/c++/v1"
   ];
 
   preConfigure = ''
@@ -33,7 +36,7 @@
     "
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Integrated Rule-Oriented Data System (iRODS)";
     longDescription = ''
       The Integrated Rule-Oriented Data System (iRODS) is open source data management
@@ -46,8 +49,8 @@
       testing on supported platforms; plug-in support for microservices, storage resources,
       drivers, and databases; and extensive documentation, training and support services.'';
     homepage = "https://irods.org";
-    license = lib.licenses.bsd3;
-    maintainers = [ lib.maintainers.bzizou ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.bsd3;
+    maintainers = [ stdenv.lib.maintainers.bzizou ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

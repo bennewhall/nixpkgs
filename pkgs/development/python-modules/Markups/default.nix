@@ -5,19 +5,18 @@
 , markdown
 , docutils
 , pygments
-, pyyaml
 }:
 
 buildPythonPackage rec {
   pname = "Markups";
-  version = "3.1.3";
+  version = "3.0.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "ab9747a72c1c6457418eb4276c79871977c13a654618e4f12e2a1f0990fbf2fc";
+    sha256 = "1ea19458dfca6a4562044e701aa8698089a0c659fc535689ed260f89a04f8d39";
   };
 
-  checkInputs = [ markdown docutils pygments pyyaml ];
+  checkInputs = [ markdown docutils pygments ];
   propagatedBuildInputs = [ python-markdown-math ];
 
   meta = {

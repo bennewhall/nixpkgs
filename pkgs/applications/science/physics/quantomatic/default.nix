@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, jre, makeWrapper }:
+{ stdenv, fetchurl, jre, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "quantomatic";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ jre ];
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
     mkdir -p $out/libexec/quantomatic
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     makeWrapper ${jre}/bin/java $out/bin/quantomatic --add-flags "-jar $out/libexec/quantomatic/quantomatic.jar"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A piece of software for reasoning about monoidal theories; in particular, quantum information processing";
     license = licenses.gpl3;
     homepage = "https://quantomatic.github.io/";

@@ -1,29 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, coreutils, gawk }:
+{ stdenv, fetchurl, coreutils, gawk }:
 
 stdenv.mkDerivation rec {
   pname = "txt2man";
   version = "1.7.1";
 
-  src = fetchFromGitHub {
-    owner = "mvertes";
-    repo = "txt2man";
-    rev = "${pname}-${version}";
-    hash = "sha256-Aqi5PNNaaM/tr9A/7vKeafYKYIs/kHbwHzE7+R/9r9s=";
+  src = fetchurl {
+    url = "https://github.com/mvertes/txt2man/archive/${pname}-${version}.tar.gz";
+    sha256 = "0ka3krmblsprv0v6h6wnm8lv08w30z0ynfnbwns6alks5gx1p6sd";
   };
 
-  makeFlags = [
-    "prefix=${placeholder "out"}"
-  ];
+  preConfigure = ''
+    makeFlags=prefix="$out"
+  '';
 
-  postPatch = ''
+  patchPhase = ''
     for f in bookman src2man txt2man; do
-      substituteInPlace $f \
-        --replace "gawk" "${gawk}/bin/gawk" \
-        --replace "(date" "(${coreutils}/bin/date" \
-        --replace "=cat" "=${coreutils}/bin/cat" \
-        --replace "cat <<" "${coreutils}/bin/cat <<" \
-        --replace "expand" "${coreutils}/bin/expand" \
-        --replace "(uname" "(${coreutils}/bin/uname"
+        substituteInPlace $f --replace "gawk" "${gawk}/bin/gawk"
+
+        substituteInPlace $f --replace "(date" "(${coreutils}/bin/date"
+        substituteInPlace $f --replace "=cat" "=${coreutils}/bin/cat"
+        substituteInPlace $f --replace "cat <<" "${coreutils}/bin/cat <<"
+        substituteInPlace $f --replace "expand" "${coreutils}/bin/expand"
+        substituteInPlace $f --replace "(uname" "(${coreutils}/bin/uname"
     done
   '';
 
@@ -35,11 +33,11 @@ stdenv.mkDerivation rec {
     sh -c 'unset PATH; printf hello | ./txt2man'
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Convert flat ASCII text to man page format";
     homepage = "http://mvertes.free.fr/";
-    license = licenses.gpl2;
-    platforms = platforms.unix;
-    maintainers = with maintainers; [ bjornfor ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = with stdenv.lib.platforms; linux ++ darwin;
+    maintainers = with stdenv.lib.maintainers; [ bjornfor ];
   };
 }

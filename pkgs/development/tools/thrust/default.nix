@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, buildEnv, makeWrapper, glib, alsa-lib , dbus, gtk2, atk
+{ stdenv, fetchurl, buildEnv, makeWrapper, glib, alsaLib , dbus, gtk2, atk
 , pango, freetype, fontconfig, gdk-pixbuf , cairo, cups, expat, nspr, gconf, nss
 , xorg, libcap, unzip
 }:
@@ -8,7 +8,7 @@ let
     name = "env-thrust";
     paths = [
       stdenv.cc.cc glib dbus gtk2 atk pango freetype fontconfig gdk-pixbuf
-      cairo cups expat alsa-lib nspr gconf nss xorg.libXrender xorg.libX11
+      cairo cups expat alsaLib nspr gconf nss xorg.libXrender xorg.libX11
       xorg.libXext xorg.libXdamage xorg.libXtst xorg.libXcomposite
       xorg.libXi xorg.libXfixes xorg.libXrandr xorg.libXcursor libcap
     ];
@@ -22,8 +22,9 @@ in stdenv.mkDerivation rec {
     sha256 = "07rrnlj0gk500pvar4b1wdqm05p4n9yjwn911x93bd2qwc8r5ymc";
   };
 
-  nativeBuildInputs = [ makeWrapper unzip ];
-  buildInputs = [ thrustEnv ];
+  buildInputs = [ thrustEnv makeWrapper unzip ];
+
+  phases = [ "installPhase" "fixupPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -36,7 +37,7 @@ in stdenv.mkDerivation rec {
     ln -s $out/libexec/thrust/thrust_shell $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Chromium-based cross-platform / cross-language application framework";
     homepage = "https://github.com/breach/thrust";
     license = licenses.mit;

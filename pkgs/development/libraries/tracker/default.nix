@@ -1,13 +1,13 @@
 { stdenv
-, lib
 , fetchurl
 , gettext
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , asciidoc
 , gobject-introspection
 , python3
+, gtk-doc
 , docbook-xsl-nons
 , docbook_xml_dtd_45
 , libxml2
@@ -17,11 +17,10 @@
 , sqlite
 , libxslt
 , libstemmer
-, gnome
+, gnome3
 , icu
 , libuuid
 , libsoup
-, libsoup_3
 , json-glib
 , systemd
 , dbus
@@ -30,13 +29,13 @@
 
 stdenv.mkDerivation rec {
   pname = "tracker";
-  version = "3.2.1";
+  version = "3.0.1";
 
   outputs = [ "out" "dev" "devdoc" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "GEfgiznm5h2EhzWqH5f32WwDggFlP6DXy56Bs365wDo=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1rhcs75axga7p7hl37h6jzb2az89jddlcwc7ykrnb2khyhka78rr";
   };
 
   patches = [
@@ -50,17 +49,18 @@ stdenv.mkDerivation rec {
     meson
     ninja
     vala
-    pkg-config
+    pkgconfig
     asciidoc
     gettext
     libxslt
     wrapGAppsNoGuiHook
     gobject-introspection
+    gtk-doc
     docbook-xsl-nons
     docbook_xml_dtd_45
     python3 # for data-generators
     systemd # used for checks to install systemd user service
-    dbus # used for checks and pkg-config to install dbus service/s
+    dbus # used for checks and pkgconfig to install dbus service/s
   ];
 
   buildInputs = [
@@ -69,15 +69,13 @@ stdenv.mkDerivation rec {
     sqlite
     icu
     libsoup
-    libsoup_3
     libuuid
     json-glib
     libstemmer
   ];
 
-  checkInputs = with python3.pkgs; [
-    pygobject3
-    tappy
+  checkInputs = [
+    python3.pkgs.pygobject3
   ];
 
   mesonFlags = [
@@ -91,7 +89,6 @@ stdenv.mkDerivation rec {
     patchShebangs utils/data-generators/cc/generate
     patchShebangs tests/functional-tests/test-runner.sh.in
     patchShebangs tests/functional-tests/*.py
-    patchShebangs examples/python/endpoint.py
   '';
 
   preCheck = ''
@@ -122,13 +119,13 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
       versionPolicy = "none";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Projects/Tracker";
     description = "Desktop-neutral user information store, search tool and indexer";
     maintainers = teams.gnome.members;

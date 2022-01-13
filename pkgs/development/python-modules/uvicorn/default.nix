@@ -1,72 +1,55 @@
-{ lib
+{ stdenv
 , buildPythonPackage
-, callPackage
 , fetchFromGitHub
-, asgiref
 , click
-, colorama
 , h11
 , httptools
-, python-dotenv
-, pyyaml
-, typing-extensions
 , uvloop
-, watchgod
 , websockets
 , wsproto
-, pythonOlder
+, pytest
+, requests
+, isPy27
 }:
 
 buildPythonPackage rec {
   pname = "uvicorn";
-  version = "0.14.0";
-  disabled = pythonOlder "3.6";
+  version = "0.11.5";
+  disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "encode";
     repo = pname;
     rev = version;
-    sha256 = "164x92k3rs47ihkmwq5av396576dxp4rzv6557pwgc1ign2ikqy1";
+    sha256 = "0cf0vw6kzxwlkvk5gw85wv3kg1kdil0wkq3s7rmxpvrk6gjk8jvq";
   };
-
-  outputs = [
-    "out"
-    "testsout"
-  ];
 
   propagatedBuildInputs = [
-    asgiref
     click
-    colorama
     h11
     httptools
-    python-dotenv
-    pyyaml
     uvloop
-    watchgod
     websockets
     wsproto
-  ] ++ lib.optionals (pythonOlder "3.8") [
-    typing-extensions
   ];
 
-  postInstall = ''
-    mkdir $testsout
-    cp -R tests $testsout/tests
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace "h11==0.8.*" "h11" \
+      --replace "httptools==0.0.13" "httptools"
   '';
 
-  pythonImportsCheck = [
-    "uvicorn"
-  ];
+  checkInputs = [ pytest requests ];
 
-  # check in passthru.tests.pytest to escape infinite recursion with httpx/httpcore
-  doCheck = false;
+  doCheck = !stdenv.isDarwin;
 
-  passthru.tests = {
-    pytest = callPackage ./tests.nix { };
-  };
+  # watchgod required the watchgod package, which isn't available in nixpkgs
+  checkPhase = ''
+    pytest --ignore=tests/supervisors/test_watchgodreload.py \
+      -k 'not test_supported_upgrade_request and not test_invalid_upgrade[WSProtocol]'
+  '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.uvicorn.org/";
     description = "The lightning-fast ASGI server";
     license = licenses.bsd3;

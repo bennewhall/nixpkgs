@@ -1,4 +1,4 @@
-{ lib, python3Packages }:
+{ stdenv, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   pname = "s4cmd";
@@ -26,7 +26,7 @@ python3Packages.buildPythonApplication rec {
   # Test suite requires an S3 bucket
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/bloomreach/s4cmd";
     description = "Super S3 command line tool";
     license = licenses.asl20;

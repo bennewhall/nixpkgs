@@ -1,9 +1,9 @@
 { mkDerivation
-, lib, stdenv
+, stdenv
 , fetchurl
 , ncurses
 , libuuid
-, pkg-config
+, pkgconfig
 , libjpeg
 , zlib
 , libewf
@@ -35,15 +35,15 @@ assert enableQt -> qwt != null;
     zlib
     libewf
   ]
-  ++ lib.optional enableNtfs ntfs3g
-  ++ lib.optional enableExtFs e2fsprogs
-  ++ lib.optionals enableQt [ qtbase qttools qwt ];
+  ++ stdenv.lib.optional enableNtfs ntfs3g
+  ++ stdenv.lib.optional enableExtFs e2fsprogs
+  ++ stdenv.lib.optionals enableQt [ qtbase qttools qwt ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   NIX_CFLAGS_COMPILE="-Wno-unused";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.cgsecurity.org/wiki/Main_Page";
     downloadPage = "https://www.cgsecurity.org/wiki/TestDisk_Download";
     description = "Data recovery utilities";
@@ -61,8 +61,8 @@ assert enableQt -> qwt != null;
       it will still work even if your media's file system has been severely
       damaged or reformatted.
     '';
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.all;
     maintainers = with maintainers; [ fgaz eelco ];
   };
 }

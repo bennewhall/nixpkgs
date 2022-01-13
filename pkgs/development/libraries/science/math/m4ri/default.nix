@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromBitbucket
 , autoreconfHook
 }:
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     autoreconfHook
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://malb.bitbucket.io/m4ri/";
     description = "Library to do fast arithmetic with dense matrices over F_2";
     license = licenses.gpl2Plus;

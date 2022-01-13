@@ -1,4 +1,4 @@
-{ lib, stdenv, buildPythonPackage, fetchPypi, six, cffi, nose }:
+{ stdenv, buildPythonPackage, fetchPypi, six, cffi, nose }:
 
 buildPythonPackage rec {
   pname = "cld2-cffi";
@@ -13,11 +13,11 @@ buildPythonPackage rec {
   checkInputs = [ nose ];
 
   # gcc doesn't approve of this code, so disable -Werror
-  NIX_CFLAGS_COMPILE = "-w" + lib.optionalString stdenv.cc.isClang " -Wno-error=c++11-narrowing";
+  NIX_CFLAGS_COMPILE = "-w" + stdenv.lib.optionalString stdenv.cc.isClang " -Wno-error=c++11-narrowing";
 
   checkPhase = "nosetests -v";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "CFFI bindings around Google Chromium's embedded compact language detection library (CLD2)";
     homepage = "https://github.com/GregBowyer/cld2-cffi";
     license = licenses.asl20;

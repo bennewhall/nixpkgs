@@ -1,4 +1,4 @@
-{ lib, stdenv, haskellPackages, fetchFromGitHub }:
+{ stdenv, haskellPackages, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "nix-script";
@@ -15,23 +15,16 @@ stdenv.mkDerivation {
     (haskellPackages.ghcWithPackages (hs: with hs; [ posix-escape ]))
   ];
 
+  phases = [ "buildPhase" "installPhase" "fixupPhase" ];
   buildPhase = ''
-    runHook preBuild
-
     mkdir -p $out/bin
     ghc -O2 $src/nix-script.hs -o $out/bin/nix-script -odir . -hidir .
-
-    runHook postBuild
   '';
   installPhase = ''
-    runHook preInstall
-
     ln -s $out/bin/nix-script $out/bin/nix-scripti
-
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A shebang for running inside nix-shell";
     homepage    = "https://github.com/bennofs/nix-script";
     license     = licenses.bsd3;

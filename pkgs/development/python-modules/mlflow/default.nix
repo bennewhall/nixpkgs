@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27
+{ stdenv, buildPythonPackage, fetchPypi, isPy27
 , alembic
 , click
 , cloudpickle
@@ -20,16 +20,17 @@
 , sqlalchemy
 , gorilla
 , gunicorn
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "mlflow";
-  version = "1.21.0";
+  version = "1.12.1";
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "5524a371f19c66a18e7ebe9b1085a77f63a6ae514271e487428f28187d79fc8f";
+    sha256 = "9b8af18d6e779fbbb094edfeb963691e485bba62eeec39fd62dfbe34bc12afeb";
   };
 
   # run into https://stackoverflow.com/questions/51203641/attributeerror-module-alembic-context-has-no-attribute-config
@@ -60,7 +61,7 @@ buildPythonPackage rec {
     gunicorn
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/mlflow/mlflow";
     description = "Open source platform for the machine learning lifecycle";
     license = licenses.asl20;

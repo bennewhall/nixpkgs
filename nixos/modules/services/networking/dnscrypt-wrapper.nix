@@ -83,7 +83,7 @@ let
   # correctly implement key rotation of dnscrypt-wrapper ephemeral keys.
   dnscrypt-proxy1 = pkgs.callPackage
     ({ stdenv, fetchFromGitHub, autoreconfHook
-    , pkg-config, libsodium, ldns, openssl, systemd }:
+    , pkgconfig, libsodium, ldns, openssl, systemd }:
 
     stdenv.mkDerivation rec {
       pname = "dnscrypt-proxy";
@@ -98,7 +98,7 @@ let
 
       configureFlags = optional stdenv.isLinux "--with-systemd";
 
-      nativeBuildInputs = [ autoreconfHook pkg-config ];
+      nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
       # <ldns/ldns.h> depends on <openssl/ssl.h>
       buildInputs = [ libsodium openssl.dev ldns ] ++ optional stdenv.isLinux systemd;
@@ -145,7 +145,6 @@ in {
     providerName = mkOption {
       type = types.str;
       default = "2.dnscrypt-cert.${config.networking.hostName}";
-      defaultText = literalExpression ''"2.dnscrypt-cert.''${config.networking.hostName}"'';
       example = "2.dnscrypt-cert.myresolver";
       description = ''
         The name that will be given to this DNSCrypt resolver.
@@ -218,7 +217,6 @@ in {
       home = "${dataDir}";
       createHome = true;
       isSystemUser = true;
-      group = "dnscrypt-wrapper";
     };
     users.groups.dnscrypt-wrapper = { };
 

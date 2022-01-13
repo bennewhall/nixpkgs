@@ -1,12 +1,15 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
-stdenv.mkDerivation rec {
+let
   pname = "bftpd";
-  version = "6.0";
+
+in stdenv.mkDerivation rec {
+  name = "${pname}-${version}";
+  version = "5.6";
 
   src = fetchurl {
-    url = "mirror://sourceforge/project/${pname}/${pname}/${pname}-${version}/${pname}-${version}.tar.gz";
-    sha256 = "sha256-t+YCys67drYKcD3GXxSVzZo4HTRZArIpA6EofeyPAlw=";
+    url = "mirror://sourceforge/project/${pname}/${pname}/${name}/${name}.tar.gz";
+    sha256 = "18ksld775balh0yx2icj7fya9fvjkfgvwznvccdlmhi3zidg550h";
   };
 
   preConfigure = ''
@@ -21,7 +24,8 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
+    inherit version;
     description = "A minimal ftp server";
     downloadPage = "http://bftpd.sf.net/download.html";
     homepage = "http://bftpd.sf.net/";

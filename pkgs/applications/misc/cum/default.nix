@@ -1,4 +1,4 @@
-{ lib, python3Packages }:
+{ stdenv, python3Packages }:
 
 with python3Packages;
 
@@ -26,7 +26,7 @@ buildPythonApplication rec {
     rm -rf $out/tests $out/LICENSE
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "comic updater, mangafied";
     homepage = "https://github.com/Hamuko/cum";
     license = licenses.asl20;

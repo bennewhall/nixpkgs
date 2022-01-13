@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, autoreconfHook
+{ stdenv, fetchFromGitHub, pkgconfig, autoreconfHook
 , boost, libbitcoin, secp256k1, zeromq }:
 
 let
@@ -15,7 +15,7 @@ in stdenv.mkDerivation {
     sha256 = "1ln9r04hlnc7qmv17rakyhrnzw1a541pg5jc1sw3ccn90a5x6cfv";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ libbitcoin secp256k1 ];
   propagatedBuildInputs = [ zeromq ];
 
@@ -27,9 +27,9 @@ in stdenv.mkDerivation {
     "--with-boost-libdir=${boost.out}/lib"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bitcoin Blockchain Query Protocol";
-    homepage = "https://libbitcoin.info/";
+    homepage = "https://libbitcoin.org/";
     platforms = platforms.linux ++ platforms.darwin;
     maintainers = with maintainers; [ asymmetric ];
 

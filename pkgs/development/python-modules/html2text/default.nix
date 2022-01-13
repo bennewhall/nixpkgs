@@ -1,8 +1,5 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, pythonOlder
-, pytestCheckHook
+{ lib, buildPythonPackage, fetchFromGitHub, pythonOlder
+, pytest
 }:
 
 buildPythonPackage rec {
@@ -17,13 +14,15 @@ buildPythonPackage rec {
     sha256 = "1y924clp2hiqg3a9437z808p29mqcx537j5fmz71plx8qrcm5jf9";
   };
 
-  checkInputs = [ pytestCheckHook ];
-
-  pythonImportsCheck = [ "html2text" ];
+  # python setup.py test is broken, use pytest
+  checkInputs = [ pytest ];
+  checkPhase = ''
+    pytest
+  '';
 
   meta = with lib; {
     description = "Turn HTML into equivalent Markdown-structured text";
     homepage = "https://github.com/Alir3z4/html2text/";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
   };
 }

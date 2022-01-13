@@ -32,7 +32,6 @@ in
 
     services.resolved.domains = mkOption {
       default = config.networking.search;
-      defaultText = literalExpression "config.networking.search";
       example = [ "example.com" ];
       type = types.listOf types.str;
       description = ''
@@ -141,8 +140,7 @@ in
 
     # add resolve to nss hosts database if enabled and nscd enabled
     # system.nssModules is configured in nixos/modules/system/boot/systemd.nix
-    # added with order 501 to allow modules to go before with mkBefore
-    system.nssDatabases.hosts = (mkOrder 501 ["resolve [!UNAVAIL=return]"]);
+    system.nssDatabases.hosts = optional config.services.nscd.enable "resolve [!UNAVAIL=return]";
 
     systemd.additionalUpstreamSystemUnits = [
       "systemd-resolved.service"

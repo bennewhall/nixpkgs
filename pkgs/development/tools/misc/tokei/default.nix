@@ -1,26 +1,26 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, libiconv, Security }:
+{ stdenv, fetchFromGitHub, rustPlatform, libiconv, darwin }:
 
 rustPlatform.buildRustPackage rec {
   pname = "tokei";
-  version = "12.1.2";
+  version = "12.0.4";
 
   src = fetchFromGitHub {
     owner = "XAMPPRocky";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-jqDsxUAMD/MCCI0hamkGuCYa8rEXNZIR8S+84S8FbgI=";
+    sha256 = "0vj6xpp5ss82n1zxljy5893s8l1pdhar5xqay5vvglkp8bzblin6";
   };
 
-  cargoSha256 = "sha256-U7Bode8qwDsNf4FVppfEHA9uiOFz74CtKgXG6xyYlT8=";
+  cargoSha256 = "02c2pdjzd49qznm1yj3rnli48267ajjdklrb1cpj0rhpirw4rh1j";
 
-  buildInputs = lib.optionals stdenv.isDarwin [
-    libiconv Security
+  buildInputs = stdenv.lib.optionals stdenv.isDarwin [
+    libiconv darwin.apple_sdk.frameworks.Security
   ];
 
   # enable all output formats
-  buildFeatures = [ "all" ];
+  cargoBuildFlags = [ "--features" "all" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A program that allows you to count your code, quickly";
     longDescription = ''
       Tokei is a program that displays statistics about your code. Tokei will show number of files, total lines within those files and code, comments, and blanks grouped by language.

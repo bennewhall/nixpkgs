@@ -1,8 +1,10 @@
-{ lib, fetchurl, python2Packages }:
+{ stdenv, fetchurl, python2Packages }:
 
-python2Packages.buildPythonPackage rec {
+let version = "0.9.5.1.1"; in
+
+python2Packages.buildPythonPackage {
   pname = "pyrex";
-  version = "0.9.5.1.1";
+  inherit version;
 
   src = fetchurl {
     url = "https://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/oldtar/Pyrex-${version}.tar.gz";
@@ -14,6 +16,6 @@ python2Packages.buildPythonPackage rec {
   meta = {
     homepage = "http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/";
     description = "A language for writing Python extension modules";
-    license = lib.licenses.asl20;
+    license = stdenv.lib.licenses.asl20;
   };
 }

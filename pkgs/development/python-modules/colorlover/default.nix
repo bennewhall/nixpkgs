@@ -1,6 +1,4 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
+{ buildPythonPackage, fetchPypi, stdenv
 }:
 
 buildPythonPackage rec {
@@ -15,10 +13,10 @@ buildPythonPackage rec {
   # no tests included in distributed archive
   doCheck = false;
 
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/jackparmer/colorlover";
     description = "Color scales in Python for humans";
-    license = licenses.mit;
-    maintainers = with maintainers; [ globin ];
+    license = stdenv.lib.licenses.mit;
+    maintainers = with stdenv.lib.maintainers; [ globin ];
   };
 }

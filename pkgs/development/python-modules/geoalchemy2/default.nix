@@ -1,53 +1,31 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, packaging
-, setuptools-scm
-, shapely
 , sqlalchemy
-, psycopg2
-, pytestCheckHook
+, shapely
+, setuptools_scm
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "GeoAlchemy2";
-  version = "0.10.0";
-  format = "setuptools";
+  version = "0.8.4";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "d97f85a4ff84341c12b1d7a6fee5ab5e5e942271279684310bb2f507b6ee5c53";
+    sha256 = "02jbad9vbnjx8bmfvxg77z18nymrry6li8hy9pwi0yiyvwbnycyr";
   };
 
-  nativeBuildInputs = [
-    setuptools-scm
-  ];
+  nativeBuildInputs = [ setuptools_scm ];
+  propagatedBuildInputs = [ sqlalchemy shapely ];
 
-  propagatedBuildInputs = [
-    packaging
-    shapely
-    sqlalchemy
-  ];
+  # https://github.com/geoalchemy/geoalchemy2/blob/e05a676350b11f0e73609379dae5625c5de2e868/TEST.rst
+  doCheck = false;
 
-  checkInputs = [
-    psycopg2
-    pytestCheckHook
-  ];
-
-  disabledTestPaths = [
-    # tests require live postgis database
-    "tests/gallery/test_decipher_raster.py"
-    "tests/gallery/test_length_at_insert.py"
-    "tests/gallery/test_summarystatsagg.py"
-    "tests/gallery/test_type_decorator.py"
-    "tests/test_functional.py"
-  ];
-
-  meta = with lib; {
-    description = "Toolkit for working with spatial databases";
+  meta = with stdenv.lib; {
     homepage =  "http://geoalchemy.org/";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    description = "Toolkit for working with spatial databases";
   };
 
 }

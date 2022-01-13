@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchgit
 , autoreconfHook
-, pkg-config
+, pkgconfig
 , glib
 , dbus
 }:
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoreconfHook
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Multimedia Messaging Service Daemon";
     homepage = "https://01.org/ofono";
     license = licenses.gpl2;

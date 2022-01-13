@@ -1,4 +1,4 @@
-{ buildPecl, lib, pcre2, php }:
+{ buildPecl, lib, pcre', php }:
 
 buildPecl {
   pname = "apcu_bc";
@@ -8,17 +8,11 @@ buildPecl {
 
   peclDeps = [ php.extensions.apcu ];
 
-  buildInputs = [ pcre2 ];
+  buildInputs = [ pcre' ];
 
   postInstall = ''
     mv $out/lib/php/extensions/apc.so $out/lib/php/extensions/apcu_bc.so
   '';
 
-  meta = with lib; {
-    description = "APCu Backwards Compatibility Module";
-    license = licenses.php301;
-    homepage = "https://pecl.php.net/package/apcu_bc";
-    maintainers = teams.php.members;
-    broken = versionAtLeast php.version "8";
-  };
+  meta.maintainers = lib.teams.php.members;
 }

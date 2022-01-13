@@ -1,11 +1,9 @@
-{ lib, buildDunePackage, ocaml, fetchurl, seq, qcheck-alcotest }:
+{ lib, buildDunePackage, fetchurl, seq }:
 
 buildDunePackage rec {
   minimumOCamlVersion = "4.03";
   pname = "psq";
   version = "0.2.0";
-
-  useDune2 = true;
 
   src = fetchurl {
     url = "https://github.com/pqwy/psq/releases/download/v${version}/psq-v${version}.tbz";
@@ -13,9 +11,6 @@ buildDunePackage rec {
   };
 
   propagatedBuildInputs = [ seq ];
-
-  doCheck = lib.versionAtLeast ocaml.version "4.08";
-  checkInputs = [ qcheck-alcotest ];
 
   meta = {
     description = "Functional Priority Search Queues for OCaml";

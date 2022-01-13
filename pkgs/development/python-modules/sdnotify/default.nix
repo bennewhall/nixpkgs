@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -12,7 +12,7 @@ buildPythonPackage rec {
     inherit pname version;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A pure Python implementation of systemd's service notification protocol";
     homepage = "https://github.com/bb4242/sdnotify";
     license = licenses.mit;

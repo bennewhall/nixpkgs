@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , glibcLocales
@@ -25,7 +25,7 @@ buildPythonPackage rec {
   # Tests broken on Python 3.x
   doCheck = !(isPy3k);
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Pure-Python library built as a PDF toolkit";
     homepage = "http://mstamy2.github.com/PyPDF2/";
     license = licenses.bsd3;

@@ -1,21 +1,20 @@
-{ fetchurl, lib, stdenv, flex }:
+{ fetchurl, stdenv, flex }:
 
 stdenv.mkDerivation rec {
-  pname = "splint";
-  version = "3.1.2";
+  name = "splint-3.1.2";
 
   src = fetchurl {
-    url = "https://www.splint.org/downloads/${pname}-${version}.src.tgz";
+    url = "http://www.splint.org/downloads/${name}.src.tgz";
     sha256 = "02pv8kscsrkrzip9r08pfs9xs98q74c52mlxzbii6cv6vx1vd3f7";
   };
 
-  patches = [ ./tmpdir.patch ] ++ lib.optional stdenv.isDarwin ./darwin.patch;
+  patches = [ ./tmpdir.patch ] ++ stdenv.lib.optional stdenv.isDarwin ./darwin.patch;
 
   buildInputs = [ flex ];
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.splint.org/";
     description = "Annotation-assisted lightweight static analyzer for C";
 

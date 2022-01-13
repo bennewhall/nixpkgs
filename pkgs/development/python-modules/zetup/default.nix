@@ -1,11 +1,6 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, nbconvert
-, pathpy
-, pytestCheckHook
-, setuptools-scm
-}:
+{ lib, buildPythonPackage, fetchPypi
+, setuptools_scm, pathpy, nbconvert
+, pytest }:
 
 buildPythonPackage rec {
   pname = "zetup";
@@ -16,25 +11,18 @@ buildPythonPackage rec {
     sha256 = "b8a9bdcfa4b705d72b55b218658bc9403c157db7b57a14158253c98d03ab713d";
   };
 
-  # Python > 3.7 compatibility
+  # Python 3.8 compatibility
   postPatch = ''
     substituteInPlace zetup/zetup_config.py \
-      --replace "'3.7']" "'3.7', '3.8', '3.9', '3.10']"
+      --replace "'3.7']" "'3.7', '3.8']"
   '';
 
   checkPhase = ''
     py.test test -k "not TestObject" --deselect=test/test_zetup_config.py::test_classifiers
   '';
 
-  propagatedBuildInputs = [ setuptools-scm ];
-
-  checkInputs = [
-    pathpy
-    nbconvert
-    pytestCheckHook
-  ];
-
-  pythonImportsCheck = [ "zetup" ];
+  checkInputs = [ pytest pathpy nbconvert ];
+  propagatedBuildInputs = [ setuptools_scm ];
 
   meta = with lib; {
     description = "Zimmermann's Extensible Tools for Unified Project setups";

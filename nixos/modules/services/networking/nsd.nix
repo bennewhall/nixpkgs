@@ -20,15 +20,6 @@ let
 
   mkZoneFileName = name: if name == "." then "root" else name;
 
-  # replaces include: directives for keys with fake keys for nsd-checkconf
-  injectFakeKeys = keys: concatStrings
-    (mapAttrsToList
-      (keyName: keyOptions: ''
-        fakeKey="$(${pkgs.bind}/bin/tsig-keygen -a ${escapeShellArgs [ keyOptions.algorithm keyName ]} | grep -oP "\s*secret \"\K.*(?=\";)")"
-        sed "s@^\s*include:\s*\"${stateDir}/private/${keyName}\"\$@secret: $fakeKey@" -i $out/nsd.conf
-      '')
-      keys);
-
   nsdEnv = pkgs.buildEnv {
     name = "nsd-env";
 
@@ -43,9 +34,9 @@ let
         echo "|- checking zone '$out/zones/$zoneFile'"
         ${nsdPkg}/sbin/nsd-checkzone "$zoneFile" "$zoneFile" || {
           if grep -q \\\\\\$ "$zoneFile"; then
-            echo zone "$zoneFile" contains escaped dollar signs \\\$
-            echo Escaping them is not needed any more. Please make sure \
-                 to unescape them where they prefix a variable name.
+            echo zone "$zoneFile" contains escaped dollar signes \\\$
+            echo Escaping them is not needed any more. Please make shure \
+                 to unescape them where they prefix a variable name
           fi
 
           exit 1
@@ -53,14 +44,7 @@ let
       done
 
       echo "checking configuration file"
-      # Save original config file including key references...
-      cp $out/nsd.conf{,.orig}
-      # ...inject mock keys into config
-      ${injectFakeKeys cfg.keys}
-      # ...do the checkconf
       ${nsdPkg}/sbin/nsd-checkconf $out/nsd.conf
-      # ... and restore original config file.
-      mv $out/nsd.conf{.orig,}
     '';
   };
 
@@ -260,6 +244,7 @@ let
       data = mkOption {
         type = types.lines;
         default = "";
+        example = "";
         description = ''
           The actual zone data. This is the content of your zone file.
           Use imports or pkgs.lib.readFile if you don't want this data in your config file.
@@ -396,6 +381,7 @@ let
       requestXFR = mkOption {
         type = types.listOf types.str;
         default = [];
+        example = [];
         description = ''
           Format: <code>[AXFR|UDP] &lt;ip-address&gt; &lt;key-name | NOKEY&gt;</code>
         '';
@@ -603,7 +589,6 @@ in
     reuseport = mkOption {
       type = types.bool;
       default = pkgs.stdenv.isLinux;
-      defaultText = literalExpression "pkgs.stdenv.isLinux";
       description = ''
         Whether to enable SO_REUSEPORT on all used sockets. This lets multiple
         processes bind to the same port. This speeds up operation especially
@@ -725,7 +710,7 @@ in
         };
       });
       default = {};
-      example = literalExpression ''
+      example = literalExample ''
         { "tsig.example.org" = {
             algorithm = "hmac-md5";
             keyFile = "/path/to/my/key";
@@ -860,7 +845,7 @@ in
     zones = mkOption {
       type = types.attrsOf zoneOptions;
       default = {};
-      example = literalExpression ''
+      example = literalExample ''
         { "serverGroup1" = {
             provideXFR = [ "10.1.2.3 NOKEY" ];
             children = {

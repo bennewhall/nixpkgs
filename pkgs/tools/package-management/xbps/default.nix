@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, which, zlib, openssl, libarchive }:
+{ stdenv, fetchFromGitHub, pkgconfig, which, zlib, openssl, libarchive }:
 
 stdenv.mkDerivation rec {
   pname = "xbps";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "0pab3xf97y4wqlyrb92zxd3cfsrbnlx6pssbw4brgwcxccw9jrhy";
   };
 
-  nativeBuildInputs = [ pkg-config which ];
+  nativeBuildInputs = [ pkgconfig which ];
 
   buildInputs = [ zlib openssl libarchive ];
 
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/void-linux/xbps";
     description = "The X Binary Package System";
     platforms = platforms.linux; # known to not work on Darwin, at least
