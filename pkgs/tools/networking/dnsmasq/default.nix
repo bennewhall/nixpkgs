@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchurl, pkg-config, dbus, nettle, fetchpatch
-, libidn, libnetfilter_conntrack, buildPackages }:
+{ stdenv, fetchurl, pkgconfig, dbus, nettle, fetchpatch
+, libidn, libnetfilter_conntrack }:
 
-with lib;
+with stdenv.lib;
 let
   copts = concatStringsSep " " ([
     "-DHAVE_IDN"
@@ -12,15 +12,14 @@ let
   ]);
 in
 stdenv.mkDerivation rec {
-  pname = "dnsmasq";
-  version = "2.85";
+  name = "dnsmasq-2.82";
 
   src = fetchurl {
-    url = "https://www.thekelleys.org.uk/dnsmasq/${pname}-${version}.tar.xz";
-    sha256 = "sha256-rZjTgD32h+W5OAgPPSXGKP5ByHh1LQP7xhmXh/7jEvo=";
+    url = "http://www.thekelleys.org.uk/dnsmasq/${name}.tar.xz";
+    sha256 = "0cn1xd1s6xs78jmrmwjnh9m6w3q38pk6dyqy2phvasqiyd33cll4";
   };
 
-  postPatch = lib.optionalString stdenv.hostPlatform.isLinux ''
+  postPatch = stdenv.lib.optionalString stdenv.hostPlatform.isLinux ''
     sed '1i#include <linux/sockios.h>' -i src/dhcp.c
   '';
 
@@ -33,7 +32,6 @@ stdenv.mkDerivation rec {
     "BINDIR=$(out)/bin"
     "MANDIR=$(out)/man"
     "LOCALEDIR=$(out)/share/locale"
-    "PKG_CONFIG=${buildPackages.pkg-config}/bin/${buildPackages.pkg-config.targetPrefix}pkg-config"
   ];
 
   hardeningEnable = [ "pie" ];
@@ -67,13 +65,13 @@ stdenv.mkDerivation rec {
     END
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ nettle libidn ]
     ++ optionals stdenv.isLinux [ dbus libnetfilter_conntrack ];
 
   meta = {
     description = "An integrated DNS, DHCP and TFTP server for small networks";
-    homepage = "https://www.thekelleys.org.uk/dnsmasq/doc.html";
+    homepage = "http://www.thekelleys.org.uk/dnsmasq/doc.html";
     license = licenses.gpl2;
     platforms = with platforms; linux ++ darwin;
     maintainers = with maintainers; [ eelco fpletz globin ];

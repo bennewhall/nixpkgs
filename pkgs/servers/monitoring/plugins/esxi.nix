@@ -1,10 +1,10 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python3Packages }:
 
 let
   bName = "check_esxi_hardware";
 
 in python3Packages.buildPythonApplication rec {
-  pname = lib.replaceStrings [ "_" ] [ "-" ] bName;
+  pname = stdenv.lib.replaceStrings [ "_" ] [ "-" ] bName;
   version = "20200710";
 
   src = fetchFromGitHub {
@@ -28,7 +28,7 @@ in python3Packages.buildPythonApplication rec {
 
   propagatedBuildInputs = with python3Packages; [ pywbem requests setuptools ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.claudiokuenzler.com/nagios-plugins/";
     license = licenses.gpl2;
     maintainers = with maintainers; [ peterhoeg ];

@@ -1,39 +1,30 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
-, mock
 , smbus-cffi
 , pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "bme680";
-  version = "1.1.1";
+  version = "1.0.5";
 
   src = fetchFromGitHub {
     owner = "pimoroni";
     repo = "bme680-python";
     rev = "v${version}";
-    sha256 = "sha256-gmdRxMJ0DoCyNcb/bYp746PBi4HktHAAYOcSQJ0Uheg=";
+    sha256 = "sha256-oIXh1JnGTI/Cj4MQFpWq+sWR2X+ioCsK0Q+T7wPITCQ=";
   };
 
-  propagatedBuildInputs = [
-    smbus-cffi
-  ];
+  propagatedBuildInputs = [ smbus-cffi ];
 
   preBuild = ''
     cd library
   '';
+  checkInputs = [ pytestCheckHook ];
 
-  checkInputs = [
-    mock
-    pytestCheckHook
-  ];
-
-  postPatch = ''
-    substituteInPlace library/setup.cfg \
-      --replace "smbus" "smbus-cffi"
-  '';
+  # next release will have tests, but not the current one
+  doCheck = false;
 
   pythonImportsCheck = [ "bme680" ];
 

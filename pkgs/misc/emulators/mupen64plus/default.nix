@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, boost, dash, freetype, libpng, pkg-config, SDL, which, zlib, nasm }:
+{stdenv, fetchurl, boost, dash, freetype, libpng, pkgconfig, SDL, which, zlib, nasm }:
 
 stdenv.mkDerivation rec {
   pname = "mupen64plus";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1a21n4gqdvag6krwcjm5bnyw5phrlxw6m0mk73jy53iq03f3s96m";
   };
 
-  nativeBuildInputs = [ pkg-config nasm ];
+  nativeBuildInputs = [ pkgconfig nasm ];
   buildInputs = [ boost dash freetype libpng SDL which zlib ];
 
   buildPhase = ''
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     dash m64p_install.sh DESTDIR="$out" PREFIX=""
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Nintendo 64 Emulator";
     license = licenses.gpl2Plus;
     homepage = "http://www.mupen64plus.org/";

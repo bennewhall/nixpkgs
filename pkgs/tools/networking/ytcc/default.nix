@@ -1,48 +1,35 @@
-{ lib, python3Packages, fetchFromGitHub, gettext, installShellFiles }:
+{ lib, python3Packages, fetchFromGitHub, gettext }:
 
 python3Packages.buildPythonApplication rec {
   pname = "ytcc";
-  version = "2.5.4";
+  version = "1.8.4";
 
   src = fetchFromGitHub {
     owner = "woefe";
     repo = "ytcc";
     rev = "v${version}";
-    sha256 = "sha256-nYHfmksZnIZGMSSFDhW7ajvv1F5h3aJo8IXw6yYOEw0=";
+    sha256 = "11gwpqmq611j07pjscch28jsrfgyzy69ph2w1miz3arqmxz7dqjp";
   };
 
-  nativeBuildInputs = [ gettext installShellFiles ];
+  nativeBuildInputs = [ gettext ];
 
-  propagatedBuildInputs = with python3Packages; [
-    yt-dlp
-    click
-    wcwidth
-  ];
+  propagatedBuildInputs = with python3Packages; [ feedparser lxml sqlalchemy youtube-dl ];
 
-  checkInputs = with python3Packages; [ nose pytestCheckHook ];
+  checkInputs = with python3Packages; [ nose pytest ];
 
   # Disable tests that touch network or shell out to commands
-  disabledTests = [
-    "get_channels"
-    "play_video"
-    "download_videos"
-    "update_all"
-    "add_channel_duplicate"
-    "test_subscribe"
-    "test_import"
-    "test_import_duplicate"
-    "test_update"
-    "test_download"
-  ];
-
-  postInstall = ''
-    installManPage doc/ytcc.1
+  checkPhase = ''
+    pytest . -k "not get_channels \
+                 and not play_video \
+                 and not download_videos \
+                 and not update_all \
+                 and not add_channel_duplicate"
   '';
 
   meta = {
     description = "Command Line tool to keep track of your favourite YouTube channels without signing up for a Google account";
     homepage = "https://github.com/woefe/ytcc";
-    license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [ marius851000 marsam ];
+    license = lib.licenses.gpl3;
+    maintainers = with lib.maintainers; [ marius851000 ];
   };
 }

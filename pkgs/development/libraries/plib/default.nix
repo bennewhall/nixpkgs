@@ -1,13 +1,12 @@
-{ fetchurl, fetchpatch, lib, stdenv, libGLU, libGL, freeglut, SDL
+{ fetchurl, fetchpatch, stdenv, libGLU, libGL, freeglut, SDL
 , libXi, libSM, libXmu, libXext, libX11 }:
 
 stdenv.mkDerivation rec {
-  pname = "plib";
-  version = "1.8.5";
+  name = "plib-1.8.5";
 
   src = fetchurl {
     # XXX: The author doesn't use the orthodox SF way to store tarballs.
-    url = "http://plib.sourceforge.net/dist/${pname}-${version}.tar.gz";
+    url = "http://plib.sourceforge.net/dist/${name}.tar.gz";
     sha256 = "0cha71mflpa10vh2l7ipyqk67dq2y0k5xbafwdks03fwdyzj4ns8";
   };
 
@@ -43,9 +42,9 @@ stdenv.mkDerivation rec {
       GLUT, or FLTK instead of PLIB's 'PW' windowing library, you can.
     '';
 
-    license = lib.licenses.lgpl2Plus;
+    license = stdenv.lib.licenses.lgpl2Plus;
 
     homepage = "http://plib.sourceforge.net/";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

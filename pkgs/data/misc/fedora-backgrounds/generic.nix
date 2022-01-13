@@ -1,5 +1,4 @@
-{ lib
-, stdenvNoCC
+{ stdenvNoCC
 , coreutils
 }:
 
@@ -11,7 +10,7 @@
 stdenvNoCC.mkDerivation {
   inherit patches src version;
 
-  pname = "fedora${lib.versions.major version}-backgrounds";
+  pname = "fedora${stdenvNoCC.lib.versions.major version}-backgrounds";
 
   dontBuild = true;
 
@@ -33,11 +32,11 @@ stdenvNoCC.mkDerivation {
     "DESTDIR=$(out)"
   ];
 
-  meta = with lib; {
+  meta = with stdenvNoCC.lib; {
     homepage = "https://github.com/fedoradesign/backgrounds";
     description = "A set of default and supplemental wallpapers for Fedora";
     license = licenses.cc-by-sa-40;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ danieldk ];
   };
 }

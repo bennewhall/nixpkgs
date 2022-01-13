@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl
-, automake, autoconf, libtool, pkg-config, autoconf-archive
+{ stdenv, fetchurl
+, automake, autoconf, libtool, pkgconfig, autoconf-archive
 , libxml2, zlib, bzip2, libtar }:
 
 let
-  release = lib.importJSON ./release-info/LanguageMachines-ticcutils.json;
+  release = builtins.fromJSON (builtins.readFile ./release-info/LanguageMachines-ticcutils.json);
 in
 
 stdenv.mkDerivation {
@@ -11,7 +11,7 @@ stdenv.mkDerivation {
   version = release.version;
   src = fetchurl { inherit (release) url sha256;
                    name = "ticcutils-${release.version}.tar.gz"; };
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ automake autoconf libtool autoconf-archive libxml2
                   # optional:
                   zlib bzip2 libtar
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
                 ];
   preConfigure = "sh bootstrap.sh";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "This module contains useful functions for general use in the TiCC software stack and beyond.";
     homepage    = "https://github.com/LanguageMachines/ticcutils";
     license     = licenses.gpl3;

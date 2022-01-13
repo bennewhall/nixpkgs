@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, makeWrapper, coreutils, git, openssh, bash, gnused, gnugrep
+{ stdenv, buildGoPackage, makeWrapper, coreutils, git, openssh, bash, gnused, gnugrep
 , src, version, hasBootstrapScript, postPatch ? ""
 , ... }:
 let
@@ -13,7 +13,7 @@ buildGoPackage {
   nativeBuildInputs = [ makeWrapper ];
 
   postInstall = ''
-    ${lib.optionalString hasBootstrapScript ''
+    ${stdenv.lib.optionalString hasBootstrapScript ''
     # Install bootstrap.sh
     mkdir -p $out/libexec/buildkite-agent
     cp $NIX_BUILD_TOP/go/src/${goPackagePath}/templates/bootstrap.sh $out/libexec/buildkite-agent
@@ -25,11 +25,11 @@ buildGoPackage {
 
     # These are runtime dependencies
     wrapProgram $out/bin/buildkite-agent \
-      ${lib.optionalString hasBootstrapScript "--set BUILDKITE_BOOTSTRAP_SCRIPT_PATH $out/libexec/buildkite-agent/bootstrap.sh"} \
-      --prefix PATH : '${lib.makeBinPath [ openssh git coreutils gnused gnugrep ]}'
+      ${stdenv.lib.optionalString hasBootstrapScript "--set BUILDKITE_BOOTSTRAP_SCRIPT_PATH $out/libexec/buildkite-agent/bootstrap.sh"} \
+      --prefix PATH : '${stdenv.lib.makeBinPath [ openssh git coreutils gnused gnugrep ]}'
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Build runner for buildkite.com";
     longDescription = ''
       The buildkite-agent is a small, reliable, and cross-platform build runner

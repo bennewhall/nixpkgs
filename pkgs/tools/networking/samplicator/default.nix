@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "samplicator";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Send copies of (UDP) datagrams to multiple receivers";
     homepage = "https://github.com/sleinen/samplicator/";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

@@ -1,22 +1,26 @@
-{ fetchFromGitHub, lib, i3 }:
+{ fetchurl, stdenv, i3, autoreconfHook }:
 
 i3.overrideAttrs (oldAttrs : rec {
-  pname = "i3-gaps";
-  version = "4.20.1";
 
-  src = fetchFromGitHub {
-    owner = "Airblader";
-    repo = "i3";
-    rev = version;
-    sha256 = "sha256-aS1dLs8KxoJaTf3RlQX+zRrtNmHEFZgkXDjt+8SuGDw=";
+  name = "i3-gaps-${version}";
+  version = "4.18.3";
+
+  src = fetchurl {
+    url = "https://github.com/Airblader/i3/releases/download/${version}/i3-${version}.tar.bz2";
+    sha256 = "1hcakwyz78lgp8mhqv7pw86jlb3m415pfql1q19rkijnhm3fn3ci";
   };
 
-  meta = with lib; {
+  nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ autoreconfHook ];
+
+  # fatal error: GENERATED_config_enums.h: No such file or directory
+  enableParallelBuilding = false;
+
+  meta = with stdenv.lib; {
     description = "A fork of the i3 tiling window manager with some additional features";
     homepage    = "https://github.com/Airblader/i3";
     maintainers = with maintainers; [ fmthoma ];
     license     = licenses.bsd3;
-    platforms   = platforms.linux ++ platforms.netbsd ++ platforms.openbsd;
+    platforms   = platforms.all;
 
     longDescription = ''
       Fork of i3wm, a tiling window manager primarily targeted at advanced users

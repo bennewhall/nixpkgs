@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, git }:
+{ stdenv, fetchFromGitHub, makeWrapper, git }:
 
 stdenv.mkDerivation rec {
   pname = "git-standup";
@@ -19,10 +19,10 @@ stdenv.mkDerivation rec {
     install -Dm755 -t $out/bin git-standup
 
     wrapProgram $out/bin/git-standup \
-      --prefix PATH : "${lib.makeBinPath [ git ]}"
+      --prefix PATH : "${stdenv.lib.makeBinPath [ git ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Recall what you did on the last working day";
     homepage = "https://github.com/kamranahmedse/git-standup";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ocaml, findlib
+{ stdenv, fetchFromGitHub, ocaml, findlib
 , easy-format
 }:
 
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   createFindlibDestdir = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/mjambon/dum";
     description = "Inspect the runtime representation of arbitrary OCaml values";
     license = licenses.lgpl21Plus;

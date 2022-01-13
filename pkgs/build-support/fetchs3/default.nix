@@ -1,4 +1,4 @@
-{ lib, runCommand, awscli }:
+{ stdenvNoCC, runCommand, awscli }:
 
 { s3url
 , name ? builtins.baseNameOf s3url
@@ -16,7 +16,7 @@ let
     AWS_SESSION_TOKEN = session_token;
   };
 
-  credentialAttrs = lib.optionalAttrs (credentials != null) (mkCredentials credentials);
+  credentialAttrs = stdenvNoCC.lib.optionalAttrs (credentials != null) (mkCredentials credentials);
 in runCommand name ({
   nativeBuildInputs = [ awscli ];
 

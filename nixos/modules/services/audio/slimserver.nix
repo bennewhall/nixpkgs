@@ -22,7 +22,7 @@ in {
       package = mkOption {
         type = types.package;
         default = pkgs.slimserver;
-        defaultText = literalExpression "pkgs.slimserver";
+        defaultText = "pkgs.slimserver";
         description = "Slimserver package to use.";
       };
 
@@ -63,7 +63,6 @@ in {
         description = "Slimserver daemon user";
         home = cfg.dataDir;
         group = "slimserver";
-        isSystemUser = true;
       };
       groups.slimserver = {};
     };

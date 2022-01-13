@@ -1,9 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchurl
 , fetchpatch
 , substituteAll
-, pkg-config
+, pkgconfig
 , glib
 , shadow
 , gobject-introspection
@@ -34,7 +33,7 @@ stdenv.mkDerivation rec {
     gobject-introspection
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
   ];
 
@@ -85,11 +84,11 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "D-Bus interface for user account query and manipulation";
     homepage = "https://www.freedesktop.org/wiki/Software/AccountsService";
     license = licenses.gpl3;
     maintainers = with maintainers; [ pSub ];
-    platforms = platforms.linux;
+    platforms = with platforms; linux;
   };
 }

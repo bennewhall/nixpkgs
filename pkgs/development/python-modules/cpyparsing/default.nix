@@ -1,19 +1,17 @@
-{ lib, buildPythonPackage, fetchFromGitHub, cython, pexpect, python }:
+{ lib, buildPythonPackage, fetchFromGitHub, cython, python }:
 
 buildPythonPackage rec {
   pname = "cpyparsing";
-  version = "2.4.7.1.1.0";
+  version = "2.4.5.0.1.1";
 
   src = fetchFromGitHub {
     owner = "evhub";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "1rqj89mb4dz0xk8djh506nrlqfqqdva9qgb5llrvvwjqv3vqnrj4";
+    rev = "aa8ee45daec5c55328446bad7202ab8f799ab0ce"; # No tags on repo
+    sha256 = "1mxa5q41cb0k4lkibs0d4lzh1w6kmhhdrsm0w0r1m3s80m05ffmw";
   };
 
   nativeBuildInputs = [ cython ];
-
-  checkInputs = [ pexpect ];
 
   checkPhase = "${python.interpreter} tests/cPyparsing_test.py";
 

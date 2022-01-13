@@ -1,50 +1,46 @@
-{ lib, stdenv, fetchurl, unzip, gtk-engine-murrine }:
+{ stdenv, fetchurl, unzip }:
 
 stdenv.mkDerivation rec {
   pname = "sweet";
-  version = "3.0";
+  version = "1.10.5";
 
   srcs = [
     (fetchurl {
       url = "https://github.com/EliverLara/Sweet/releases/download/v${version}/Sweet-Ambar-Blue.zip";
-      sha256 = "sha256-6ZrjH5L7Yox7riR+2I7vVbFoG4k7xHGyOq1OnkllyiY";
+      sha256 = "11040hx8ci4vbnyaj63zj924v0ln7rjm9a28mcqdax60h3dp12lj";
     })
     (fetchurl {
       url = "https://github.com/EliverLara/Sweet/releases/download/v${version}/Sweet-Ambar.zip";
-      sha256 = "sha256-FAbf682YJCCt8NKSdFoaFLwxLDU1aCcTgNdlybZtPMo=";
+      sha256 = "0lvnjmirpwdav8q0bfbhybwkr2h6dilc7lhhj18xd2k57xadjmxr";
     })
     (fetchurl {
       url = "https://github.com/EliverLara/Sweet/releases/download/v${version}/Sweet-Dark.zip";
-      sha256 = "sha256-t6fczOnKwi4B9hSFhHQaQ533o7MFL+7HPtUJ/p2CIXM=";
+      sha256 = "0a7mh1pgvi8w1ahsmvgnmpdawm30lcjqk4zqvg0lqadsd04dn4h1";
     })
     (fetchurl {
       url = "https://github.com/EliverLara/Sweet/releases/download/v${version}/Sweet-mars.zip";
-      sha256 = "sha256-QGkkpUqkxGPM1DXrvToB3taajk7vK3rqibQF2M4N9i0=";
+      sha256 = "0n2dkl35qrik10wvhvkayyra987p03g56pxhz5kc73cbsl5zd96l";
     })
     (fetchurl {
       url = "https://github.com/EliverLara/Sweet/releases/download/v${version}/Sweet.zip";
-      sha256 = "sha256-1qVC2n7ypN1BFuSzBpbY7QzJUzF1anYNAVcMkNpGTMM";
+      sha256 = "0wwmc3wj2pjg4kimfkvcsimk3s4s7l7k000vxqi8yjlfs70f273c";
     })
   ];
 
   nativeBuildInputs = [ unzip ];
 
-  propagatedUserEnvPkgs = [ gtk-engine-murrine ];
-
   sourceRoot = ".";
 
   installPhase = ''
-    runHook preInstall
     mkdir -p $out/share/themes/
     cp -a Sweet* $out/share/themes/
     rm $out/share/themes/*/{LICENSE,README*}
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Light and dark colorful Gtk3.20+ theme";
     homepage = "https://github.com/EliverLara/Sweet";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ fuzen ];
     platforms = platforms.linux;
   };

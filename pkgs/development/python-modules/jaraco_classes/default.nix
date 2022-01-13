@@ -1,34 +1,19 @@
-{ lib, buildPythonPackage, fetchFromGitHub, isPy27
-, setuptools-scm
-, more-itertools
-, pytestCheckHook
-}:
+{ buildPythonPackage, fetchPypi, isPy27, setuptools_scm, six, more-itertools }:
 
 buildPythonPackage rec {
   pname = "jaraco.classes";
-  version = "3.1.1";
+  version = "3.1.0";
   disabled = isPy27;
 
-  src = fetchFromGitHub {
-    owner = "jaraco";
-    repo = "jaraco.classes";
-    rev = "v${version}";
-    sha256 = "0wzrcsxi9gb65inayg0drm08iaw37jm1lqxhz3860i6pwjh503pr";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "1avsxzm5mwylmy2zbxq3xvn48z5djb0qy3hwv4ryncprivzri1n3";
   };
 
   pythonNamespaces = [ "jaraco" ];
 
-  SETUPTOOLS_SCM_PRETEND_VERSION = version;
+  nativeBuildInputs = [ setuptools_scm ];
+  propagatedBuildInputs = [ six more-itertools ];
 
-  nativeBuildInputs = [ setuptools-scm ];
-
-  propagatedBuildInputs = [ more-itertools ];
-
-  checkInputs = [ pytestCheckHook ];
-
-  meta = with lib; {
-    description = "Utility functions for Python class constructs";
-    homepage = "https://github.com/jaraco/jaraco.classes";
-    license = licenses.mit;
-  };
+  doCheck = false;
 }

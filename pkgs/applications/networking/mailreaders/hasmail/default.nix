@@ -1,7 +1,7 @@
 { lib
 , buildGoModule
 , fetchFromGitHub
-, pkg-config
+, pkgconfig
 , gobject-introspection
 , pango
 , cairo
@@ -24,7 +24,7 @@ buildGoModule rec {
   doCheck = false;
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [

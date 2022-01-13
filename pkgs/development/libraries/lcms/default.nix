@@ -1,11 +1,10 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
-stdenv.mkDerivation rec {
-  pname = "lcms";
-  version = "1.19";
+stdenv.mkDerivation {
+  name = "lcms-1.19";
 
   src = fetchurl {
-    url = "mirror://sourceforge/lcms/${pname}-${version}.tar.gz";
+    url = "http://www.littlecms.com/lcms-1.19.tar.gz";
     sha256 = "1abkf8iphwyfs3z305z3qczm3z1i9idc1lz4gvfg92jnkz5k5bl0";
   };
 
@@ -18,7 +17,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Color management engine";
     homepage = "http://www.littlecms.com/";
-    license = lib.licenses.mit;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.mit;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

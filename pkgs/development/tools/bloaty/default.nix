@@ -1,4 +1,4 @@
-{ lib, stdenv, cmake, zlib, fetchFromGitHub }:
+{ stdenv, cmake, zlib, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   version = "1.1";
@@ -16,13 +16,15 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ zlib ];
 
+  enableParallelBuilding = true;
+
   doCheck = true;
 
   installPhase = ''
     install -Dm755 {.,$out/bin}/bloaty
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "a size profiler for binaries";
     homepage = "https://github.com/google/bloaty";
     license = licenses.asl20;

@@ -1,11 +1,11 @@
-{ pkgs }:
-final: prev:
-with prev;
+{ pkgs,  ... }:
+self: super:
+with super;
 {
   ##########################################3
   #### manual fixes for generated packages
   ##########################################3
-  bit32 = prev.bit32.overrideAttrs(oa: {
+  bit32 = super.bit32.override({
     # Small patch in order to no longer redefine a Lua 5.2 function that Luajit
     # 2.1 also provides, see https://github.com/LuaJIT/LuaJIT/issues/325 for
     # more
@@ -14,7 +14,7 @@ with prev;
     ];
   });
 
-  busted = prev.busted.overrideAttrs(oa: {
+  busted = super.busted.override({
     postConfigure = ''
       substituteInPlace ''${rockspecFilename} \
         --replace "'lua_cliargs = 3.0-1'," "'lua_cliargs >= 3.0-1',"
@@ -25,7 +25,14 @@ with prev;
     '';
   });
 
-  cqueues = (prev.lib.overrideLuarocks prev.cqueues (drv: {
+  cqueues = super.cqueues.override(rec {
+    # Parse out a version number without the Lua version inserted
+    version = with pkgs.lib; let
+      version' = super.cqueues.version;
+      rel = splitVersion version';
+      date = head rel;
+      rev = last (splitString "-" (last rel));
+    in "${date}-${rev}";
     nativeBuildInputs = [
       pkgs.gnum4
     ];
@@ -34,17 +41,9 @@ with prev;
       { name = "OPENSSL"; dep = pkgs.openssl; }
     ];
     disabled = luaOlder "5.1" || luaAtLeast "5.4";
-  })).overrideAttrs(oa: rec {
-    # Parse out a version number without the Lua version inserted
-    version = with pkgs.lib; let
-      version' = prev.cqueues.version;
-      rel = splitVersion version';
-      date = head rel;
-      rev = last (splitString "-" (last rel));
-    in "${date}-${rev}";
     # Upstream rockspec is pointlessly broken into separate rockspecs, per Lua
     # version, which doesn't work well for us, so modify it
-    postConfigure = let inherit (prev.cqueues) pname; in ''
+    postConfigure = let inherit (super.cqueues) pname; in ''
       # 'all' target auto-detects correct Lua version, which is fine for us as
       # we only have the right one available :)
       sed -Ei ''${rockspecFilename} \
@@ -57,13 +56,13 @@ with prev;
     '';
   });
 
-  cyrussasl = prev.lib.overrideLuarocks prev.cyrussasl (drv: {
+  cyrussasl = super.cyrussasl.override({
     externalDeps = [
       { name = "LIBSASL"; dep = pkgs.cyrus_sasl; }
     ];
   });
 
-  http = prev.http.overrideAttrs(oa: {
+  http = super.http.override({
     patches = [
       (pkgs.fetchpatch {
         name = "invalid-state-progression.patch";
@@ -77,7 +76,7 @@ with prev;
     */
   });
 
-  ldbus = prev.lib.overrideLuarocks prev.ldbus (drv: {
+  ldbus = super.ldbus.override({
     extraVariables = {
       DBUS_DIR="${pkgs.dbus.lib}";
       DBUS_ARCH_INCDIR="${pkgs.dbus.lib}/lib/dbus-1.0/include";
@@ -88,7 +87,7 @@ with prev;
     ];
   });
 
-  ljsyscall = prev.lib.overrideLuarocks prev.ljsyscall (drv: rec {
+  ljsyscall = super.ljsyscall.override(rec {
     version = "unstable-20180515";
     # package hasn't seen any release for a long time
     src = pkgs.fetchFromGitHub {
@@ -107,9 +106,9 @@ with prev;
     propagatedBuildInputs = with pkgs.lib; optional (!isLuaJIT) luaffi;
   });
 
-  lgi = prev.lib.overrideLuarocks prev.lgi (drv: {
+  lgi = super.lgi.override({
     nativeBuildInputs = [
-      pkgs.pkg-config
+      pkgs.pkgconfig
     ];
     buildInputs = [
       pkgs.glib
@@ -122,38 +121,37 @@ with prev;
         sha256 = "0gfvvbri9kyzhvq3bvdbj2l6mwvlz040dk4mrd5m9gz79f7w109c";
       })
     ];
-
-    # there is only a rockspec.in in the repo, the actual rockspec must be generated
-    preConfigure = ''
-      make rock
-    '';
   });
 
-  lrexlib-gnu = prev.lib.overrideLuarocks prev.lrexlib-gnu (drv: {
+  lrexlib-gnu = super.lrexlib-gnu.override({
     buildInputs = [
       pkgs.gnulib
     ];
   });
 
-  lrexlib-pcre = prev.lib.overrideLuarocks prev.lrexlib-pcre (drv: {
+  lrexlib-pcre = super.lrexlib-pcre.override({
     externalDeps = [
       { name = "PCRE"; dep = pkgs.pcre; }
     ];
   });
 
-  lrexlib-posix = prev.lib.overrideLuarocks prev.lrexlib-posix (drv: {
+  lrexlib-posix = super.lrexlib-posix.override({
     buildInputs = [
       pkgs.glibc.dev
     ];
   });
 
-  lua-iconv = prev.lib.overrideLuarocks prev.lua-iconv (drv: {
+  ltermbox = super.ltermbox.override( {
+    disabled = !isLua51 || isLuaJIT;
+  });
+
+  lua-iconv = super.lua-iconv.override({
     buildInputs = [
       pkgs.libiconv
     ];
   });
 
-  lua-lsp = prev.lua-lsp.overrideAttrs(oa: {
+  lua-lsp = super.lua-lsp.override({
     # until Alloyed/lua-lsp#28
     postConfigure = ''
       substituteInPlace ''${rockspecFilename} \
@@ -161,38 +159,38 @@ with prev;
     '';
   });
 
-  lua-zlib = prev.lib.overrideLuarocks prev.lua-zlib (drv: {
+  lua-zlib = super.lua-zlib.override({
     buildInputs = [
       pkgs.zlib.dev
     ];
     disabled = luaOlder "5.1" || luaAtLeast "5.4";
   });
 
-  luadbi-mysql = prev.lib.overrideLuarocks prev.luadbi-mysql (drv: {
+  luadbi-mysql = super.luadbi-mysql.override({
     extraVariables = {
       # Can't just be /include and /lib, unfortunately needs the trailing 'mysql'
       MYSQL_INCDIR="${pkgs.libmysqlclient.dev}/include/mysql";
       MYSQL_LIBDIR="${pkgs.libmysqlclient}/lib/mysql";
     };
     buildInputs = [
-      pkgs.mariadb.client
+      pkgs.mysql.client
       pkgs.libmysqlclient
     ];
   });
 
-  luadbi-postgresql = prev.lib.overrideLuarocks prev.luadbi-postgresql (drv: {
+  luadbi-postgresql = super.luadbi-postgresql.override({
     buildInputs = [
       pkgs.postgresql
     ];
   });
 
-  luadbi-sqlite3 = prev.lib.overrideLuarocks prev.luadbi-sqlite3 (drv: {
+  luadbi-sqlite3 = super.luadbi-sqlite3.override({
     externalDeps = [
       { name = "SQLITE"; dep = pkgs.sqlite; }
     ];
   });
 
-  luaevent = prev.lib.overrideLuarocks prev.luaevent (drv: {
+  luaevent = super.luaevent.override({
     propagatedBuildInputs = [
       luasocket
     ];
@@ -202,7 +200,7 @@ with prev;
     disabled = luaOlder "5.1" || luaAtLeast "5.4";
   });
 
-  luaexpat = prev.lib.overrideLuarocks prev.luaexpat (drv: {
+  luaexpat = super.luaexpat.override({
     externalDeps = [
       { name = "EXPAT"; dep = pkgs.expat; }
     ];
@@ -213,57 +211,59 @@ with prev;
 
   # TODO Somehow automatically amend buildInputs for things that need luaffi
   # but are in luajitPackages?
-  luaffi = prev.lib.overrideLuarocks prev.luaffi (drv: {
+  luaffi = super.luaffi.override({
     # The packaged .src.rock version is pretty old, and doesn't work with Lua 5.3
     src = pkgs.fetchFromGitHub {
       owner = "facebook"; repo = "luaffifb";
       rev = "532c757e51c86f546a85730b71c9fef15ffa633d";
       sha256 = "1nwx6sh56zfq99rcs7sph0296jf6a9z72mxknn0ysw9fd7m1r8ig";
     };
-    knownRockspec = with prev.luaffi; "${pname}-${version}.rockspec";
+    knownRockspec = with super.luaffi; "${pname}-${version}.rockspec";
     disabled = luaOlder "5.1" || luaAtLeast "5.4" || isLuaJIT;
   });
 
-  luaossl = prev.lib.overrideLuarocks prev.luaossl (drv: {
+  luaossl = super.luaossl.override({
     externalDeps = [
       { name = "CRYPTO"; dep = pkgs.openssl; }
       { name = "OPENSSL"; dep = pkgs.openssl; }
     ];
   });
 
-  luasec = prev.lib.overrideLuarocks prev.luasec (drv: {
+  luasec = super.luasec.override({
     externalDeps = [
       { name = "OPENSSL"; dep = pkgs.openssl; }
     ];
   });
 
-  luasql-sqlite3 = prev.lib.overrideLuarocks prev.luasql-sqlite3 (drv: {
+  luasql-sqlite3 = super.luasql-sqlite3.override({
     externalDeps = [
       { name = "SQLITE"; dep = pkgs.sqlite; }
     ];
   });
 
-  luasystem = prev.lib.overrideLuarocks prev.luasystem (drv: { buildInputs = [ pkgs.glibc.out ]; });
+  luasystem = super.luasystem.override({
+    buildInputs = pkgs.lib.optionals pkgs.stdenv.isLinux [
+      pkgs.glibc
+    ];
+  });
 
-  luazip = prev.lib.overrideLuarocks prev.luazip (drv: {
+  luazip = super.luazip.override({
     buildInputs = [
       pkgs.zziplib
     ];
   });
 
-  lua-yajl = prev.lib.overrideLuarocks prev.lua-yajl (drv: {
+  lua-yajl = super.lua-yajl.override({
     buildInputs = [
       pkgs.yajl
     ];
   });
 
-  luuid = (prev.lib.overrideLuarocks prev.luuid (drv: {
+  luuid = super.luuid.override(old: {
     externalDeps = [
       { name = "LIBUUID"; dep = pkgs.libuuid; }
     ];
-    disabled = luaOlder "5.1" || (luaAtLeast "5.4");
-  })).overrideAttrs(oa: {
-    meta = oa.meta // {
+    meta = old.meta // {
       platforms = pkgs.lib.platforms.linux;
     };
     # Trivial patch to make it work in both 5.1 and 5.2.  Basically just the
@@ -275,12 +275,13 @@ with prev;
     patches = [
       ./luuid.patch
     ];
-    postConfigure = let inherit (prev.luuid) version pname; in ''
+    postConfigure = let inherit (super.luuid) version pname; in ''
       sed -Ei ''${rockspecFilename} -e 's|lua >= 5.2|lua >= 5.1,|'
     '';
+    disabled = luaOlder "5.1" || (luaAtLeast "5.4");
   });
 
-  luv = prev.lib.overrideLuarocks prev.luv (drv: {
+  luv = super.luv.override({
     # Use system libuv instead of building local and statically linking
     # This is a hacky way to specify -DWITH_SHARED_LIBUV=ON which
     # is not possible with luarocks and the current luv rockspec
@@ -294,11 +295,11 @@ with prev;
     buildInputs = [ pkgs.libuv ];
 
     passthru = {
-      libluv = final.luv.overrideAttrs (oa: {
-        preBuild = final.luv.preBuild + ''
+      libluv = self.luv.override ({
+        preBuild = self.luv.preBuild + ''
           sed -i 's,\(option(BUILD_MODULE.*\)ON,\1OFF,' CMakeLists.txt
           sed -i 's,\(option(BUILD_SHARED_LIBS.*\)OFF,\1ON,' CMakeLists.txt
-          sed -i 's,${"\${.*INSTALL_INC_DIR}"},${placeholder "out"}/include/luv,' CMakeLists.txt
+          sed -i 's,${"\${INSTALL_INC_DIR}"},${placeholder "out"}/include/luv,' CMakeLists.txt
         '';
 
         nativeBuildInputs = [ pkgs.fixDarwinDylibNames ];
@@ -310,32 +311,32 @@ with prev;
     };
   });
 
-  lyaml = prev.lib.overrideLuarocks prev.lyaml (oa: {
+  lyaml = super.lyaml.override({
     buildInputs = [
       pkgs.libyaml
     ];
   });
 
-  mpack = prev.lib.overrideLuarocks prev.mpack (drv: {
+  mpack = super.mpack.override({
     buildInputs = [ pkgs.libmpack ];
     # the rockspec doesn't use the makefile so you may need to export more flags
     USE_SYSTEM_LUA = "yes";
     USE_SYSTEM_MPACK = "yes";
   });
 
-  rapidjson = prev.rapidjson.overrideAttrs(oa: {
+  rapidjson = super.rapidjson.override({
     preBuild = ''
       sed -i '/set(CMAKE_CXX_FLAGS/d' CMakeLists.txt
       sed -i '/set(CMAKE_C_FLAGS/d' CMakeLists.txt
     '';
   });
 
-  readline = (prev.lib.overrideLuarocks prev.readline (drv: {
+  readline = (super.readline.override ({
     unpackCmd = ''
       unzip "$curSrc"
       tar xf *.tar.gz
     '';
-    propagatedBuildInputs = prev.readline.propagatedBuildInputs ++ [ pkgs.readline.out ];
+    propagatedBuildInputs = super.readline.propagatedBuildInputs ++ [ pkgs.readline ];
     extraVariables = rec {
       READLINE_INCDIR = "${pkgs.readline.dev}/include";
       HISTORY_INCDIR = READLINE_INCDIR;
@@ -343,30 +344,7 @@ with prev;
   })).overrideAttrs (old: {
     # Without this, source root is wrongly set to ./readline-2.6/doc
     setSourceRoot = ''
-      sourceRoot=./readline-3.0
+      sourceRoot=./readline-2.6
     '';
   });
-
-  std-_debug = prev.std-_debug.overrideAttrs(oa: {
-    # run make to generate lib/std/_debug/version.lua
-    preConfigure = ''
-      make all
-    '';
-  });
-
-  std-normalize = prev.std-normalize.overrideAttrs(oa: {
-    # run make to generate lib/std/_debug/version.lua
-    preConfigure = ''
-      make all
-    '';
-  });
-
-  # TODO just while testing, remove afterwards
-  # toVimPlugin should do it instead
-  gitsigns-nvim = prev.gitsigns-nvim.overrideAttrs(oa: {
-    nativeBuildInputs = oa.nativeBuildInputs or [] ++ [ pkgs.vimUtils.vimGenDocHook ];
-  });
-
-  # aliases
-  cjson = prev.lua-cjson;
 }

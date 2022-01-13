@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config
+{ stdenv, fetchurl, pkgconfig
 , buildsystem
 }:
 
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-08WCBct40xC/gcpVNHotCYcZzsrHBGvDZ5g7E4tFAgs=";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ buildsystem ];
 
   makeFlags = [
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     "NSSHARED=${buildsystem}/share/netsurf-buildsystem"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/";
     description = "NetSurf Public Suffix List - Handling library";
     license = licenses.mit;

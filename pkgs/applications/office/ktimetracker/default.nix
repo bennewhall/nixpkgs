@@ -1,4 +1,4 @@
-{ mkDerivation, lib, fetchurl, cmake, pkg-config, extra-cmake-modules,
+{ mkDerivation, lib, fetchurl, cmake, pkgconfig, extra-cmake-modules,
 kconfig, kconfigwidgets, kdbusaddons, kdoctools, ki18n, kidletime,
 kjobwidgets, kio, knotifications, kwindowsystem, kxmlgui, ktextwidgets,
 kcalendarcore
@@ -14,11 +14,11 @@ mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    cmake pkg-config extra-cmake-modules
+    cmake pkgconfig extra-cmake-modules
   ];
 
   buildInputs = [
-    kconfig kconfigwidgets kdbusaddons kdoctools ki18n kidletime kjobwidgets
+		kconfig kconfigwidgets kdbusaddons kdoctools ki18n kidletime kjobwidgets
 kio knotifications kwindowsystem kxmlgui ktextwidgets
     kcalendarcore
   ];

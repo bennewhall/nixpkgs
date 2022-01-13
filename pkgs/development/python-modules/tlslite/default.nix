@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -12,7 +12,7 @@ buildPythonPackage rec {
     sha256 = "9b9a487694c239efea8cec4454a99a56ee1ae1a5f3af0858ccf8029e2ac2d42d";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A pure Python implementation of SSL and TLS";
     homepage = "https://pypi.python.org/pypi/tlslite";
     license = licenses.bsd3;

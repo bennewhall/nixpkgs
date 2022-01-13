@@ -1,8 +1,8 @@
-{ lib, appleDerivation', stdenv, IOKitSrcs, xnu, darwin-stubs }:
+{ stdenv, appleDerivation, IOKitSrcs, xnu, darwin-stubs }:
 
 # Someday it'll make sense to split these out into their own packages, but today is not that day.
-appleDerivation' stdenv {
-  srcs = lib.attrValues IOKitSrcs;
+appleDerivation {
+  srcs = stdenv.lib.attrValues IOKitSrcs;
   sourceRoot = ".";
 
   phases = [ "unpackPhase" "installPhase" ];
@@ -182,7 +182,7 @@ appleDerivation' stdenv {
     # video: missing altogether
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ joelteon copumpkin ];
     platforms   = platforms.darwin;
     license     = licenses.apsl20;

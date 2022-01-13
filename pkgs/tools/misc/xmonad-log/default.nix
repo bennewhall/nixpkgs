@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "xmonad-log";
@@ -15,7 +15,7 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "xmonad DBus monitoring solution";
     homepage = "https://github.com/xintron/xmonad-log";
     license = licenses.mit;

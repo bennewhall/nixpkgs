@@ -27,7 +27,7 @@ in
     package = mkOption {
       type = types.package;
       default = pkgs.gnupg;
-      defaultText = literalExpression "pkgs.gnupg";
+      defaultText = "pkgs.gnupg";
       description = ''
         The gpg package that should be used.
       '';
@@ -71,7 +71,6 @@ in
       type = types.nullOr (types.enum pkgs.pinentry.flavors);
       example = "gnome3";
       default = defaultPinentryFlavor;
-      defaultText = literalDocBook ''matching the configured desktop environment'';
       description = ''
         Which pinentry interface to use. If not null, the path to the
         pinentry binary will be passed to gpg-agent via commandline and

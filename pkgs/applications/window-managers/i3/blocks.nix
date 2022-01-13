@@ -1,6 +1,6 @@
-{ fetchFromGitHub, fetchpatch, lib, stdenv, autoreconfHook, pkg-config }:
+{ fetchFromGitHub, fetchpatch, stdenv, autoreconfHook, pkg-config }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation {
   pname = "i3blocks";

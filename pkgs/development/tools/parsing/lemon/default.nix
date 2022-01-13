@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 let
 
@@ -19,7 +19,7 @@ in stdenv.mkDerivation {
   pname = "lemon";
   version = "1.69";
 
-  dontUnpack = true;
+  phases = [ "buildPhase" "installPhase" ];
 
   buildPhase = ''
     sh -xc "$CC ${srcs.lemon} -o lemon"
@@ -30,7 +30,7 @@ in stdenv.mkDerivation {
     install -Dvm644 ${srcs.lempar} $out/bin/lempar.c
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An LALR(1) parser generator";
     longDescription = ''
       The Lemon program is an LALR(1) parser generator that takes a

@@ -41,19 +41,15 @@ let
     stdenv.mkDerivation ({
       name = "aspell-dict-${shortName}";
 
-      strictDeps = true;
-
-      nativeBuildInputs = [ aspell which ];
+      buildInputs = [aspell which];
 
       dontAddPrefix = true;
-
-      configurePlatforms = [ ];
 
       preBuild = "makeFlagsArray=(dictdir=$out/lib/aspell datadir=$out/lib/aspell)";
 
       meta = {
         description = "Aspell dictionary for ${fullName}";
-        platforms = lib.platforms.all;
+        platforms = stdenv.lib.platforms.all;
       } // (args.meta or {});
     } // removeAttrs args [ "meta" ]);
 
@@ -157,7 +153,7 @@ let
         }
       '';
 
-      dontUnpack = true;
+      phases = [ "preBuild" "buildPhase" "installPhase" ];
     } // args);
 
 in rec {
@@ -302,10 +298,10 @@ in rec {
 
   en = buildOfficialDict {
     language = "en";
-    version = "2020.12.07-0";
+    version = "2019.10.06-0";
     fullName = "English";
     filename = "aspell6";
-    sha256 = "1cwzqkm8gr1w51rpckwlvb43sb0b5nbwy7s8ns5vi250515773sc";
+    sha256 = "1zai9wrqwgb9z9vfgb22qhrvxvg73jg0ix44j1khm2f6m96lncr4";
   };
 
   eo = buildOfficialDict {
@@ -909,11 +905,7 @@ in rec {
 
     langInputs = [ en ];
 
-    buildPhase = ''
-      runHook preBuild
-      cat $src | aspell-affix en-computers --dont-validate-words --lang=en
-      runHook postBuild
-    '';
+    buildPhase = "cat $src | aspell-affix en-computers --dont-validate-words --lang=en";
     installPhase = "aspell-install en-computers";
 
     meta = {
@@ -938,10 +930,8 @@ in rec {
     langInputs = [ en ];
 
     buildPhase = ''
-      runHook preBuild
       cat $src1 | aspell-plain en_US-science --dont-validate-words --lang=en
       cat $src2 | aspell-plain en_GB-science --dont-validate-words --lang=en
-      runHook postBuild
     '';
     installPhase = "aspell-install en_US-science en_GB-science";
 

@@ -1,20 +1,14 @@
-{ lib
-, stdenv
-, python3
-, fetchFromGitHub
-, makeWrapper
-, medusa
-}:
+{ stdenv, python3, fetchFromGitHub, makeWrapper, medusa }:
 
 stdenv.mkDerivation rec {
   pname = "brutespray";
-  version = "1.7.0";
+  version = "1.6.8";
 
   src = fetchFromGitHub {
     owner = "x90skysn3k";
     repo = pname;
-    rev = "${pname}-${version}";
-    sha256 = "0lkm3fvx35ml5jh4ykjr2srq8qfajkmxwp4qfcn9xi58khk3asq3";
+    rev = "brutespray-${version}";
+    sha256 = "1pi4d5vcvvjsby39dq995dlhpxdicmfhqsiw23hr25m38ccfm3rh";
   };
 
   postPatch = ''
@@ -31,19 +25,15 @@ stdenv.mkDerivation rec {
     patchShebangs $out/bin
     patchPythonScript $out/bin/brutespray
     wrapProgram $out/bin/brutespray \
-      --prefix PATH : ${lib.makeBinPath [ medusa ]}
+      --prefix PATH : ${stdenv.lib.makeBinPath [ medusa ]}
 
     mkdir -p $out/share/brutespray
     cp -r wordlist/ $out/share/brutespray/wordlist
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/x90skysn3k/brutespray";
-    description = "Tool to do brute-forcing from Nmap output";
-    longDescription = ''
-      This tool automatically attempts default credentials on found services
-      directly from Nmap output.
-    '';
+    description = "Brute-Forcing from Nmap output - Automatically attempts default creds on found services";
     license = licenses.mit;
     maintainers = with maintainers; [ ma27 ];
   };

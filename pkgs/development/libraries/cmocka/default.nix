@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv, cmake }:
+{ fetchurl, stdenv, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "cmocka";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lightweight library to simplify and generalize unit tests for C";
 
     longDescription =

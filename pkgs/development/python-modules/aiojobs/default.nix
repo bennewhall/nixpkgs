@@ -1,25 +1,22 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, pythonOlder
+{ buildPythonPackage
+, fetchPypi
+, isPy27
 , aiohttp
-, pytestCheckHook
+, pytest
 , pytest-aiohttp
 , pygments
+, lib
 }:
 
 buildPythonPackage rec {
   pname = "aiojobs";
-  version = "1.0.0";
+  version = "0.2.2";
   format = "flit";
+  disabled = isPy27;
 
-  disabled = pythonOlder "3.6";
-
-  src = fetchFromGitHub {
-    owner = "aio-libs";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "EQwD0b2B9qFVd/8thKInaio0hpPzvVIjvCN0TcARu2w=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "01a0msjh4w58fd7jplmblh0hwgpzwjs5xkgqz3d0p5yv3cykwjwf";
   };
 
   nativeBuildInputs = [
@@ -31,17 +28,17 @@ buildPythonPackage rec {
   ];
 
   checkInputs = [
-    pytestCheckHook
+    pytest
     pytest-aiohttp
   ];
 
-  pythonImportsCheck = [
-    "aiojobs"
-  ];
+  checkPhase = ''
+    pytest tests
+  '';
 
   meta = with lib; {
-    description = "Jobs scheduler for managing background task (asyncio)";
     homepage = "https://github.com/aio-libs/aiojobs";
+    description = "Jobs scheduler for managing background task (asyncio)";
     license = licenses.asl20;
     maintainers = with maintainers; [ cmcdragonkai ];
   };

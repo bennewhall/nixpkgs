@@ -1,4 +1,4 @@
-{buildPerlPackage, lib, fetchurl, DBDmysql}:
+{buildPerlPackage, stdenv, fetchurl, DBDmysql}:
 
 buildPerlPackage {
   pname = "maatkit";
@@ -27,7 +27,7 @@ buildPerlPackage {
     done
   '' ;
 
-  meta = with lib; {
+  meta = {
     description = "Database toolkit";
     longDescription = ''
       You can use Maatkit to prove replication is working correctly, fix
@@ -37,7 +37,7 @@ buildPerlPackage {
       In addition to MySQL, there is support for PostgreSQL, Memcached, and a
       growing variety of other databases and technologies.
     '';
-    license = licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     homepage = "http://www.maatkit.org/";
   };
 }

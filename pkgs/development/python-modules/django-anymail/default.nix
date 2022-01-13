@@ -1,5 +1,5 @@
 {
-    lib,
+    stdenv,
     buildPythonPackage,
     fetchFromGitHub,
     six,
@@ -12,13 +12,13 @@
 
 buildPythonPackage rec {
   pname = "django-anymail";
-  version = "8.4";
+  version = "8.1";
 
   src = fetchFromGitHub {
     owner = "anymail";
     repo = pname;
     rev = "v${version}";
-    sha256 = "08ac24hrafkk1jg3milfjky3qni1cz5qggp1rgzq9r7ina4akjma";
+    sha256 = "1v8ayd3nh7pna9lg0pzwgwmvmzzh2g1kxsy7i6mka0hi52g1xvz5";
   };
 
   propagatedBuildInputs = [
@@ -38,10 +38,10 @@ buildPythonPackage rec {
 
   # this package allows multiple email backends
   # sparkpost is missing because it's not packaged yet
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Django email backends and webhooks for Mailgun";
     homepage = "https://github.com/anymail/django-anymail";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ ivegotasthma ];
   };
 }

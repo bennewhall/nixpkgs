@@ -1,4 +1,4 @@
-{ lib, mkDerivation, fetchFromGitHub, pkg-config, symlinkJoin, qmake, diffPlugins
+{ lib, mkDerivation, fetchFromGitHub, pkgconfig, symlinkJoin, qmake, diffPlugins
 , qtbase, qtmultimedia, taglib, libmediainfo, libzen, libbass }:
 
 let
@@ -27,8 +27,7 @@ let
     in mkDerivation {
       name = "${src.name}-patched";
       inherit src;
-
-      dontInstall = true;
+      phases = [ "unpackPhase" "patchPhase" ];
 
       patchPhase = with lib; ''
         # we don’t want prebuild binaries checked into version control!
@@ -110,7 +109,7 @@ in mkDerivation {
     make install
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   inherit buildInputs;
 
   meta = with lib; {

@@ -6,12 +6,12 @@
 
 python3.pkgs.buildPythonApplication rec {
   pname = "ankisyncd";
-  version = "2.2.0";
+  version = "2.1.0";
   src = fetchFromGitHub {
-    owner = "ankicommunity";
+    owner = "tsudoko";
     repo = "anki-sync-server";
     rev = version;
-    sha256 = "196xhd6vzp1ncr3ahz0bv0gp1ap2s37j8v48dwmvaywzayakqdab";
+    sha256 = "6a140afa94fdb1725fed716918875e3d2ad0092cb955136e381c9d826cc4927c";
   };
   format = "other";
 
@@ -60,8 +60,8 @@ python3.pkgs.buildPythonApplication rec {
   meta = with lib; {
     description = "Self-hosted Anki sync server";
     maintainers = with maintainers; [ matt-snider ];
-    homepage = "https://github.com/ankicommunity/anki-sync-server";
-    license = licenses.agpl3Only;
+    homepage = "https://github.com/tsudoko/anki-sync-server";
+    license = licenses.agpl3;
     platforms = platforms.linux;
   };
 }

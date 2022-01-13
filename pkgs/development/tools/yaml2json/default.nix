@@ -1,19 +1,21 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 
-buildGoPackage rec {
+buildGoPackage {
   pname = "yaml2json";
-  version = "1.3";
+  version = "unstable-2017-05-03";
   goPackagePath = "github.com/bronze1man/yaml2json";
 
+  goDeps = ./deps.nix;
+
   src = fetchFromGitHub {
+    rev = "ee8196e587313e98831c040c26262693d48c1a0c";
     owner = "bronze1man";
     repo = "yaml2json";
-    rev = "v${version}";
-    sha256 = "0bhjzl4qibiyvn56wcsm85f3vwnlzf4gywy2gq9mrnbrl629amq1";
+    sha256 = "16a2sqzbam5adbhfvilnpdabzwncs7kgpr0cn4gp09h2imzsprzw";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/bronze1man/yaml2json";
     description = "Convert yaml to json";
     license = with licenses; [ mit ];

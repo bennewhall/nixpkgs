@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, isPy3k }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, isPy3k }:
 
 buildPythonPackage rec {
   pname = "python-doi";
@@ -13,7 +13,7 @@ buildPythonPackage rec {
 
   disabled = !isPy3k;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python library to work with Document Object Identifiers (doi)";
     homepage = "https://github.com/alejandrogallo/python-doi";
     maintainers = with maintainers; [ teto ];

@@ -1,26 +1,23 @@
-{ lib, stdenv, rustPlatform, fetchFromGitHub, libiconv, perl, python3, Security, AppKit, openssl, xclip, pkg-config }:
+{ stdenv, rustPlatform, fetchFromGitHub, libiconv, xorg, python3, Security, AppKit }:
 rustPlatform.buildRustPackage rec {
   pname = "gitui";
-  version = "0.19.0";
+  version = "0.10.1";
 
   src = fetchFromGitHub {
     owner = "extrawurst";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-PNyXmXHS8StJhx6Qko7zbXrX1CX3owC1HmyX9VV7tEg=";
+    sha256 = "1ifwbi6nydh66z6cprjmz2qvy9z52rj9jg2xf054i249gy955hah";
   };
 
-  cargoSha256 = "sha256-Q6QUxIe5bkoEcxZZwhJbihaHhSsX8SLqWzmjp8hFsS4=";
+  cargoSha256 = "1454dn7k1fc4yxhbcmx0z3hj9d9srnlc2k1qp707h1vq46ib1rsf";
 
-  nativeBuildInputs = [ python3 perl pkg-config ];
-  buildInputs = [ openssl ]
-    ++ lib.optional stdenv.isLinux xclip
-    ++ lib.optionals stdenv.isDarwin [ libiconv Security AppKit ];
+  nativeBuildInputs = [ python3 ];
+  buildInputs = [ ]
+    ++ stdenv.lib.optional stdenv.isLinux xorg.libxcb
+    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv Security AppKit ];
 
-  # Needed to get openssl-sys to use pkg-config.
-  OPENSSL_NO_VENDOR = 1;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Blazing fast terminal-ui for git written in rust";
     homepage = "https://github.com/extrawurst/gitui";
     license = licenses.mit;

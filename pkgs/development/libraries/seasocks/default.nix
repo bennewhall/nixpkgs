@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, python, zlib }:
+{ stdenv, fetchFromGitHub, cmake, python, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "seasocks";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
   buildInputs = [ zlib python ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/mattgodbolt/seasocks";
     description = "Tiny embeddable C++ HTTP and WebSocket server";
     license = licenses.bsd2;

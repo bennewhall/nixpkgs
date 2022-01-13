@@ -56,7 +56,7 @@ in
     config = mkOption {
       type = attrs;
       default = { };
-      example = literalExpression ''
+      example = literalExample ''
         {
           videobridge = {
             ice.udp.port = 5000;
@@ -82,7 +82,7 @@ in
         See <link xlink:href="https://github.com/jitsi/jitsi-videobridge/blob/master/doc/muc.md" /> for more information.
       '';
       default = { };
-      example = literalExpression ''
+      example = literalExample ''
         {
           "localhost" = {
             hostName = "localhost";
@@ -191,16 +191,6 @@ in
         Whether to open ports in the firewall for the videobridge.
       '';
     };
-
-    apis = mkOption {
-      type = with types; listOf str;
-      description = ''
-        What is passed as --apis= parameter. If this is empty, "none" is passed.
-        Needed for monitoring jitsi.
-      '';
-      default = [];
-      example = literalExpression "[ \"colibri\" \"rest\" ]";
-    };
   };
 
   config = mkIf cfg.enable {
@@ -217,8 +207,6 @@ in
         "-Dnet.java.sip.communicator.SC_HOME_DIR_NAME" = "videobridge";
         "-Djava.util.logging.config.file" = "/etc/jitsi/videobridge/logging.properties";
         "-Dconfig.file" = pkgs.writeText "jvb.conf" (toHOCON jvbConfig);
-        # Mitigate CVE-2021-44228
-        "-Dlog4j2.formatMsgNoLookups" = true;
       } // (mapAttrs' (k: v: nameValuePair "-D${k}" v) cfg.extraProperties);
     in
     {
@@ -233,7 +221,7 @@ in
         "export ${toVarName name}=$(cat ${xmppConfig.passwordFile})\n"
       ) cfg.xmppConfigs))
       + ''
-        ${pkgs.jitsi-videobridge}/bin/jitsi-videobridge --apis=${if (cfg.apis == []) then "none" else concatStringsSep "," cfg.apis}
+        ${pkgs.jitsi-videobridge}/bin/jitsi-videobridge --apis=none
       '';
 
       serviceConfig = {

@@ -1,23 +1,18 @@
-{ lib, stdenv, fetchurl, pkg-config, meson, ninja, glib, libintl }:
+{ stdenv, fetchurl, pkgconfig, glib, libintl }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "desktop-file-utils";
-  version = "0.26";
+  version = "0.24";
 
   src = fetchurl {
     url = "https://www.freedesktop.org/software/${pname}/releases/${pname}-${version}.tar.xz";
-    sha256 = "02bkfi6fyk4c0gh2avd897882ww5zl7qg7bzzf28qb57kvkvsvdj";
+    sha256 = "1nc3bwjdrpcrkbdmzvhckq0yngbcxspwj2n1r7jr3gmx1jk5vpm1";
   };
 
-  nativeBuildInputs = [ pkg-config meson ninja ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ glib libintl ];
-
-  postPatch = ''
-    substituteInPlace src/install.c \
-      --replace \"update-desktop-database\" \"$out/bin/update-desktop-database\"
-  '';
 
   setupHook = ./setup-hook.sh;
 

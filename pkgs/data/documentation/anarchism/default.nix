@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, xdg-utils }:
+{ stdenv, fetchFromGitLab, xdg_utils }:
 
 stdenv.mkDerivation rec {
   pname = "anarchism";
@@ -12,9 +12,11 @@ stdenv.mkDerivation rec {
     sha256 = "04ylk0y5b3jml2awmyz7m1hnymni8y1n83m0k6ychdh0px8frhm5";
   };
 
+  phases = [ "unpackPhase" "postPatch" "installPhase" ];
+
   postPatch = ''
     substituteInPlace debian/anarchism.desktop \
-      --replace "/usr/bin/xdg-open" "${xdg-utils}/bin/xdg-open"
+      --replace "/usr/bin/xdg-open" "${xdg_utils}/bin/xdg-open"
     substituteInPlace debian/anarchism.desktop \
       --replace "file:///usr" "file://$out"
   '';
@@ -26,7 +28,7 @@ stdenv.mkDerivation rec {
     cp debian/anarchism.desktop $out/share/applications
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.anarchistfaq.org/";
     changelog = "http://anarchism.pageabode.com/afaq/new.html";
     description = "Exhaustive exploration of Anarchist theory and practice";

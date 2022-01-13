@@ -4,6 +4,7 @@
 , nose
 , numpy
 , lib
+, pytest
 }:
 
 buildPythonPackage rec {

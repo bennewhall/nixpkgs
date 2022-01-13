@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, openssl, pkg-config
+{ stdenv, fetchurl, openssl, pkgconfig
 , withPerl ? false, perl
 , withPython ? false, python3
 , withTcl ? false, tcl
@@ -9,7 +9,7 @@
 , withDebug ? false
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "znc";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     sha256 = "03fyi0j44zcanj1rsdx93hkdskwfvhbywjiwd17f9q1a7yp8l8zz";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ openssl ]
     ++ optional withPerl perl
@@ -31,17 +31,15 @@ stdenv.mkDerivation rec {
     ++ optional withZlib zlib;
 
   configureFlags = [
-    (lib.enableFeature withPerl "perl")
-    (lib.enableFeature withPython "python")
-    (lib.enableFeature withTcl "tcl")
-    (lib.withFeatureAs withTcl "tcl" "${tcl}/lib")
-    (lib.enableFeature withCyrus "cyrus")
+    (stdenv.lib.enableFeature withPerl "perl")
+    (stdenv.lib.enableFeature withPython "python")
+    (stdenv.lib.enableFeature withTcl "tcl")
+    (stdenv.lib.withFeatureAs withTcl "tcl" "${tcl}/lib")
+    (stdenv.lib.enableFeature withCyrus "cyrus")
   ] ++ optional (!withIPv6) [ "--disable-ipv6" ]
     ++ optional withDebug [ "--enable-debug" ];
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Advanced IRC bouncer";
     homepage = "https://wiki.znc.in/ZNC";
     maintainers = with maintainers; [ schneefux lnl7 ];

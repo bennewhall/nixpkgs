@@ -1,5 +1,5 @@
-{ stdenv, lib, fetchFromGitHub, bash, pkg-config, autoconf, cpio, file, which, unzip
-, zip, perl, cups, freetype, alsa-lib, libjpeg, giflib, libpng, zlib, lcms2
+{ stdenv, lib, fetchFromGitHub, bash, pkgconfig, autoconf, cpio, file, which, unzip
+, zip, perl, cups, freetype, alsaLib, libjpeg, giflib, libpng, zlib, lcms2
 , libX11, libICE, libXrender, libXext, libXt, libXtst, libXi, libXinerama
 , libXcursor, libXrandr, fontconfig, openjdk11-bootstrap
 , setJavaClassPath
@@ -11,8 +11,8 @@
 let
   major = "11";
   minor = "0";
-  update = "12";
-  build = "7";
+  update = "9";
+  build = "11";
 
   openjdk = stdenv.mkDerivation rec {
     pname = "openjdk" + lib.optionalString headless "-headless";
@@ -22,12 +22,12 @@ let
       owner = "openjdk";
       repo = "jdk${major}u";
       rev = "jdk-${version}";
-      sha256 = "0s8g6gj5vhm7hbp05cqaxasjrkwr41fm634qim8q6slklm4pkkli";
+      sha256 = "11j2rqz9nag5y562g99py4p72f2kv4wwwyrnaspmrzax00wynyx7";
     };
 
-    nativeBuildInputs = [ pkg-config autoconf unzip ];
+    nativeBuildInputs = [ pkgconfig autoconf ];
     buildInputs = [
-      cpio file which zip perl zlib cups freetype alsa-lib libjpeg giflib
+      cpio file which unzip zip perl zlib cups freetype alsaLib libjpeg giflib
       libpng zlib lcms2 libX11 libICE libXrender libXext libXtst libXt libXtst
       libXi libXinerama libXcursor libXrandr fontconfig openjdk11-bootstrap
     ] ++ lib.optionals (!headless && enableGnome2) [
@@ -39,7 +39,6 @@ let
       ./read-truststore-from-env-jdk10.patch
       ./currency-date-range-jdk10.patch
       ./increase-javadoc-heap.patch
-      ./fix-library-path-jdk11.patch
     ] ++ lib.optionals (!headless && enableGnome2) [
       ./swing-use-gtk-jdk10.patch
     ];
@@ -73,12 +72,6 @@ let
     ] ++ lib.optionals (!headless && enableGnome2) [
       "-lgtk-3" "-lgio-2.0" "-lgnomevfs-2" "-lgconf-2"
     ]);
-
-    # -j flag is explicitly rejected by the build system:
-    #     Error: 'make -jN' is not supported, use 'make JOBS=N'
-    # Note: it does not make build sequential. Build system
-    # still runs in parallel.
-    enableParallelBuilding = false;
 
     buildFlags = [ "all" ];
 
@@ -143,7 +136,13 @@ let
 
     disallowedReferences = [ openjdk11-bootstrap ];
 
-    meta = import ./meta.nix lib;
+    meta = with stdenv.lib; {
+      homepage = "http://openjdk.java.net/";
+      license = licenses.gpl2;
+      description = "The open-source Java Development Kit";
+      maintainers = with maintainers; [ edwtjo asbachb ];
+      platforms = [ "i686-linux" "x86_64-linux" "aarch64-linux" "armv7l-linux" "armv6l-linux" ];
+    };
 
     passthru = {
       architecture = "";

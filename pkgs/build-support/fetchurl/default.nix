@@ -104,9 +104,7 @@ let
     if urls != [] && url == "" then
       (if lib.isList urls then urls
        else throw "`urls` is not a list")
-    else if urls == [] && url != "" then
-      (if lib.isString url then [url]
-       else throw "`url` is not a string")
+    else if urls == [] && url != "" then [url]
     else throw "fetchurl requires either `url` or `urls` to be set";
 
   hash_ =
@@ -139,7 +137,7 @@ stdenvNoCC.mkDerivation {
   # New-style output content requirements.
   inherit (hash_) outputHashAlgo outputHash;
 
-  SSL_CERT_FILE = if (hash_.outputHash == "" || hash_.outputHash == lib.fakeSha256 || hash_.outputHash == lib.fakeSha512 || hash_.outputHash == lib.fakeHash)
+  SSL_CERT_FILE = if hash_.outputHash == ""
                   then "${cacert}/etc/ssl/certs/ca-bundle.crt"
                   else "/no-cert-file.crt";
 

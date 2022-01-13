@@ -1,4 +1,4 @@
-{ lib, stdenv, kernel }:
+{ stdenv, kernel }:
 
 stdenv.mkDerivation {
   pname = "intel-speed-select";
@@ -11,7 +11,7 @@ stdenv.mkDerivation {
     sed -i 's,/usr,,g' Makefile
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool to enumerate and control the Intel Speed Select Technology features";
     homepage = "https://www.kernel.org/";
     license = licenses.gpl2;

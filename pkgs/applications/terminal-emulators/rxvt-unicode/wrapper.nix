@@ -40,7 +40,7 @@ let
 
         paths = [ rxvt-unicode-unwrapped ] ++ plugins ++ extraDeps;
 
-        nativeBuildInputs = [ makeWrapper ];
+        buildInputs = [ makeWrapper ];
 
         postBuild = ''
           wrapProgram $out/bin/urxvt \

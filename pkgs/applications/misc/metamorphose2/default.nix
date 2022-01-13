@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, makeWrapper, gettext
+{ stdenv, fetchgit, makeWrapper, gettext
 , python27, python2Packages
 }:
 
@@ -33,7 +33,7 @@ stdenv.mkDerivation {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "a graphical mass renaming program for files and folders";
     homepage    = "https://github.com/metamorphose/metamorphose2";
     license     = with licenses; gpl3Plus;

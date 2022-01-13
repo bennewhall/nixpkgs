@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, buildGoPackage, CoreFoundation }:
+{ stdenv, fetchFromGitHub, buildGoPackage, CoreFoundation }:
 
 buildGoPackage rec {
   pname = "tychus";
@@ -15,13 +15,13 @@ buildGoPackage rec {
     sha256 = "02ybxjsfga89gpg0k21zmykhhnpx1vy3ny8fcwj0qsg73i11alvw";
   };
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [ CoreFoundation ];
+  buildInputs = stdenv.lib.optionals stdenv.hostPlatform.isDarwin [ CoreFoundation ];
 
-  tags = [ "release" ];
+  buildFlags = [ "--tags" "release" ];
 
   meta = {
     description = "Command line utility to live-reload your application";
     homepage = "https://github.com/devlocker/tychus";
-    license = lib.licenses.mit;
+    license = stdenv.lib.licenses.mit;
   };
 }

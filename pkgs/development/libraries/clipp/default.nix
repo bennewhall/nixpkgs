@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "clipp";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
       --subst-var version
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Easy to use, powerful and expressive command line argument handling for C++11/14/17";
     homepage = "https://github.com/muellan/clipp";
     license = licenses.mit;

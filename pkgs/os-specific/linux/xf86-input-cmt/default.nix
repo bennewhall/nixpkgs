@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, xorgserver, xorgproto,
+{ stdenv, fetchFromGitHub, pkgconfig, xorgserver, xorgproto,
   utilmacros, libgestures, libevdevc }:
 
 stdenv.mkDerivation rec {
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     ./apply_patches.sh
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     xorgserver xorgproto utilmacros
     libgestures libevdevc
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     "--with-sdkdir=${placeholder "out"}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Chromebook touchpad driver";
     license = licenses.bsd3;
     platforms = platforms.linux;

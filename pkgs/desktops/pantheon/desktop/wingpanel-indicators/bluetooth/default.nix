@@ -1,8 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , python3
 , ninja
@@ -18,13 +18,13 @@
 
 stdenv.mkDerivation rec {
   pname = "wingpanel-indicator-bluetooth";
-  version = "2.1.8";
+  version = "unstable-2020-10-01";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = pname;
-    rev = version;
-    sha256 = "12rasf8wy3cqnfjlm9s2qnx4drzx0w0yviagkng3kspdzm3vzsqy";
+    rev = "2b59d646ea0d66ae45dafc851374f24dcd98c064";
+    sha256 = "sha256-selp70P+7RhbdHF6iiNmcNbMf/c+B9zZ6nlxwRSZGn4=";
   };
 
   passthru = {
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     libxml2
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
   ];
@@ -57,11 +57,11 @@ stdenv.mkDerivation rec {
     patchShebangs meson/post_install.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bluetooth Indicator for Wingpanel";
     homepage = "https://github.com/elementary/wingpanel-indicator-bluetooth";
     license = licenses.lgpl21Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
   };
 }

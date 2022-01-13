@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, autoconf, automake, makeWrapper
+{ stdenv, fetchFromGitLab, autoconf, automake, makeWrapper
 , python3, perl, perlPackages
 , libmd, gnupg, which, getopt, libpaper, nettools, qprint
 , sendmailPath ? "/run/wrappers/bin/sendmail" }:
@@ -127,62 +127,62 @@ in stdenv.mkDerivation rec {
         TextTemplate MIMETools MailTools TimeDate NetIDNEncode ]
         ++ GnuPGInterfaceRuntimeDependencies)} \
       --prefix PATH ":" \
-      "${lib.makeBinPath [ nettools gnupg ]}"
+      "${stdenv.lib.makeBinPath [ nettools gnupg ]}"
 
     wrapProgram $out/bin/gpg-key2latex --set PERL5LIB \
       ${perlPackages.makePerlPath GnuPGInterfaceRuntimeDependencies} \
       --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg libpaper ]}"
+      "${stdenv.lib.makeBinPath [ gnupg libpaper ]}"
 
     wrapProgram $out/bin/gpg-key2ps --prefix PATH ":" \
-      "${lib.makeBinPath [ which gnupg libpaper ]}"
+      "${stdenv.lib.makeBinPath [ which gnupg libpaper ]}"
 
     wrapProgram $out/bin/gpg-mailkeys --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg qprint ]}"
+      "${stdenv.lib.makeBinPath [ gnupg qprint ]}"
 
     wrapProgram $out/bin/gpgdir --set PERL5LIB \
       ${with perlPackages; makePerlPath ([
         TermReadKey ]
         ++ GnuPGInterfaceRuntimeDependencies)} \
       --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
     wrapProgram $out/bin/gpglist --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
     wrapProgram $out/bin/gpgparticipants --prefix PATH ":" \
-      "${lib.makeBinPath [ getopt gnupg ]}"
+      "${stdenv.lib.makeBinPath [ getopt gnupg ]}"
 
 #    wrapProgram $out/bin/gpgparticipants-prefill
 
     wrapProgram $out/bin/gpgparticipants-filter --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
     wrapProgram $out/bin/gpgsigs --set PERL5LIB \
       ${perlPackages.makePerlPath GnuPGInterfaceRuntimeDependencies} \
       --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
     wrapProgram $out/bin/gpgwrap --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
 #    wrapProgram $out/bin/keyanalyze --set PERL5LIB \
 
     wrapProgram $out/bin/keyart --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
     wrapProgram $out/bin/keylookup --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
     wrapProgram $out/bin/pgp-clean --set PERL5LIB \
       ${perlPackages.makePerlPath GnuPGInterfaceRuntimeDependencies} \
       --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
     wrapProgram $out/bin/pgp-fixkey --set PERL5LIB \
       ${perlPackages.makePerlPath GnuPGInterfaceRuntimeDependencies} \
       --prefix PATH ":" \
-      "${lib.makeBinPath [ gnupg ]}"
+      "${stdenv.lib.makeBinPath [ gnupg ]}"
 
 #    wrapProgram $out/bin/pgpring
 
@@ -196,7 +196,7 @@ in stdenv.mkDerivation rec {
       ${with perlPackages; makePerlPath [ GD ]}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://salsa.debian.org/signing-party-team/signing-party";
     description = "A collection of several projects relating to OpenPGP";
     longDescription = ''

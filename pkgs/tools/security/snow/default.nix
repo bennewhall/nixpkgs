@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "snow";
@@ -15,10 +15,10 @@ stdenv.mkDerivation rec {
     install -Dm755 snow -t $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Conceal messages in ASCII text by appending whitespace to the end of lines";
     homepage = "http://www.darkside.com.au/snow/";
-    license = licenses.asl20;
+    license = licenses.apsl20;
     maintainers = with maintainers; [ siraben ];
     platforms = platforms.unix;
   };

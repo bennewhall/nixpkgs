@@ -1,10 +1,5 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, fetchurl
-, libasyncns
-, pkg-config
-}:
+{ stdenv, buildPythonPackage, fetchurl
+, libasyncns, pkgconfig }:
 
 buildPythonPackage rec {
   pname = "libasyncns-python";
@@ -17,18 +12,11 @@ buildPythonPackage rec {
 
   patches = [ ./libasyncns-fix-res-consts.patch ];
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace resquery.c \
-      --replace '<arpa/nameser.h>' '<arpa/nameser_compat.h>'
-  '';
-
   buildInputs = [ libasyncns ];
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   doCheck = false; # requires network access
 
-  pythonImportsCheck = [ "libasyncns" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "libasyncns-python is a python binding for the asynchronous name service query library";
     license = licenses.lgpl21;
     maintainers = [ maintainers.mic92 ];

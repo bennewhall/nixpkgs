@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, pkg-config, cairo, poppler, wxGTK ? null, wxmac ? null, darwin ? null }:
+{ stdenv, fetchFromGitHub, autoconf, automake, pkgconfig, cairo, poppler, wxGTK ? null, wxmac ? null, darwin ? null }:
 
 let
   wxInputs =
@@ -9,21 +9,21 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "diff-pdf";
-  version = "0.5";
+  version = "0.4.1";
 
   src = fetchFromGitHub {
     owner = "vslavik";
     repo = "diff-pdf";
     rev = "v${version}";
-    sha256 = "sha256-Si8v5ZY1Q/AwQTaxa1bYG8bgqxWj++c4Hh1LzXSmSwE=";
+    sha256 = "1y5ji4c4m69vzs0z051fkhfdrjnyxb6kzac5flhdkfb2hgp1jnxl";
   };
 
-  nativeBuildInputs = [ autoconf automake pkg-config ];
+  nativeBuildInputs = [ autoconf automake pkgconfig ];
   buildInputs = [ cairo poppler ] ++ wxInputs;
 
   preConfigure = "./bootstrap";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://vslavik.github.io/diff-pdf/";
     description = "Simple tool for visually comparing two PDF files";
     license = licenses.gpl2;

@@ -1,29 +1,27 @@
-{ fetchurl, lib, stdenv, emacs, gnulib, autoconf, bison, automake, gettext, gperf, texinfo, perl, rsync, gawk}:
+{ fetchurl, stdenv, emacs }:
 
 stdenv.mkDerivation rec {
-  pname = "idutils";
-  version = "4.6";
+  name = "idutils-4.6";
 
   src = fetchurl {
-    url = "mirror://gnu/idutils/idutils-${version}.tar.xz";
+    url = "mirror://gnu/idutils/${name}.tar.xz";
     sha256 = "1hmai3422iaqnp34kkzxdnywl7n7pvlxp11vrw66ybxn9wxg90c1";
   };
 
-  preConfigure = ''
-    # replace embedded gnulib tests with those from gnulib package
-    bash -O extglob -c "cd gnulib-tests; rm -r !(Makefile.am)"
-    substituteInPlace ./configure.ac --replace "AC_PREREQ(2.61)" "AC_PREREQ(2.64)"
-    ./bootstrap --force --gnulib-srcdir=${gnulib} --skip-po --bootstrap-sync --no-git
+  preConfigure =
+    ''
+       # Fix for building on Glibc 2.16.  Won't be needed once the
+       # gnulib in idutils is updated.
+       sed -i '/gets is a security hole/d' lib/stdio.in.h
     '';
 
-  buildInputs = lib.optional stdenv.isLinux emacs;
-  nativeBuildInputs = [ gnulib autoconf bison automake gettext gperf texinfo perl rsync gawk ];
+  buildInputs = stdenv.lib.optional stdenv.isLinux emacs;
 
   doCheck = !stdenv.isDarwin;
 
   patches = [ ./nix-mapping.patch ];
 
-  meta = with lib; {
+  meta = {
     description = "Text searching utility";
 
     longDescription = ''
@@ -48,9 +46,10 @@ stdenv.mkDerivation rec {
     '';
 
     homepage = "https://www.gnu.org/software/idutils/";
-    license = licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = with maintainers; [ gfrascadorio ];
-    platforms = lib.platforms.all;
+    maintainers = [ ];
+    platforms = stdenv.lib.platforms.all;
+    broken = true;
   };
 }

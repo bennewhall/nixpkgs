@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , libX11
 , libXt
@@ -35,11 +35,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     libX11 libXt
-  ] ++ lib.optionals withJpegSupport [
+  ] ++ stdenv.lib.optionals withJpegSupport [
     libjpeg
-  ] ++ lib.optionals withPngSupport [
+  ] ++ stdenv.lib.optionals withPngSupport [
     libpng
-  ] ++ lib.optionals withTiffSupport [
+  ] ++ stdenv.lib.optionals withTiffSupport [
     libtiff
   ];
 
@@ -80,9 +80,9 @@ stdenv.mkDerivation rec {
       zoom, brightening/darkening and merging.
     '';
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
-    maintainers = with lib.maintainers; [ andrew-d ];
-    platforms = lib.platforms.linux;  # arbitrary choice
+    maintainers = with stdenv.lib.maintainers; [ andrew-d ];
+    platforms = stdenv.lib.platforms.linux;  # arbitrary choice
   };
 }

@@ -1,4 +1,8 @@
-{ stdenv, pkgs, lib, runtimeShell, cores ? [ ] }:
+{ stdenv, pkgs, cores, runtimeShell }:
+
+assert cores != [];
+
+with pkgs.lib;
 
 let
 
@@ -21,7 +25,7 @@ stdenv.mkDerivation {
 
   buildCommand = ''
     mkdir -p $out/bin
-    ${lib.concatMapStrings (exec: "ln -s ${scriptSh exec} $out/bin/kodi-${exec.name};") execs}
+    ${stdenv.lib.concatMapStrings (exec: "ln -s ${scriptSh exec} $out/bin/kodi-${exec.name};") execs}
   '';
 
   meta = {
@@ -31,6 +35,6 @@ stdenv.mkDerivation {
       advanced (emulation) launcher for Kodi since device input is
       otherwise caught by both Kodi and the retroarch process.
     '';
-    license = lib.licenses.gpl3;
+    license = stdenv.lib.licenses.gpl3;
   };
 }

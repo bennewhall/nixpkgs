@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, jinja2, inflect }:
+{ stdenv, buildPythonPackage, fetchPypi, jinja2, inflect }:
 
 buildPythonPackage rec {
   pname = "jinja2_pluralize";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
     inflect
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Jinja2 pluralize filters";
     homepage = "https://github.com/audreyr/jinja2_pluralize";
     license = licenses.bsd3;

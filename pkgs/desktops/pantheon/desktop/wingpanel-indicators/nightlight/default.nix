@@ -1,9 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
-, fetchpatch
 , nix-update-script
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , ninja
 , vala
@@ -16,23 +15,14 @@
 
 stdenv.mkDerivation rec {
   pname = "wingpanel-indicator-nightlight";
-  version = "2.1.0";
+  version = "2.0.4";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = pname;
     rev = version;
-    sha256 = "1zxjw68byg4sjn8lzsidzmy4ipwxgnv8rm529a7wzlpgj2xq3x4j";
+    sha256 = "sha256-0f03XO74ezzS/Uy0mXT4raoazETL/SOVh58sAo9bEIA=";
   };
-
-  patches = [
-    # Upstream code not respecting our localedir
-    # https://github.com/elementary/wingpanel-indicator-nightlight/pull/91
-    (fetchpatch {
-      url = "https://github.com/elementary/wingpanel-indicator-nightlight/commit/4e15f71ed958df3569b2f1e224b9fb18613281f1.patch";
-      sha256 = "07awmswyy0988pm6ggyz22mllja675cbdzrjdqc1xd4knwcgy77v";
-    })
-  ];
 
   passthru = {
     updateScript = nix-update-script {
@@ -44,7 +34,7 @@ stdenv.mkDerivation rec {
     libxml2
     meson
     ninja
-    pkg-config
+    pkgconfig
     vala
   ];
 
@@ -55,11 +45,13 @@ stdenv.mkDerivation rec {
     wingpanel
   ];
 
-  meta = with lib; {
+  PKG_CONFIG_WINGPANEL_2_0_INDICATORSDIR = "${placeholder "out"}/lib/wingpanel";
+
+  meta = with stdenv.lib; {
     description = "Night Light Indicator for Wingpanel";
     homepage = "https://github.com/elementary/wingpanel-indicator-nightlight";
     license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
   };
 }

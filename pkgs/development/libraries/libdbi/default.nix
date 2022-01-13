@@ -1,15 +1,14 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "libdbi";
-  version = "0.9.0";
+  name = "libdbi-0.9.0";
 
   src = fetchurl {
-    url = "mirror://sourceforge/libdbi/${pname}-${version}.tar.gz";
+    url = "mirror://sourceforge/libdbi/${name}.tar.gz";
     sha256 = "00s5ra7hdlq25iv23nwf4h1v3kmbiyzx0v9bhggjiii4lpf6ryys";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://libdbi.sourceforge.net/";
     description = "DB independent interface to DB";
     license = licenses.lgpl21;

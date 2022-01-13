@@ -1,10 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, ocaml, findlib, camlpdf, ncurses }:
+{ stdenv, fetchFromGitHub, ocaml, findlib, camlpdf, ncurses }:
 
-if !lib.versionAtLeast ocaml.version "4.10"
-then throw "cpdf is not available for OCaml ${ocaml.version}"
-else
-
-let version = "2.4"; in
+let version = "2.3.1"; in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-cpdf-${version}";
@@ -13,14 +9,19 @@ stdenv.mkDerivation {
     owner = "johnwhitington";
     repo = "cpdf-source";
     rev = "v${version}";
-    sha256 = "1a8lmfc76dr8x6pxgm4aypbys02pfma9yh4z3l1qxp2q1909na5l";
+    sha256 = "1gwz0iy28f67kbqap2q10nf98dalwbi03vv5j893z2an7pb4w68z";
   };
+
+  prePatch = ''
+    substituteInPlace META --replace 'version="1.7"' 'version="${version}"'
+  '';
 
   buildInputs = [ ocaml findlib ncurses ];
   propagatedBuildInputs = [ camlpdf ];
 
-  preInstall = ''
-    mkdir -p $OCAMLFIND_DESTDIR
+  createFindlibDestdir = true;
+
+  postInstall = ''
     mkdir -p $out/bin
     cp cpdf $out/bin
     mkdir -p $out/share/
@@ -28,7 +29,7 @@ stdenv.mkDerivation {
     cp cpdfmanual.pdf $out/share/doc/cpdf/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.coherentpdf.com/";
     platforms = ocaml.meta.platforms or [];
     description = "PDF Command Line Tools";

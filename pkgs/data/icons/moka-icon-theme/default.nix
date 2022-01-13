@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, gtk3, python3, faba-icon-theme, hicolor-icon-theme, jdupes }:
+{ stdenv, fetchFromGitHub, meson, ninja, gtk3, python3, faba-icon-theme, hicolor-icon-theme }:
 
 stdenv.mkDerivation rec {
   pname = "moka-icon-theme";
-  version = "unstable-2019-05-29";
+  version = "5.4.0";
 
   src = fetchFromGitHub {
     owner = "snwh";
     repo = pname;
-    rev = "c0355ea31e5cfdb6b44d8108f602d66817546a09";
-    sha256 = "0m4kfarkl94wdhsds2q1l9x5hfa9l3117l8j6j7qm7sf7yzr90c8";
+    rev = "v${version}";
+    sha256 = "015l02im4mha5z91dbchxf6xkp66d346bg3xskwg0rh3lglhjsrd";
   };
 
   nativeBuildInputs = [
@@ -16,7 +16,6 @@ stdenv.mkDerivation rec {
     ninja
     gtk3
     python3
-    jdupes
   ];
 
   propagatedBuildInputs = [
@@ -26,23 +25,14 @@ stdenv.mkDerivation rec {
 
   dontDropIconThemeCache = true;
 
-  # These fixup steps are slow and unnecessary for this package
-  dontPatchELF = true;
-  dontRewriteSymlinks = true;
-
   postPatch = ''
     patchShebangs meson/post_install.py
   '';
 
-  postInstall = ''
-    # replace duplicate files with symlinks
-    jdupes -l -r $out/share/icons
-  '';
-
-  meta = with lib; {
-    description = "Icon theme designed with a minimal flat style using simple geometry and bright colours";
+  meta = with stdenv.lib; {
+    description = "An icon theme designed with a minimal flat style using simple geometry and bright colours";
     homepage = "https://snwh.org/moka";
-    license = with licenses; [ cc-by-sa-40 gpl3Only ];
+    license = with licenses; [ cc-by-sa-40 gpl3 ];
     # darwin cannot deal with file names differing only in case
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];

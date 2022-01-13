@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , gettext
 , libxml2
-, pkg-config
+, pkgconfig
 , gtk3
 , cmake
 , ninja
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     wrapGAppsHook
     vala
     cmake
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     gtk3
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A searchable command palette in every modern GTK application";
     homepage = "https://github.com/p-e-w/plotinus";
     maintainers = with maintainers; [ samdroid-apps ];

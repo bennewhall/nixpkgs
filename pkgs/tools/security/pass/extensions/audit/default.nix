@@ -1,4 +1,4 @@
-{ lib, stdenv, pass, fetchFromGitHub, pythonPackages, makeWrapper, gnupg }:
+{ stdenv, pass, fetchFromGitHub, pythonPackages, makeWrapper, gnupg }:
 
 let
   pythonEnv = pythonPackages.python.withPackages (p: [ p.requests p.setuptools p.zxcvbn ]);
@@ -43,7 +43,7 @@ in stdenv.mkDerivation rec {
       --prefix PYTHONPATH : "$out/lib/${pythonEnv.libPrefix}/site-packages"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pass extension for auditing your password repository.";
     homepage = "https://github.com/roddhjav/pass-audit";
     license = licenses.gpl3Plus;

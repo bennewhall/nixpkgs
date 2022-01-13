@@ -1,14 +1,14 @@
 { buildPythonPackage
-
+, stdenv
 , sentencepiece
-, pkg-config
+, pkgconfig
 }:
 
 buildPythonPackage rec {
   pname = "sentencepiece";
   inherit (sentencepiece) version src;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ sentencepiece.dev ];
 
   sourceRoot = "source/python";

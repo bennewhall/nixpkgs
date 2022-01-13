@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, alsa-lib, libopus, ortp, bctoolbox }:
+{ stdenv, fetchurl, alsaLib, libopus, ortp, bctoolbox }:
 
 stdenv.mkDerivation rec {
   pname = "trx";
@@ -15,10 +15,10 @@ stdenv.mkDerivation rec {
     ./add_bctoolbox_ldlib.patch
   ];
 
-  buildInputs = [ alsa-lib libopus ortp bctoolbox ];
+  buildInputs = [ alsaLib libopus ortp bctoolbox ];
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple toolset for broadcasting live audio using RTP/UDP and Opus";
     homepage = "http://www.pogo.org.uk/~mark/trx/";
     license = licenses.gpl2;

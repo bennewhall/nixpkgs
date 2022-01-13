@@ -1,10 +1,9 @@
 {callPackage, fetchurl}:
 callPackage ./dvtm.nix rec {
-  pname = "dvtm";
-  version = "0.15";
+  name = "dvtm-0.15";
 
   src = fetchurl {
-    url = "https://www.brain-dump.org/projects/dvtm/dvtm-${version}.tar.gz";
+    url = "http://www.brain-dump.org/projects/dvtm/${name}.tar.gz";
     sha256 = "0475w514b7i3gxk6khy8pfj2gx9l7lv2pwacmq92zn1abv01a84g";
   };
 
@@ -17,4 +16,4 @@ callPackage ./dvtm.nix rec {
     })
   ];
 }
-
+    

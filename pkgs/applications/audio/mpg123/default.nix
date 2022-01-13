@@ -1,72 +1,48 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchurl
 , makeWrapper
-, pkg-config
+
+, alsaLib
 , perl
-, withAlsa ? stdenv.hostPlatform.isLinux
-, alsa-lib
-, withPulse ? stdenv.hostPlatform.isLinux
-, libpulseaudio
-, withCoreAudio ? stdenv.hostPlatform.isDarwin
-, AudioUnit
-, AudioToolbox
-, withJack ? stdenv.hostPlatform.isUnix
-, jack
-, withConplay ? !stdenv.hostPlatform.isWindows
 }:
 
 stdenv.mkDerivation rec {
-  pname = "mpg123";
-  version = "1.28.2";
+  name = "mpg123-1.26.3";
 
   src = fetchurl {
-    url = "mirror://sourceforge/${pname}/${pname}-${version}.tar.bz2";
-    sha256 = "006v44nz4nkpgvxz1k2vbbrfpa2m47hyydscs0wf3iysiyvd9vvy";
+    url = "mirror://sourceforge/mpg123/${name}.tar.bz2";
+    sha256 = "0vkcfdx0mqq6lmpczsmpa2jsb0s6dryx3i7gvr32i3w9b9w9ij9h";
   };
 
-  outputs = [ "out" ] ++ lib.optionals withConplay [ "conplay" ];
+  outputs = [ "out" "conplay" ];
 
-  nativeBuildInputs = lib.optionals withConplay [ makeWrapper ]
-    ++ lib.optionals (withPulse || withJack) [ pkg-config ];
+  nativeBuildInputs = [ makeWrapper ];
 
-  buildInputs = lib.optionals withConplay [ perl ]
-    ++ lib.optionals withAlsa [ alsa-lib ]
-    ++ lib.optionals withPulse [ libpulseaudio ]
-    ++ lib.optionals withCoreAudio [ AudioUnit AudioToolbox ]
-    ++ lib.optionals withJack [ jack ];
+  buildInputs = [ perl ] ++ stdenv.lib.optional (!stdenv.isDarwin) alsaLib;
 
-  configureFlags = [
-    "--with-audio=${lib.strings.concatStringsSep "," (
-      lib.optional withJack "jack"
-      ++ lib.optional withPulse "pulse"
-      ++ lib.optional withAlsa "alsa"
-      ++ lib.optional withCoreAudio "coreaudio"
-      ++ [ "dummy" ]
-    )}"
-  ] ++ lib.optional (stdenv.hostPlatform ? mpg123) "--with-cpu=${stdenv.hostPlatform.mpg123.cpu}";
+  configureFlags = stdenv.lib.optional
+    (stdenv.hostPlatform ? mpg123)
+    "--with-cpu=${stdenv.hostPlatform.mpg123.cpu}";
 
-  enableParallelBuilding = true;
-
-  postInstall = lib.optionalString withConplay ''
+  postInstall = ''
     mkdir -p $conplay/bin
     mv scripts/conplay $conplay/bin/
   '';
 
-  preFixup = lib.optionalString withConplay ''
+  preFixup = ''
     patchShebangs $conplay/bin/conplay
   '';
 
-  postFixup = lib.optionalString withConplay ''
+  postFixup = ''
     wrapProgram $conplay/bin/conplay \
       --prefix PATH : $out/bin
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Fast console MPEG Audio Player and decoder library";
-    homepage = "https://mpg123.org";
-    license = licenses.lgpl21Only;
-    maintainers = with maintainers; [ ftrvxmtrx ];
-    platforms = platforms.all;
+    homepage = "http://mpg123.org";
+    license = stdenv.lib.licenses.lgpl21;
+    maintainers = [ stdenv.lib.maintainers.ftrvxmtrx ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

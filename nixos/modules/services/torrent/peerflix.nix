@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.peerflix;
-  opt = options.services.peerflix;
 
   configFile = pkgs.writeText "peerflix-config.json" ''
     {
@@ -33,7 +32,6 @@ in {
     downloadDir = mkOption {
       description = "Peerflix temporary download directory.";
       default = "${cfg.stateDir}/torrents";
-      defaultText = literalExpression ''"''${config.${opt.stateDir}}/torrents"'';
       type = types.path;
     };
   };
@@ -62,10 +60,6 @@ in {
       };
     };
 
-    users.users.peerflix = {
-      isSystemUser = true;
-      group = "peerflix";
-    };
-    users.groups.peerflix = {};
+    users.users.peerflix.uid = config.ids.uids.peerflix;
   };
 }

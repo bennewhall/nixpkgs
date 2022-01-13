@@ -10,13 +10,13 @@
 
 mkDerivation rec {
   pname = "libqtxdg";
-  version = "3.8.0";
+  version = "3.5.0";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "14jrzwdmhgn6bcggmhxx5rdapjzm93cfkjjls3nii1glnkwzncxz";
+    sha256 = "00dzs6zc8prc0mxmvq0pmpy1qi8rysg97as7jfd0ndk5jii0nd85";
   };
 
   nativeBuildInputs = [
@@ -40,9 +40,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/libqtxdg";
     description = "Qt implementation of freedesktop.org xdg specs";
-    license = licenses.lgpl21Plus;
+    homepage = "https://github.com/lxqt/libqtxdg";
+    license = licenses.lgpl21;
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];
   };

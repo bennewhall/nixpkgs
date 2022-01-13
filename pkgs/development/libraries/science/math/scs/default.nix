@@ -1,16 +1,16 @@
-{ lib, stdenv, fetchFromGitHub, blas, lapack, gfortran, fixDarwinDylibNames }:
+{ stdenv, fetchFromGitHub, blas, lapack, gfortran, fixDarwinDylibNames }:
 
 assert (!blas.isILP64) && (!lapack.isILP64);
 
 stdenv.mkDerivation rec {
   pname = "scs";
-  version = "3.0.0";
+  version = "2.1.1";
 
   src = fetchFromGitHub {
     owner = "cvxgrp";
     repo = "scs";
     rev = version;
-    sha256 = "sha256-Lly28KDDZ5hJyiMOhiX/3VaKs0iPcSqizOurZevhfCo=";
+    sha256 = "14g5m3lcvrbwpq1bq0liq00jh0gm1947lg3z4jfsp43f6p5alb20";
   };
 
   # Actually link and add libgfortran to the rpath
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
       --replace "gcc" "cc"
   '';
 
-  nativeBuildInputs = lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
 
   buildInputs = [ blas lapack gfortran.cc.lib ];
 
@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Splitting Conic Solver";
     longDescription = ''
       Numerical optimization package for solving large-scale convex cone problems

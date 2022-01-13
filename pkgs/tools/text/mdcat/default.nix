@@ -1,8 +1,7 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , rustPlatform
-, pkg-config
+, pkgconfig
 , asciidoctor
 , openssl
 , Security
@@ -12,20 +11,19 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "mdcat";
-  version = "0.25.0";
+  version = "0.22.1";
 
   src = fetchFromGitHub {
     owner = "lunaryorn";
     repo = pname;
     rev = "mdcat-${version}";
-    sha256 = "sha256-wrtvVFOSqpNBWLRGPL+08WBS4ltQyZwRE3/dqqT6IXg=";
+    hash = "sha256-4sM1xT/JQ+yM5tZkGwK7r0gUT5so9o1MnDJ7apZkRd4=";
   };
 
-  nativeBuildInputs = [ pkg-config asciidoctor installShellFiles ];
-  buildInputs = [ openssl ]
-    ++ lib.optional stdenv.isDarwin Security;
+  nativeBuildInputs = [ pkgconfig asciidoctor installShellFiles ];
+  buildInputs = [ openssl ] ++ stdenv.lib.optional stdenv.isDarwin Security;
 
-  cargoSha256 = "sha256-9I6/lt5VXfZp2/W6EoXtagcNj2kfxB5ZT2GkWgsUyM8=";
+  cargoSha256 = "sha256-LoNm2/6/FgTKp95ETODY39D8Ou+9X+IXIy625YW9AFI=";
 
   checkInputs = [ ansi2html ];
   # Skip tests that use the network and that include files.
@@ -34,7 +32,6 @@ rustPlatform.buildRustPackage rec {
     "--skip magic::tests::detect_mimetype_of_magic_param_bytes_max_length"
     "--skip magic::tests::detect_mimetype_of_png_image"
     "--skip magic::tests::detect_mimetype_of_svg_image"
-    "--skip resources::tests::read_url_with_http_url_fails_when_size_limit_is_exceeded"
     "--skip resources::tests::read_url_with_http_url_fails_when_status_404"
     "--skip resources::tests::read_url_with_http_url_returns_content_when_status_200"
     "--skip iterm2_tests_render_md_samples_images_md"
@@ -47,10 +44,10 @@ rustPlatform.buildRustPackage rec {
     installShellCompletion --zsh $releaseDir/build/mdcat-*/out/completions/_mdcat
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "cat for markdown";
     homepage = "https://github.com/lunaryorn/mdcat";
     license = with licenses; [ asl20 ];
-    maintainers = with maintainers; [ davidtwco SuperSandro2000 ];
+    maintainers = with maintainers; [ davidtwco ];
   };
 }

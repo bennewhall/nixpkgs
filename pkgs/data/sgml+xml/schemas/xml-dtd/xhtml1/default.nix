@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libxml2 }:
+{ stdenv, fetchurl, libxml2 }:
 
 stdenv.mkDerivation {
   name = "xhtml1-20020801";
@@ -20,13 +20,13 @@ stdenv.mkDerivation {
       xmlcatalog --noout --create $cat
       grep PUBLIC DTD/*.soc | while read x; do
           eval a=($x)
-          xmlcatalog --noout --add public "''${a[1]}" "''${a[2]}" $cat
+          xmlcatalog --noout --add public "''${a[1]}" "''${a[2]}" $cat 
       done
     ''; # */
 
   meta = {
     homepage = "http://www.w3.org/TR/xhtml1/";
     description = "DTDs for XHTML 1.0, the Extensible HyperText Markup Language";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

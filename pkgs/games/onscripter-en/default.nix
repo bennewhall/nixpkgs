@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , libpng, libjpeg, libogg, libvorbis, freetype, smpeg
 , SDL, SDL_image, SDL_mixer, SDL_ttf }:
 
 
 stdenv.mkDerivation {
-  pname = "onscripter-en";
-  version = "20110930";
+  name = "onscripter-en-20110930";
 
   src = fetchurl {
     # The website is not available now.
@@ -26,7 +25,7 @@ stdenv.mkDerivation {
     sed -i 's/.dll//g' Makefile
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Japanese visual novel scripting engine";
     homepage = "http://unclemion.com/onscripter/";
     license = licenses.gpl2;

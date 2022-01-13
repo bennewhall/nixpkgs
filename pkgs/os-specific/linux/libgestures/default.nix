@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, glib, jsoncpp }:
+{ stdenv, fetchFromGitHub, pkgconfig, glib, jsoncpp }:
 
 stdenv.mkDerivation rec {
   name = "libgestures-${version}";
@@ -17,13 +17,13 @@ stdenv.mkDerivation rec {
       --replace '$(DESTDIR)/usr/include' '$(DESTDIR)/include'
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ glib jsoncpp ];
 
 
   makeFlags = [ "DESTDIR=$(out)" "LIBDIR=/lib" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ChromiumOS libgestures modified to compile for Linux";
     license = licenses.bsd3;
     platforms = platforms.linux;

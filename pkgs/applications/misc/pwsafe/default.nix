@@ -1,5 +1,4 @@
-{ lib, stdenv, fetchFromGitHub
-, cmake, pkg-config, zip, gettext, perl
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, zip, gettext, perl
 , wxGTK30, libXext, libXi, libXt, libXtst, xercesc
 , qrencode, libuuid, libyubikey, yubikey-personalization
 , curl, openssl, file
@@ -7,18 +6,17 @@
 
 stdenv.mkDerivation rec {
   pname = "pwsafe";
-  version = "1.14.0"; # do NOT update to 3.x Windows releases
-  # nixpkgs-update: no auto update
+  version = "3.53.0";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = version;
-    hash = "sha256-s3IXe4gTwUOzQslNfWrcN/srrG9Jv02zfkGgiZN3C1s=";
+    sha256 = "0nh5jnf5yls2qv5hpfhm6i854zsknyh7d93c987a0cg14sg820fv";
   };
 
   nativeBuildInputs = [
-    cmake gettext perl pkg-config zip
+    cmake gettext perl pkgconfig zip
   ];
   buildInputs = [
     libXext libXi libXt libXtst wxGTK30
@@ -31,29 +29,30 @@ stdenv.mkDerivation rec {
     "-DNO_GTEST=ON"
     "-DCMAKE_CXX_FLAGS=-I${yubikey-personalization}/include/ykpers-1"
   ];
+  enableParallelBuilding = true;
 
   postPatch = ''
     # Fix perl scripts used during the build.
-    for f in $(find . -type f -name '*.pl') ; do
+    for f in `find . -type f -name '*.pl'`; do
       patchShebangs $f
     done
 
     # Fix hard coded paths.
-    for f in $(grep -Rl /usr/share/ src) ; do
+    for f in `grep -Rl /usr/share/ src`; do
       substituteInPlace $f --replace /usr/share/ $out/share/
     done
 
     # Fix hard coded zip path.
     substituteInPlace help/Makefile.linux --replace /usr/bin/zip ${zip}/bin/zip
 
-    for f in $(grep -Rl /usr/bin/ .) ; do
+    for f in `grep -Rl /usr/bin/ .`; do
       substituteInPlace $f --replace /usr/bin/ ""
     done
   '';
 
   installFlags = [ "PREFIX=${placeholder "out"}" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A password database utility";
     longDescription = ''
       Password Safe is a password database utility. Like many other

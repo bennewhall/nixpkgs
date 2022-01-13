@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, alsa-lib, cmake, pkg-config, glib
+{ stdenv, fetchFromGitHub, alsaLib, cmake, pkgconfig, glib
 , tracingSupport ? true, logToStderr ? true }:
 
 let oz = x: if x then "1" else "0"; in
@@ -14,16 +14,18 @@ stdenv.mkDerivation rec {
     sha256 = "1p6fh6ah5v3qz7dxhcsixx38bxg44ypbim4m03bxk3ls5i9xslmn";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  enableParallelBuilding = true;
 
-  buildInputs = [ alsa-lib glib ];
+  nativeBuildInputs = [ cmake pkgconfig ];
+
+  buildInputs = [ alsaLib glib ];
 
   cmakeFlags = [
     "-DWITH_TRACE=${oz tracingSupport}"
     "-DLOG_TO_STDERR=${oz logToStderr}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PulseAudio emulation for ALSA";
     homepage = "https://github.com/i-rinat/apulse";
     license = licenses.mit;

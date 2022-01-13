@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchgit
 , fetchpatch
-, pkg-config
+, pkgconfig
 , glib
 , icu
 , gobject-introspection
@@ -27,7 +27,6 @@ stdenv.mkDerivation rec {
     "${src}/debian/patches/gtkdocize.patch"
     "${src}/debian/patches/strict-prototype.patch"
     "${src}/debian/patches/vapi-skip-properties.patch"
-    ./0001-Fix-build-with-Vala-0.54.patch
 
     # Fixes glib 2.62 deprecations
     (fetchpatch {
@@ -38,7 +37,7 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     vala
     autoreconfHook
     gobject-introspection
@@ -56,13 +55,11 @@ stdenv.mkDerivation rec {
     "--with-pygi-overrides-dir=${placeholder "py"}/${python3.sitePackages}/gi/overrides"
   ];
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library that uses DBus to provide objects allowing you to create Model-View-Controller type programs across DBus";
     homepage = "https://launchpad.net/dee";
     license = licenses.lgpl3;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ abbradar ];
+    maintainers = with maintainers; [ abbradar worldofpeace ];
   };
 }

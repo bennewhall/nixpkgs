@@ -5,8 +5,10 @@
 assert attrs?pname -> attrs?version;
 assert attrs?pname -> !(attrs?name);
 
-lib.warnIf (attrs ? name) "builtPerlPackage: `name' (\"${attrs.name}\") is deprecated, use `pname' and `version' instead"
-
+(if attrs ? name then
+  lib.trivial.warn "builtPerlPackage: `name' (\"${attrs.name}\") is deprecated, use `pname' and `version' instead"
+ else
+  (x: x))
 toPerlModule(stdenv.mkDerivation (
   (
   lib.recursiveUpdate

@@ -7,7 +7,7 @@
 }:
 
 mkDerivation {
-  pname = "kgpg";
+  name = "kgpg";
   nativeBuildInputs = [ extra-cmake-modules kdoctools makeWrapper ];
   buildInputs = [
     akonadi-contacts gnupg karchive kcodecs kcontacts kcoreaddons kcrash
@@ -18,8 +18,6 @@ mkDerivation {
     wrapProgram "$out/bin/kgpg" --prefix PATH : "${lib.makeBinPath [ gnupg ]}"
   '';
   meta = {
-    homepage = "https://apps.kde.org/kgpg/";
-    description = "Encryption tool";
     license = [ lib.licenses.gpl2 ];
     maintainers = [ lib.maintainers.ttuegel ];
   };

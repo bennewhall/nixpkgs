@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, which, pkg-config, gtk2, pcre, glib, libxml2
+{ stdenv, fetchurl, which, pkgconfig, gtk2, pcre, glib, libxml2
 , libsoup ? null
 }:
 
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   # Not adding 'hostname' command, the build shouldn't depend on what the build
   # host is called.
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ which gtk2 pcre glib libxml2 libsoup ];
 
   # Fixes '#error You must compile this program without "-O"'
@@ -40,7 +40,7 @@ stdenv.mkDerivation rec {
     rmdir "$out/usr"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://hardinfo.org/";
     description = "Display information about your hardware and operating system";
     license = licenses.gpl2;

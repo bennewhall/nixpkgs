@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, nix-update-script, meson, ninja, pkg-config, vala, pantheon, python3, libgee, gtk3, desktop-file-utils, wrapGAppsHook }:
+{ stdenv, fetchFromGitHub, nix-update-script, meson, ninja, pkgconfig, vala, pantheon, python3, libgee, gtk3, desktop-file-utils, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
   pname = "hashit";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     vala
-    pkg-config
+    pkgconfig
     python3
     wrapGAppsHook
   ];
@@ -39,12 +39,11 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple app for checking usual checksums - Designed for elementary OS";
     homepage = "https://github.com/artemanufrij/hashit";
     license = licenses.gpl2Plus;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
     platforms = platforms.linux;
-    mainProgram = "com.github.artemanufrij.hashit";
   };
 }

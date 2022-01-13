@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, numpy, scipy, pillow }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, numpy, scipy, pillow }:
 
 buildPythonPackage rec {
   pname = "pyssim";
@@ -23,7 +23,7 @@ buildPythonPackage rec {
     $out/bin/pyssim --cw --width 128 --height 128 test-images/test3-orig.jpg test-images/test3-rot.jpg | grep 0.938
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Module for computing Structured Similarity Image Metric (SSIM) in Python";
     homepage = "https://github.com/jterrace/pyssim";
     license = licenses.mit;

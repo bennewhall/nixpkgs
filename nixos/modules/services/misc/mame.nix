@@ -45,17 +45,15 @@ in
     environment.systemPackages = [ pkgs.mame ];
 
     security.wrappers."${mame}" = {
-      owner = "root";
-      group = "root";
-      capabilities = "cap_net_admin,cap_net_raw+eip";
       source = "${pkgs.mame}/bin/${mame}";
+      capabilities = "cap_net_admin,cap_net_raw+eip";
     };
 
     systemd.services.mame = {
       description = "MAME TUN/TAP Ethernet interface";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.iproute2 ];
+      path = [ pkgs.iproute ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
@@ -65,5 +63,5 @@ in
     };
   };
 
-  meta.maintainers = with lib.maintainers; [ ];
+  meta.maintainers = with lib.maintainers; [ gnidorah ];
 }

@@ -1,13 +1,11 @@
-{ lib, stdenv, fetchurl, fetchpatch, xmlto, docbook_xml_dtd_412
-, libxslt, docbook_xsl, autoconf, automake, gettext, libiconv, libtool
-}:
+{ stdenv, fetchurl, fetchpatch, xmlto, docbook_xml_dtd_412
+, libxslt, docbook_xsl, autoconf, automake, gettext, libiconv, libtool}:
 
-stdenv.mkDerivation rec {
-  pname = "opensp";
-  version = "1.5.2";
+stdenv.mkDerivation {
+  name = "opensp-1.5.2";
 
   src = fetchurl {
-    url = "mirror://sourceforge/openjade/OpenSP-${version}.tar.gz";
+    url = "mirror://sourceforge/openjade/OpenSP-1.5.2.tar.gz";
     sha256 = "1khpasr6l0a8nfz6kcf3s81vgdab8fm2dj291n5r2s53k228kx2p";
   };
 
@@ -22,7 +20,7 @@ stdenv.mkDerivation rec {
       sha256 = "04q14s8qsad0bkjmj067dn831i0r6v7742rafdlnbfm5y249m2q6";
     })
   ];
-
+  
   setupHook = ./setup-hook.sh;
 
   postFixup = ''
@@ -31,25 +29,19 @@ stdenv.mkDerivation rec {
     sed -i -e 's/name="idm.*"//g' $out/share/doc/OpenSP/releasenotes.html
     '';
 
-  preConfigure = lib.optionalString stdenv.isCygwin ''
-    autoreconf -fi
-  '';
+  preConfigure = if stdenv.isCygwin then "autoreconf -fi" else null;
 
-  strictDeps = true;
+  # need autoconf, automake, gettext, and libtool for reconfigure
+  nativeBuildInputs = stdenv.lib.optionals stdenv.isCygwin [ autoconf automake libtool ];
 
-  nativeBuildInputs = [
-    xmlto
-    docbook_xml_dtd_412
-    docbook_xsl
-  ] ++ lib.optionals stdenv.isCygwin [ autoconf automake libtool ];
+  buildInputs = [ xmlto docbook_xml_dtd_412 libxslt docbook_xsl gettext libiconv ];
 
   doCheck = false; # fails
 
-  meta = with lib; {
+  meta = {
     description = "A suite of SGML/XML processing tools";
-    license = licenses.mit;
+    license = stdenv.lib.licenses.mit;
     homepage = "http://openjade.sourceforge.net/";
-    platforms = platforms.unix;
-    maintainers = with maintainers; [ ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

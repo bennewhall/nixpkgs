@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pkgs
@@ -19,14 +18,12 @@ buildPythonPackage rec {
   # No tests included
   doCheck = false;
 
-  # On macOS, users are expected to install macFUSE. This means fusepy should
-  # be able to find libfuse in /usr/local/lib.
-  patchPhase = lib.optionalString (!stdenv.isDarwin) ''
+  patchPhase = ''
     substituteInPlace fuse.py --replace \
       "find_library('fuse')" "'${pkgs.fuse}/lib/libfuse.so'"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple ctypes bindings for FUSE";
     longDescription = ''
       Python module that provides a simple interface to FUSE and MacFUSE.

@@ -1,34 +1,37 @@
 { lib
 , fetchPypi
 , buildPythonPackage
-, setuptools-scm
 , astropy
-, pytestCheckHook
-, pytest-doctestplus
+, pytest
+, pytest-astropy
+, astropy-helpers
 , scipy
 }:
 
 buildPythonPackage rec {
   pname = "radio_beam";
-  version = "0.3.3";
+  version = "0.3.2";
 
   src = fetchPypi {
-    inherit version;
-    pname = "radio-beam";
-    sha256 = "e34902d91713ccab9f450b9d3e82317e292cf46a30bd42f9ad3c9a0519fcddcd";
+    inherit pname version;
+    sha256 = "0g1nqiikv023ab60gfqrvc13kfjv8m70bpfk264vlliaq6mvxdf2";
   };
-
-  nativeBuildInputs = [
-    setuptools-scm
-  ];
 
   propagatedBuildInputs = [ astropy ];
 
-  checkInputs = [ pytestCheckHook pytest-doctestplus scipy ];
+  nativeBuildInputs = [ astropy-helpers ];
+
+  # Disable automatic update of the astropy-helper module
+  postPatch = ''
+    substituteInPlace setup.cfg --replace "auto_use = True" "auto_use = False"
+  '';
+
+  checkInputs = [ pytest pytest-astropy scipy ];
 
   # Tests must be run in the build directory
-  preCheck = ''
+  checkPhase = ''
     cd build/lib
+    pytest
   '';
 
   meta = {

@@ -24,7 +24,7 @@ in
 
 {
   name = "ncdns";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ rnhmjoj ];
   };
 

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 , fparser
@@ -37,7 +37,9 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "A C++ library to describe geometrical objects";
     homepage = "https://github.com/thliebig/CSXCAD";
     license = licenses.lgpl3;

@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python27Packages, python3Packages, wmctrl,
+{ stdenv, fetchurl, python27Packages, python36Packages, wmctrl,
   qtbase, mkDerivationWith }:
 
 {
@@ -6,41 +6,37 @@
     pname = "plover";
     version = "3.1.1";
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "OpenSteno Plover stenography software";
       maintainers = with maintainers; [ twey kovirobi ];
       license     = licenses.gpl2;
     };
 
-    src = fetchFromGitHub {
-      owner = "openstenoproject";
-      repo = "plover";
-      rev = "v${version}";
-      sha256 = "sha256-LIhTwHMphg+xTR9NKvjAZ6p0mmqPNcZd9C4cgnenmYQ=";
+    src = fetchurl {
+      url    = "https://github.com/openstenoproject/plover/archive/v${version}.tar.gz";
+      sha256 = "1hdg5491phx6svrxxsxp8v6n4b25y7y4wxw7x3bxlbyhaskgj53r";
     };
 
-    nativeBuildInputs     = [ setuptools-scm ];
+    nativeBuildInputs     = [ setuptools_scm ];
     buildInputs           = [ pytest mock ];
     propagatedBuildInputs = [
       six setuptools pyserial appdirs hidapi wxPython xlib wmctrl dbus-python
     ];
   };
 
-  dev = with python3Packages; mkDerivationWith buildPythonPackage rec {
+  dev = with python36Packages; mkDerivationWith buildPythonPackage rec {
     pname = "plover";
-    version = "4.0.0.dev10";
+    version = "4.0.0.dev8";
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "OpenSteno Plover stenography software";
       maintainers = with maintainers; [ twey kovirobi ];
       license     = licenses.gpl2;
     };
 
-    src = fetchFromGitHub {
-      owner = "openstenoproject";
-      repo = "plover";
-      rev = "v${version}";
-      sha256 = "sha256-oJ7+R3ZWhUbNTTAw1AfMg2ur8vW1XEbsa5FgSTam1Ns=";
+    src = fetchurl {
+      url    = "https://github.com/openstenoproject/plover/archive/v${version}.tar.gz";
+      sha256 = "1wxkmik1zyw5gqig5r0cas5v6f5408fbnximzw610rdisqy09rxp";
     };
 
     # I'm not sure why we don't find PyQt5 here but there's a similar

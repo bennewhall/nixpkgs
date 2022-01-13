@@ -3,33 +3,32 @@
 # non-existent path (/nix/store/eeee...).  This is useful for getting rid of
 # dependencies that you know are not actually needed at runtime.
 
-{ lib, stdenvNoCC, signingUtils, shell ? stdenvNoCC.shell }:
+{ stdenv, writeScriptBin }:
 
-let
-  stdenv = stdenvNoCC;
+writeScriptBin "remove-references-to" ''
+#! ${stdenv.shell} -e
 
-  darwinCodeSign = stdenv.targetPlatform.isDarwin && stdenv.targetPlatform.isAarch64;
-in
+# References to remove
+targets=()
+while getopts t: o; do
+    case "$o" in
+        t) storeId=$(echo "$OPTARG" | sed -n "s|^$NIX_STORE/\\([a-z0-9]\{32\}\\)-.*|\1|p")
+           if [ -z "$storeId" ]; then
+               echo "-t argument must be a Nix store path"
+               exit 1
+           fi
+           targets+=("$storeId")
+    esac
+done
+shift $(($OPTIND-1))
 
-stdenv.mkDerivation {
-  name = "remove-references-to";
+# Files to remove the references from
+regions=()
+for i in "$@"; do
+    test ! -L "$i" -a -f "$i" && regions+=("$i")
+done
 
-  dontUnpack = true;
-  dontConfigure = true;
-  dontBuild = true;
-
-  installPhase = ''
-    mkdir -p $out/bin
-    substituteAll ${./remove-references-to.sh} $out/bin/remove-references-to
-    chmod a+x $out/bin/remove-references-to
-  '';
-
-  postFixup = lib.optionalString darwinCodeSign ''
-    mkdir -p $out/nix-support
-    substituteAll ${./darwin-sign-fixup.sh} $out/nix-support/setup-hooks.sh
-  '';
-
-  inherit (builtins) storeDir;
-  shell = lib.getBin shell + (shell.shellPath or "");
-  signingUtils = if darwinCodeSign then signingUtils else null;
-}
+for target in "''${targets[@]}" ; do
+    sed -i -e "s|$NIX_STORE/$target-|$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-|g" "''${regions[@]}"
+done
+''

@@ -3,12 +3,13 @@
 alephone.makeWrapper rec {
   pname = "marathon";
   desktopName = "Marathon";
-  version = "20210408";
+  version = "20190331";
   icon = alephone.icons + "/marathon.png";
 
   zip = fetchurl {
-    url = "https://github.com/Aleph-One-Marathon/alephone/releases/download/release-${version}/Marathon-${version}-Data.zip";
-    sha256 = "sha256-WM5c0X/BGeDu8d7hME3LiZavkgJll6rc3Beat/2bsdg=";
+    url =
+      "https://github.com/Aleph-One-Marathon/alephone/releases/download/release-${version}/Marathon-${version}-Data.zip";
+    sha256 = "1d18a7hn8s50rqcs9i72ak5fq5a76hwk7nylfinrxjb134c9vlpz";
   };
 
   meta = {

@@ -1,10 +1,9 @@
-{lib, stdenv, fetchurl, bison, flex, readline, ncurses, gnused}:
+{stdenv, fetchurl, yacc, flex, readline, ncurses, gnused}:
 
-stdenv.mkDerivation rec {
-  pname = "cdecl";
-  version = "2.5";
+stdenv.mkDerivation {
+  name = "cdecl-2.5";
   src = fetchurl {
-    url = "https://www.cdecl.org/files/${pname}-blocks-${version}.tar.gz";
+    url = "https://www.cdecl.org/files/cdecl-blocks-2.5.tar.gz";
     sha256 = "1b7k0ra30hh8mg8fqv0f0yzkaac6lfg6n376drgbpxg4wwml1rly";
   };
 
@@ -15,12 +14,12 @@ stdenv.mkDerivation rec {
     makeFlags="$makeFlags PREFIX=$out BINDIR=$out/bin MANDIR=$out/man1 CATDIR=$out/cat1 CC=$CC";
     mkdir -p $out/bin;
   '';
-  buildInputs = [bison flex readline ncurses];
+  buildInputs = [yacc flex readline ncurses];
 
   meta = {
     description = "Translator English -- C/C++ declarations";
-    license = lib.licenses.publicDomain;
-    maintainers = with lib.maintainers; [joelteon];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.publicDomain;
+    maintainers = with stdenv.lib.maintainers; [joelteon];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

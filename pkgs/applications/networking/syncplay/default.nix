@@ -2,7 +2,7 @@
 
 buildPythonApplication rec {
   pname = "syncplay";
-  version = "1.6.9";
+  version = "1.6.6";
 
   format = "other";
 
@@ -10,7 +10,7 @@ buildPythonApplication rec {
     owner = "Syncplay";
     repo = "syncplay";
     rev = "v${version}";
-    sha256 = "0qm3qn4a1nahhs7q81liz514n9blsi107g9s9xfw2i8pzi7v9v0v";
+    sha256 = "1wkxdp7dv5y1100awy949higvs5035ylfyl83qrp4lnimy3imw09";
   };
 
   propagatedBuildInputs = [ pyside2 shiboken2 twisted certifi ] ++ twisted.extras.tls;
@@ -27,6 +27,6 @@ buildPythonApplication rec {
     description = "Free software that synchronises media players";
     license = licenses.asl20;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ Enzime ];
+    maintainers = with maintainers; [ enzime ];
   };
 }

@@ -1,49 +1,31 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, makeWrapper
-, samba
-, perl
-, openldap
-}:
+{ stdenv, fetchurl, makeWrapper, samba, perl, openldap }:
 
 stdenv.mkDerivation rec {
   pname = "enum4linux";
-  version = "0.9.1";
-
-  src = fetchFromGitHub {
-    owner = "CiscoCXSecurity";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-/R0P4Ft9Y0LZwKwhDGAe36UKviih6CNbJbj1lcNKEkM=";
+  version = "0.8.9";
+  src = fetchurl {
+    url = "https://labs.portcullis.co.uk/download/enum4linux-${version}.tar.gz";
+    sha256 = "41334df0cb1ba82db9e3212981340372bb355a8160073331d2a1610908a62d85";
   };
 
   dontBuild = true;
-
-  nativeBuildInputs = [
-    makeWrapper
-  ];
-
-  buildInputs = [
-    openldap
-    perl
-    samba
-  ];
+  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ samba perl openldap ];
 
   installPhase = ''
     mkdir -p $out/bin
     cp enum4linux.pl $out/bin/enum4linux
 
     wrapProgram $out/bin/enum4linux \
-      --prefix PATH : ${lib.makeBinPath [ samba openldap ]}
+      --prefix PATH : ${stdenv.lib.makeBinPath [ samba openldap ]}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool for enumerating information from Windows and Samba systems";
     homepage = "https://labs.portcullis.co.uk/tools/enum4linux/";
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ fishi0x01 ];
+    license = licenses.gpl2;
     platforms = platforms.unix;
+    maintainers = [ maintainers.fishi0x01 ];
   };
 }
 

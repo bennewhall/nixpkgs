@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, texinfo, allegro, perl, libX11 }:
+{ stdenv, fetchurl, texinfo, allegro, perl, libX11 }:
 
 stdenv.mkDerivation rec {
   pname = "cgui";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "SYSTEM_DIR=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A multiplatform basic GUI library";
     maintainers = [ maintainers.raskin ];
     platforms = platforms.linux;

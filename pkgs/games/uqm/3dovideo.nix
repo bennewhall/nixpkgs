@@ -1,8 +1,10 @@
-{ stdenv, lib, requireFile, writeText, fetchFromGitHub, haskellPackages }:
+{ stdenv, requireFile, writeText, fetchurl, haskellPackages }:
+
+with stdenv.lib;
 
 let
   makeSpin = num: let
-    padded = (lib.optionalString (lib.lessThan num 10) "0") + toString num;
+    padded = (optionalString (lessThan num 10) "0") + toString num;
   in "slides.spins.${padded} = 3DOVID:" +
      "addons/3dovideo/spins/ship${padded}.duk:" +
      "addons/3dovideo/spins/spin.aif:" +
@@ -11,17 +13,15 @@ let
   videoRMP = writeText "3dovideo.rmp" (''
     slides.ending = 3DOVID:addons/3dovideo/ending/victory.duk
     slides.intro = 3DOVID:addons/3dovideo/intro/intro.duk
-  '' + lib.concatMapStrings makeSpin (lib.range 0 24));
+  '' + concatMapStrings makeSpin (range 0 24));
 
-  helper = with haskellPackages; mkDerivation rec {
+  helper = with haskellPackages; mkDerivation {
     pname = "uqm3donix";
     version = "0.1.0.0";
 
-    src = fetchFromGitHub {
-      owner = "aszlig";
-      repo = "uqm3donix";
-      rev = "v${version}";
-      hash = "sha256-rK30u2PBysiSGSA9829F1Nom/wtoVN6rGTBneRKeWEw=";
+    src = fetchurl {
+      url = "https://github.com/aszlig/uqm3donix/archive/v0.1.0.0.tar.gz";
+      sha256 = "0d40gpc3bqkw68varjxwgbdzxw0dvwqksijmvij5ixmlcspbjgvb";
     };
 
     isLibrary = false;
@@ -30,7 +30,7 @@ let
     buildDepends = [ base binary bytestring filepath tar ];
 
     description = "Extract video files from a Star Control II 3DO image";
-    license = lib.licenses.bsd3;
+    license = stdenv.lib.licenses.bsd3;
   };
 
 in stdenv.mkDerivation {

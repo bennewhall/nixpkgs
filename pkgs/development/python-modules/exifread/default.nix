@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -12,11 +12,11 @@ buildPythonPackage rec {
     sha256 = "a0f74af5040168d3883bbc980efe26d06c89f026dc86ba28eb34107662d51766";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Easy to use Python module to extract Exif metadata from tiff and jpeg files";
     homepage    = "https://github.com/ianare/exif-py";
     license     = licenses.bsd0;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ vozz ];
   };
 
 }

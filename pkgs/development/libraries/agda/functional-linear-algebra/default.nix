@@ -1,7 +1,7 @@
-{ fetchFromGitHub, lib, mkDerivation, standard-library }:
+{ fetchFromGitHub, lib, stdenv, mkDerivation, standard-library }:
 
 mkDerivation rec {
-  version = "0.4";
+  version = "0.1";
   pname = "functional-linear-algebra";
 
   buildInputs = [ standard-library ];
@@ -10,14 +10,10 @@ mkDerivation rec {
     repo = "functional-linear-algebra";
     owner = "ryanorendorff";
     rev = "v${version}";
-    sha256 = "05jk3792k9xf8iiwzm2hwlvd25f2pqqr3gppmqjf8xb9199i8fk0";
+    sha256 = "09ri3jmgp9jjwi1mzv4c3w6rvcmyx6spa2qxpwlcn0f4bmfva6wm";
   };
 
-  preConfigure = ''
-    sh generate-everything.sh
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ryanorendorff/functional-linear-algebra";
     description = ''
       Formalizing linear algebra in Agda by representing matrices as functions

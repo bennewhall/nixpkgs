@@ -1,9 +1,10 @@
-{ lib, stdenv, fetchgit, cmake, libtiff, pkg-config, tesseract }:
+{ stdenv, fetchgit, cmake, libtiff, pkgconfig, tesseract }:
 
-stdenv.mkDerivation rec {
-  pname = "vobsub2srt";
-  version = "unstable-2014-08-17";
-  rev = "a6abbd61127a6392d420bbbebdf7612608c943c2";
+let rev = "a6abbd61127a6392d420bbbebdf7612608c943c2";
+    shortRev = builtins.substring 0 7 rev;
+in
+stdenv.mkDerivation {
+  name = "vobsub2srt-git-20140817-${shortRev}";
 
   src = fetchgit {
     inherit rev;
@@ -11,15 +12,15 @@ stdenv.mkDerivation rec {
     sha256 = "1rpanrv8bgdh95v2320qbd44xskncvq6y84cbbfc86gw0qxpd9cb";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
-  buildInputs = [ libtiff ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ cmake libtiff ];
   propagatedBuildInputs = [ tesseract ];
 
   meta = {
     homepage = "https://github.com/ruediger/VobSub2SRT";
     description = "Converts VobSub subtitles into SRT subtitles";
-    license = lib.licenses.gpl3Plus;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.ttuegel ];
+    license = stdenv.lib.licenses.gpl3Plus;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.ttuegel ];
   };
 }

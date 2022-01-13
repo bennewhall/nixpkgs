@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libGLU, libGL, SDL, SDL_mixer, plib, libjpeg }:
+{ stdenv, fetchurl, libGLU, libGL, SDL, SDL_mixer, plib, libjpeg }:
 let
   version = "0.9.13";
 in
@@ -21,8 +21,8 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "A model-airplane flight simulator";
-    maintainers = with lib.maintainers; [ raskin ];
+    maintainers = with stdenv.lib.maintainers; [ raskin ];
     platforms = [ "i686-linux" "x86_64-linux" ];
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

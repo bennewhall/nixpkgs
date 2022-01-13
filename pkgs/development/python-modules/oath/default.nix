@@ -1,27 +1,18 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "oath";
-  version = "1.4.4";
-  format = "setuptools";
+  version = "1.4.3";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-vWsg0g8sTj9TUj7pACEdynWu7KcvT1qf2NyswXX+HAs=";
+    sha256 = "1xqgcqgx6aa0j21hwsdb3aqpqhviwj756bcqjjjcm1h1aij11p6m";
   };
-  checkInputs = [
-    pytestCheckHook
-  ];
 
-  pythonImportsCheck = [
-    "oath"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python implementation of the three main OATH specifications: HOTP, TOTP and OCRA";
     homepage = "https://github.com/bdauvergne/python-oath";
     license = licenses.bsd3;

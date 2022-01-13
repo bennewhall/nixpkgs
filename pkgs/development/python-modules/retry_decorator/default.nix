@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -12,7 +12,7 @@ buildPythonPackage rec {
     sha256 = "e1e8ad02e518fe11073f2ea7d80b6b8be19daa27a60a1838aff7c731ddcf2ebe";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pnpnpn/retry-decorator";
     description = "Retry Decorator for python functions";
     license = licenses.mit;

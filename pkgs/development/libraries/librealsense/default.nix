@@ -1,23 +1,13 @@
-{ stdenv
-, config
-, lib
-, fetchFromGitHub
-, fetchpatch
-, cmake
-, libusb1
-, ninja
-, pkg-config
-, gcc
+{ stdenv, config, lib, fetchFromGitHub, cmake, libusb1, ninja, pkgconfig, gcc
 , cudaSupport ? config.cudaSupport or false, cudatoolkit
-, enablePython ? false, pythonPackages ? null
-}:
+, enablePython ? false, pythonPackages ? null }:
 
 assert cudaSupport -> cudatoolkit != null;
 assert enablePython -> pythonPackages != null;
 
 stdenv.mkDerivation rec {
   pname = "librealsense";
-  version = "2.45.0";
+  version = "2.40.0";
 
   outputs = [ "out" "dev" ];
 
@@ -25,30 +15,23 @@ stdenv.mkDerivation rec {
     owner = "IntelRealSense";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0aqf48zl7825v7x8c3x5w4d17m4qq377f1mn6xyqzf9b0dnk4i1j";
+    sha256 = "KZNriNDxRKR14KFJrAbzZLfSQ3iiZ8PKC80fVh0AQls=";
   };
 
   buildInputs = [
     libusb1
     gcc.cc.lib
   ] ++ lib.optional cudaSupport cudatoolkit
-    ++ lib.optionals enablePython (with pythonPackages; [python pybind11 ]);
+    ++ lib.optional enablePython pythonPackages.python;
 
-  patches = [
-    # fix build on aarch64-darwin
-    # https://github.com/IntelRealSense/librealsense/pull/9253
-    (fetchpatch {
-      url = "https://github.com/IntelRealSense/librealsense/commit/beb4c44debc8336de991c983274cad841eb5c323.patch";
-      sha256 = "05mxsd2pz3xrvywdqyxkwdvxx8hjfxzcgl51897avz4v2j89pyq8";
-    })
+  patches = lib.optionals enablePython [
     ./py_sitepackage_dir.patch
-    ./py_pybind11_no_external_download.patch
   ];
 
   nativeBuildInputs = [
     cmake
     ninja
-    pkg-config
+    pkgconfig
   ];
 
   cmakeFlags = [
@@ -68,11 +51,11 @@ stdenv.mkDerivation rec {
     cp ../wrappers/python/pyrealsense2/__init__.py $out/${pythonPackages.python.sitePackages}/pyrealsense2
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A cross-platform library for Intel® RealSense™ depth cameras (D400 series and the SR300)";
     homepage = "https://github.com/IntelRealSense/librealsense";
     license = licenses.asl20;
     maintainers = with maintainers; [ brian-dawn ];
-    platforms = platforms.unix;
+    platforms = [ "i686-linux" "x86_64-linux" "x86_64-darwin" ];
   };
 }

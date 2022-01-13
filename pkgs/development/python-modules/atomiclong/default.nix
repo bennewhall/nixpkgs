@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pytest, cffi }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest, cffi }:
 
 buildPythonPackage rec {
   pname = "atomiclong";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   buildInputs = [ pytest ];
   propagatedBuildInputs = [ cffi ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Long data type with atomic operations using CFFI";
     homepage = "https://github.com/dreid/atomiclong";
     license = licenses.mit;

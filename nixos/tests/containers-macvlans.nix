@@ -1,13 +1,15 @@
+# Test for NixOS' container support.
+
 let
   # containers IP on VLAN 1
   containerIp1 = "192.168.1.253";
   containerIp2 = "192.168.1.254";
 in
 
-import ./make-test-python.nix ({ pkgs, lib, ... }: {
+import ./make-test-python.nix ({ pkgs, ...} : {
   name = "containers-macvlans";
-  meta = {
-    maintainers = with lib.maintainers; [ montag451 ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ montag451 ];
   };
 
   nodes = {
@@ -15,6 +17,7 @@ import ./make-test-python.nix ({ pkgs, lib, ... }: {
     machine1 =
       { lib, ... }:
       {
+        virtualisation.memorySize = 256;
         virtualisation.vlans = [ 1 ];
 
         # To be able to ping containers from the host, it is necessary
@@ -54,6 +57,7 @@ import ./make-test-python.nix ({ pkgs, lib, ... }: {
     machine2 =
       { ... }:
       {
+        virtualisation.memorySize = 256;
         virtualisation.vlans = [ 1 ];
       };
 

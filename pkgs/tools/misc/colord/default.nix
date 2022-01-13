@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , nixosTests
 , bash-completion
 , glib
 , polkit
-, pkg-config
+, pkgconfig
 , gettext
 , gusb
 , lcms2
@@ -68,7 +68,7 @@ stdenv.mkDerivation rec {
     libxslt
     meson
     ninja
-    pkg-config
+    pkgconfig
     shared-mime-info
     vala
     wrapGAppsHook
@@ -104,7 +104,7 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "System service to manage, install and generate color profiles to accurately color manage input and output devices";
     homepage = "https://www.freedesktop.org/software/colord/";
     license = licenses.lgpl2Plus;

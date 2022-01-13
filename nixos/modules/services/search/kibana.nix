@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.kibana;
-  opt = options.services.kibana;
 
   ge7 = builtins.compareVersions cfg.package.version "7" >= 0;
   lt6_6 = builtins.compareVersions cfg.package.version "6.6" < 0;
@@ -131,9 +130,6 @@ in {
           This defaults to the singleton list [ca] when the <option>ca</option> option is defined.
         '';
         default = if cfg.elasticsearch.ca == null then [] else [ca];
-        defaultText = literalExpression ''
-          if config.${opt.elasticsearch.ca} == null then [ ] else [ ca ]
-        '';
         type = types.listOf types.path;
       };
 
@@ -153,7 +149,8 @@ in {
     package = mkOption {
       description = "Kibana package to use";
       default = pkgs.kibana;
-      defaultText = literalExpression "pkgs.kibana";
+      defaultText = "pkgs.kibana";
+      example = "pkgs.kibana";
       type = types.package;
     };
 
@@ -202,12 +199,10 @@ in {
     environment.systemPackages = [ cfg.package ];
 
     users.users.kibana = {
-      isSystemUser = true;
+      uid = config.ids.uids.kibana;
       description = "Kibana service user";
       home = cfg.dataDir;
       createHome = true;
-      group = "kibana";
     };
-    users.groups.kibana = {};
   };
 }

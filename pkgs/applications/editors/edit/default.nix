@@ -1,40 +1,40 @@
-{ lib, stdenv, fetchgit, unzip, pkg-config, ncurses, libX11, libXft, cwebbin }:
+{ stdenv, fetchgit, unzip, pkgconfig, ncurses, libX11, libXft, cwebbin }:
 
 stdenv.mkDerivation {
   pname = "edit-nightly";
-  version = "20180228";
+  version = "20160425";
 
   src = fetchgit {
     url = "git://c9x.me/ed.git";
-    rev = "77d96145b163d79186c722a7ffccfff57601157c";
-    sha256 = "0rsmp7ydmrq3xx5q19566is9a2v2w5yfsphivfc7j4ljp32jlyyy";
+    rev = "323d49b68c5e804ed3b8cada0e2274f1589b3484";
+    sha256 = "0wv8i3ii7cd9bqhjpahwp2g5fcmyk365nc7ncmvl79cxbz3f7y8v";
   };
 
-  nativeBuildInputs = [
-    unzip
-    pkg-config
-    cwebbin
-  ];
-
   buildInputs = [
-    ncurses
-    libX11
-    libXft
+     unzip
+     pkgconfig
+     ncurses
+     libX11
+     libXft
+     cwebbin
   ];
 
-  preBuild = ''
+  buildPhase = ''
     ctangle *.w
+    make
   '';
 
   installPhase = ''
-    install -Dm755 obj/edit -t $out/bin
+    mkdir -p $out/bin/
+    cp obj/edit $out/bin/edit
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A relaxing mix of Vi and ACME";
-    homepage = "https://c9x.me/edit";
+    homepage = "http://c9x.me/edit";
     license = licenses.publicDomain;
     maintainers = [ maintainers.vrthra ];
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }
+

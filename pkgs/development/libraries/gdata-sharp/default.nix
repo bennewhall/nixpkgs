@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchsvn, pkg-config, mono, dotnetPackages }:
+{ stdenv, fetchsvn, pkgconfig, mono, dotnetPackages }:
 
 let
   newtonsoft-json = dotnetPackages.NewtonsoftJson;
@@ -12,7 +12,7 @@ in stdenv.mkDerivation {
     sha256 = "0b0rvgg3xsbbg2fdrpz0ywsy9rcahlyfskndaagd3yzm83gi6bhk";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ mono newtonsoft-json ];
 
   sourceRoot = "svn-r1217/clients/cs";
@@ -26,7 +26,7 @@ in stdenv.mkDerivation {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://code.google.com/archive/p/google-gdata/";
 
     description = "The Google Data APIs";

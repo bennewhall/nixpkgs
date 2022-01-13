@@ -3,24 +3,22 @@
 , fetchPypi
 , msrestazure
 , azure-common
-, azure-mgmt-core
 , azure-mgmt-nspkg
 }:
 
 buildPythonPackage rec {
   pname = "azure-mgmt-managementpartner";
-  version = "1.0.0";
+  version = "0.1.1";
 
   src = fetchPypi {
     inherit pname version;
     extension = "zip";
-    sha256 = "1cd591848454a115c216d216a3fb7802c1b5de04b105e2696e4237b0f8768f2f";
+    sha256 = "1bvcmx7dkf2adi26z7c2ga63ggpzdfqj8q1gzcic1yn03v6nb8i7";
   };
 
   propagatedBuildInputs = [
     msrestazure
     azure-common
-    azure-mgmt-core
     azure-mgmt-nspkg
   ];
 

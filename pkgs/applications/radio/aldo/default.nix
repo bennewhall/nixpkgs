@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, libao, autoreconfHook }:
+{ stdenv, fetchgit, libao, autoreconfHook }:
 
 let
   pname = "aldo";
@@ -16,7 +16,7 @@ in stdenv.mkDerivation {
 
   buildInputs = [ libao ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Morse code training program";
     homepage = "http://aldo.nongnu.org/";
     license = licenses.gpl3Plus;

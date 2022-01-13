@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , gettext
 , dbus
 , glib
@@ -23,7 +23,7 @@
 , samba
 , libmtp
 , gnomeSupport ? false
-, gnome
+, gnome3
 , gcr
 , glib-networking
 , gnome-online-accounts
@@ -41,11 +41,11 @@
 
 stdenv.mkDerivation rec {
   pname = "gvfs";
-  version = "1.48.1";
+  version = "1.46.1";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "1hlxl6368h6nyqp1888szxs9hnpcw98k3h23dgqi29xd38klzsmj";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "00r56kp8dhdn1ypyap66klymlwlh646n4f1ri797w2x6p70sc7k2";
   };
 
   postPatch = ''
@@ -59,7 +59,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     python3
-    pkg-config
+    pkgconfig
     gettext
     wrapGAppsHook
     libxml2
@@ -90,8 +90,8 @@ stdenv.mkDerivation rec {
     openssh
     gsettings-desktop-schemas
     # TODO: a ligther version of libsoup to have FTP/HTTP support?
-  ] ++ lib.optionals gnomeSupport [
-    gnome.libsoup
+  ] ++ stdenv.lib.optionals gnomeSupport [
+    gnome3.libsoup
     gcr
     glib-networking # TLS support
     gnome-online-accounts
@@ -102,13 +102,13 @@ stdenv.mkDerivation rec {
   mesonFlags = [
     "-Dsystemduserunitdir=${placeholder "out"}/lib/systemd/user"
     "-Dtmpfilesdir=no"
-  ] ++ lib.optionals (!gnomeSupport) [
+  ] ++ stdenv.lib.optionals (!gnomeSupport) [
     "-Dgcr=false"
     "-Dgoa=false"
     "-Dkeyring=false"
     "-Dhttp=false"
     "-Dgoogle=false"
-  ] ++ lib.optionals (samba == null) [
+  ] ++ stdenv.lib.optionals (samba == null) [
     # Xfce don't want samba
     "-Dsmb=false"
   ];
@@ -117,16 +117,15 @@ stdenv.mkDerivation rec {
   doInstallCheck = doCheck;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Virtual Filesystem support library" + optionalString gnomeSupport " (full GNOME support)";
     license = licenses.lgpl2Plus;
     platforms = platforms.linux;
-    maintainers = [ ] ++ teams.gnome.members;
+    maintainers = [ maintainers.lethalman ] ++ teams.gnome.members;
   };
 }

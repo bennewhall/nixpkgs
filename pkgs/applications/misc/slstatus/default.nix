@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchgit, pkg-config, writeText, libX11, conf ? null, patches ? [] }:
+{ stdenv, fetchgit, pkgconfig, writeText, libX11, conf ? null, patches ? [] }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "slstatus";
@@ -17,10 +17,8 @@ stdenv.mkDerivation rec {
 
   inherit patches;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libX11 ];
-
-  makeFlags = [ "CC:=$(CC)" ];
 
   installFlags = [ "PREFIX=$(out)" ];
 

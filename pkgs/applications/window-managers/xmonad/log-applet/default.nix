@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, autoreconfHook, glib, dbus-glib
+{ stdenv, fetchFromGitHub, pkgconfig, autoreconfHook, glib, dbus-glib
 , desktopSupport ? "gnomeflashback", xorg
 , gtk2
-, gtk3, gnome, mate
+, gtk3, gnome3, mate
 , libxfce4util, xfce4-panel
 }:
 
@@ -20,12 +20,12 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ glib dbus-glib xorg.xcbutilwm ]
-    ++ lib.optionals (desktopSupport == "gnomeflashback") [ gtk3 gnome.gnome-panel ]
-    ++ lib.optionals (desktopSupport == "mate") [ gtk3 mate.mate-panel ]
-    ++ lib.optionals (desktopSupport == "xfce4") [ gtk2 libxfce4util xfce4-panel ]
+    ++ stdenv.lib.optionals (desktopSupport == "gnomeflashback") [ gtk3 gnome3.gnome-panel ]
+    ++ stdenv.lib.optionals (desktopSupport == "mate") [ gtk3 mate.mate-panel ]
+    ++ stdenv.lib.optionals (desktopSupport == "xfce4") [ gtk2 libxfce4util xfce4-panel ]
   ;
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   configureFlags =  [ "--with-panel=${desktopSupport}" ];
 
@@ -35,10 +35,10 @@ stdenv.mkDerivation rec {
   # --define-variable=prefix=$prefix
   PKG_CONFIG_LIBXFCE4PANEL_1_0_LIBDIR = "$(out)/lib";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/kalj/xmonad-log-applet";
     license = licenses.bsd3;
-    broken = desktopSupport == "gnomeflashback" || desktopSupport == "xfce4";
+    broken = desktopSupport == "gnomeflashback";
     description = "An applet that will display XMonad log information (${desktopSupport} version)";
     platforms = platforms.linux;
     maintainers = with maintainers; [ abbradar ];

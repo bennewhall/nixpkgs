@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libxkbcommon, pkg-config, cmake }:
+{ stdenv, fetchFromGitHub, libxkbcommon, pkgconfig, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "libtsm";
@@ -13,13 +13,13 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libxkbcommon ];
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Terminal-emulator State Machine";
     homepage = "http://www.freedesktop.org/wiki/Software/kmscon/libtsm/";
     license = licenses.mit;
     maintainers = with maintainers; [ cstrahan ];
-    platforms = platforms.linux;
+    platforms = with platforms; unix;
   };
 }

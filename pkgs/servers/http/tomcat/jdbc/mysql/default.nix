@@ -1,21 +1,13 @@
-{ lib, stdenv, mysql_jdbc }:
+{ stdenv, mysql_jdbc }:
 
 stdenv.mkDerivation {
-  pname = "tomcat-mysql-jdbc";
-  version = mysql_jdbc.version;
+  name = "tomcat-mysql-jdbc";
+  builder = ./builder.sh;
+  buildInputs = [ mysql_jdbc ];
 
-  dontUnpack = true;
-
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p $out/lib
-    ln -s $mysql_jdbc/share/java/mysql-connector-java.jar $out/lib/mysql-connector-java.jar
-
-    runHook postInstall
-  '';
+  inherit mysql_jdbc;
 
   meta = {
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

@@ -1,12 +1,12 @@
-{ fetchurl, lib, stdenv, gettext, npth, libgpg-error, buildPackages }:
+{ fetchurl, stdenv, gettext, npth, libgpgerror, buildPackages }:
 
 stdenv.mkDerivation rec {
   pname = "libassuan";
-  version = "2.5.5";
+  version = "2.5.4";
 
   src = fetchurl {
     url = "mirror://gnupg/${pname}/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-jowvzJgvnKZ9y7HZXi3HRrFzmkZovCCzo8W+Yy7bNOQ=";
+    sha256 = "1w7vnnycq4z7gf4bk38pi4hrb8qrrzgfpz3cd7frwldxnfbfx060";
   };
 
   outputs = [ "out" "dev" "info" ];
@@ -16,17 +16,17 @@ stdenv.mkDerivation rec {
   buildInputs = [ npth gettext ];
 
   configureFlags = [
-    "--with-libgpg-error-prefix=${libgpg-error.dev}"
+    "--with-libgpg-error-prefix=${libgpgerror.dev}"
   ];
 
   doCheck = true;
 
   # Make sure includes are fixed for callers who don't use libassuan-config
   postInstall = ''
-    sed -i 's,#include <gpg-error.h>,#include "${libgpg-error.dev}/include/gpg-error.h",g' $dev/include/assuan.h
+    sed -i 's,#include <gpg-error.h>,#include "${libgpgerror.dev}/include/gpg-error.h",g' $dev/include/assuan.h
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "IPC library used by GnuPG and related software";
     longDescription = ''
       Libassuan is a small library implementing the so-called Assuan

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl }:
+{ stdenv, fetchFromGitHub, perl }:
 
 stdenv.mkDerivation rec {
   pname = "urxvt-tabbedex";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tabbed plugin for rxvt-unicode with many enhancements (mina86's fork)";
     homepage = "https://github.com/mina86/urxvt-tabbedex";
     maintainers = with maintainers; [ abbradar ];

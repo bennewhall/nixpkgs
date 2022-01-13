@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, readline }:
+{ stdenv, fetchFromGitHub, readline }:
 
 stdenv.mkDerivation rec {
   pname = "picoc";
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     install -m644 *.h $out/include
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Very small C interpreter for scripting";
     longDescription = ''
       PicoC is a very small C interpreter for scripting. It was originally

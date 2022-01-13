@@ -1,10 +1,10 @@
-import ./make-test-python.nix ({ pkgs, lib, ... }: {
+# Test for NixOS' container support.
+
+import ./make-test-python.nix ({ pkgs, ...} : {
   name = "containers-ephemeral";
-  meta = {
-    maintainers = with lib.maintainers; [ patryk27 ];
-  };
 
   machine = { pkgs, ... }: {
+    virtualisation.memorySize = 768;
     virtualisation.writableStore = true;
 
     containers.webserver = {

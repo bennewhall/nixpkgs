@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pythonOlder
@@ -16,9 +16,9 @@ buildPythonPackage rec {
 
   disabled = pythonOlder "3.5";
 
-  buildInputs = [ pytest ];
+  propagatedBuildInputs = [ pytest ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jbasko/pytest-random-order";
     description = "Randomise the order of tests with some control over the randomness";
     license = licenses.mit;

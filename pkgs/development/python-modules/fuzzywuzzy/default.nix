@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, python-Levenshtein, pycodestyle, hypothesis, pytest }:
+{ stdenv, buildPythonPackage, fetchPypi, python-Levenshtein, pycodestyle, hypothesis, pytest }:
 
 buildPythonPackage rec {
   pname = "fuzzywuzzy";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ python-Levenshtein ];
   checkInputs = [ pycodestyle hypothesis pytest ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fuzzy string matching for Python";
     homepage = "https://github.com/seatgeek/fuzzywuzzy";
     license = licenses.gpl2;

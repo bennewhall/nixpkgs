@@ -3,14 +3,13 @@
 , fetchFromGitHub
 , autoreconfHook
 , go-md2man
-, pkg-config
+, pkgconfig
 , libcap
 , libseccomp
 , python3
 , systemd
 , yajl
 , nixosTests
-, criu
 }:
 
 let
@@ -27,7 +26,6 @@ let
     "test_pid_file.py"
     "test_preserve_fds.py"
     "test_resources"
-    "test_seccomp"
     "test_start.py"
     "test_uid_gid.py"
     "test_update.py"
@@ -37,21 +35,19 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "crun";
-  version = "1.4";
+  version = "0.16";
 
   src = fetchFromGitHub {
     owner = "containers";
     repo = pname;
     rev = version;
-    sha256 = "sha256-hO3gOZ0AaSvymIDvoylHzlHscoN1+G7wDXTCP1c5uIw=";
+    sha256 = "03547axiwv161sbymh2vxqx591xr4nq6b9y8y45m15xvfv0f7vl8";
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ autoreconfHook go-md2man pkg-config python3 ];
+  nativeBuildInputs = [ autoreconfHook go-md2man pkgconfig python3 ];
 
-  buildInputs = [ libcap libseccomp systemd yajl ]
-    # Criu currently only builds on x86_64-linux
-    ++ lib.optional (lib.elem stdenv.hostPlatform.system criu.meta.platforms) criu;
+  buildInputs = [ libcap libseccomp systemd yajl ];
 
   enableParallelBuilding = true;
 

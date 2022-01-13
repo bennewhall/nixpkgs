@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, pkg-config
+, pkgconfig
 , meson
 , ninja
 , gettext
@@ -11,31 +11,35 @@
 , libtasn1
 , gtk3
 , pango
-, libsecret
-, openssh
-, systemd
 , gobject-introspection
 , makeWrapper
 , libxslt
 , vala
-, gnome
+, gnome3
 , python3
 , shared-mime-info
 }:
 
 stdenv.mkDerivation rec {
   pname = "gcr";
-  version = "3.41.0";
+  version = "3.38.0";
+
+  src = fetchurl {
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1q97pba4bzjndm1vlvicyv8mrl0n589qsw71dp8jrz2payvcfk56";
+  };
+
+  postPatch = ''
+    patchShebangs build/ gcr/fixtures/
+
+    chmod +x meson_post_install.py
+    patchShebangs meson_post_install.py
+  '';
 
   outputs = [ "out" "dev" ];
 
-  src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "CQn8SeqK1IMtJ1ZP8v0dxmZpbioHxzlBxIgp5gVy2gE=";
-  };
-
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     meson
     python3
     ninja
@@ -52,9 +56,6 @@ stdenv.mkDerivation rec {
     libgcrypt
     libtasn1
     pango
-    libsecret
-    openssh
-    systemd
   ];
 
   propagatedBuildInputs = [
@@ -69,21 +70,11 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-Dgtk_doc=false"
-    # We are still using ssh-agent from gnome-keyring.
-    # https://github.com/NixOS/nixpkgs/issues/140824
-    "-Dssh_agent=false"
   ];
 
   doCheck = false; # fails 21 out of 603 tests, needs dbus daemon
 
-  PKG_CONFIG_SYSTEMD_SYSTEMDUSERUNITDIR = "${placeholder "out"}/lib/systemd/user";
-
-  postPatch = ''
-    patchShebangs build/ gcr/fixtures/
-
-    chmod +x meson_post_install.py
-    patchShebangs meson_post_install.py
-  '';
+  enableParallelBuilding = true;
 
   preFixup = ''
     wrapProgram "$out/bin/gcr-viewer" \
@@ -91,13 +82,13 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
-    platforms = platforms.unix;
+  meta = with stdenv.lib; {
+    platforms = platforms.linux;
     maintainers = teams.gnome.members;
     description = "GNOME crypto services (daemon and tools)";
     homepage = "https://gitlab.gnome.org/GNOME/gcr";

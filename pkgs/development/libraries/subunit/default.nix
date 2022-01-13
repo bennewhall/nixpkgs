@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, check, cppunit, perl, python3Packages }:
+{ stdenv, fetchurl, pkgconfig, check, cppunit, perl, pythonPackages }:
 
 # NOTE: for subunit python library see pkgs/top-level/python-packages.nix
 
@@ -11,14 +11,14 @@ stdenv.mkDerivation rec {
     sha256 = "1h7i5ifcx20qkya24j11nbwa829klw7dvnlljdgivgvcx6b20y80";
   };
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ check cppunit perl python3Packages.wrapPython ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ check cppunit perl pythonPackages.wrapPython ];
 
-  propagatedBuildInputs = with python3Packages; [ testtools testscenarios ];
+  propagatedBuildInputs = with pythonPackages; [ testtools testscenarios ];
 
   postFixup = "wrapPythonPrograms";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A streaming protocol for test results";
     homepage = "https://launchpad.net/subunit";
     license = licenses.asl20;

@@ -1,28 +1,30 @@
-{ lib, stdenv, fetchurl, guileSupport ? false, pkg-config, guile }:
+{ stdenv, fetchurl, guileSupport ? false, pkgconfig ? null , guile ? null }:
 
-stdenv.mkDerivation rec {
-  pname = "gnumake";
+assert guileSupport -> ( pkgconfig != null && guile != null );
+
+let
   version = "4.3";
+in
+stdenv.mkDerivation {
+  pname = "gnumake";
+  inherit version;
 
   src = fetchurl {
     url = "mirror://gnu/make/make-${version}.tar.gz";
     sha256 = "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0";
   };
 
-  # to update apply these patches with `git am *.patch` to https://git.savannah.gnu.org/git/make.git
   patches = [
-    # Replaces /bin/sh with sh, see patch file for reasoning
-    ./0001-No-impure-bin-sh.patch
     # Purity: don't look for library dependencies (of the form `-lfoo') in /lib
     # and /usr/lib. It's a stupid feature anyway. Likewise, when searching for
     # included Makefiles, don't look in /usr/include and friends.
-    ./0002-remove-impure-dirs.patch
+    ./impure-dirs.patch
   ];
 
-  nativeBuildInputs = lib.optionals guileSupport [ pkg-config ];
-  buildInputs = lib.optionals guileSupport [ guile ];
+  nativeBuildInputs = stdenv.lib.optionals guileSupport [ pkgconfig ];
+  buildInputs = stdenv.lib.optionals guileSupport [ guile ];
 
-  configureFlags = lib.optional guileSupport "--with-guile"
+  configureFlags = stdenv.lib.optional guileSupport "--with-guile"
 
     # Make uses this test to decide whether it should keep track of
     # subseconds. Apple made this possible with APFS and macOS 10.13.
@@ -31,11 +33,11 @@ stdenv.mkDerivation rec {
     # a second. So, tell Make to ignore nanoseconds in mtime here by
     # overriding the autoconf test for the struct.
     # See https://github.com/NixOS/nixpkgs/issues/51221 for discussion.
-    ++ lib.optional stdenv.isDarwin "ac_cv_struct_st_mtim_nsec=no";
+    ++ stdenv.lib.optional stdenv.isDarwin "ac_cv_struct_st_mtim_nsec=no";
 
   outputs = [ "out" "man" "info" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.gnu.org/software/make/";
     description = "A tool to control the generation of non-source files from sources";
     license = licenses.gpl3Plus;

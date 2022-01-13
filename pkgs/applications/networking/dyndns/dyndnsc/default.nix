@@ -2,27 +2,26 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "dyndnsc";
-  version = "0.6.1";
+  version = "0.5.1";
 
   src = python3Packages.fetchPypi {
     inherit pname version;
-    sha256 = "13078d29eea2f9a4ca01f05676c3309ead5e341dab047e0d51c46f23d4b7fbb4";
+    hash = "sha256-Sy6U0XhIQ9mPmznmWKqoyqE34vaE84fwlivouaF7Dd0=";
   };
 
   postPatch = ''
     substituteInPlace setup.py --replace "bottle==" "bottle>="
   '';
 
-  nativeBuildInputs = with python3Packages; [ pytest-runner ];
+  nativeBuildInputs = with python3Packages; [ pytestrunner ];
   propagatedBuildInputs = with python3Packages; [
     daemonocle
     dnspython
     netifaces
     requests
-    json-logging
     setuptools
   ];
-  checkInputs = with python3Packages; [ bottle mock pytest-console-scripts pytestCheckHook ];
+  checkInputs = with python3Packages; [ bottle pytestCheckHook ];
 
   disabledTests = [
     # dnswanip connects to an external server to discover the

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, extra-cmake-modules
+{ stdenv, fetchurl, cmake, extra-cmake-modules
 , karchive, kcrash, ki18n, kio, solid
 , boost, gmp, qca-qt5, libgcrypt
 }:
@@ -23,13 +23,13 @@ in stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ gmp boost ];
 
+  enableParallelBuilding = true;
+
   passthru = {
     inherit mainVersion;
   };
 
-  dontWrapQtApps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A BitTorrent library used by KTorrent";
     homepage    = "https://www.kde.org/applications/internet/ktorrent/";
     maintainers = with maintainers; [ eelco ];

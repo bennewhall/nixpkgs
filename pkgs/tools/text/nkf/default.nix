@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "nkf";
@@ -14,8 +14,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Tool for converting encoding of Japanese text";
     homepage = "https://nkf.osdn.jp/";
-    license = lib.licenses.zlib;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.auntie ];
+    license = stdenv.lib.licenses.zlib;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.auntie ];
   };
 }

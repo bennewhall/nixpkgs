@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, xz, dpkg
+{stdenv, fetchurl, unzip, xz, dpkg
 , libxslt, docbook_xsl, makeWrapper
 , python3Packages
 , perlPackages, curl, gnupg, diffutils
@@ -16,8 +16,7 @@ in stdenv.mkDerivation rec {
     sha256 = "0xy1nvqrnifx46g8ch69pk31by0va6hn10wpi1fkrsrgncanjjh1";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ xz dpkg libxslt python setuptools curl gnupg diffutils ] ++
+  buildInputs = [ unzip xz dpkg libxslt python setuptools makeWrapper curl gnupg diffutils ] ++
     (with perlPackages; [ perl CryptSSLeay LWP TimeDate DBFile FileDesktopEntry ParseDebControl LWPProtocolHttps ]);
 
   preConfigure = ''
@@ -58,8 +57,8 @@ in stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
-    description = "Debian package maintenance scripts";
+  meta = with stdenv.lib; {
+    description = ''Debian package maintenance scripts'';
     license = licenses.free; # Mix of public domain, Artistic+GPL, GPL1+, GPL2+, GPL3+, and GPL2-only... TODO
     maintainers = with maintainers; [raskin];
     platforms = with platforms; linux;

@@ -1,49 +1,34 @@
-{ lib
-, buildPythonPackage
-, isPy27
-, fetchPypi
-, setuptools-scm
-, six
-, dnspython
-, pycountry
-, pytestCheckHook
-}:
+{ stdenv, buildPythonPackage, fetchPypi, dnspython, pycountry, nose, setuptools_scm, six, isPy27 }:
 
 buildPythonPackage rec {
   pname = "FormEncode";
-  version = "2.0.1";
+  version = "2.0.0";
 
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "8f2974112c2557839d5bae8b76490104c03830785d923abbdef148bf3f710035";
+    sha256 = "049pm276140h30xgzwylhpii24xcln1qfdlfmbj69sqpfhlr5szj";
   };
 
   postPatch = ''
-    sed -i '/setuptools_scm_git_archive/d' setup.py
+    sed -i 's/setuptools_scm_git_archive//' setup.py
+    sed -i 's/use_scm_version=.*,/version="${version}",/' setup.py
   '';
 
-  nativeBuildInputs = [ setuptools-scm ];
-
+  nativeBuildInputs = [ setuptools_scm ];
   propagatedBuildInputs = [ six ];
 
-  checkInputs = [
-    dnspython
-    pycountry
-    pytestCheckHook
-  ];
+  checkInputs = [ dnspython pycountry nose ];
 
-  disabledTests = [
-    # requires network for DNS resolution
-    "test_doctests"
-    "test_unicode_ascii_subgroup"
-  ];
+  preCheck = ''
+    # requires dns resolving
+    sed -i 's/test_unicode_ascii_subgroup/noop/' formencode/tests/test_email.py
+  '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "FormEncode validates and converts nested structures";
     homepage = "http://formencode.org";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
   };
 }

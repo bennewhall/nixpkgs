@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, kernel, libdrm }:
+{ stdenv, fetchFromGitHub, fetchpatch, kernel, libdrm }:
 
 stdenv.mkDerivation rec {
   pname = "evdi";
-  version = "unstable-2021-07-07";
+  version = "unstable-20200416";
 
   src = fetchFromGitHub {
     owner = "DisplayLink";
     repo = pname;
-    rev = "b0b2c80eb63f9b858b71afa772135f434aea192a";
-    sha256 = "sha256-io+CbZovGjEJjwtmARFH23Djt933ONoHMDoea+i6xFo=";
+    rev = "dc595db636845aef39490496bc075f6bf067106c";
+    sha256 = "1yrny6jj9403z0rxbd3nxf49xc4w0rfpl7xsq03pq32pb3vlbqw7";
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
@@ -27,12 +27,12 @@ stdenv.mkDerivation rec {
     install -Dm755 library/libevdi.so $out/lib/libevdi.so
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extensible Virtual Display Interface";
     maintainers = with maintainers; [ eyjhb ];
     platforms = platforms.linux;
-    license = with licenses; [ lgpl21Only gpl2Only ];
+    license = with licenses; [ lgpl21 gpl2 ];
     homepage = "https://www.displaylink.com/";
-    broken = kernel.kernelOlder "4.19" || kernel.kernelAtLeast "5.15" || stdenv.isAarch64;
+    broken = versionOlder kernel.version "4.9" || stdenv.isAarch64;
   };
 }

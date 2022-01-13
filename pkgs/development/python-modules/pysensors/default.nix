@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, python, fetchFromGitHub, lm_sensors }:
+{ stdenv, buildPythonPackage, python, fetchFromGitHub, lm_sensors }:
 buildPythonPackage {
   version = "2017-07-13";
   pname = "pysensors";
@@ -22,7 +22,7 @@ buildPythonPackage {
     ${python.interpreter} -m unittest discover
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ guibou ];
     description = "Easy hardware health monitoring in Python for Linux systems";
     homepage = "https://pysensors.readthedocs.org";

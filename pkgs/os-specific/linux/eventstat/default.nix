@@ -1,26 +1,20 @@
-{ stdenv, lib, fetchFromGitHub, ncurses }:
+{ stdenv, lib, fetchzip, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "eventstat";
-  version = "0.04.13";
-
-  src = fetchFromGitHub {
-    owner = "ColinIanKing";
-    repo = pname;
-    rev = "V${version}";
-    hash = "sha256-psamt9omhakiO3Kx2EzofPL2VAsva7XKQTZmn6zKefA=";
+  version = "0.04.10";
+  src = fetchzip {
+    url = "https://kernel.ubuntu.com/~cking/tarballs/eventstat/eventstat-${version}.tar.gz";
+    sha256 = "0rmg49m56qxji7gwci03pkk4f4hnaq1n2x1348dqkaf5zs5nhi6b";
   };
-
   buildInputs = [ ncurses ];
-  installFlags = [
-    "BINDIR=${placeholder "out"}/bin"
-    "MANDIR=${placeholder "out"}/share/man/man8"
-    "BASHDIR=${placeholder "out"}/share/bash-completion/completions"
-  ];
-
+  installFlags = [ "DESTDIR=$(out)" ];
+  postInstall = ''
+    mv $out/usr/* $out
+    rm -r $out/usr
+  '';
   meta = with lib; {
     description = "Simple monitoring of system events";
-    homepage = "https://github.com/ColinIanKing/eventstat";
     license = licenses.gpl2;
     platforms = platforms.linux;
     maintainers = with maintainers; [ cstrahan ];

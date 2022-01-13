@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , autoPatchelfHook
 , buildFHSUserEnv
 , dpkg
@@ -9,7 +9,7 @@
 , extraPkgs ? []
 }:
 let
-  majMin = lib.versions.majorMinor version;
+  majMin = stdenv.lib.versions.majorMinor version;
   version = "7.6.13";
 
   fahclient = stdenv.mkDerivation rec {
@@ -52,8 +52,8 @@ buildFHSUserEnv {
   meta = {
     description = "Folding@home client";
     homepage = "https://foldingathome.org/";
-    license = lib.licenses.unfree;
-    maintainers = [ lib.maintainers.zimbatm ];
+    license = stdenv.lib.licenses.unfree;
+    maintainers = [ stdenv.lib.maintainers.zimbatm ];
     platforms = [ "x86_64-linux" ];
   };
 }

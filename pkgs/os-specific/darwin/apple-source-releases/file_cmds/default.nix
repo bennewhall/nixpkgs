@@ -1,8 +1,8 @@
-{ lib, appleDerivation, xcbuildHook, zlib, bzip2, xz, ncurses, libutil, Libinfo }:
+{ stdenv, appleDerivation, xcbuildHook, zlib, bzip2, lzma, ncurses, libutil }:
 
 appleDerivation {
   nativeBuildInputs = [ xcbuildHook ];
-  buildInputs = [ zlib bzip2 xz ncurses libutil Libinfo ];
+  buildInputs = [ zlib bzip2 lzma ncurses libutil ];
 
   # some commands not working:
   # mtree: _simple.h not found
@@ -32,7 +32,7 @@ appleDerivation {
   '';
 
   meta = {
-    platforms = lib.platforms.darwin;
-    maintainers = with lib.maintainers; [ matthewbauer ];
+    platforms = stdenv.lib.platforms.darwin;
+    maintainers = with stdenv.lib.maintainers; [ matthewbauer ];
   };
 }

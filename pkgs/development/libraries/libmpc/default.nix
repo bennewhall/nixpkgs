@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , gmp, mpfr
 }:
 
@@ -7,13 +7,16 @@
 # cgit) that are needed here should be included directly in Nixpkgs as
 # files.
 
-stdenv.mkDerivation rec {
+let
+  version = "1.2.0";
+in
+stdenv.mkDerivation {
   pname = "libmpc";
-  version = "1.2.1"; # to avoid clash with the MPD client
+  inherit version; # to avoid clash with the MPD client
 
   src = fetchurl {
     url = "mirror://gnu/mpc/mpc-${version}.tar.gz";
-    sha256 = "0n846hqfqvmsmim7qdlms0qr86f1hck19p12nq3g3z2x74n3sl0p";
+    sha256 = "19pxx3gwhwl588v496g3aylhcw91z1dk1d5x3a8ik71sancjs3z9";
   };
 
   buildInputs = [ gmp mpfr ];
@@ -30,9 +33,9 @@ stdenv.mkDerivation rec {
       '';
 
     homepage = "http://mpc.multiprecision.org/";
-    license = lib.licenses.lgpl2Plus;
+    license = stdenv.lib.licenses.lgpl2Plus;
 
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
     maintainers = [ ];
   };
 }

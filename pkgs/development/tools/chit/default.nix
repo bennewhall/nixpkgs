@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, pkg-config, openssl
+{ stdenv, fetchFromGitHub, rustPlatform, pkgconfig, openssl
 , darwin
 }:
 
@@ -15,15 +15,15 @@ buildRustPackage rec {
     sha256 = "0iixczy3cad44j2d7zzj8f3lnmp4jwnb0snmwfgiq3vj9wrn28pz";
   };
 
-  cargoSha256 = "1y6k24p4m67v5773rzid2r0jwxp9piggrp0462z446hbcam2r4gd";
+  cargoSha256 = "1w25k3bqmmcrhpkw510vbwph0rfmrzi2wby0z2rz1q4k1f9k486m";
 
-  nativeBuildInputs = lib.optionals stdenv.isLinux [ pkg-config ];
+  nativeBuildInputs = stdenv.lib.optionals stdenv.isLinux [ pkgconfig ];
   buildInputs = []
-  ++ lib.optionals stdenv.isLinux [ openssl ]
-  ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ CoreFoundation CoreServices Security ])
+  ++ stdenv.lib.optionals stdenv.isLinux [ openssl ]
+  ++ stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ CoreFoundation CoreServices Security ])
   ;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Crate help in terminal: A tool for looking up details about rust crates without going to crates.io";
     longDescription = ''
       Chit helps answer these questions:

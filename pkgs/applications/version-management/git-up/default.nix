@@ -1,4 +1,4 @@
-{ lib, fetchurl, pythonPackages, git }:
+{ stdenv, fetchurl, pythonPackages, git }:
 
 pythonPackages.buildPythonApplication rec {
   pname = "git-up";
@@ -26,7 +26,7 @@ pythonPackages.buildPythonApplication rec {
     rm -r $out/${pythonPackages.python.sitePackages}/PyGitUp/tests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/msiemens/PyGitUp";
     description = "A git pull replacement that rebases all local branches when pulling";
     license = licenses.mit;

@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , gstreamer
 , gst-plugins-base
 , python3
@@ -12,11 +12,11 @@
 
 stdenv.mkDerivation rec {
   pname = "gst-devtools";
-  version = "1.18.4";
+  version = "1.18.1";
 
   src = fetchurl {
-    url = "https://gstreamer.freedesktop.org/src/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "1kvcabcfzm7wqih3lzgrg9xjbn4xpx43d1m2zkkvab4i8161kggz";
+    url = "${meta.homepage}/src/${pname}/${pname}-${version}.tar.xz";
+    sha256 = "1pxhg8n5nl34baq6mb07i27b33gaw47zrv5yalyj6f12pnx148ki";
   };
 
   patches = [
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
     gobject-introspection
 
     # documentation
@@ -51,11 +51,9 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-Ddoc=disabled" # `hotdoc` not packaged in nixpkgs as of writing
-  ] ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    "-Dintrospection=disabled"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Integration testing infrastructure for the GStreamer framework";
     homepage = "https://gstreamer.freedesktop.org";
     license = licenses.lgpl2Plus;

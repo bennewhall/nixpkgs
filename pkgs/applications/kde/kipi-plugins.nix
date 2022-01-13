@@ -6,7 +6,7 @@
 }:
 
 mkDerivation {
-  pname    = "kipi-plugins";
+  name    = "kipi-plugins";
 
   nativeBuildInputs = [ extra-cmake-modules ];
   buildInputs = [
@@ -17,7 +17,7 @@ mkDerivation {
   meta = {
     description = "Plugins for KDE-based image applications";
     license = lib.licenses.gpl2;
-    homepage = "https://github.com/KDE/kipi-plugins";
+    homepage = "https://cgit.kde.org/kipi-plugins.git";
     maintainers = with lib.maintainers; [ ttuegel ];
   };
 }

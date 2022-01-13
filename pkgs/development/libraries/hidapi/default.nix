@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, udev, libusb1
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, udev, libusb1
 , darwin }:
 
 stdenv.mkDerivation rec {
@@ -12,16 +12,16 @@ stdenv.mkDerivation rec {
     sha256 = "1nr4z4b10vpbh3ss525r7spz4i43zim2ba5qzfl15dgdxshxxivb";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ ]
-    ++ lib.optionals stdenv.isLinux [ libusb1 udev ];
+    ++ stdenv.lib.optionals stdenv.isLinux [ libusb1 udev ];
 
   enableParallelBuilding = true;
 
-  propagatedBuildInputs = lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ IOKit Cocoa ]);
+  propagatedBuildInputs = stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ IOKit Cocoa ]);
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library for communicating with USB and Bluetooth HID devices";
     homepage = "https://github.com/libusb/hidapi";
     maintainers = with maintainers; [ prusnak ];

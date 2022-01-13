@@ -1,4 +1,4 @@
-{ lib, stdenv, stdenv_32bit, pkgsi686Linux, fetchFromGitHub, fetchurl }:
+{ stdenv, stdenv_32bit, pkgsi686Linux, fetchFromGitHub, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "red";
@@ -77,7 +77,7 @@ stdenv.mkDerivation rec {
 
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       New programming language strongly inspired by Rebol, but with a
       broader field of usage thanks to its native-code compiler, from system

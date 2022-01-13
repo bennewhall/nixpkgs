@@ -1,4 +1,4 @@
-{ stdenv, lib, buildEnv, writeText, writeShellScriptBin, pkgs, pkgsi686Linux }:
+{ stdenv, buildEnv, writeText, pkgs, pkgsi686Linux }:
 
 { name, profile ? ""
 , targetPkgs ? pkgs: [], multiPkgs ? pkgs: []
@@ -49,9 +49,6 @@ let
     [ (toString gcc.cc.lib)
     ];
 
-  ldconfig = writeShellScriptBin "ldconfig" ''
-    exec ${pkgs.glibc.bin}/bin/ldconfig -f /etc/ld.so.conf -C /etc/ld.so.cache "$@"
-  '';
   etcProfile = writeText "profile" ''
     export PS1='${name}-chrootenv:\u@\h:\w\$ '
     export LOCALE_ARCHIVE='/usr/lib/locale/locale-archive'
@@ -89,8 +86,7 @@ let
   # Composes a /usr-like directory structure
   staticUsrProfileTarget = buildEnv {
     name = "${name}-usr-target";
-    # ldconfig wrapper must come first so it overrides the original ldconfig
-    paths = [ etcPkg ldconfig ] ++ basePkgs ++ targetPaths;
+    paths = [ etcPkg ] ++ basePkgs ++ targetPaths;
     extraOutputsToInstall = [ "out" "lib" "bin" ] ++ extraOutputsToInstall;
     ignoreCollisions = true;
   };
@@ -136,27 +132,14 @@ let
     mkdir -m0755 usr
     cd usr
     ${setupLibDirs}
-    ${lib.optionalString isMultiBuild ''
-    if [ -d "${staticUsrProfileMulti}/share" ]; then
-      cp -rLf ${staticUsrProfileMulti}/share share
-    fi
-    ''}
-    if [ -d "${staticUsrProfileTarget}/share" ]; then
-      if [ -d share ]; then
-        chmod -R 755 share
-        cp -rLTf ${staticUsrProfileTarget}/share share
-      else
-        cp -rLf ${staticUsrProfileTarget}/share share
-      fi
-    fi
-    for i in bin sbin include; do
+    for i in bin sbin share include; do
       if [ -d "${staticUsrProfileTarget}/$i" ]; then
         cp -rsHf "${staticUsrProfileTarget}/$i" "$i"
       fi
     done
     cd ..
 
-    for i in var etc opt; do
+    for i in var etc; do
       if [ -d "${staticUsrProfileTarget}/$i" ]; then
         cp -rsHf "${staticUsrProfileTarget}/$i" "$i"
       fi

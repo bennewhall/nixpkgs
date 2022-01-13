@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, python27, htslib, zlib, makeWrapper}:
+{stdenv, fetchFromGitHub, python27, htslib, zlib, makeWrapper}:
 
 let python = python27.withPackages (ps: with ps; [ cython ]);
 
@@ -13,8 +13,7 @@ in stdenv.mkDerivation {
     sha256 = "0nah6r54b8xm778gqyb8b7rsd76z8ji4g73sm6rvpw5s96iib1vw";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ htslib python zlib ];
+  buildInputs = [ htslib python zlib makeWrapper ];
 
   buildPhase = ''
     patchShebangs .
@@ -29,7 +28,7 @@ in stdenv.mkDerivation {
     makeWrapper ${python}/bin/python $out/bin/platypus --add-flags "$out/libexec/platypus/bin/Platypus.py"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The Platypus variant caller";
     license = licenses.gpl3;
     homepage = "https://github.com/andyrimmer/Platypus";

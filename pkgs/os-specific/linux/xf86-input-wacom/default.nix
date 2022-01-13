@@ -1,61 +1,31 @@
-{ lib
-, stdenv
-, autoreconfHook
-, fetchFromGitHub
-, xorgproto
-, libX11
-, libXext
-, libXi
-, libXinerama
-, libXrandr
-, libXrender
-, ncurses
-, pixman
-, pkg-config
-, udev
-, utilmacros
-, xorgserver
-}:
+{ stdenv, fetchurl
+, xorgproto, libX11, libXext, libXi, libXrandr, libXrender
+, ncurses, pkgconfig, xorgserver, udev, libXinerama, pixman }:
 
 stdenv.mkDerivation rec {
-  pname = "xf86-input-wacom";
-  version = "0.40.0";
+  name = "xf86-input-wacom-0.36.0";
 
-  src = fetchFromGitHub {
-    owner = "linuxwacom";
-    repo = pname;
-    rev = "${pname}-${version}";
-    sha256 = "sha256-0U4pAB5vsIlBewCBqQ4SLHDrwqtr9nh7knZpXZMkzck=";
+  src = fetchurl {
+    url = "mirror://sourceforge/linuxwacom/${name}.tar.bz2";
+    sha256 = "1xi39hl8ddgj9m7m2k2ll2r3wh0k0aq45fvrsv43651bhz9cbrza";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  buildInputs = [ xorgproto libX11 libXext libXi libXrandr libXrender
+    ncurses pkgconfig xorgserver udev libXinerama pixman ];
 
-  buildInputs = [
-    libX11
-    libXext
-    libXi
-    libXinerama
-    libXrandr
-    libXrender
-    ncurses
-    udev
-    utilmacros
-    pixman
-    xorgproto
-    xorgserver
-  ];
+  preConfigure = ''
+    mkdir -p $out/share/X11/xorg.conf.d
+    configureFlags="--with-xorg-module-dir=$out/lib/xorg/modules
+    --with-sdkdir=$out/include/xorg --with-xorg-conf-dir=$out/share/X11/xorg.conf.d"
+  '';
 
-  configureFlags = [
-    "--with-xorg-module-dir=${placeholder "out"}/lib/xorg/modules"
-    "--with-sdkdir=${placeholder "out"}/include/xorg"
-    "--with-xorg-conf-dir=${placeholder "out"}/share/X11/xorg.conf.d"
-  ];
+  CFLAGS = "-I${pixman}/include/pixman-1";
 
-  meta = with lib; {
-    maintainers = with maintainers; [ goibhniu fortuneteller2k ];
+  meta = with stdenv.lib; {
+    maintainers = [ maintainers.goibhniu ];
     description = "Wacom digitizer driver for X11";
     homepage = "http://linuxwacom.sourceforge.net";
-    license = licenses.gpl2Only;
-    platforms = platforms.linux; # Probably, works with other unixes as well
+    license = licenses.gpl2;
+    platforms = platforms.linux; # Probably, works with other unices as well
   };
 }

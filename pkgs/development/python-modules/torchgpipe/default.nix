@@ -2,7 +2,8 @@
 , buildPythonPackage
 , fetchFromGitHub
 , isPy27
-, pytest-runner
+, pytest
+, pytestrunner
 , pytestCheckHook
 , pytorch
 }:
@@ -22,11 +23,12 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ pytorch ];
 
-  checkInputs = [ pytest-runner pytestCheckHook ];
-  disabledTests = [
-    "test_inplace_on_requires_grad"
-    "test_input_requiring_grad"
-  ];
+  checkInputs = [ pytest pytestrunner pytestCheckHook ];
+  disabledTests = [ "test_inplace_on_requires_grad" ];
+  # seems like a harmless failure:
+  ## AssertionError:
+  ## Pattern 'a leaf Variable that requires grad has been used in an in-place operation.'
+  ## does not match 'a leaf Variable that requires grad is being used in an in-place operation.'
 
   meta = with lib; {
     description = "GPipe implemented in Pytorch and optimized for CUDA rather than TPU";

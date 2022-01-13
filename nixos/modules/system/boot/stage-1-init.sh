@@ -2,13 +2,6 @@
 
 targetRoot=/mnt-root
 console=tty1
-verbose="@verbose@"
-
-info() {
-    if [[ -n "$verbose" ]]; then
-        echo "$@"
-    fi
-}
 
 extraUtils="@extraUtils@"
 export LD_LIBRARY_PATH=@extraUtils@/lib
@@ -62,7 +55,7 @@ EOF
         echo "Rebooting..."
         reboot -f
     else
-        info "Continuing..."
+        echo "Continuing..."
     fi
 }
 
@@ -70,9 +63,9 @@ trap 'fail' 0
 
 
 # Print a greeting.
-info
-info "[1;32m<<< NixOS Stage 1 >>>[0m"
-info
+echo
+echo "[1;32m<<< NixOS Stage 1 >>>[0m"
+echo
 
 # Make several required directories.
 mkdir -p /etc/udev
@@ -118,18 +111,6 @@ specialMount() {
   mount -n -t "$fsType" -o "$options" "$device" "$mountPoint"
 }
 source @earlyMountScript@
-
-# Copy initrd secrets from /.initrd-secrets to their actual destinations
-if [ -d "/.initrd-secrets" ]; then
-    #
-    # Secrets are named by their full destination pathname and stored
-    # under /.initrd-secrets/
-    #
-    for secret in $(cd "/.initrd-secrets"; find . -type f); do
-        mkdir -p $(dirname "/$secret")
-        cp "/.initrd-secrets/$secret" "$secret"
-    done
-fi
 
 # Log the script output to /dev/kmsg or /run/log/stage-1-init.log.
 mkdir -p /tmp
@@ -229,14 +210,14 @@ ln -s @modulesClosure@/lib/modules /lib/modules
 ln -s @modulesClosure@/lib/firmware /lib/firmware
 echo @extraUtils@/bin/modprobe > /proc/sys/kernel/modprobe
 for i in @kernelModules@; do
-    info "loading module $(basename $i)..."
+    echo "loading module $(basename $i)..."
     modprobe $i
 done
 
 
 # Create device nodes in /dev.
 @preDeviceCommands@
-info "running udev..."
+echo "running udev..."
 ln -sfn /proc/self/fd /dev/fd
 ln -sfn /proc/self/fd/0 /dev/stdin
 ln -sfn /proc/self/fd/1 /dev/stdout
@@ -254,13 +235,23 @@ udevadm settle
 # XXX: Use case usb->lvm will still fail, usb->luks->lvm is covered
 @preLVMCommands@
 
-info "starting device mapper and LVM..."
+
+echo "starting device mapper and LVM..."
 lvm vgchange -ay
 
 if test -n "$debug1devices"; then fail; fi
 
 
 @postDeviceCommands@
+
+
+# Return true if the machine is on AC power, or if we can't determine
+# whether it's on AC power.
+onACPower() {
+    ! test -d "/proc/acpi/battery" ||
+    ! ls /proc/acpi/battery/BAT[0-9]* > /dev/null 2>&1 ||
+    ! cat /proc/acpi/battery/BAT*/state | grep "^charging state" | grep -q "discharg"
+}
 
 
 # Check the specified file system, if appropriate.
@@ -304,6 +295,13 @@ checkFS() {
         \( "$fsType" = ext3 -o "$fsType" = ext4 -o "$fsType" = reiserfs \
         -o "$fsType" = xfs -o "$fsType" = jfs -o "$fsType" = f2fs \)
     then
+        return 0
+    fi
+
+    # Don't run `fsck' if the machine is on battery power.  !!! Is
+    # this a good idea?
+    if ! onACPower; then
+        echo "on battery power, so no \`fsck' will be performed on \`$device'"
         return 0
     fi
 
@@ -381,7 +379,7 @@ mountFS() {
         done
     fi
 
-    info "mounting $device on $mountPoint..."
+    echo "mounting $device on $mountPoint..."
 
     mkdir -p "/mnt-root$mountPoint"
 
@@ -538,7 +536,7 @@ while read -u 3 mountPoint; do
     # If copytoram is enabled: skip mounting the ISO and copy its content to a tmpfs.
     if [ -n "$copytoram" ] && [ "$device" = /dev/root ] && [ "$mountPoint" = /iso ]; then
       fsType=$(blkid -o value -s TYPE "$device")
-      fsSize=$(blockdev --getsize64 "$device" || stat -Lc '%s' "$device")
+      fsSize=$(blockdev --getsize64 "$device")
 
       mkdir -p /tmp-iso
       mount -t "$fsType" /dev/root /tmp-iso
@@ -610,16 +608,11 @@ echo /sbin/modprobe > /proc/sys/kernel/modprobe
 
 
 # Start stage 2.  `switch_root' deletes all files in the ramfs on the
-# current root.  The path has to be valid in the chroot not outside.
-if [ ! -e "$targetRoot/$stage2Init" ]; then
-    stage2Check=${stage2Init}
-    while [ "$stage2Check" != "${stage2Check%/*}" ] && [ ! -L "$targetRoot/$stage2Check" ]; do
-        stage2Check=${stage2Check%/*}
-    done
-    if [ ! -L "$targetRoot/$stage2Check" ]; then
-        echo "stage 2 init script ($targetRoot/$stage2Init) not found"
-        fail
-    fi
+# current root.  Note that $stage2Init might be an absolute symlink,
+# in which case "-e" won't work because we're not in the chroot yet.
+if [ ! -e "$targetRoot/$stage2Init" ] && [ ! -L "$targetRoot/$stage2Init" ] ; then
+    echo "stage 2 init script ($targetRoot/$stage2Init) not found"
+    fail
 fi
 
 mkdir -m 0755 -p $targetRoot/proc $targetRoot/sys $targetRoot/dev $targetRoot/run

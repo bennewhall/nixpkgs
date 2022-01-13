@@ -1,15 +1,14 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
-stdenv.mkDerivation rec {
-  pname = "chrpath";
-  version = "0.16";
+stdenv.mkDerivation {
+  name = "chrpath-0.16";
 
   src = fetchurl {
-    url = "https://alioth-archive.debian.org/releases/${pname}/${pname}/${version}/${pname}-${version}.tar.gz";
+    url = "https://alioth-archive.debian.org/releases/chrpath/chrpath/0.16/chrpath-0.16.tar.gz";
     sha256 = "0yvfq891mcdkf8g18gjjkn2m5rvs8z4z4cl1vwdhx6f2p9a4q3dv";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Command line tool to adjust the RPATH or RUNPATH of ELF binaries";
     longDescription = ''
       chrpath changes, lists or removes the rpath or runpath setting in a

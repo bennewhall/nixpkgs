@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, python, numpy, matplotlib, nose }:
+{ stdenv, buildPythonPackage, fetchPypi, python, numpy, matplotlib, nose }:
 
 buildPythonPackage rec {
   pname = "deap";
@@ -16,7 +16,7 @@ buildPythonPackage rec {
     ${python.interpreter} setup.py nosetests --verbosity=3
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "DEAP is a novel evolutionary computation framework for rapid prototyping and testing of ideas.";
     homepage = "https://github.com/DEAP/deap";
     license = licenses.lgpl3;

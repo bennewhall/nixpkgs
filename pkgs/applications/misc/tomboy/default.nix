@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, itstool, intltool, pkg-config
+{ stdenv, fetchurl, itstool, intltool, pkgconfig
 , libxml2, gnome2, atk, gtk2, glib
 , mono, mono-addins, dbus-sharp-2_0, dbus-sharp-glib-2_0, gnome-sharp, gtk-sharp-2_0
 , makeWrapper, lib}:
@@ -16,7 +16,7 @@ stdenv.mkDerivation {
     sha256 = "0j5jmd079bm2fydqaic5ymbfdxna3qlx6fkp2mqhgcdr7prsbl3q";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ itstool intltool
     libxml2 gnome2.GConf atk gtk2
     mono mono-addins dbus-sharp-2_0 dbus-sharp-glib-2_0 gnome-sharp gtk-sharp-2_0
@@ -33,11 +33,11 @@ stdenv.mkDerivation {
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ glib gtk-sharp-2_0 gtk-sharp-2_0.gtk gnome2.GConf ]}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Apps/Tomboy";
     description = "A simple note-taking application with synchronization";
     platforms = platforms.linux;
-    license = lib.licenses.lgpl2;
+    license = stdenv.lib.licenses.lgpl2;
     maintainers = with maintainers; [ stesie ];
   };
 }

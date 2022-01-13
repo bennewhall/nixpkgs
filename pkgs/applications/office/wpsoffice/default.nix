@@ -1,10 +1,11 @@
-{ lib, stdenv
+{ stdenv
 , mkDerivation
 , fetchurl
+, autoPatchelfHook
 , dpkg
 , wrapGAppsHook
 , wrapQtAppsHook
-, alsa-lib
+, alsaLib
 , atk
 , bzip2
 , cairo
@@ -22,7 +23,7 @@
 , libtool
 , libuuid
 , libxml2
-, xz
+, lzma
 , nspr
 , nss
 , openssl
@@ -33,8 +34,6 @@
 , unixODBC
 , xorg
 , zlib
-, steam
-, makeWrapper
 }:
 
 stdenv.mkDerivation rec {
@@ -48,25 +47,25 @@ stdenv.mkDerivation rec {
   unpackCmd = "dpkg -x $src .";
   sourceRoot = ".";
 
-  postUnpack = lib.optionalString (version == "11.1.0.9505") ''
+  postUnpack = stdenv.lib.optionalString (version == "11.1.0.9505") ''
     # distribution is missing libjsapiservice.so, so we should not let
     # autoPatchelfHook fail on the following dead libraries
     rm opt/kingsoft/wps-office/office6/{libjsetapi.so,libjswppapi.so,libjswpsapi.so}
   '';
 
-  nativeBuildInputs = [ dpkg wrapGAppsHook wrapQtAppsHook makeWrapper ];
+  nativeBuildInputs = [ autoPatchelfHook dpkg wrapGAppsHook wrapQtAppsHook ];
 
-  meta = with lib; {
-    description = "Office suite, formerly Kingsoft Office";
-    homepage = "https://www.wps.com/";
+  meta = {
+    description = "Office program originally named Kingsoft Office";
+    homepage = "http://wps-community.org/";
     platforms = [ "x86_64-linux" ];
     hydraPlatforms = [];
-    license = licenses.unfreeRedistributable;
-    maintainers = with maintainers; [ mlatus th0rgal ];
+    license = stdenv.lib.licenses.unfreeRedistributable;
+    maintainers = with stdenv.lib.maintainers; [ mlatus th0rgal ];
   };
 
   buildInputs = with xorg; [
-    alsa-lib
+    alsaLib
     atk
     bzip2
     cairo
@@ -98,7 +97,7 @@ stdenv.mkDerivation rec {
     libuuid
     libxcb
     libxml2
-    xz
+    lzma
     nspr
     nss
     openssl
@@ -108,7 +107,6 @@ stdenv.mkDerivation rec {
     sqlite
     unixODBC
     zlib
-    cups.lib
   ];
 
   dontPatchELF = true;
@@ -139,12 +137,7 @@ stdenv.mkDerivation rec {
     "tcmalloc" # gperftools
   ];
 
-  installPhase = let
-    steam-run = (steam.override {
-      extraPkgs = p: buildInputs;
-      nativeOnly = true;
-    }).run;
-  in ''
+  installPhase = ''
     prefix=$out/opt/kingsoft/wps-office
     mkdir -p $out
     cp -r opt $out
@@ -160,14 +153,11 @@ stdenv.mkDerivation rec {
       substituteInPlace $i \
         --replace /usr/bin $out/bin
     done
-
-    for i in wps wpp et wpspdf; do
-      mv $out/bin/$i $out/bin/.$i-orig
-      makeWrapper ${steam-run}/bin/steam-run $out/bin/$i \
-        --add-flags $out/bin/.$i-orig \
-        --argv0 $i
-    done
   '';
+
+  runtimeLibPath = stdenv.lib.makeLibraryPath [
+    cups.lib
+  ];
 
   dontWrapQtApps = true;
   dontWrapGApps = true;
@@ -176,7 +166,8 @@ stdenv.mkDerivation rec {
       echo "Wrapping $f"
       wrapProgram "$f" \
         "''${gappsWrapperArgs[@]}" \
-        "''${qtWrapperArgs[@]}"
+        "''${qtWrapperArgs[@]}" \
+        --suffix LD_LIBRARY_PATH : "$runtimeLibPath"
     done
   '';
 }

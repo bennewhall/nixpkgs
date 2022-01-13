@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , fetchFromGitHub
 , meson
 , python3Packages
@@ -11,18 +11,18 @@
 , pango
 , gdk-pixbuf
 , gobject-introspection
-, xvfb-run
+, xvfb_run
 }:
 
 python3Packages.buildPythonApplication rec {
   pname = "gtg";
-  version = "0.5";
+  version = "unstable-2020-10-22";
 
   src = fetchFromGitHub {
     owner = "getting-things-gnome";
     repo = "gtg";
-    rev = "v${version}";
-    sha256 = "0b2slm7kjq6q8c7v4m7aqc8m1ynjxn3bl7445srpv1xc0dilq403";
+    rev = "144814c16723fa9d00e17e047df5d79ab443fc5f";
+    sha256 = "1lpanfbj8y8b6cqp92lgbvfs8irrc5bsdffzcjcycazv19qm7z2n";
   };
 
 
@@ -53,19 +53,15 @@ python3Packages.buildPythonApplication rec {
   checkInputs = with python3Packages; [
     nose
     mock
-    xvfb-run
+    xvfb_run
   ];
-
-  preBuild = ''
-    export HOME="$TMP"
-  '';
 
   format = "other";
   strictDeps = false; # gobject-introspection does not run with strictDeps (https://github.com/NixOS/nixpkgs/issues/56943)
 
   checkPhase = "xvfb-run python3 ../run-tests";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = " A personal tasks and TODO-list items organizer";
     longDescription = ''
       "Getting Things GNOME" (GTG) is a personal tasks and ToDo list organizer inspired by the "Getting Things Done" (GTD) methodology.

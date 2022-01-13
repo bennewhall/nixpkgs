@@ -1,21 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, writeScript, cmake, clang, rocm-device-libs, lld, llvm }:
+{ stdenv, fetchFromGitHub, cmake, clang, device-libs, lld, llvm }:
 
 stdenv.mkDerivation rec {
   pname = "rocm-comgr";
-  version = "4.5.2";
+  version = "3.10.0";
 
   src = fetchFromGitHub {
     owner = "RadeonOpenCompute";
     repo = "ROCm-CompilerSupport";
     rev = "rocm-${version}";
-    hash = "sha256-enGzu1EOo87/S5oH1eEqPy0AtsBhCcroG3DYemeNgR0=";
+    hash = "sha256-JMzXg1Hw0iWcTnKu/NgW7rD8iagp724F01GaJbrJj9M=";
   };
 
   sourceRoot = "source/lib/comgr";
 
   nativeBuildInputs = [ cmake ];
 
-  buildInputs = [ clang rocm-device-libs lld llvm ];
+  buildInputs = [ clang device-libs lld llvm ];
 
   cmakeFlags = [
     "-DCLANG=${clang}/bin/clang"
@@ -36,18 +36,11 @@ stdenv.mkDerivation rec {
         -i CMakeLists.txt
   '';
 
-  passthru.updateScript = writeScript "update.sh" ''
-    #!/usr/bin/env nix-shell
-    #!nix-shell -i bash -p curl jq common-updater-scripts
-    version="$(curl -sL "https://api.github.com/repos/RadeonOpenCompute/ROCm-CompilerSupport/releases?per_page=1" | jq '.[0].tag_name | split("-") | .[1]' --raw-output)"
-    update-source-version rocm-comgr "$version"
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "APIs for compiling and inspecting AMDGPU code objects";
     homepage = "https://github.com/RadeonOpenCompute/ROCm-CompilerSupport/tree/amd-stg-open/lib/comgr";
     license = licenses.ncsa;
-    maintainers = with maintainers; [ lovesegfault ];
+    maintainers = with maintainers; [ danieldk ];
     platforms = platforms.linux;
   };
 }

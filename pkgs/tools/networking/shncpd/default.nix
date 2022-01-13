@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "shncpd";
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
     makeFlags=( "PREFIX=$out" )
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple, stupid and slow HNCP daemon";
     homepage = "https://www.irif.univ-paris-diderot.fr/~jch/software/homenet/shncpd.html";
     license = licenses.mit;

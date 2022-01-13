@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , imageio, imageio-ffmpeg }:
 
 buildPythonPackage rec {
@@ -12,7 +12,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ imageio imageio-ffmpeg ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Turn Python scripts into handouts with Markdown and figures";
     homepage = "https://github.com/danijar/handout";
     license = licenses.gpl3;

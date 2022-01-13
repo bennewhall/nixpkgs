@@ -2,7 +2,7 @@ import ./make-test-python.nix ({ pkgs, ...} :
 {
   name = "enlightenment";
 
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ romildo ];
   };
 
@@ -11,14 +11,15 @@ import ./make-test-python.nix ({ pkgs, ...} :
     imports = [ ./common/user-account.nix ];
     services.xserver.enable = true;
     services.xserver.desktopManager.enlightenment.enable = true;
-    services.xserver.displayManager = {
-      lightdm.enable = true;
+    services.xserver.displayManager.lightdm = {
+      enable = true;
       autoLogin = {
         enable = true;
         user = "alice";
       };
     };
     hardware.pulseaudio.enable = true; # needed for the factl test, /dev/snd/* exists without them but udev doesn't care then
+    virtualisation.memorySize = 1024;
     environment.systemPackages = [ pkgs.xdotool ];
     services.acpid.enable = true;
     services.connman.enable = true;
@@ -87,7 +88,7 @@ import ./make-test-python.nix ({ pkgs, ...} :
         machine.screenshot("wizard12")
 
     with subtest("Run Terminology"):
-        machine.succeed("terminology >&2 &")
+        machine.succeed("terminology &")
         machine.sleep(5)
         machine.send_chars("ls --color -alF\n")
         machine.sleep(2)

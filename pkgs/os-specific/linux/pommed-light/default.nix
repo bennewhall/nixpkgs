@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , pciutils
 , libconfuse
-, alsa-lib
+, alsaLib
 , audiofile
-, pkg-config
+, pkgconfig
 , zlib
 , eject
 }:
@@ -28,11 +28,11 @@ stdenv.mkDerivation rec {
     substituteInPlace pommed/cd_eject.c --replace /usr/bin/eject ${eject}/bin/eject
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     pciutils
     libconfuse
-    alsa-lib
+    alsaLib
     audiofile
     zlib
     eject
@@ -60,6 +60,6 @@ stdenv.mkDerivation rec {
     '';
     homepage = "https://github.com/bytbox/pommed-light";
     platforms = [ "x86_64-linux" ];
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

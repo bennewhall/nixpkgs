@@ -1,4 +1,4 @@
-{ lib, fetchurl, perlPackages, ncurses, lynx, makeWrapper }:
+{ stdenv, fetchurl, perlPackages, ncurses, lynx, makeWrapper }:
 
 perlPackages.buildPerlPackage {
   pname = "wml";
@@ -55,7 +55,7 @@ perlPackages.buildPerlPackage {
 
   installTargets = [ "install" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.shlomifish.org/open-source/projects/website-meta-language/";
     description = "Off-line HTML generation toolkit for Unix";
     license = licenses.gpl2;

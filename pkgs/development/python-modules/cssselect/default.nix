@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "cssselect";
@@ -12,6 +12,6 @@ buildPythonPackage rec {
   # AttributeError: 'module' object has no attribute 'tests'
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
   };
 }

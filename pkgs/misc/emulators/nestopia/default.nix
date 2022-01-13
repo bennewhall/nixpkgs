@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, SDL2, alsa-lib, gtk3
-, makeWrapper, libGLU, libGL, libarchive, libao, unzip, xdg-utils
-, libepoxy, gdk-pixbuf, gnome, wrapGAppsHook
+{ stdenv, fetchFromGitHub, pkgconfig, SDL2, alsaLib, gtk3
+, makeWrapper, libGLU, libGL, libarchive, libao, unzip, xdg_utils
+, epoxy, gdk-pixbuf, gnome3, wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {
@@ -21,22 +21,22 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     SDL2
-    alsa-lib
-    libepoxy
+    alsaLib
+    epoxy
     gtk3
     gdk-pixbuf
     libGLU libGL
     libarchive
     libao
-    xdg-utils
-    gnome.adwaita-icon-theme
+    unzip
+    xdg_utils
+    gnome3.adwaita-icon-theme
   ];
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     makeWrapper
     wrapGAppsHook
-    unzip
   ];
 
   installPhase = ''
@@ -64,9 +64,9 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://0ldsk00l.ca/nestopia/";
     description = "NES emulator with a focus on accuracy";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ MP2E ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ MP2E ];
   };
 }
 

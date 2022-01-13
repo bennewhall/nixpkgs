@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, which, bison, flex, libmaa, zlib, libtool }:
+{ stdenv, fetchurl, which, bison, flex, libmaa, zlib, libtool }:
 
 stdenv.mkDerivation rec {
   pname = "dictd";
-  version = "1.13.1";
+  version = "1.13.0";
 
   src = fetchurl {
     url = "mirror://sourceforge/dict/dictd-${version}.tar.gz";
-    sha256 = "sha256-5PGmfRaJTYSUVp19yUQsFcw4wBHyuWMcfxzGInZlKhs=";
+    sha256 = "1r413a78sa3mcrgddgdj1za34dj6mnd4dg66csqv2yz8fypm3fpf";
   };
 
   buildInputs = [ libmaa zlib ];
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     install -Dm444 -t $out/share/doc/${pname} NEWS README
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Dict protocol server and client";
     homepage = "http://www.dict.org";
     license = licenses.gpl2;

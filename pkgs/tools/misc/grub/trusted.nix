@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl, fetchgit, fetchpatch, autogen, flex, bison, python, autoconf, automake
+{ stdenv, fetchurl, fetchgit, autogen, flex, bison, python, autoconf, automake
 , gettext, ncurses, libusb-compat-0_1, freetype, qemu, lvm2
 , for_HP_laptop ? false
 }:
 
-with lib;
+with stdenv.lib;
 let
   pcSystems = {
     i686-linux.target = "i386";
@@ -81,14 +81,7 @@ stdenv.mkDerivation rec {
            -e "s|/usr/src/unifont.bdf|$PWD/unifont.bdf|g"
     '';
 
-  patches = [
-    ./fix-bash-completion.patch
-    (fetchpatch {
-      # glibc-2.26 and above needs '<sys/sysmacros.h>'
-      url = "https://github.com/Rohde-Schwarz/TrustedGRUB2/commit/7a5b301e3adb8e054288518a325135a1883c1c6c.patch";
-      sha256 = "1jfrrmcrd9a8w7n419kszxgbpshx7888wc05smg5q4jvc1ag3xm7";
-    })
-  ];
+  patches = [ ./fix-bash-completion.patch ];
 
   # save target that grub is compiled for
   grubTarget = if inPCSystems
@@ -96,11 +89,9 @@ stdenv.mkDerivation rec {
                else "";
 
   doCheck = false;
-  # On -j16 races with early header creation:
-  #  config.h:38:10: fatal error: ./config-util.h: No such file or directory
-  enableParallelBuilding = false;
+  enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GRUB 2.0 extended with TCG (TPM) support for integrity measured boot process (trusted boot)";
     homepage = "https://github.com/Sirrix-AG/TrustedGRUB2";
     license = licenses.gpl3Plus;

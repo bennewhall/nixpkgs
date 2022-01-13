@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, flex, bison, gmp, perl }:
+{ stdenv, fetchurl, flex, bison, gmp, perl }:
 
 stdenv.mkDerivation rec {
     pname = "cvc3";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A prover for satisfiability modulo theory (SMT)";
     maintainers = with maintainers;
       [ raskin ];

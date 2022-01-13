@@ -1,6 +1,6 @@
-{ appleDerivation', stdenv, darwin-stubs }:
+{ appleDerivation, darwin-stubs }:
 
-appleDerivation' stdenv {
+appleDerivation {
   phases = [ "unpackPhase" "installPhase" ];
 
   __propagatedImpureHostDeps = [

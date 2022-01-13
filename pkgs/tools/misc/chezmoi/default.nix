@@ -1,22 +1,22 @@
-{ lib, buildGoModule, fetchFromGitHub, installShellFiles }:
+{ stdenv, buildGoModule, fetchFromGitHub, installShellFiles }:
 
 buildGoModule rec {
   pname = "chezmoi";
-  version = "2.9.4";
+  version = "1.8.9";
 
   src = fetchFromGitHub {
     owner = "twpayne";
     repo = "chezmoi";
     rev = "v${version}";
-    sha256 = "sha256-idkPhBGrLz4xv/DnFt4iiO4jVRTsBmMXGhM0MQmVtpw=";
+    sha256 = "07jsakihci98ww1hgppilq942raz05c5xi2pzq632vq5i11fi0nj";
   };
 
-  vendorSha256 = "sha256-9uOlNgMsz4UklSk7UJDKZMjszoxQZK6mLQwhtK8I+Mc=";
+  vendorSha256 = "0adva7crl6dachbf76920aniki3zcq9chdjjrzssasm89zqgwicf";
 
   doCheck = false;
 
-  ldflags = [
-    "-s" "-w" "-X main.version=${version}" "-X main.builtBy=nixpkgs"
+  buildFlagsArray = [
+    "-ldflags=-s -w -X main.version=${version} -X main.builtBy=nixpkgs"
   ];
 
   nativeBuildInputs = [ installShellFiles ];
@@ -29,7 +29,7 @@ buildGoModule rec {
 
   subPackages = [ "." ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.chezmoi.io/";
     description = "Manage your dotfiles across multiple machines, securely";
     license = licenses.mit;

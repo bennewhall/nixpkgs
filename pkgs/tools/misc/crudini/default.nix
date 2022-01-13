@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python3Packages, help2man, installShellFiles }:
+{ stdenv, fetchFromGitHub, python3Packages, help2man, installShellFiles }:
 
 python3Packages.buildPythonApplication rec {
   pname = "crudini";
@@ -40,7 +40,7 @@ python3Packages.buildPythonApplication rec {
     runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A utility for manipulating ini files ";
     homepage = "https://www.pixelbeat.org/programs/crudini/";
     license = licenses.gpl2Only;

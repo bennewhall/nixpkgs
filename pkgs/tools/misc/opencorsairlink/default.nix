@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchFromGitHub, libusb1, pkg-config }:
+{ stdenv, fetchFromGitHub, libusb1, pkgconfig }:
 
 stdenv.mkDerivation rec {
-  pname = "OpenCorsairLink";
-  version = "unstable-2019-12-23";
+  name = "OpenCorsairLink-${version}";
+  version = "2019-12-23";
 
   buildInputs = [ libusb1 ];
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   makeFlags = [ "PREFIX=${placeholder "out"}" ];
 
@@ -16,11 +16,11 @@ stdenv.mkDerivation rec {
     sha256 = "1nizicl0mc9pslc6065mnrs0fnn8sh7ca8iiw7w9ix57zrhabpld";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Linux and Mac OS support for the CorsairLink Devices ";
     homepage = "https://github.com/audiohacked/OpenCorsairLink";
     license = licenses.gpl2;
     platforms = platforms.all;
-    maintainers = [ lib.maintainers.expipiplus1 ];
+    maintainers = [ stdenv.lib.maintainers.expipiplus1 ];
   };
 }

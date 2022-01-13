@@ -1,77 +1,58 @@
-{ lib, stdenv, fetchurl, fetchpatch, makeWrapper, glibcLocales, mono, dotnetPackages, unzip, dotnetCorePackages, writeText, roslyn }:
+{ stdenv, fetchurl, makeWrapper, glibcLocales, mono, dotnetPackages, unzip, dotnet-sdk }:
 
 let
 
-  dotnet-sdk = dotnetCorePackages.sdk_5_0;
-
   xplat = fetchurl {
-    url = "https://github.com/mono/msbuild/releases/download/v16.9.0/mono_msbuild_6.12.0.137.zip";
-    sha256 = "1wnzbdpk4s9bmawlh359ak2b8zi0sgx1qvcjnvfncr1wsck53v7q";
+    url = "https://github.com/mono/msbuild/releases/download/0.07/mono_msbuild_xplat-master-8f608e49.zip";
+    sha256 = "1jxq3fk9a6q2a8i9zacxaz3fkvc22i9qvzlpa7wbb95h42g0ffhq";
   };
 
-  deps = map (package: package.src)
-    (import ./deps.nix { inherit fetchurl; });
-
-  nuget-config = writeText "NuGet.config" ''
-    <?xml version="1.0" encoding="utf-8"?>
-    <configuration>
-      <packageSources>
-        <clear />
-      </packageSources>
-    </configuration>
-  '';
+  deps = import ./nuget.nix { inherit fetchurl; };
 
 in
 
 stdenv.mkDerivation rec {
   pname = "msbuild";
-  version = "16.10.1+xamarinxplat.2021.05.26.14.00";
+  version = "16.3+xamarinxplat.2019.07.26.14.57";
 
   src = fetchurl {
     url = "https://download.mono-project.com/sources/msbuild/msbuild-${version}.tar.xz";
-    sha256 = "05ghqqkdj4s3d0xkp7mkdzjig5zj3k6ajx71j0g2wv6rdbvg6899";
+    sha256 = "1zcdfx4xsh62wj3g1jc2an0lppsfs691lz4dv05xbgi01aq1hk6a";
   };
 
   nativeBuildInputs = [
     dotnet-sdk
     mono
-    unzip
   ];
 
   buildInputs = [
     dotnetPackages.Nuget
     glibcLocales
     makeWrapper
+    unzip
   ];
+
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=msbuild
+  phases = ["unpackPhase" "buildPhase" "installPhase" "installCheckPhase"];
 
   # https://github.com/NixOS/nixpkgs/issues/38991
   # bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
-  LOCALE_ARCHIVE = lib.optionalString stdenv.isLinux
+  LOCALE_ARCHIVE = stdenv.lib.optionalString stdenv.isLinux
       "${glibcLocales}/lib/locale/locale-archive";
-
-  postPatch = ''
-    # not patchShebangs, there is /bin/bash in the body of the script as well
-    substituteInPlace ./eng/cibuild_bootstrapped_msbuild.sh --replace /bin/bash ${stdenv.shell}
-
-    patchShebangs eng/*.sh mono/build/*.sh
-
-    sed -i -e "/<\/projectImportSearchPaths>/a <property name=\"MSBuildExtensionsPath\" value=\"$out/lib/mono/xbuild\"/>" \
-      src/MSBuild/app.config
-
-    # license check is case sensitive
-    mv LICENSE license.bak && mv license.bak license
-  '';
 
   buildPhase = ''
     # nuget would otherwise try to base itself in /homeless-shelter
     export HOME=$(pwd)/fake-home
 
-    cp ${nuget-config} NuGet.config
-    nuget sources Add -Name nixos -Source $(pwd)/nixos
-
     for package in ${toString deps}; do
       nuget add $package -Source nixos
     done
+
+    nuget sources Disable -Name "nuget.org"
+    nuget sources Add -Name nixos -Source $(pwd)/nixos
+
+    # license check is case sensitive
+    mv LICENSE license.bak && mv license.bak license
 
     mkdir -p artifacts
     unzip ${xplat} -d artifacts
@@ -82,27 +63,28 @@ stdenv.mkDerivation rec {
 
     # overwrite the file
     echo "#!${stdenv.shell}" > eng/common/dotnet-install.sh
-    echo "#!${stdenv.shell}" > mono/build/get_sdk_files.sh
 
-    mkdir -p mono/dotnet-overlay/msbuild-bin
-    cp ${dotnet-sdk}/sdk/*/{Microsoft.NETCoreSdk.BundledVersions.props,RuntimeIdentifierGraph.json} mono/dotnet-overlay/msbuild-bin
+    # msbuild response files to use only the nixos source
+    echo "/p:RestoreSources=nixos" > artifacts/mono-msbuild/MSBuild.rsp
+    echo "/p:RestoreSources=nixos" > src/MSBuild/MSBuild.rsp
+
+    # not patchShebangs, there is /bin/bash in the body of the script as well
+    substituteInPlace ./eng/cibuild_bootstrapped_msbuild.sh --replace /bin/bash ${stdenv.shell}
 
     # DisableNerdbankVersioning https://gitter.im/Microsoft/msbuild/archives/2018/06/27?at=5b33dbc4ce3b0f268d489bfa
     # TODO there are some (many?) failing tests
     ./eng/cibuild_bootstrapped_msbuild.sh --host_type mono --configuration Release --skip_tests /p:DisableNerdbankVersioning=true
-    patchShebangs stage1/mono-msbuild/msbuild
   '';
 
   installPhase = ''
-    stage1/mono-msbuild/msbuild mono/build/install.proj /p:MonoInstallPrefix="$out" /p:Configuration=Release-MONO
+    mono artifacts/mono-msbuild/MSBuild.dll mono/build/install.proj /p:MonoInstallPrefix="$out" /p:Configuration=Release-MONO
 
-    ln -s ${roslyn}/lib/dotnet/microsoft.net.compilers.toolset/*/tasks/net472 $out/lib/mono/msbuild/Current/bin/Roslyn
+    ln -s ${mono}/lib/mono/msbuild/Current/bin/Roslyn $out/lib/mono/msbuild/Current/bin/Roslyn
 
     makeWrapper ${mono}/bin/mono $out/bin/msbuild \
+      --set MSBuildExtensionsPath $out/lib/mono/xbuild \
       --set-default MONO_GC_PARAMS "nursery-size=64m" \
       --add-flags "$out/lib/mono/msbuild/15.0/bin/MSBuild.dll"
-
-    ln -s $(find ${dotnet-sdk} -name libhostfxr.so) $out/lib/mono/msbuild/Current/bin/SdkResolvers/Microsoft.DotNet.MSBuildSdkResolver/
   '';
 
   doInstallCheck = true;
@@ -140,7 +122,7 @@ EOF
     ${mono}/bin/mono Helloworld.exe | grep "Hello, world!"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Mono version of Microsoft Build Engine, the build platform for .NET, and Visual Studio";
     homepage = "https://github.com/mono/msbuild";
     license = licenses.mit;
@@ -148,3 +130,4 @@ EOF
     platforms = platforms.unix;
   };
 }
+

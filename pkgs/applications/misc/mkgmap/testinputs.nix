@@ -2,7 +2,7 @@
 let
   fetchTestInput = { res, sha256 }: fetchurl {
     inherit sha256;
-    url = "https://www.mkgmap.org.uk/testinput/${res}";
+    url = "http://www.mkgmap.org.uk/testinput/${res}";
     name = builtins.replaceStrings [ "/" ] [ "__" ] res;
   };
 in

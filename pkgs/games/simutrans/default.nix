@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, unzip, zlib, libpng, bzip2, SDL, SDL_mixer
+{ stdenv, fetchurl, pkgconfig, unzip, zlib, libpng, bzip2, SDL, SDL_mixer
 , buildEnv, config, runtimeShell
 }:
 
@@ -6,33 +6,33 @@ let
   # Choose your "paksets" of objects, images, text, music, etc.
   paksets = config.simutrans.paksets or "pak64 pak64.japan pak128 pak128.britain pak128.german";
 
-  result = with lib; withPaks (
+  result = with stdenv.lib; withPaks (
     if paksets == "*" then attrValues pakSpec # taking all
       else map (name: pakSpec.${name}) (splitString " " paksets)
   );
 
-  ver1 = "121";
-  ver2 = "0";
-  ver3 = "";
-  version  = "${ver1}.${ver2}${lib.optionalString (ver3 != "") ".${ver3}"}";
-  ver_dash = "${ver1}-${ver2}${lib.optionalString (ver3 != "") "-${ver3}"}";
+  ver1 = "120";
+  ver2 = "4";
+  ver3 = "1";
+  version =   "${ver1}.${ver2}.${ver3}";
+  ver_dash =  "${ver1}-${ver2}-${ver3}";
 
   binary_src = fetchurl {
     url = "mirror://sourceforge/simutrans/simutrans/${ver_dash}/simutrans-src-${ver_dash}.zip";
-    sha256 = "1f463r6kr5ig0zd3mncc74k93xbjywsq3d06j5r17831jyc9bzb9";
+    sha256 = "0yw7vjvmczp022mgk35swwhpbiszpz91mwsgicxglwivgc30vvic";
   };
 
 
-  # As of 2021/07, many of these paksets have not been updated for years, so are on old versions.
-  pakSpec = lib.mapAttrs
+  # As of 2015/03, many packsets still didn't have a release for version 120.
+  pakSpec = stdenv.lib.mapAttrs
     (pakName: attrs: mkPak (attrs // {inherit pakName;}))
   {
     pak64 = {
-      srcPath = "${ver_dash}/simupak64-${ver_dash}";
+      srcPath = "121-0/simupak64-121-0";
       sha256 = "1k335kh8dhm1hdn5iwn3sdgnrlpk0rqxmmgqgqcwsi09cmw45m5c";
     };
     "pak64.japan" = {
-      # No release for 121.0 yet!
+      # No release for 120.2 yet!
       srcPath = "120-0/simupak64.japan-120-0-1";
       sha256 = "14swy3h4ij74bgaw7scyvmivfb5fmp21nixmhlpk3mav3wr3167i";
     };
@@ -52,7 +52,7 @@ let
     "pak128.german" = {
       url = "mirror://sourceforge/simutrans/PAK128.german/"
         + "pak128.german_1.2_for_ST_121.0/PAK128.german_1.2_for_ST_121-0.zip";
-      sha256 = "1cv1rzl1a3i5dvk476zq094wawk9hhdh2f0y4xrdny5gn17mb2xi";
+      sha256 = "1jxjckz4b02yv1mv1zc3pmajpq740dfnlvhr0x762lbrybymvagi";
     };
 
     /* This release contains accented filenames that prevent unzipping.
@@ -115,8 +115,8 @@ let
 
     sourceRoot = ".";
 
-    nativeBuildInputs = [ pkg-config unzip ];
-    buildInputs = [ zlib libpng bzip2 SDL SDL_mixer ];
+    nativeBuildInputs = [ pkgconfig ];
+    buildInputs = [ zlib libpng bzip2 SDL SDL_mixer unzip ];
 
     configurePhase = let
       # Configuration as per the readme.txt and config.template
@@ -152,7 +152,7 @@ let
       mv build/default/sim $out/bin/simutrans
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "A simulation game in which the player strives to run a successful transport system";
       longDescription = ''
         Simutrans is a cross-platform simulation game in which the

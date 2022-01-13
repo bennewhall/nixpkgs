@@ -1,9 +1,9 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy27
 , pytest
-, pytest-cov
+, pytestcov
 }:
 
 buildPythonPackage rec {
@@ -16,13 +16,13 @@ buildPythonPackage rec {
     sha256 = "f6842b7242b1039c0c28f6feef29016e7e7dd3caaeb476a193acf737db31ee38";
   };
 
-  checkInputs = [ pytest pytest-cov ];
+  checkInputs = [ pytest pytestcov ];
 
   checkPhase = ''
     pytest
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for deferring decorator actions";
     homepage = "https://pylonsproject.org/";
     license = licenses.bsd0;

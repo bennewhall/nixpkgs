@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage, nose }:
+{ stdenv, fetchPypi, buildPythonPackage, nose }:
 
 buildPythonPackage rec {
     pname = "pytimeparse";
@@ -11,7 +11,7 @@ buildPythonPackage rec {
 
     checkInputs = [ nose ];
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "A small Python library to parse various kinds of time expressions";
       homepage    = "https://github.com/wroberts/pytimeparse";
       license     = licenses.mit;

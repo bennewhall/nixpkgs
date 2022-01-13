@@ -1,49 +1,25 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, pkg-config
-, cmake
-, libiconv
-, zlib
-, enableOcr ? true
-, makeWrapper
-, tesseract4
-, leptonica
-, ffmpeg
-}:
+{ stdenv, fetchFromGitHub, pkgconfig, cmake
+, glew, glfw3, leptonica, libiconv, tesseract3, zlib }:
 
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "ccextractor";
-  version = "0.93";
+  version = "0.88";
 
   src = fetchFromGitHub {
     owner = "CCExtractor";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-usVAKBkdd8uz9cD5eLd0hnwGonOJLscRdc+iWDlNXVc=";
+    sha256 = "1sya45hvv4d46bk7541yimmafgvgyhkpsvwfz9kv6pm4yi1lz6nb";
   };
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace src/CMakeLists.txt \
-    --replace 'add_definitions(-DGPAC_CONFIG_LINUX)' 'add_definitions(-DGPAC_CONFIG_DARWIN)'
-  '';
+  sourceRoot = "source/src";
 
-  cmakeDir = "../src";
+  nativeBuildInputs = [ pkgconfig cmake ];
 
-  nativeBuildInputs = [ pkg-config cmake makeWrapper ];
+  buildInputs = [ glew glfw3 leptonica tesseract3 zlib ] ++ stdenv.lib.optional (!stdenv.isLinux) libiconv;
 
-  buildInputs = [ zlib ]
-    ++ lib.optional (!stdenv.isLinux) libiconv
-    ++ lib.optionals enableOcr [ leptonica tesseract4 ffmpeg ];
-
-  cmakeFlags = lib.optionals enableOcr [ "-DWITH_OCR=on" "-DWITH_HARDSUBX=on" ];
-
-  postInstall = lib.optionalString enableOcr ''
-    wrapProgram "$out/bin/ccextractor" \
-      --set TESSDATA_PREFIX "${tesseract4}/share/"
-  '';
-
-  meta = with lib; {
+  meta = {
     homepage = "https://www.ccextractor.org";
     description = "Tool that produces subtitles from closed caption data in videos";
     longDescription = ''
@@ -52,13 +28,7 @@ stdenv.mkDerivation rec {
       It works on Linux, Windows, and OSX.
     '';
     platforms = platforms.unix;
-    # undefined reference to `png_do_expand_palette_rgba8_neon'
-    # undefined reference to `png_riffle_palette_neon'
-    # undefined reference to `png_do_expand_palette_rgb8_neon'
-    # undefined reference to `png_init_filter_functions_neon'
-    # during Linking C executable ccextractor
-    broken = stdenv.isAarch64;
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ titanous ];
   };
 }

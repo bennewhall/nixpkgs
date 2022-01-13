@@ -1,73 +1,55 @@
-{ lib
-, stdenv
-, aiohttp
+{ stdenv
 , buildPythonPackage
-, codecov
 , fetchFromGitHub
+, aiohttp
+, black
+, codecov
 , flake8
 , isPy3k
 , mock
-, psutil
-, pytest-cov
 , pytest-mock
 , pytestCheckHook
-, pytest-runner
+, pytestcov
+, pytestrunner
 , requests
 , responses
 , six
-, websocket-client
+, websocket_client
 }:
 
 buildPythonPackage rec {
-  pname = "slackclient";
-  version = "2.9.3";
+  pname = "python-slackclient";
+  version = "2.5.0";
 
   disabled = !isPy3k;
 
   src = fetchFromGitHub {
-    owner = "slackapi";
-    repo = "python-slack-sdk";
-    rev = "v${version}";
-    sha256 = "1rfb7izgddv28ag37gdnv3sd8z2zysrxs7ad8x20x690zshpaq16";
+    owner  = "slackapi";
+    repo   = pname;
+    rev    = version;
+    sha256 = "1ngj1mivbln19546195k400w9yaw69g0w6is7c75rqwyxr8wgzsk";
   };
 
   propagatedBuildInputs = [
     aiohttp
-    websocket-client
+    websocket_client
     requests
     six
   ];
 
   checkInputs = [
+    black
     codecov
     flake8
     mock
-    psutil
-    pytest-cov
     pytest-mock
     pytestCheckHook
-    pytest-runner
+    pytestcov
+    pytestrunner
     responses
   ];
 
-  # Exclude tests that requires network features
-  pytestFlagsArray = [ "--ignore=integration_tests" ];
-
-  disabledTests = [
-    "test_start_raises_an_error_if_rtm_ws_url_is_not_returned"
-  ] ++ lib.optionals stdenv.isDarwin [
-    # these fail with `ConnectionResetError: [Errno 54] Connection reset by peer`
-    "test_issue_690_oauth_access"
-    "test_issue_690_oauth_v2_access"
-    "test_send"
-    "test_send_attachments"
-    "test_send_blocks"
-    "test_send_dict"
-  ];
-
-  pythonImportsCheck = [ "slack" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A client for Slack, which supports the Slack Web API and Real Time Messaging (RTM) API";
     homepage = "https://github.com/slackapi/python-slackclient";
     license = licenses.mit;

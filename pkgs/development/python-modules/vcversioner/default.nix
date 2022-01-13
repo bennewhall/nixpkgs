@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "vcversioner";
@@ -9,7 +9,7 @@ buildPythonPackage rec {
     sha256 = "16z10sm78jd7ca3jbkgc3q5i8a8q7y1h21q1li21yy3rlhbhrrns";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "take version numbers from version control";
     homepage = "https://github.com/habnabit/vcversioner";
     license = licenses.isc;

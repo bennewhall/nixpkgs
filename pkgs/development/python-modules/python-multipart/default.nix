@@ -2,7 +2,7 @@
 , buildPythonPackage
 , fetchPypi
 , pytest
-, pytest-cov
+, pytestcov
 , mock
 , pyyaml
 , six
@@ -19,7 +19,7 @@ buildPythonPackage rec {
 
   checkInputs = [
     pytest
-    pytest-cov
+    pytestcov
     mock
     pyyaml
   ];

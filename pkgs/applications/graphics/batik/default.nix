@@ -1,15 +1,15 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation rec {
   pname = "batik";
-  version = "1.14";
+  version = "1.13";
 
   src = fetchurl {
     url = "mirror://apache/xmlgraphics/batik/binaries/batik-bin-${version}.tar.gz";
-    sha256 = "sha256-D06qgb5wdS5AahnznDnAGISPCZY/CPqJdGQFRwUsRhg=";
+    sha256 = "16sq90nbs6psgm3xz30sbs6r5dnpd3qzsvr1xvnp4yipwjcmhmkw";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Java based toolkit for handling SVG";
     homepage = "https://xmlgraphics.apache.org/batik";
     license = licenses.asl20;

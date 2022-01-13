@@ -11,23 +11,23 @@
 # Runtime dependencies
 , jedi
 , decorator
-, matplotlib-inline
 , pickleshare
 , traitlets
-, prompt-toolkit
+, prompt_toolkit
 , pexpect
 , appnope
 , backcall
+, fetchpatch
 }:
 
 buildPythonPackage rec {
   pname = "ipython";
-  version = "7.29.0";
+  version = "7.19.0";
   disabled = pythonOlder "3.7";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "4f69d7423a5a1972f6347ff233e38bbf4df6a150ef20fbb00c635442ac3060aa";
+    sha256 = "cbb2ef3d5961d44e6a963b9817d4ea4e1fa2eb589c371a470fed14d8d40cbd6a";
   };
 
   prePatch = lib.optionalString stdenv.isDarwin ''
@@ -41,10 +41,9 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     jedi
     decorator
-    matplotlib-inline
     pickleshare
     traitlets
-    prompt-toolkit
+    prompt_toolkit
     pygments
     pexpect
     backcall

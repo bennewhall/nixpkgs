@@ -1,13 +1,11 @@
-{lib, stdenv, fetchurl, openssl, fuse}:
+{stdenv, fetchurl, openssl, fuse}:
 
 throw "It still does not build"
 
-stdenv.mkDerivation rec {
-  pname = "fsfs";
-  version = "0.1.1";
-
+stdenv.mkDerivation {
+  name = "fsfs-0.1.1";
   src = fetchurl {
-    url = "mirror://sourceforge/fsfs/fsfs-${version}.tar.gz";
+    url = "mirror://sourceforge/fsfs/fsfs-0.1.1.tar.gz";
     sha256 = "05wka9aq182li2r7gxcd8bb3rhpns7ads0k59v7w1jza60l57c74";
   };
 
@@ -27,6 +25,6 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://fsfs.sourceforge.net/";
     description = "Secure distributed file system in user space";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

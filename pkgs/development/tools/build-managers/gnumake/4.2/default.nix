@@ -1,10 +1,13 @@
-{ lib, stdenv, fetchurl, guileSupport ? false, pkg-config ? null , guile ? null }:
+{ stdenv, fetchurl, guileSupport ? false, pkgconfig ? null , guile ? null }:
 
-assert guileSupport -> ( pkg-config != null && guile != null );
+assert guileSupport -> ( pkgconfig != null && guile != null );
 
-stdenv.mkDerivation rec {
-  pname = "gnumake";
+let
   version = "4.2.1";
+in
+stdenv.mkDerivation {
+  pname = "gnumake";
+  inherit version;
 
   src = fetchurl {
     url = "mirror://gnu/make/make-${version}.tar.bz2";
@@ -20,13 +23,12 @@ stdenv.mkDerivation rec {
     ./pselect.patch
     # Fix support for glibc 2.27's glob, inspired by http://www.linuxfromscratch.org/lfs/view/8.2/chapter05/make.html
     ./glibc-2.27-glob.patch
-    ./glibc-2.33-glob.patch
   ];
 
-  nativeBuildInputs = lib.optionals guileSupport [ pkg-config ];
-  buildInputs = lib.optionals guileSupport [ guile ];
+  nativeBuildInputs = stdenv.lib.optionals guileSupport [ pkgconfig ];
+  buildInputs = stdenv.lib.optionals guileSupport [ guile ];
 
-  configureFlags = lib.optional guileSupport "--with-guile"
+  configureFlags = stdenv.lib.optional guileSupport "--with-guile"
 
     # Make uses this test to decide whether it should keep track of
     # subseconds. Apple made this possible with APFS and macOS 10.13.
@@ -35,11 +37,11 @@ stdenv.mkDerivation rec {
     # a second. So, tell Make to ignore nanoseconds in mtime here by
     # overriding the autoconf test for the struct.
     # See https://github.com/NixOS/nixpkgs/issues/51221 for discussion.
-    ++ lib.optional stdenv.isDarwin "ac_cv_struct_st_mtim_nsec=no";
+    ++ stdenv.lib.optional stdenv.isDarwin "ac_cv_struct_st_mtim_nsec=no";
 
   outputs = [ "out" "man" "info" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.gnu.org/software/make/";
     description = "A tool to control the generation of non-source files from sources";
     license = licenses.gpl3Plus;

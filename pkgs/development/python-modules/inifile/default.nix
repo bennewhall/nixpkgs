@@ -1,22 +1,22 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
 
 buildPythonPackage rec {
   pname = "inifile";
-  version = "0.4.1";
+  version = "0.3";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "d9e5eb4708ebf13353c4cfce798ad47890a8bcc5fbae04630223d15d79f55e96";
+    sha256 = "0zgd53czc1irwx6b5zip8xlmyfr40hz2pd498d8yv61znj6lm16h";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A small INI library for Python";
     homepage    = "https://github.com/mitsuhiko/python-inifile";
     license     = licenses.bsd0;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ vozz ];
   };
 
 }

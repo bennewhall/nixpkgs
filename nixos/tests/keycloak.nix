@@ -3,41 +3,25 @@
 # client using their Keycloak login.
 
 let
-  certs = import ./common/acme/server/snakeoil-certs.nix;
-  frontendUrl = "https://${certs.domain}/auth";
+  frontendUrl = "http://keycloak/auth";
   initialAdminPassword = "h4IhoJFnt2iQIR9";
 
   keycloakTest = import ./make-test-python.nix (
     { pkgs, databaseType, ... }:
     {
       name = "keycloak";
-      meta = with pkgs.lib.maintainers; {
+      meta = with pkgs.stdenv.lib.maintainers; {
         maintainers = [ talyz ];
       };
 
       nodes = {
         keycloak = { ... }: {
-
-          security.pki.certificateFiles = [
-            certs.ca.cert
-          ];
-
-          networking.extraHosts = ''
-            127.0.0.1 ${certs.domain}
-          '';
-
+          virtualisation.memorySize = 1024;
           services.keycloak = {
             enable = true;
-            inherit frontendUrl initialAdminPassword;
-            sslCertificate = certs.${certs.domain}.cert;
-            sslCertificateKey = certs.${certs.domain}.key;
-            database = {
-              type = databaseType;
-              username = "bogus";
-              passwordFile = pkgs.writeText "dbPassword" "wzf6vOCbPp6cqTH";
-            };
+            inherit frontendUrl databaseType initialAdminPassword;
+            databasePasswordFile = pkgs.writeText "dbPassword" "wzf6vOCbPp6cqTH";
           };
-
           environment.systemPackages = with pkgs; [
             xmlstarlet
             libtidy

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libX11, libSM, SDL, libGLU, libGL, expat, SDL_ttf
+{ stdenv, fetchurl, libX11, libSM, SDL, libGLU, libGL, expat, SDL_ttf
 , SDL_image, zlib, libXxf86misc }:
 stdenv.mkDerivation rec {
   pname = "xpilot-ng";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     libX11 libSM SDL SDL_ttf SDL_image libGLU libGL expat zlib libXxf86misc
   ];
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A multiplayer X11 space combat game";
     homepage = "http://xpilot.sf.net/";
     license = licenses.gpl2Plus;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, gtk-engine-murrine }:
+{ stdenv, fetchFromGitHub, gtk-engine-murrine }:
 
 stdenv.mkDerivation rec {
   pname = "orion";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     homepage = "https://github.com/shimmerproject/Orion";
-    license = lib.licenses.gpl3Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3Plus;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, python3 }:
+{ stdenv, python3 }:
 
 let
   python = python3.override {
@@ -32,7 +32,7 @@ buildPythonApplication rec {
 
   propagatedBuildInputs = [ iowait psutil pyzmq tornado six ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A process and socket manager";
     homepage = "https://github.circus.com/circus-tent/circus";
     license = licenses.asl20;

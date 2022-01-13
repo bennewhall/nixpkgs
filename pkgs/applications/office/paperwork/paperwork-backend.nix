@@ -6,7 +6,7 @@
 , isPyPy
 
 , pyenchant
-, scikit-learn
+, simplebayes
 , pypillowfight
 , pycountry
 , whoosh
@@ -41,7 +41,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     pyenchant
-    scikit-learn
+    simplebayes
     pypillowfight
     pycountry
     whoosh
@@ -61,12 +61,12 @@ buildPythonPackage rec {
     export HOME=$(mktemp -d)
   '';
 
-  nativeBuildInputs = [ pkgs.gettext pkgs.which pkgs.shared-mime-info ];
+  nativeBuildInputs = [ pkgs.gettext pkgs.which ];
   preBuild = ''
     make l10n_compile
   '';
 
-  checkInputs = [ openpaperwork-gtk psutil pkgs.libreoffice ];
+  checkInputs = [ openpaperwork-gtk psutil ];
 
   meta = {
     description = "Backend part of Paperwork (Python API, no UI)";

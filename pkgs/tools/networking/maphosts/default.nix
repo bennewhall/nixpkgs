@@ -7,10 +7,9 @@ let
     gemdir = ./.;
   };
 in stdenv.mkDerivation {
-  pname = "maphosts";
-  version = env.gems.maphosts.version;
+  name = "maphosts-${env.gems.maphosts.version}";
 
-  dontUnpack = true;
+  phases = ["installPhase"];
 
   installPhase = ''
     mkdir -p "$out/bin"

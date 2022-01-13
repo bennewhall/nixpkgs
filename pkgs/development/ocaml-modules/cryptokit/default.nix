@@ -1,23 +1,17 @@
-{ lib, buildDunePackage, fetchFromGitHub, zlib, dune-configurator, zarith, ncurses }:
+{ lib, buildDunePackage, fetchurl, zlib, dune-configurator, zarith, ncurses }:
 
-buildDunePackage rec {
+buildDunePackage {
   pname = "cryptokit";
   version = "1.16.1";
 
   useDune2 = true;
 
-  src = fetchFromGitHub {
-    owner = "xavierleroy";
-    repo = "cryptokit";
-    rev = "release${lib.replaceStrings ["."] [""] version}";
-    sha256 = "sha256-eDIzi16Al/mXCNos/lVqjZWCtdP9SllXnRfm4GBWMfA=";
+  src = fetchurl {
+    url = "https://github.com/xavierleroy/cryptokit/archive/release1161.tar.gz";
+    sha256 = "0kzqkk451m69nqi5qiwak0rd0rp5vzi613gcngsiig7dyxwka61c";
   };
 
-  # dont do autotools configuration, but do trigger findlib's preConfigure hook
-  configurePhase = ''
-    runHook preConfigure
-    runHook postConfigure
-  '';
+  dontConfigure = true;
 
   buildInputs = [ dune-configurator ncurses ];
   propagatedBuildInputs = [ zarith zlib ];

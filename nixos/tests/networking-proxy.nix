@@ -8,10 +8,11 @@ let default-config = {
 
         services.xserver.enable = false;
 
+        virtualisation.memorySize = 128;
       };
 in import ./make-test-python.nix ({ pkgs, ...} : {
   name = "networking-proxy";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [  ];
   };
 

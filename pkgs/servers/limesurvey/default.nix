@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, writeText, nixosTests }:
+{ stdenv, fetchFromGitHub, writeText, nixosTests }:
 
 stdenv.mkDerivation rec {
   pname = "limesurvey";
@@ -31,16 +31,11 @@ stdenv.mkDerivation rec {
     smoke-test = nixosTests.limesurvey;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Open source survey application";
     license = licenses.gpl2;
     homepage = "https://www.limesurvey.org";
     maintainers = with maintainers; [offline];
     platforms = with platforms; unix;
-    knownVulnerabilities = [
-      # https://github.com/LimeSurvey/LimeSurvey/blob/3.x-LTS/docs/release_notes.txt
-      "Unauthorized access to statistics of a survey with certain permission configurations"
-      "Persistent XSS in browse response"
-    ];
   };
 }

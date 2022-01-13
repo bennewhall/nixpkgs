@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 , pkg-config
@@ -86,7 +86,7 @@ stdenv.mkDerivation rec {
     install -Dm755 -t $out/bin amber image_diff
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Multi-API shader test framework";
     homepage = "https://github.com/google/amber";
     license = licenses.asl20;

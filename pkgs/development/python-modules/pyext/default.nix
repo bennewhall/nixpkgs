@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub }:
+{ stdenv, buildPythonPackage, fetchFromGitHub }:
 
 buildPythonPackage {
     pname = "pyext";
@@ -15,7 +15,7 @@ buildPythonPackage {
     # Has no test suite
     doCheck = false;
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Simple Python extensions";
       homepage = "https://github.com/kirbyfan64/PyExt";
       license = licenses.mit;

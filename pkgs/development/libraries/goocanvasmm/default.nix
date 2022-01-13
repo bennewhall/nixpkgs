@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, goocanvas2, gtkmm3, gnome }:
+{ stdenv, fetchurl, pkgconfig, goocanvas2, gtkmm3, gnome3 }:
 
 stdenv.mkDerivation rec {
   pname = "goocanvasmm";
@@ -7,23 +7,22 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "0vpdfrj59nwzwj8bk4s0h05iyql62pxjzsxh72g3vry07s3i3zw0";
   };
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ gtkmm3 goocanvas2 ];
 
   enableParallelBuilding = true;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
       attrPath = "goocanvasmm2";
-      versionPolicy = "none"; # stable version has not been released yet, last update 2015
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ bindings for GooCanvas";
     homepage = "https://wiki.gnome.org/Projects/GooCanvas";
     license = licenses.lgpl2;

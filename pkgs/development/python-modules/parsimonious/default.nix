@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , nose
@@ -17,10 +17,7 @@ buildPythonPackage rec {
   checkInputs = [ nose ];
   propagatedBuildInputs = [ six ];
 
-  # performance tests tend to fail sometimes
-  NOSE_EXCLUDE = "test_benchmarks";
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/erikrose/parsimonious";
     description = "Fast arbitrary-lookahead parser written in pure Python";
     license = licenses.mit;

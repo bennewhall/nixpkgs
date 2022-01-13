@@ -1,59 +1,69 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , buildPythonPackage
-, pythonOlder
-  # Mitmproxy requirements
-, asgiref
+, isPy27
+, fetchpatch
+# Mitmproxy requirements
 , blinker
 , brotli
 , certifi
 , click
 , cryptography
 , flask
-, h11
 , h2
 , hyperframe
 , kaitaistruct
 , ldap3
-, msgpack
 , passlib
 , protobuf
-, publicsuffix2
 , pyasn1
 , pyopenssl
 , pyparsing
 , pyperclip
-, ruamel-yaml
+, ruamel_yaml
 , setuptools
 , sortedcontainers
 , tornado
 , urwid
 , wsproto
+, publicsuffix2
 , zstandard
-  # Additional check requirements
+# Additional check requirements
 , beautifulsoup4
 , glibcLocales
-, hypothesis
+, pytest
+, requests
+, asynctest
 , parver
 , pytest-asyncio
-, pytest-timeout
-, pytest-xdist
-, pytestCheckHook
-, requests
+, hypothesis
+, asgiref
+, msgpack
 }:
 
 buildPythonPackage rec {
   pname = "mitmproxy";
-  version = "7.0.4";
-  disabled = pythonOlder "3.8";
+  version = "5.3.0";
+  disabled = isPy27;
 
   src = fetchFromGitHub {
-    owner = pname;
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-424WNG9Yj+Zfo1UTh7emknZ7xTtpFPz7Ph+FpE149FM=";
+    owner  = pname;
+    repo   = pname;
+    rev    = "v${version}";
+    sha256 = "04y7fxxssrs14i7zl7fwlwrpnms39i7a6m18481sg8vlrkbagxjr";
   };
+
+  postPatch = ''
+    # remove dependency constraints
+    sed 's/>=\([0-9]\.\?\)\+\( \?, \?<\([0-9]\.\?\)\+\)\?\( \?, \?!=\([0-9]\.\?\)\+\)\?//' -i setup.py
+  '';
+
+  doCheck = (!stdenv.isDarwin);
+
+  checkPhase = ''
+    export HOME=$(mktemp -d)
+    pytest -k 'not test_get_version' # expects a Git repository
+  '';
 
   propagatedBuildInputs = [
     setuptools
@@ -65,7 +75,6 @@ buildPythonPackage rec {
     click
     cryptography
     flask
-    h11
     h2
     hyperframe
     kaitaistruct
@@ -78,7 +87,7 @@ buildPythonPackage rec {
     pyopenssl
     pyparsing
     pyperclip
-    ruamel-yaml
+    ruamel_yaml
     sortedcontainers
     tornado
     urwid
@@ -87,42 +96,21 @@ buildPythonPackage rec {
   ];
 
   checkInputs = [
+    asynctest
     beautifulsoup4
+    flask
     glibcLocales
     hypothesis
     parver
+    pytest
     pytest-asyncio
-    pytest-timeout
-    pytest-xdist
-    pytestCheckHook
     requests
   ];
 
-  doCheck = !stdenv.isDarwin;
-
-  postPatch = ''
-    # remove dependency constraints
-    sed 's/>=\([0-9]\.\?\)\+\( \?, \?<\([0-9]\.\?\)\+\)\?\( \?, \?!=\([0-9]\.\?\)\+\)\?//' -i setup.py
-  '';
-
-  preCheck = ''
-    export HOME=$(mktemp -d)
-  '';
-
-  disabledTests = [
-    # Tests require a git repository
-    "test_get_version"
-    # https://github.com/mitmproxy/mitmproxy/commit/36ebf11916704b3cdaf4be840eaafa66a115ac03
-    # Tests require terminal
-    "test_integration"
-  ];
-
-  pythonImportsCheck = [ "mitmproxy" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Man-in-the-middle proxy";
-    homepage = "https://mitmproxy.org/";
-    license = licenses.mit;
+    homepage    = "https://mitmproxy.org/";
+    license     = licenses.mit;
     maintainers = with maintainers; [ fpletz kamilchm ];
   };
 }

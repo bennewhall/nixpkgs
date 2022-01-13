@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, gcc, asciidoc, autoreconfHook }:
+{ stdenv, fetchurl, makeWrapper, gcc, asciidoc, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "colm";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
       --prefix PATH ":" ${gcc}/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A programming language for the analysis and transformation of computer languages";
     homepage = "http://www.colm.net/open-source/colm";
     license = licenses.gpl2;

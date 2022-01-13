@@ -20,7 +20,7 @@ buildPythonPackage rec {
 
   meta = with lib; {
     description = "Jupyterlab syntax coloring theme for pygments";
-    homepage = "https://github.com/jupyterlab/jupyterlab_pygments";
+    homepage = "https://github.com/jupyterlab/jupyterlab-pygments/";
     license = licenses.mit;
     maintainers = with maintainers; [ jonringer ];
   };

@@ -1,19 +1,15 @@
 { lib
 , buildPythonPackage
-, callPackage
 , flit
+, isPy3k
 , toml
 }:
 
 buildPythonPackage rec {
   pname = "flit-core";
-  version = "3.2.0";
+  version = "2.3.0";
+  disabled = !isPy3k;
   format = "pyproject";
-
-  outputs = [
-    "out"
-    "testsout"
-  ];
 
   inherit (flit) src patches;
 
@@ -25,23 +21,14 @@ buildPythonPackage rec {
     toml
   ];
 
-  postInstall = ''
-    mkdir $testsout
-    cp -R ../tests $testsout/tests
-  '';
-
-  # check in passthru.tests.pytest to escape infinite recursion with setuptools-scm
-  doCheck = false;
-
   passthru.tests = {
     inherit flit;
-    pytest = callPackage ./tests.nix { };
   };
 
-  meta = with lib; {
+  meta = {
     description = "Distribution-building parts of Flit. See flit package for more information";
     homepage = "https://github.com/takluyver/flit";
-    license = licenses.bsd3;
-    maintainers = with maintainers; [ fridh SuperSandro2000 ];
+    license = lib.licenses.bsd3;
+    maintainers = [ lib.maintainers.fridh ];
   };
 }

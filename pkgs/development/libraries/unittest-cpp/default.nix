@@ -1,6 +1,6 @@
-{lib, stdenv, fetchFromGitHub, cmake}:
+{stdenv, fetchFromGitHub, cmake}:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "unittest-cpp";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
     sha256 = "0sxb3835nly1jxn071f59fwbdzmqi74j040r81fanxyw3s1azw0i";
   };
 
-  nativeBuildInputs = [ cmake ];
+  buildInputs = [cmake];
 
   doCheck = false;
 
@@ -22,6 +22,6 @@ stdenv.mkDerivation rec {
     description = "Lightweight unit testing framework for C++";
     license = licenses.mit;
     maintainers = [];
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

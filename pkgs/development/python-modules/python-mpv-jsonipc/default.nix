@@ -1,5 +1,5 @@
 { lib, buildPythonPackage, fetchFromGitHub, requests
-, tqdm, websocket-client, pythonOlder }:
+, tqdm, websocket_client, pythonOlder }:
 
 buildPythonPackage rec {
   pname = "python-mpv-jsonipc";
@@ -16,7 +16,7 @@ buildPythonPackage rec {
   # 'mpv-jsonipc' does not have any tests
   doCheck = false;
 
-  propagatedBuildInputs = [ requests tqdm websocket-client ];
+  propagatedBuildInputs = [ requests tqdm websocket_client ];
 
   pythonImportsCheck = [ "python_mpv_jsonipc" ];
 

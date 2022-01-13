@@ -1,55 +1,35 @@
-{ lib
-, attrs
+{ attrs
 , buildPythonPackage
 , defusedxml
-, fetchFromGitHub
+, fetchPypi
 , hypothesis
 , isPy3k
-, jbig2dec
 , lxml
-, mupdf
-, packaging
 , pillow
-, psutil
 , pybind11
-, pytest-xdist
 , pytestCheckHook
+, pytest-helpers-namespace
+, pytest-timeout
+, pytest_xdist
+, pytestrunner
 , python-dateutil
 , python-xmp-toolkit
+, python3
 , qpdf
-, setuptools
-, setuptools-scm
 , setuptools-scm-git-archive
-, substituteAll
+, setuptools_scm
+, stdenv
 }:
 
 buildPythonPackage rec {
   pname = "pikepdf";
-  version = "4.3.0";
+  version = "2.2.0";
   disabled = ! isPy3k;
 
-  src = fetchFromGitHub {
-    owner = "pikepdf";
-    repo = "pikepdf";
-    rev = "v${version}";
-    # The content of .git_archival.txt is substituted upon tarball creation,
-    # which creates indeterminism if master no longer points to the tag.
-    # See https://github.com/jbarlow83/OCRmyPDF/issues/841
-    extraPostFetch = ''
-      rm "$out/.git_archival.txt"
-    '';
-    hash = "sha256-9dSJ6+rZd49rFSQExYnFBGQGZ8MnFM+z/0Iz/nYkW4E=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "74300a32c41b3d578772f6933f23a88b19f74484185e71e5225ce2f7ea5aea78";
   };
-
-  patches = [
-    (substituteAll {
-      src = ./paths.patch;
-      jbig2dec = "${lib.getBin jbig2dec}/bin/jbig2dec";
-      mudraw = "${lib.getBin mupdf}/bin/mudraw";
-    })
-  ];
-
-  SETUPTOOLS_SCM_PRETEND_VERSION = version;
 
   buildInputs = [
     pybind11
@@ -58,34 +38,40 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [
     setuptools-scm-git-archive
-    setuptools-scm
+    setuptools_scm
   ];
 
   checkInputs = [
     attrs
     hypothesis
-    pytest-xdist
-    psutil
+    pillow
     pytestCheckHook
+    pytest-helpers-namespace
+    pytest-timeout
+    pytest_xdist
+    pytestrunner
     python-dateutil
     python-xmp-toolkit
   ];
 
-  propagatedBuildInputs = [
-    defusedxml
-    lxml
-    packaging
-    pillow
-    setuptools
-  ];
+  propagatedBuildInputs = [ defusedxml lxml ];
 
-  pythonImportsCheck = [ "pikepdf" ];
+  postPatch = ''
+    sed -i \
+      -e 's/^pytest .*/pytest/g' \
+      -e 's/^attrs .*/attrs/g' \
+      -e 's/^hypothesis .*/hypothesis/g' \
+      requirements/test.txt
+  '';
 
-  meta = with lib; {
+  preBuild = ''
+    HOME=$TMPDIR
+  '';
+
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pikepdf/pikepdf";
     description = "Read and write PDFs with Python, powered by qpdf";
     license = licenses.mpl20;
-    maintainers = with maintainers; [ kiwi dotlambda ];
-    changelog = "https://github.com/pikepdf/pikepdf/blob/${version}/docs/release_notes.rst";
+    maintainers = [ maintainers.kiwi ];
   };
 }

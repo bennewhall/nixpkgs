@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , nixosTests
 , copyDesktopItems
@@ -15,7 +15,7 @@
 , pango
 , cairo
 , expat
-, alsa-lib
+, alsaLib
 , cups
 , dbus
 , atk
@@ -41,17 +41,17 @@ let
     categories = "Game;";
   };
 
-  envLibPath = lib.makeLibraryPath [
+  envLibPath = stdenv.lib.makeLibraryPath [
     curl
     libpulseaudio
     systemd
-    alsa-lib # needed for narrator
+    alsaLib # needed for narrator
     flite # needed for narrator
     libXxf86vm # needed only for versions <1.13
   ];
 
-  libPath = lib.makeLibraryPath ([
-    alsa-lib
+  libPath = stdenv.lib.makeLibraryPath ([
+    alsaLib
     atk
     cairo
     cups
@@ -88,11 +88,11 @@ in
 stdenv.mkDerivation rec {
   pname = "minecraft-launcher";
 
-  version = "2.2.1441";
+  version = "2.2.741";
 
   src = fetchurl {
     url = "https://launcher.mojang.com/download/linux/x86_64/minecraft-launcher_${version}.tar.gz";
-    sha256 = "03q579hvxnsh7d00j6lmfh53rixdpf33xb5zlz7659pvb9j5w0cm";
+    sha256 = "0bm78ybn91ihibxgmlpk7dl2zxy4a57k86qmb08cif3ifbflzkvw";
   };
 
   icon = fetchurl {
@@ -137,15 +137,15 @@ stdenv.mkDerivation rec {
     # Do not create `GPUCache` in current directory
     makeWrapper $out/opt/minecraft-launcher/minecraft-launcher $out/bin/minecraft-launcher \
       --prefix LD_LIBRARY_PATH : ${envLibPath} \
-      --prefix PATH : ${lib.makeBinPath [ jre ]} \
-      --set JAVA_HOME ${lib.getBin jre} \
+      --prefix PATH : ${stdenv.lib.makeBinPath [ jre ]} \
+      --set JAVA_HOME ${stdenv.lib.makeBinPath [ jre ]} \
       --run "cd /tmp" \
       "''${gappsWrapperArgs[@]}"
   '';
 
   desktopItems = [ desktopItem ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Official launcher for Minecraft, a sandbox-building game";
     homepage = "https://minecraft.net";
     maintainers = with maintainers; [ cpages ryantm infinisil ];

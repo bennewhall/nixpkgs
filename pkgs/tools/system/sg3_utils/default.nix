@@ -1,16 +1,15 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "sg3_utils";
-  version = "1.47";
+  name = "sg3_utils-1.45";
 
   src = fetchurl {
-    url = "https://sg.danny.cz/sg/p/sg3_utils-${version}.tgz";
-    sha256 = "sha256-hnPH+sqEm2s0dkMy0qqR9y2wW/9zgruDbQaIeVGZw+E=";
+    url = "http://sg.danny.cz/sg/p/${name}.tgz";
+    sha256 = "0qasc3qm4i8swjfaywiwpgz76gdxqvm47qycxgmprbsjmxqwk1qb";
   };
 
-  meta = with lib; {
-    homepage = "https://sg.danny.cz/sg/";
+  meta = with stdenv.lib; {
+    homepage = "http://sg.danny.cz/sg/";
     description = "Utilities that send SCSI commands to devices";
     platforms = platforms.linux;
     license = with licenses; [ bsd2 gpl2Plus ];

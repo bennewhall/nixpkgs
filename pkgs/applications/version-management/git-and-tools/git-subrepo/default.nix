@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, git, makeWrapper, which }:
+{ stdenv, fetchFromGitHub, git, makeWrapper, which }:
 
 stdenv.mkDerivation rec {
   pname = "git-subrepo";
@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
       --prefix PATH : "${git}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ingydotnet/git-subrepo";
     description = "Git submodule alternative";
     license = licenses.mit;

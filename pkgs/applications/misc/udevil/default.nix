@@ -1,20 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, intltool, glib, pkg-config, udev, util-linux, acl }:
-
-stdenv.mkDerivation rec {
-  pname = "udevil";
-  version = "0.4.4";
-
-  src = fetchFromGitHub {
-    owner = "IgnorantGuru";
-    repo = "udevil";
-    rev = version;
-    sha256 = "0nd44r8rbxifx4x4m24z5aji1c6k1fhw8cmf5s43wd5qys0bcdad";
+{ stdenv, fetchurl, intltool, glib, pkgconfig, udev, util-linux, acl }:
+stdenv.mkDerivation {
+  name = "udevil-0.4.4";
+  src = fetchurl {
+    url = "https://github.com/IgnorantGuru/udevil/archive/0.4.4.tar.gz";
+    sha256 = "0z1bhaayambrcn7bgnrqk445k50ifabmw8q4i9qj49nnbcvxhbxd";
   };
-
-  nativeBuildInputs = [ pkg-config ];
-
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ intltool glib udev ];
-
   configurePhase = ''
     substituteInPlace src/Makefile.in --replace "-o root -g root" ""
     # do not set setuid bit in nix store
@@ -27,18 +19,11 @@ stdenv.mkDerivation rec {
       --with-setfacl-prog=${acl.bin}/bin/setfacl \
       --sysconfdir=$prefix/etc
   '';
-
-  postInstall = ''
-    substituteInPlace $out/lib/systemd/system/devmon@.service \
-      --replace /usr/bin/devmon "$out/bin/devmon"
-  '';
-
   patches = [ ./device-info-sys-stat.patch ];
-
-  meta = with lib; {
+  meta = {
     description = "A command line Linux program which mounts and unmounts removable devices without a password, shows device info, and monitors device changes";
     homepage = "https://ignorantguru.github.io/udevil/";
-    platforms = platforms.linux;
-    license = licenses.gpl3Plus;
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3;
   };
 }

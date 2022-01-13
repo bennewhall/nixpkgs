@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , cmake
 , libpcap, boost }:
 
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
   buildInputs = [ libpcap boost ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/aguinet/usbtop";
     description = "A top utility that shows an estimated instantaneous bandwidth on USB buses and devices";
     maintainers = with maintainers; [ etu ];

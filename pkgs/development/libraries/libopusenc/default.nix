@@ -1,11 +1,14 @@
-{ lib, stdenv, fetchurl, pkg-config, libopus }:
+{ stdenv, fetchurl, pkgconfig, libopus }:
 
-stdenv.mkDerivation rec {
-  pname = "libopusenc";
+let
   version = "0.2.1";
+in
+stdenv.mkDerivation {
+  pname = "libopusenc";
+  inherit version;
 
   src = fetchurl {
-    url = "mirror://mozilla/opus/libopusenc-${version}.tar.gz";
+    url = "https://archive.mozilla.org/pub/opus/libopusenc-${version}.tar.gz";
     sha256 = "1ffb0vhlymlsq70pxsjj0ksz77yfm2x0a1x8q50kxmnkm1hxp642";
   };
 
@@ -13,10 +16,10 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libopus ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library for encoding .opus audio files and live streams";
     license = licenses.bsd3;
     homepage = "https://www.opus-codec.org/";

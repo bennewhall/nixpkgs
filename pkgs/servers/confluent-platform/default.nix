@@ -18,8 +18,7 @@ stdenv.mkDerivation rec {
     sha256 = "18yvp56b8l074qfkgr4afirgd43g8b023n9ija6dnk6p6dib1f4j";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jre bash ];
+  buildInputs = [ jre makeWrapper bash ];
 
   installPhase = ''
     cp -R $confluentCli confluent-cli
@@ -52,7 +51,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.confluent.io/";
     description = "Confluent event streaming platform based on Apache Kafka";
     license = licenses.asl20;

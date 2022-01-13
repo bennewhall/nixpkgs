@@ -1,47 +1,42 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
-, enableVTK ? true
-, vtk
-, ApplicationServices
-, Cocoa
-, enablePython ? false
-, python ? null
-, swig
-}:
+{ stdenv, fetchurl, cmake, vtk_7, darwin
+, enablePython ? false, python ? null,  swig ? null}:
 
 stdenv.mkDerivation rec {
+  version = "3.0.8";
   pname = "gdcm";
-  version = "3.0.10";
 
-  src = fetchFromGitHub {
-    owner = "malaterre";
-    repo = "GDCM";
-    rev = "v${version}";
-    sha256 = "sha256-KFN13kGE0E8gQBgtErvkW7Fa+3YYqQh0RA2bPS90WUI=";
+  src = fetchurl {
+    url = "mirror://sourceforge/gdcm/${pname}-${version}.tar.bz2";
+    sha256 = "1q9p0r7wszn51yak9wdp61fd9i0wj3f8ja2frmhk7d1gxic7j1rk";
   };
+
+  dontUseCmakeBuildDir = true;
 
   cmakeFlags = [
     "-DGDCM_BUILD_APPLICATIONS=ON"
     "-DGDCM_BUILD_SHARED_LIBS=ON"
-  ] ++ lib.optionals enableVTK [
     "-DGDCM_USE_VTK=ON"
-  ] ++ lib.optionals enablePython [
+  ]
+  ++ stdenv.lib.optional enablePython [
     "-DGDCM_WRAP_PYTHON:BOOL=ON"
     "-DGDCM_INSTALL_PYTHONMODULE_DIR=${placeholder "out"}/${python.sitePackages}"
   ];
 
-  nativeBuildInputs = [ cmake ];
+  preConfigure = ''
+    cmakeDir=$PWD
+    mkdir ../build
+    cd ../build
+  '';
 
-  buildInputs = lib.optionals enableVTK [
-    vtk
-  ] ++ lib.optionals stdenv.isDarwin [
-    ApplicationServices
-    Cocoa
-  ] ++ lib.optionals enablePython [ swig python ];
+  enableParallelBuilding = true;
+  buildInputs = [ cmake vtk_7 ]
+    ++ stdenv.lib.optional stdenv.isDarwin [
+      darwin.apple_sdk.frameworks.ApplicationServices
+      darwin.apple_sdk.frameworks.Cocoa
+    ] ++ stdenv.lib.optional enablePython [ swig python ];
+  propagatedBuildInputs = [ ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The grassroots cross-platform DICOM implementation";
     longDescription = ''
       Grassroots DICOM (GDCM) is an implementation of the DICOM standard designed to be open source so that researchers may access clinical data directly.
@@ -49,6 +44,6 @@ stdenv.mkDerivation rec {
     '';
     homepage = "http://gdcm.sourceforge.net/";
     license = with licenses; [ bsd3 asl20 ];
-    maintainers = with maintainers; [ tfmoraes ];
+    platforms = platforms.all;
   };
 }

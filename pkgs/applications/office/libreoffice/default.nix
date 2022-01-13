@@ -1,18 +1,18 @@
-{ stdenv, fetchurl, lib, pam, python3, libxslt, perl, ArchiveZip, box2d, gettext
+{ stdenv, fetchurl, fetchpatch, lib, pam, python3, libxslt, perl, ArchiveZip, gettext
 , IOCompress, zlib, libjpeg, expat, freetype, libwpd
 , libxml2, db, curl, fontconfig, libsndfile, neon
 , bison, flex, zip, unzip, gtk3, libmspack, getopt, file, cairo, which
-, icu, boost, jdk, ant, cups, xorg, fontforge, jre_minimal
+, icu, boost, jdk, ant, cups, xorg, libcmis, fontforge
 , openssl, gperf, cppunit, poppler, util-linux
 , librsvg, libGLU, libGL, bsh, CoinMP, libwps, libabw, libmysqlclient
 , autoconf, automake, openldap, bash, hunspell, librdf_redland, nss, nspr
 , libwpg, dbus-glib, clucene_core, libcdr, lcms
 , unixODBC, mdds, sane-backends, mythes, libexttextcat, libvisio
-, fontsConf, pkg-config, bluez5, libtool, carlito
+, fontsConf, pkgconfig, bluez5, libtool, carlito
 , libatomic_ops, graphite2, harfbuzz, libodfgen, libzmf
 , librevenge, libe-book, libmwaw, glm, gst_all_1
 , gdb, commonsLogging, librdf_rasqal, wrapGAppsHook
-, gnome, glib, ncurses, libepoxy, gpgme
+, gnome3, glib, ncurses, epoxy, gpgme
 , langs ? [ "ca" "cs" "da" "de" "en-GB" "en-US" "eo" "es" "fr" "hu" "it" "ja" "nl" "pl" "pt" "pt-BR" "ro" "ru" "sl" "zh-CN" ]
 , withHelp ? true
 , kdeIntegration ? false, mkDerivation ? null, qtbase ? null, qtx11extras ? null
@@ -24,10 +24,6 @@
 assert builtins.elem variant [ "fresh" "still" ];
 
 let
-  jre' = jre_minimal.override {
-    modules = [ "java.base" "java.desktop" ];
-  };
-
   importVariant = f: import (./. + "/src-${variant}/${f}");
 
   primary-src = importVariant "primary.nix" { inherit fetchurl; };
@@ -62,9 +58,16 @@ in (mkDrv rec {
 
   outputs = [ "out" "dev" ];
 
+  # For some reason librdf_redland sometimes refers to rasqal.h instead
+  # of rasqal/rasqal.h
   NIX_CFLAGS_COMPILE = [
-    "-I${librdf_rasqal}/include/rasqal" # librdf_redland refers to rasqal.h instead of rasqal/rasqal.h
-    "-fno-visibility-inlines-hidden" # https://bugs.documentfoundation.org/show_bug.cgi?id=78174#c10
+    "-I${librdf_rasqal}/include/rasqal"
+  ] ++ lib.optionals stdenv.isx86_64 [ "-mno-fma" "-mno-avx" ]
+  # https://bugs.documentfoundation.org/show_bug.cgi?id=78174#c10
+  ++ [ "-fno-visibility-inlines-hidden" ];
+
+  patches = [
+    ./xdg-open-brief.patch
   ];
 
   tarballPath = "external/tarballs";
@@ -81,8 +84,6 @@ in (mkDrv rec {
     tar -xf ${srcs.help}
     tar -xf ${srcs.translations}
   '';
-
-  patches = [ ./skip-failed-test-with-icu70.patch ];
 
   ### QT/KDE
   #
@@ -299,6 +300,8 @@ in (mkDrv rec {
     cp -r sysui/desktop/icons  "$out/share"
     sed -re 's@Icon=libreoffice(dev)?[0-9.]*-?@Icon=@' -i "$out/share/applications/"*.desktop
 
+    qtWrapperArgs+=(--prefix GST_PLUGIN_SYSTEM_PATH : "$GST_PLUGIN_SYSTEM_PATH")
+
     mkdir -p $dev
     cp -r include $dev
   '' + lib.optionalString kdeIntegration ''
@@ -316,19 +319,21 @@ in (mkDrv rec {
     "--with-boost-libdir=${boost.out}/lib"
     "--with-beanshell-jar=${bsh}"
     "--with-vendor=NixOS"
+    "--with-commons-logging-jar=${commonsLogging}/share/java/commons-logging-1.2.jar"
     "--disable-report-builder"
     "--disable-online-update"
     "--enable-python=system"
     "--enable-dbus"
     "--enable-release-build"
     "--enable-epm"
+    "--with-jdk-home=${jdk.home}"
     "--with-ant-home=${ant}/lib/ant"
     "--with-system-cairo"
     "--with-system-libs"
     "--with-system-headers"
     "--with-system-openssl"
     "--with-system-libabw"
-    "--without-system-libcmis"
+    "--with-system-libcmis"
     "--with-system-libwps"
     "--with-system-openldap"
     "--with-system-coinmp"
@@ -369,12 +374,13 @@ in (mkDrv rec {
     "--without-system-mdds" # we have mdds but our version is too new
     # https://github.com/NixOS/nixpkgs/commit/5c5362427a3fa9aefccfca9e531492a8735d4e6f
     "--without-system-orcus"
+    "--without-system-qrcodegen"
     "--without-system-xmlsec"
   ] ++ lib.optionals kdeIntegration [
     "--enable-kf5"
     "--enable-qt5"
     "--enable-gtk3-kde5"
-  ];
+  ] ++ lib.optional (lib.versionOlder version "6.4") "--disable-gtk"; # disables GTK2, GTK3 is still there
 
   checkPhase = ''
     make unitcheck
@@ -382,25 +388,25 @@ in (mkDrv rec {
   '';
 
   nativeBuildInputs = [
-    gdb fontforge autoconf automake bison pkg-config libtool jdk
+    gdb fontforge autoconf automake bison pkgconfig libtool
   ] ++ lib.optional (!kdeIntegration) wrapGAppsHook
     ++ lib.optional kdeIntegration wrapQtAppsHook;
 
   buildInputs = with xorg;
-    [ ant ArchiveZip boost box2d cairo clucene_core
+    [ ant ArchiveZip boost cairo clucene_core
       IOCompress cppunit cups curl db dbus-glib expat file flex fontconfig
       freetype getopt gperf gtk3
-      hunspell icu jre' lcms libcdr libexttextcat unixODBC libjpeg
+      hunspell icu jdk lcms libcdr libexttextcat unixODBC libjpeg
       libmspack librdf_redland librsvg libsndfile libvisio libwpd libwpg libX11
       libXaw libXext libXi libXinerama libxml2 libxslt libXtst
       libXdmcp libpthreadstubs libGLU libGL mythes
       glib libmysqlclient
-      neon nspr nss openldap openssl pam perl pkg-config poppler
+      neon nspr nss openldap openssl pam perl pkgconfig poppler
       python3 sane-backends unzip which zip zlib
-      mdds bluez5 libwps libabw libzmf
+      mdds bluez5 libcmis libwps libabw libzmf
       libxshmfence libatomic_ops graphite2 harfbuzz gpgme util-linux
-      librevenge libe-book libmwaw glm ncurses libepoxy
-      libodfgen CoinMP librdf_rasqal gnome.adwaita-icon-theme gettext
+      librevenge libe-book libmwaw glm ncurses epoxy
+      libodfgen CoinMP librdf_rasqal gnome3.adwaita-icon-theme gettext
     ]
     ++ (with gst_all_1; [
       gstreamer
@@ -410,8 +416,7 @@ in (mkDrv rec {
     ++ lib.optional kdeIntegration [ qtbase qtx11extras kcoreaddons kio ];
 
   passthru = {
-    inherit srcs;
-    jdk = jre';
+    inherit srcs jdk;
   };
 
   requiredSystemFeatures = [ "big-parallel" ];

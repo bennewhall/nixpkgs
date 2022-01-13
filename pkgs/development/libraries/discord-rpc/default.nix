@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 , rapidjson
@@ -23,14 +23,14 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     rapidjson
-  ] ++ lib.optional stdenv.isDarwin AppKit;
+  ] ++ stdenv.lib.optional stdenv.isDarwin AppKit;
 
   cmakeFlags = [
     "-DBUILD_SHARED_LIBS=true"
-    "-DBUILD_EXAMPLES=${lib.boolToString buildExamples}"
+    "-DBUILD_EXAMPLES=${stdenv.lib.boolToString buildExamples}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Official library to interface with the Discord client";
     homepage = "https://github.com/discordapp/discord-rpc";
     license = licenses.mit;

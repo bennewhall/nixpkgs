@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, python3, cmake, jq, libX11, libXext, zlib }:
+{ stdenv, fetchgit, python3, cmake, jq, libX11, libXext, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "swiftshader";
@@ -50,7 +50,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description =
       "A high-performance CPU-based implementation of the Vulkan, OpenGL ES, and Direct3D 9 graphics APIs";
     homepage = "https://opensource.google/projects/swiftshader";

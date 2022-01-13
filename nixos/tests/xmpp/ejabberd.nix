@@ -1,6 +1,6 @@
 import ../make-test-python.nix ({ pkgs, ... }: {
   name = "ejabberd";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ ajs124 ];
   };
   nodes = {

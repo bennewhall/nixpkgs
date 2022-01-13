@@ -1,4 +1,4 @@
-{ lib, mkDerivation, fetchFromGitHub, cmake, pkg-config, makeWrapper
+{ stdenv, mkDerivation, fetchFromGitHub, cmake, pkgconfig, makeWrapper
 , boost, xercesc, hunspell, zlib, pcre16
 , qtbase, qttools, qtwebengine, qtxmlpatterns
 , python3Packages
@@ -6,18 +6,18 @@
 
 mkDerivation rec {
   pname = "sigil";
-  version = "1.8.0";
+  version = "1.4.3";
 
   src = fetchFromGitHub {
     repo = "Sigil";
     owner = "Sigil-Ebook";
     rev = version;
-    sha256 = "sha256-luX4/KERB4GwpID7zVnd6F/mN8SHTy9zmqSUzJ1CYPk=";
+    sha256 = "1hk8kmhvkwfimbxzhwbnb8qdpf4n36cdzl9wfvi574i9pps36hnz";
   };
 
   pythonPath = with python3Packages; [ lxml ];
 
-  nativeBuildInputs = [ cmake pkg-config makeWrapper ];
+  nativeBuildInputs = [ cmake pkgconfig makeWrapper ];
 
   buildInputs = [
     boost xercesc qtbase qttools qtwebengine qtxmlpatterns
@@ -36,7 +36,9 @@ mkDerivation rec {
        ''${qtWrapperArgs[@]}
   '';
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "Free, open source, multi-platform ebook (ePub) editor";
     homepage = "https://github.com/Sigil-Ebook/Sigil/";
     license = licenses.gpl3;

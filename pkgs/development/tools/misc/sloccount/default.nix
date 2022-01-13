@@ -1,11 +1,10 @@
-{ fetchurl, lib, stdenv, perl, makeWrapper }:
+{ fetchurl, stdenv, perl, makeWrapper }:
 
 stdenv.mkDerivation rec {
-  pname = "sloccount";
-  version = "2.26";
+  name = "sloccount-2.26";
 
   src = fetchurl {
-    url = "https://www.dwheeler.com/${pname}/${pname}-${version}.tar.gz";
+    url = "https://www.dwheeler.com/sloccount/${name}.tar.gz";
     sha256 = "0ayiwfjdh1946asah861ah9269s5xkc8p5fv1wnxs9znyaxs4zzs";
   };
 
@@ -31,7 +30,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  makeFlags = [ "PREFIX=$(out)" "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = [ "PREFIX=$(out)" "CC=cc" ];
 
   doCheck = true;
   checkPhase = ''HOME="$TMPDIR" PATH="$PWD:$PATH" make test'';
@@ -63,11 +62,11 @@ stdenv.mkDerivation rec {
       the Perl CPAN library using this tool suite.
     '';
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
     homepage = "https://www.dwheeler.com/sloccount/";
 
     maintainers = [ ];
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

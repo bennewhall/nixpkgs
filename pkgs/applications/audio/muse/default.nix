@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, qttools, wrapQtAppsHook
-, alsa-lib, dssi, fluidsynth, ladspaH, lash, libinstpatch, libjack2, liblo
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, qttools, wrapQtAppsHook
+, alsaLib, dssi, fluidsynth, ladspaH, lash, libinstpatch, libjack2, liblo
 , libsamplerate, libsndfile, lilv, lrdf, lv2, qtsvg, rtaudio, rubberband, sord
 }:
 
@@ -22,14 +22,14 @@ stdenv.mkDerivation rec {
 
   patches = [ ./fix-parallel-building.patch ];
 
-  nativeBuildInputs = [ cmake pkg-config qttools wrapQtAppsHook ];
+  nativeBuildInputs = [ cmake pkgconfig qttools wrapQtAppsHook ];
 
   buildInputs = [
-    alsa-lib dssi fluidsynth ladspaH lash libinstpatch libjack2 liblo
+    alsaLib dssi fluidsynth ladspaH lash libinstpatch libjack2 liblo
     libsamplerate libsndfile lilv lrdf lv2 qtsvg rtaudio rubberband sord
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://muse-sequencer.github.io/";
     description = "MIDI/Audio sequencer with recording and editing capabilities";
     longDescription = ''

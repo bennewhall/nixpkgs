@@ -1,20 +1,20 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 }:
 
 stdenv.mkDerivation rec {
   pname = "convimg";
-  version = "8.9";
+  version = "8.3";
 
   src = fetchFromGitHub {
     owner = "mateoconlechuga";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-JTKyOjeiu6FAUrDPDAwLBVgZwmNY11wHonqEV1ukRpw=";
+    sha256 = "1k2fkzfg08y2gcm8jabmb2plgqmgw6y30m73ys4mmbskxgy7hc3s";
     fetchSubmodules = true;
   };
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = [ "CC=cc" ];
 
   checkPhase = ''
     pushd test
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     install -Dm755 bin/convimg $out/bin/convimg
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Image palette quantization";
     longDescription = ''
       This program is used to convert images to other formats,

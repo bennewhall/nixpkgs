@@ -6,10 +6,10 @@
 , ruby
 , aubio
 , cmake
-, pkg-config
+, pkgconfig
 , boost
 , bash
-, jack2
+, jack2Full
 , supercollider
 , qwt
 , osmid
@@ -35,7 +35,7 @@ mkDerivation rec {
   buildInputs = [
     bash
     cmake
-    pkg-config
+    pkgconfig
     qtbase
     qwt
     ruby
@@ -102,12 +102,7 @@ mkDerivation rec {
   dontWrapQtApps = true;
   preFixup = ''
     wrapQtApp "$out/bin/sonic-pi" \
-      --prefix PATH : ${lib.makeBinPath [ bash jack2 ruby supercollider ] } \
-      --set AUBIO_LIB "${aubio}/lib/libaubio.so"
-    makeWrapper \
-      $out/app/server/ruby/bin/sonic-pi-server.rb \
-      $out/bin/sonic-pi-server \
-      --prefix PATH : ${lib.makeBinPath [ bash jack2 ruby supercollider ] } \
+      --prefix PATH : ${ruby}/bin:${bash}/bin:${supercollider}/bin:${jack2Full}/bin \
       --set AUBIO_LIB "${aubio}/lib/libaubio.so"
   '';
 

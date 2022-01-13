@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 let
   inherit (stdenv.hostPlatform) system;
@@ -36,9 +36,9 @@ stdenv.mkDerivation {
       which runs on most major Unix platforms.  It mainly conforms to the
       ANSI Common Lisp standard.
     '';
-    license = lib.licenses.free;		# public domain
+    license = stdenv.lib.licenses.free;		# public domain
     homepage = "http://www.cons.org/cmucl/";
-    maintainers = [lib.maintainers.tohl];
-    platforms = lib.platforms.linux;
+    maintainers = [stdenv.lib.maintainers.tohl];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

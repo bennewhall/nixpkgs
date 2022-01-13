@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, libjson, json_c, gengetopt, flex, byacc, gmp
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, libjson, json_c, gengetopt, flex, byacc, gmp
 , libpcap
 }:
 
@@ -21,12 +21,12 @@ stdenv.mkDerivation rec {
   cmakeFlags = [ "-DRESPECT_INSTALL_PREFIX_CONFIG=ON" ];
   dontUseCmakeBuildDir = true;
 
-  nativeBuildInputs = [ cmake pkg-config gengetopt flex byacc ];
+  nativeBuildInputs = [ cmake pkgconfig gengetopt flex byacc ];
   buildInputs = [ libjson json_c gmp libpcap ];
 
   outputs = [ "out" "man" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://zmap.io/";
     license = licenses.asl20;
     description = "Fast single packet network scanner designed for Internet-wide network surveys";

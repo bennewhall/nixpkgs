@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, zlib }:
+{ stdenv, fetchurl, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "bwa";
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     install -vD -t $out/include bwt.h
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A software package for mapping low-divergent sequences against a large reference genome, such as the human genome";
     license     = licenses.gpl3;
     homepage    = "http://bio-bwa.sourceforge.net/";

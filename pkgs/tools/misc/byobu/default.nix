@@ -1,13 +1,14 @@
-{ lib, stdenv, fetchurl, makeWrapper
+{ stdenv, fetchurl, makeWrapper
 , ncurses, python3, perl, textual-window-manager
 , gettext, vim, bc, screen }:
 
 let
+  inherit (stdenv) lib;
   pythonEnv = python3.withPackages (ps: with ps; [ snack ]);
 in
 stdenv.mkDerivation rec {
   version = "5.133";
-  pname = "byobu";
+  name = "byobu-" + version;
 
   src = fetchurl {
     url = "https://launchpad.net/byobu/trunk/${version}/+download/byobu_${version}.orig.tar.gz";
@@ -16,8 +17,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ perl gettext ];
+  buildInputs = [ perl makeWrapper gettext ];
   propagatedBuildInputs = [ textual-window-manager screen ];
 
   postPatch = ''
@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://launchpad.net/byobu/";
     description = "Text-based window manager and terminal multiplexer";
 

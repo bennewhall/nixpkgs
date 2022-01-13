@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pyasn1
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   buildInputs = [ pyasn1 pycrypto ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Toolkit for safe and simple cryptography";
     homepage    = "https://pypi.python.org/pypi/python-keyczar";
     license     = licenses.asl20;

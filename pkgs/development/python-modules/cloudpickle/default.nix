@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27, pytest, mock }:
+{ stdenv, buildPythonPackage, fetchPypi, isPy27, pytest, mock }:
 
 buildPythonPackage rec {
   pname = "cloudpickle";
@@ -20,7 +20,7 @@ buildPythonPackage rec {
   # TypeError: cannot serialize '_io.FileIO' object
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Extended pickling support for Python objects";
     homepage = "https://github.com/cloudpipe/cloudpickle";
     license = with licenses; [ bsd3 ];

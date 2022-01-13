@@ -15,19 +15,16 @@ let
 
   yquake2 = stdenv.mkDerivation rec {
     pname = "yquake2";
-    version = "8.00";
+    version = "7.43";
 
     src = fetchFromGitHub {
       owner = "yquake2";
       repo = "yquake2";
       rev = "QUAKE2_${builtins.replaceStrings ["."] ["_"] version}";
-      sha256 = "0xnpmh0pl1095dykhc76rp242x587yh9zh6wayqzaam6cn3xlz3w";
+      sha256 = "1dszbvxlh1npq4nv9s4wv4lcyfgb01k92ncxrrczsxy1dddg86pp";
     };
 
-    postPatch = ''
-      substituteInPlace src/common/filesystem.c \
-        --replace /usr/share/games/quake2 $out/share/games/quake2
-    '';
+    enableParallelBuilding = true;
 
     nativeBuildInputs = [ cmake ];
 
@@ -60,7 +57,7 @@ let
       cp $src/stuff/yq2.cfg $out/share/games/quake2
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Yamagi Quake II client";
       homepage = "https://www.yamagi.org/quake2/";
       license = licenses.gpl2;

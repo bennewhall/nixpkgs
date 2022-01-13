@@ -1,60 +1,38 @@
-{ lib
-, stdenv
-, cmark-gfm
-, fetchurl
-, fetchpatch
-, qmake
-, qtbase
-, qtwebengine
-, wrapGAppsHook
-, wrapQtAppsHook
-}:
+{ mkDerivation, stdenv, fetchurl, qmake, qtbase, qtwebkit }:
 
-stdenv.mkDerivation rec {
+mkDerivation rec {
   pname = "mindforger";
-  version = "1.52.0";
+  version = "1.48.2";
 
   src = fetchurl {
-    url = "https://github.com/dvorka/mindforger/releases/download/${version}/mindforger_${version}.tgz";
-    sha256 = "1pghsw8kwvjhg3jpmjs0n892h2l0pm0cs6ymi8b23fwk0kfj67rd";
+    url = "https://github.com/dvorka/mindforger/releases/download/1.48.0/mindforger_${version}.tgz";
+    sha256 = "1wlrl8hpjcpnq098l3n2d1gbhbjylaj4z366zvssqvmafr72iyw4";
   };
 
-  nativeBuildInputs = [ qmake wrapGAppsHook wrapQtAppsHook ];
-  buildInputs = [ qtbase qtwebengine cmark-gfm ];
+  nativeBuildInputs = [ qmake ] ;
+  buildInputs = [ qtbase qtwebkit ] ;
 
   doCheck = true;
 
-  patches = [
-    # this makes the package relocatable - removes hardcoded references to /usr
-    ./paths.patch
-    #  this fixes compilation with QtWebEngine - referencing a commit trying to upstream the change - see https://github.com/dvorka/mindforger/pull/1357
-    (fetchpatch {
-      url = "https://github.com/dvorka/mindforger/commit/d28e2bade0278af1b5249953202810540969026a.diff";
-      sha256 = "sha256-qHKQQNGSc3F9seaOHV0gzBQFFqcTXk91LpKrojjpAUw=";
-    })
-  ];
+  enableParallelBuilding = true ;
+
+  patches = [ ./build.patch ] ;
 
   postPatch = ''
-    substituteInPlace lib/src/install/installer.cpp --replace /usr "$out"
+    substituteInPlace deps/discount/version.c.in --subst-var-by TABSTOP 4
     substituteInPlace app/resources/gnome-shell/mindforger.desktop --replace /usr "$out"
-    for f in app/app.pro lib/lib.pro; do
-      substituteInPlace "$f" --replace "QMAKE_CXX = g++" ""
-    done
   '';
 
-  qmakeFlags = [
-    "-r"
-    "mindforger.pro"
-    "CONFIG+=mfnoccache"
-    "CONFIG+=mfwebengine"
-  ];
-
-  postInstall = lib.optionalString stdenv.isDarwin ''
-    mkdir "$out"/Applications
-    mv app/mindforger.app "$out"/Applications/
+  preConfigure = ''
+    export AC_PATH="$PATH"
+    pushd deps/discount
+    ./configure.sh
+    popd
   '';
 
-  meta = with lib; {
+  qmakeFlags = [ "-r mindforger.pro" "CONFIG+=mfnoccache" ] ;
+
+  meta = with stdenv.lib; {
     description = "Thinking Notebook & Markdown IDE";
     longDescription = ''
      MindForger is actually more than an editor or IDE - it's human
@@ -63,6 +41,5 @@ stdenv.mkDerivation rec {
     homepage = "https://www.mindforger.com";
     license = licenses.gpl2Plus;
     platforms = platforms.all;
-    maintainers = with maintainers; [ cyplo ];
   };
 }

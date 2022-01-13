@@ -1,27 +1,29 @@
-{ lib, fetchurl, buildDunePackage, ppxlib, ppx_repr }:
+{ lib, fetchurl, buildDunePackage, ppxlib, ocaml-syntax-shims }:
 
 buildDunePackage rec {
   pname = "ppx_irmin";
-  version = "2.7.2";
+  version = "2.2.0";
 
   src = fetchurl {
     url = "https://github.com/mirage/irmin/releases/download/${version}/irmin-${version}.tbz";
-    sha256 = "29c68c5001a727aaa7a6842d6204ffa3e24b3544fa4f6af2234cdbfa032f7fdf";
+    sha256 = "0gzw918b661qkvd140hilww9jsc49rxsxz1k4iihyvikjn202km4";
   };
 
-  minimumOCamlVersion = "4.08";
+  minimumOCamlVersion = "4.06";
 
   useDune2 = true;
 
-  propagatedBuildInputs = [
-    ppx_repr
-    ppxlib
-  ];
+  buildInputs = [ ocaml-syntax-shims ];
+  propagatedBuildInputs = [ ppxlib ];
+
+  # tests depend on irmin, would create mutual dependency
+  # opt to test irmin instead of ppx_irmin
+  doCheck = false;
 
   meta = {
     homepage = "https://irmin.org/";
     description = "PPX deriver for Irmin generics";
     license = lib.licenses.isc;
-    maintainers = with lib.maintainers; [ vbgl sternenseemann ];
+    maintainers = [ lib.maintainers.vbgl ];
   };
 }

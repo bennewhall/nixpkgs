@@ -152,7 +152,6 @@ rec {
         { name = outputName;
           value = commonAttrs // {
             inherit (drv.${outputName}) type outputName;
-            outputSpecified = true;
             drvPath = assert condition; drv.${outputName}.drvPath;
             outPath = assert condition; drv.${outputName}.outPath;
           };
@@ -160,6 +159,7 @@ rec {
 
       outputsList = map outputToAttrListElement outputs;
     in commonAttrs // {
+      outputUnspecified = true;
       drvPath = assert condition; drv.drvPath;
       outPath = assert condition; drv.outPath;
     };
@@ -219,17 +219,16 @@ rec {
 
   /* Like the above, but aims to support cross compilation. It's still ugly, but
      hopefully it helps a little bit. */
-  makeScopeWithSplicing = splicePackages: newScope: otherSplices: keep: extra: f:
+  makeScopeWithSplicing = splicePackages: newScope: otherSplices: keep: f:
     let
-      spliced0 = splicePackages {
+      spliced = splicePackages {
         pkgsBuildBuild = otherSplices.selfBuildBuild;
         pkgsBuildHost = otherSplices.selfBuildHost;
         pkgsBuildTarget = otherSplices.selfBuildTarget;
         pkgsHostHost = otherSplices.selfHostHost;
         pkgsHostTarget = self; # Not `otherSplices.selfHostTarget`;
         pkgsTargetTarget = otherSplices.selfTargetTarget;
-      };
-      spliced = extra spliced0 // spliced0 // keep self;
+      } // keep self;
       self = f self // {
         newScope = scope: newScope (spliced // scope);
         callPackage = newScope spliced; # == self.newScope {};
@@ -240,7 +239,6 @@ rec {
           newScope
           otherSplices
           keep
-          extra
           (lib.fixedPoints.extends g f);
         packages = f;
       };

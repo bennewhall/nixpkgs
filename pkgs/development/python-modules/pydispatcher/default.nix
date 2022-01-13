@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pytest
@@ -19,7 +19,7 @@ buildPythonPackage rec {
     py.test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://pydispatcher.sourceforge.net/";
     description = "Signal-registration and routing infrastructure for use in multiple contexts";
     license = licenses.bsd3;

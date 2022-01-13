@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, dpkg, busybox, systemd }:
+{ stdenv, fetchurl, dpkg, busybox, systemd }:
 
 stdenv.mkDerivation rec {
   pname = "molly-guard";
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
     done;
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Attempts to prevent you from accidentally shutting down or rebooting machines";
     homepage    = "https://salsa.debian.org/debian/molly-guard";
     license     = licenses.artistic2;

@@ -1,17 +1,16 @@
-{ lib, stdenv, fetchurl, pkg-config, libxslt, telepathy-glib, python2, libxml2, dbus-glib, dbus
+{ stdenv, fetchurl, pkgconfig, libxslt, telepathy-glib, libxml2, dbus-glib, dbus
 , sqlite, libsoup, libnice, gnutls}:
 
 stdenv.mkDerivation rec {
-  pname = "telepathy-gabble";
-  version = "0.18.4";
+  name = "telepathy-gabble-0.18.4";
 
   src = fetchurl {
-    url = "https://telepathy.freedesktop.org/releases/telepathy-gabble/telepathy-gabble-${version}.tar.gz";
+    url = "https://telepathy.freedesktop.org/releases/telepathy-gabble/${name}.tar.gz";
     sha256 = "174nlkqm055vrhv11gy73m20jbsggcb0ddi51c7s9m3j5ibr2p0i";
   };
 
-  nativeBuildInputs = [ pkg-config libxslt ];
-  buildInputs = [ libxml2 dbus-glib sqlite libsoup libnice telepathy-glib gnutls python2 ];
+  nativeBuildInputs = [ pkgconfig libxslt ];
+  buildInputs = [ libxml2 dbus-glib sqlite libsoup libnice telepathy-glib gnutls telepathy-glib.python ];
 
   checkInputs = [ dbus.daemon ];
 
@@ -20,10 +19,10 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://telepathy.freedesktop.org/components/telepathy-gabble/";
     description = "Jabber/XMPP connection manager for the Telepathy framework";
     license = licenses.lgpl21Plus;
-    platforms = lib.platforms.gnu ++ lib.platforms.linux;
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;
   };
 }

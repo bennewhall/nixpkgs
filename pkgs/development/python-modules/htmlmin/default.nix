@@ -1,5 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
-
+{ stdenv, buildPythonPackage, fetchPypi }:
 buildPythonPackage rec {
   pname = "htmlmin";
   version = "0.1.12";
@@ -11,10 +10,10 @@ buildPythonPackage rec {
   # Tests run fine in a normal source checkout, but not when being built by nix.
   doCheck = false;
 
-  meta = with lib; {
+  meta = {
     description = "A configurable HTML Minifier with safety features";
     homepage = "https://pypi.python.org/pypi/htmlmin";
-    license = licenses.bsd3;
+    license = stdenv.lib.licenses.bsd3;
     maintainers = [];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip }:
+{ stdenv, fetchurl, unzip }:
 
 stdenv.mkDerivation {
   pname = "tegaki-zinnia-japanese";
@@ -9,7 +9,7 @@ stdenv.mkDerivation {
     sha256 = "1nmg9acxhcqly9gwkyb9m0hpy76fll91ywk4b1q4xms0ajxip1h7";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Japanese handwriting model for the Zinnia engine";
     homepage = "http://tegaki.org/";
     license = licenses.lgpl21;
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
     maintainers = [ maintainers.gebner ];
   };
 
-  nativeBuildInputs = [ unzip ];
+  buildInputs = [ unzip ];
 
   makeFlags = [ "installpath=$(out)/share/tegaki/models/zinnia/" ];
 }

@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, libunwind, cmake, pcre, gdb}:
+{stdenv, fetchFromGitHub, libunwind, cmake, pcre, gdb}:
 
 stdenv.mkDerivation rec {
   version = "5.9.16";
@@ -34,10 +34,10 @@ stdenv.mkDerivation rec {
       details and see the big picture from combined workloads.
     '';
 
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
 
     homepage = "https://igprof.org/";
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ ktf ];
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ ktf ];
   };
 }

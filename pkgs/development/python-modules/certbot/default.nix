@@ -2,26 +2,26 @@
 , buildPythonPackage
 , python, runCommand
 , fetchFromGitHub
-, configargparse, acme, configobj, cryptography, distro, josepy, parsedatetime, pyRFC3339, pyopenssl, pytz, requests, six, zope_component, zope_interface
-, dialog, gnureadline
-, pytest-xdist, pytestCheckHook, python-dateutil
+, ConfigArgParse, acme, configobj, cryptography, distro, josepy, parsedatetime, pyRFC3339, pyopenssl, pytz, requests, six, zope_component, zope_interface
+, dialog, mock, gnureadline
+, pytest_xdist, pytest, pytestCheckHook, dateutil
 }:
 
 buildPythonPackage rec {
   pname = "certbot";
-  version = "1.22.0";
+  version = "1.10.1";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = "v${version}";
-    sha256 = "1wrk5rhds6a69vbs1bda0zhwpvjhd8i20did6j3kydbas3zbr516";
+    sha256 = "035cdw2h3f511drc0q1j65j911m1pj6c5ghywavkhib0chim044c";
   };
 
   sourceRoot = "source/${pname}";
 
   propagatedBuildInputs = [
-    configargparse
+    ConfigArgParse
     acme
     configobj
     cryptography
@@ -37,19 +37,16 @@ buildPythonPackage rec {
     zope_interface
   ];
 
-  buildInputs = [ dialog gnureadline ];
+  buildInputs = [ dialog mock gnureadline ];
 
   checkInputs = [
-    python-dateutil
+    dateutil
+    pytest
     pytestCheckHook
-    pytest-xdist
+    pytest_xdist
   ];
 
-  pytestFlagsArray = [
-    "-o cache_dir=$(mktemp -d)"
-    # See https://github.com/certbot/certbot/issues/8746
-    "-W ignore::ResourceWarning"
-  ];
+  pytestFlagsArray = [ "-o cache_dir=$(mktemp -d)" ];
 
   doCheck = true;
 

@@ -2,11 +2,11 @@
 
 buildPythonPackage rec {
   pname = "pygit2";
-  version = "1.7.1";
+  version = "1.4.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "d7faa29558436decc2e78110f38d6677eb366b683ba5cdc2803d47195711165d";
+    sha256 = "cbeb38ab1df9b5d8896548a11e63aae8a064763ab5f1eabe4475e6b8a78ee1c8";
   };
 
   preConfigure = lib.optionalString stdenv.isDarwin ''
@@ -20,8 +20,6 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     cached-property
   ] ++ lib.optional (!isPyPy) cffi;
-
-  propagatedNativeBuildInputs = lib.optional (!isPyPy) cffi;
 
   checkInputs = [ pytestCheckHook ];
 

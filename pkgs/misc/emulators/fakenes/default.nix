@@ -1,12 +1,10 @@
-{lib, stdenv, fetchurl, allegro, openal, libGLU, libGL, zlib, hawknl, freeglut, libX11,
+{stdenv, fetchurl, allegro, openal, libGLU, libGL, zlib, hawknl, freeglut, libX11,
   libXxf86vm, libXcursor, libXpm }:
 
-stdenv.mkDerivation rec {
-  pname = "fakenes";
-  version = "0.5.9-beta3";
-
+stdenv.mkDerivation {
+  name = "fakenes-0.5.9b3";
   src = fetchurl {
-    url = "mirror://sourceforge/fakenes/fakenes-${version}.tar.gz";
+    url = "mirror://sourceforge/fakenes/fakenes-0.5.9-beta3.tar.gz";
     sha256 = "026h67s4pzc1vma59pmzk02iy379255qbai2q74wln9bxqcpniy4";
   };
 
@@ -26,9 +24,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     homepage = "http://fakenes.sourceforge.net/";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     description = "Portable Open Source NES Emulator";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
     broken = true;
   };
 }

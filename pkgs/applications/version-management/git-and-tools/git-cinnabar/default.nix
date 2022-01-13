@@ -8,13 +8,13 @@ in
 
 stdenv.mkDerivation rec {
   pname = "git-cinnabar";
-  version = "0.5.7";
+  version = "0.5.4";
 
   src = fetchFromGitHub {
     owner = "glandium";
     repo = "git-cinnabar";
     rev = version;
-    sha256 = "04dsjlsw98avrckldx7rc70b2zsbajzkyqqph4c7d9xd5djh3yaj";
+    sha256 = "1cjn2cc6mj4m736wxab9s6qx83p5n5ha8cr3x84s9ra6rxs8d7pi";
     fetchSubmodules = true;
   };
 
@@ -27,8 +27,6 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out/bin $out/libexec
     install git-cinnabar-helper $out/bin
     install git-cinnabar git-remote-hg $out/libexec
@@ -40,14 +38,12 @@ stdenv.mkDerivation rec {
             --prefix GIT_CINNABAR_EXPERIMENTS , python3 \
             --set PYTHONPATH ${mercurial}/${python3.sitePackages}
     done
-
-    runHook postInstall
   '';
 
   meta = with lib; {
     homepage = "https://github.com/glandium/git-cinnabar";
     description = "git remote helper to interact with mercurial repositories";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ qyliss ];
     platforms = platforms.all;
   };

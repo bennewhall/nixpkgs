@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , meson
 , ninja
@@ -15,13 +14,13 @@
 
 stdenv.mkDerivation rec {
   pname = "pop-gtk-theme";
-  version = "2021-08-19";
+  version = "2020-06-30";
 
   src = fetchFromGitHub {
     owner = "pop-os";
     repo = "gtk-theme";
-    rev = "6615e4510485c5dc0b379746acc40f538d987c86";
-    sha256 = "16h03x2m4j4hfwp7pdmw1navcy5q7di38jvigfgf263wajyxbznr";
+    rev = "8c31be9f9257375bf7a049069cb4ecbac7d281a1";
+    sha256 = "16dxxazpllcxlbiblynqq4b65wfn9k1jab8dl69l819v73z303ky";
   };
 
   nativeBuildInputs = [
@@ -55,7 +54,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "System76 Pop GTK+ Theme";
     homepage = "https://github.com/pop-os/gtk-theme";
     license = with licenses; [ gpl3 lgpl21 cc-by-sa-40 ];

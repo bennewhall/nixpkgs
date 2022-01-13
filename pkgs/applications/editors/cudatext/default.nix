@@ -34,24 +34,28 @@ let
         inherit (spec) owner rev sha256;
       }
     )
-    (lib.importJSON ./deps.json);
+    (builtins.fromJSON (builtins.readFile ./deps.json));
 in
 stdenv.mkDerivation rec {
   pname = "cudatext";
-  version = "1.152.1";
+  version = "1.115.0";
 
   src = fetchFromGitHub {
     owner = "Alexey-T";
     repo = "CudaText";
     rev = version;
-    sha256 = "sha256-rFmgf/wg6/jIObBDN+viKX3KrewVWgxs8uVF1gCY72s=";
+    sha256 = "0q7gfpzc97fvyvabjdb9a4d3c2qhm4zf5bqgnsj73vkly80kgww8";
   };
+
+  patches = [
+    # Don't check for update
+    ./dont-check-update.patch
+  ];
 
   postPatch = ''
     substituteInPlace app/proc_globdata.pas \
       --replace "/usr/share/cudatext" "$out/share/cudatext" \
-      --replace "libpython3.so" "${python3}/lib/libpython${python3.pythonVersion}.so" \
-      --replace "AllowProgramUpdates:= true;" "AllowProgramUpdates:= false;"
+      --replace "libpython3.so" "${python3}/lib/libpython3.so"
   '';
 
   nativeBuildInputs = [ lazarus fpc ]
@@ -91,15 +95,8 @@ stdenv.mkDerivation rec {
     install -Dm644 setup/debfiles/cudatext-512.png -t $out/share/pixmaps
     install -Dm644 setup/debfiles/cudatext.desktop -t $out/share/applications
   '' + lib.concatMapStringsSep "\n" (lexer: ''
-    if [ -d "CudaText-lexers/${lexer}" ]; then
-      install -Dm644 CudaText-lexers/${lexer}/*.{cuda-lexmap,lcf} $out/share/cudatext/data/lexlib
-    else
-      echo "${lexer} lexer not found"
-      exit 1
-    fi
+    install -Dm644 CudaText-lexers/${lexer}/*.{cuda-lexmap,lcf} $out/share/cudatext/data/lexlib
   '') additionalLexers;
-
-  passthru.updateScript = ./update.sh;
 
   meta = with lib; {
     description = "Cross-platform code editor";
@@ -108,8 +105,7 @@ stdenv.mkDerivation rec {
       Config system in JSON files. Multi-carets and multi-selections.
       Search and replace with RegEx. Extendable by Python plugins and themes.
     '';
-    homepage = "https://cudatext.github.io/";
-    changelog = "https://cudatext.github.io/history.txt";
+    homepage = "http://www.uvviewsoft.com/cudatext/";
     license = licenses.mpl20;
     maintainers = with maintainers; [ sikmir ];
     platforms = platforms.linux;

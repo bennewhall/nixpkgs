@@ -1,52 +1,42 @@
-{ lib
-, buildDotnetModule
-, fetchFromGitHub
-, dotnetCorePackages
-, libkrb5
-, zlib
-, openssl
-}:
+{ stdenv, fetchurl, unzip, makeWrapper, dotnetCorePackages, jq }:
 
-buildDotnetModule rec {
-  pname = "archisteamfarm";
-  version = "5.1.5.3";
+stdenv.mkDerivation rec {
+  pname = "ArchiSteamFarm";
+  version = "4.3.1.0";
 
-  src = fetchFromGitHub {
-    owner = "justarchinet";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-H038maKHZujmbKhbi8fxsKR/tcSPrcl9L5xnr77yyXg=";
+  src = fetchurl {
+    url = "https://github.com/JustArchiNET/ArchiSteamFarm/releases/download/${version}/ASF-generic.zip";
+    sha256 = "1q28byshh4wkfsfdb0sfdqq9a5da9k7i4nagsfpk0fzyajvzd4lx";
   };
 
-  dotnet-runtime = dotnetCorePackages.aspnetcore_5_0;
-  nugetDeps = ./deps.nix;
+  nativeBuildInputs = [ unzip makeWrapper jq ];
 
-  projectFile = "ArchiSteamFarm.sln";
-  executables = [ "ArchiSteamFarm" ];
+  sourceRoot = ".";
 
-  runtimeDeps = [ libkrb5 zlib openssl ];
+  installPhase = ''
+    dist=$out/opt/asf
+    mkdir -p $dist
+    cp -r * $dist
 
-  # Without this, it attempts to write to the store even though the `--path` flag is supplied.
-  patches = [ ./mutable-customdir.patch ];
+    jq "del(.runtimeOptions.framework.version)" ArchiSteamFarm.runtimeconfig.json > $dist/ArchiSteamFarm.runtimeconfig.json
 
-  doCheck = true;
-
-  preInstall = ''
-    # A mutable path, with this directory tree must be set. By default, this would point at the nix store causing errors.
-    makeWrapperArgs+=(
-      --add-flags "--path ~/.config/archisteamfarm"
-      --run "mkdir -p ~/.config/archisteamfarm/{config,logs,plugins}"
-      --run "cd ~/.config/archisteamfarm"
-    )
+    makeWrapper ${dotnetCorePackages.aspnetcore_3_1}/bin/dotnet $out/bin/ArchiSteamFarm \
+      --add-flags $dist/ArchiSteamFarm.dll \
+      --add-flags "--path ~/.config/asf" \
+      --run "mkdir -p ~/.config/asf" \
+      --run "cd ~/.config/asf" \
+      --run "[ -d config ] || cp --no-preserve=mode -r $dist/config ." \
+      --run "[ -d logs ] || cp --no-preserve=mode -r $dist/logs ." \
+      --run "[ -d plugins ] || cp --no-preserve=mode -r $dist/plugins ." \
+      --run "ln -sf $dist/www ."
   '';
 
-  passthru.updateScript = ./updater.sh;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Application with primary purpose of idling Steam cards from multiple accounts simultaneously";
     homepage = "https://github.com/JustArchiNET/ArchiSteamFarm";
     license = licenses.asl20;
-    platforms = dotnetCorePackages.aspnetcore_5_0.meta.platforms;
-    maintainers = with maintainers; [ SuperSandro2000 lom ];
+    platforms = dotnetCorePackages.aspnetcore_3_1.meta.platforms;
+    maintainers = with maintainers; [ gnidorah ];
+    hydraPlatforms = [];
   };
 }

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , django
@@ -20,7 +20,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "libthumbor is the python extension to thumbor";
     homepage = "https://github.com/heynemann/libthumbor";
     license = licenses.mit;

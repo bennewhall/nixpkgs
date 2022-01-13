@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, sphinx, fetchPypi }:
+{ stdenv, buildPythonPackage, sphinx, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "guzzle_sphinx_theme";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ sphinx ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Sphinx theme used by Guzzle: http://guzzlephp.org";
     homepage = "https://github.com/guzzle/guzzle_sphinx_theme/";
     license = licenses.mit;

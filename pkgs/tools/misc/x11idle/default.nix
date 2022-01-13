@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchurl, libXScrnSaver, libX11 }:
+{ stdenv, fetchurl, libXScrnSaver, libX11 }:
 
 stdenv.mkDerivation rec {
+
   version = "9.2.4";
-  pname = "x11idle-org";
+  name = "x11idle-org-${version}";
 
   src = fetchurl {
     url = "https://code.orgmode.org/bzg/org-mode/raw/release_${version}/contrib/scripts/x11idle.c";
@@ -18,7 +19,7 @@ stdenv.mkDerivation rec {
     gcc -lXss -lX11 $src -o $out/bin/x11idle
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       Compute consecutive idle time for current X11 session with millisecond resolution
     '';

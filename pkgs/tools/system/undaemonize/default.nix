@@ -1,9 +1,7 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation {
-  pname = "undaemonize";
-  version = "unstable-2017-07-11";
-
+  name = "undaemonize-2017-07-11";
   src = fetchFromGitHub {
     repo = "undaemonize";
     owner = "nickstenning";
@@ -16,9 +14,9 @@ stdenv.mkDerivation {
   meta = {
     description = "Tiny helper utility to force programs which insist on daemonizing themselves to run in the foreground";
     homepage = "https://github.com/nickstenning/undaemonize";
-    license = lib.licenses.mit;
-    maintainers = [ lib.maintainers.canndrew ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.mit;
+    maintainers = [ stdenv.lib.maintainers.canndrew ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }
 

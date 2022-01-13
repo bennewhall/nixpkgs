@@ -1,27 +1,26 @@
-{ lib, stdenv, fetchgit, libxml2, libxslt, docbook-xsl, docbook_xml_dtd_44, perlPackages, makeWrapper, darwin }:
+{ stdenv, fetchgit, libxml2, libxslt, docbook-xsl, docbook_xml_dtd_44, perlPackages, makeWrapper, darwin }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "moreutils";
-  version = "0.67";
+  version = "0.63";
 
   src = fetchgit {
     url = "git://git.joeyh.name/moreutils";
     rev = "refs/tags/${version}";
-    sha256 = "sha256-8Mu7L3KqOsW9OmidMkWB+q9TofHd1P1sbsNrtE4MUoA=";
+    sha256 = "17sszmcdck4w01hgcq7vd25p2iw3yzvjwx1yf20jg85gzs1dplrd";
   };
 
   preBuild = ''
     substituteInPlace Makefile --replace /usr/share/xml/docbook/stylesheet/docbook-xsl ${docbook-xsl}/xml/xsl/docbook
   '';
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ libxml2 libxslt docbook-xsl docbook_xml_dtd_44 ]
+  buildInputs = [ libxml2 libxslt docbook-xsl docbook_xml_dtd_44 makeWrapper ]
     ++ optional stdenv.isDarwin darwin.cctools;
 
   propagatedBuildInputs = with perlPackages; [ perl IPCRun TimeDate TimeDuration ];
 
-  buildFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
+  buildFlags = [ "CC=cc" ];
   installFlags = [ "PREFIX=$(out)" ];
 
   postInstall = ''

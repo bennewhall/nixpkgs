@@ -1,19 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, meson, pkg-config, ninja }:
+{ stdenv, fetchFromGitHub, meson, pkg-config, ninja }:
 
 stdenv.mkDerivation rec {
   pname = "aml";
-  version = "0.2.1";
+  version = "0.1.0";
 
   src = fetchFromGitHub {
     owner = "any1";
     repo = pname;
     rev = "v${version}";
-    sha256 = "1m911n3rd41ch4yk3k9k1lz29xp3h54k6jx122abq5kmngy9znqw";
+    sha256 = "1pmiflkd9idnf6p0rnmccqqlj87k8crz9ixpx6rix671vnpk0xzi";
   };
 
   nativeBuildInputs = [ meson pkg-config ninja ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Another main loop";
     inherit (src.meta) homepage;
     license = licenses.isc;

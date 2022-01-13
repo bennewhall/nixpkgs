@@ -1,11 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , fetchpatch
 , cmake
 # Remove gcc and python references
 , removeReferencesTo
-, pkg-config
-, volk
+, pkgconfig
 , cppunit
 , swig
 , orc
@@ -17,7 +16,7 @@
 , codec2
 , gsm
 , fftwFloat
-, alsa-lib
+, alsaLib
 , libjack2
 , CoreAudio
 , uhd
@@ -44,16 +43,17 @@
   minor = "14";
   patch = "0";
 }
+, fetchSubmodules ? true
 }:
 
 let
-  sourceSha256 = "BiUDibXV/5cEYmAAaIxT4WTxF/ni4MJumF5oJ/vuOyc=";
+  sourceSha256 = "1nh4f9dmygprlbqybd3j1byg9fsr6065n140mvc4b0v8qqygmhrc";
   featuresInfo = {
     # Needed always
     basic = {
       native = [
         cmake
-        pkg-config
+        pkgconfig
         orc
       ];
       runtime = [ boost log4cpp mpir ];
@@ -61,9 +61,6 @@ let
     };
     volk = {
       cmakeEnableFlag = "VOLK";
-      runtime = [
-        volk
-      ];
     };
     doxygen = {
       native = [ doxygen ];
@@ -141,8 +138,8 @@ let
     };
     gr-audio = {
       runtime = []
-        ++ lib.optionals stdenv.isLinux [ alsa-lib libjack2 ]
-        ++ lib.optionals stdenv.isDarwin [ CoreAudio ]
+        ++ stdenv.lib.optionals stdenv.isLinux [ alsaLib libjack2 ]
+        ++ stdenv.lib.optionals stdenv.isDarwin [ CoreAudio ]
       ;
       cmakeEnableFlag = "GR_AUDIO";
     };
@@ -201,7 +198,6 @@ let
   };
   shared = (import ./shared.nix {
     inherit
-      lib
       stdenv
       python
       removeReferencesTo
@@ -211,59 +207,57 @@ let
       sourceSha256
       overrideSrc
       fetchFromGitHub
+      fetchSubmodules
     ;
     qt = qt4;
     gtk = gtk2;
   });
-  inherit (shared) hasFeature; # function
-in
-
-stdenv.mkDerivation rec {
-  inherit pname;
   inherit (shared)
     version
     src
+    hasFeature # function
     nativeBuildInputs
     buildInputs
     disallowedReferences
     postInstall
+    passthru
     doCheck
     dontWrapPythonPrograms
     meta
   ;
-
-  passthru = shared.passthru // {
-    # Deps that are potentially overriden and are used inside GR plugins - the same version must
-    inherit boost volk;
-  } // lib.optionalAttrs (hasFeature "gr-uhd") {
-    inherit uhd;
-  };
   cmakeFlags = shared.cmakeFlags
     # From some reason, if these are not set, libcodec2 and gsm are
     # not detected properly (slightly different then what's in
     # ./default.nix).
-    ++ lib.optionals (hasFeature "gr-vocoder") [
+    ++ stdenv.lib.optionals (hasFeature "gr-vocoder" features) [
       "-DLIBCODEC2_LIBRARIES=${codec2}/lib/libcodec2.so"
       "-DLIBCODEC2_INCLUDE_DIR=${codec2}/include"
       "-DLIBGSM_LIBRARIES=${gsm}/lib/libgsm.so"
       "-DLIBGSM_INCLUDE_DIR=${gsm}/include/gsm"
     ]
-    ++ lib.optionals (hasFeature "volk" && volk != null) [
-      "-DENABLE_INTERNAL_VOLK=OFF"
-    ]
   ;
   stripDebugList = shared.stripDebugList
     # gr-fcd feature was dropped in 3.8
-    ++ lib.optionals (hasFeature "gr-fcd") [ "share/gnuradio/examples/fcd" ]
+    ++ stdenv.lib.optionals (hasFeature "gr-fcd" features) [ "share/gnuradio/examples/fcd" ]
   ;
-  preConfigure = ""
+  preConfigure = ''
+  ''
     # wxgui and pygtk are not looked up properly, so we force them to be
     # detected as found, if they are requested by the `features` attrset.
-    + lib.optionalString (hasFeature "gr-wxgui") ''
+    + stdenv.lib.optionalString (hasFeature "gr-wxgui" features) ''
       sed -i 's/.*wx\.version.*/set(WX_FOUND TRUE)/g' gr-wxgui/CMakeLists.txt
     ''
-    + lib.optionalString (hasFeature "gnuradio-companion") ''
+    + stdenv.lib.optionalString (hasFeature "gnuradio-companion" features) ''
       sed -i 's/.*pygtk_version.*/set(PYGTK_FOUND TRUE)/g' grc/CMakeLists.txt
+    ''
+    # If python-support is disabled, don't install volk's (git submodule)
+    # volk_modtool - it references python.
+    #
+    # NOTE: The same is done for 3.8, but we don't put this string in
+    # ./shared.nix since on the next release of 3.8 it won't be needed there,
+    # but it will be needed for 3.7, probably for ever.
+    + stdenv.lib.optionalString (!hasFeature "python-support" features) ''
+      sed -i -e "/python\/volk_modtool/d" volk/CMakeLists.txt
     ''
   ;
   patches = [
@@ -278,4 +272,24 @@ stdenv.mkDerivation rec {
       sha256 = "2Pitgu8accs16B5X5+/q51hr+IY9DMsA15f56gAtBs8=";
     })
   ];
+in
+
+stdenv.mkDerivation rec {
+  inherit
+    pname
+    version
+    src
+    nativeBuildInputs
+    buildInputs
+    cmakeFlags
+    preConfigure
+    # disallowedReferences
+    stripDebugList
+    patches
+    postInstall
+    passthru
+    doCheck
+    dontWrapPythonPrograms
+    meta
+  ;
 }

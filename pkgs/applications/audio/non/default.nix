@@ -1,27 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, python3, cairo, libjpeg, ntk, libjack2
+{ stdenv, fetchFromGitHub, pkgconfig, python2, cairo, libjpeg, ntk, libjack2
 , libsndfile, ladspaH, liblo, libsigcxx, lrdf, wafHook
 }:
 
 stdenv.mkDerivation {
   pname = "non";
-  version = "unstable-2021-01-28";
+  version = "2018-02-15";
   src = fetchFromGitHub {
-    owner = "linuxaudio";
+    owner = "original-male";
     repo = "non";
-    rev = "cdad26211b301d2fad55a26812169ab905b85bbb";
-    sha256 = "sha256-iMJNMDytNXpEkUhL0RILSd25ixkm8HL/edtOZta0Pf4=";
+    rev = "5ae43bb27c42387052a73e5ffc5d33efb9d946a9";
+    sha256 = "1cljkkyi9dxqpqhx8y6l2ja4zjmlya26m26kqxml8gx08vyvddhx";
   };
 
-  nativeBuildInputs = [ pkg-config wafHook ];
-  buildInputs = [ python3 cairo libjpeg ntk libjack2 libsndfile
-                  ladspaH liblo libsigcxx lrdf
+  nativeBuildInputs = [ pkgconfig wafHook ];
+  buildInputs = [ python2 cairo libjpeg ntk libjack2 libsndfile
+    ladspaH liblo libsigcxx lrdf
   ];
 
   meta = {
     description = "Lightweight and lightning fast modular Digital Audio Workstation";
     homepage = "http://non.tuxfamily.org";
-    license = lib.licenses.lgpl21;
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.nico202 ];
+    license = stdenv.lib.licenses.lgpl21;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.nico202 ];
   };
 }

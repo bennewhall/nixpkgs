@@ -1,8 +1,8 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , pytest
-, pytest-cov
+, pytestcov
 , numpy
 , scipy
 , cython
@@ -22,14 +22,14 @@ buildPythonPackage rec {
     sha256 = "0qmkxl5sbgh0j73n667vyi7ywzh09iaync91yp1j5rrcmwsn0qfs";
   };
 
-  checkInputs = [ pytest pytest-cov ];
+  checkInputs = [ pytest pytestcov ];
   propagatedBuildInputs = [ numpy scipy cython numba six ];
 
   checkPhase = ''
     pytest tests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/bmcfee/resampy";
     description = "Efficient signal resampling";
     license = licenses.isc;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ncurses, glibc }:
+{ stdenv, fetchurl, ncurses, glibc }:
 
 stdenv.mkDerivation rec {
   pname = "statserial";
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
   cp statserial.1 $out/share/man/man1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://sites.google.com/site/tranter/software";
     description = "Display serial port modem status lines";
     license = licenses.gpl2;

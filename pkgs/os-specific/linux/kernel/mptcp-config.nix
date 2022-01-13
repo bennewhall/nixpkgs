@@ -1,5 +1,5 @@
-{ lib }:
-with lib.kernel;
+{ stdenv }:
+with stdenv.lib.kernel;
 {
     # DRM_AMDGPU = yes;
 

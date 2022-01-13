@@ -4,7 +4,13 @@ with lib;
 
 let
   cfg = config.services.corerad;
-  settingsFormat = pkgs.formats.toml {};
+
+  writeTOML = name: x:
+    pkgs.runCommandNoCCLocal name {
+      passAsFile = ["config"];
+      config = builtins.toJSON x;
+      buildInputs = [ pkgs.go-toml ];
+    } "jsontoml < $configPath > $out";
 
 in {
   meta.maintainers = with maintainers; [ mdlayher ];
@@ -13,8 +19,8 @@ in {
     enable = mkEnableOption "CoreRAD IPv6 NDP RA daemon";
 
     settings = mkOption {
-      type = settingsFormat.type;
-      example = literalExpression ''
+      type = types.uniq types.attrs;
+      example = literalExample ''
         {
           interfaces = [
             # eth0 is an upstream interface monitoring for IPv6 router advertisements.
@@ -37,20 +43,20 @@ in {
         }
       '';
       description = ''
-        Configuration for CoreRAD, see <link xlink:href="https://github.com/mdlayher/corerad/blob/main/internal/config/reference.toml"/>
+        Configuration for CoreRAD, see <link xlink:href="https://github.com/mdlayher/corerad/blob/master/internal/config/default.toml"/>
         for supported values. Ignored if configFile is set.
       '';
     };
 
     configFile = mkOption {
       type = types.path;
-      example = literalExpression ''"''${pkgs.corerad}/etc/corerad/corerad.toml"'';
+      example = literalExample "\"\${pkgs.corerad}/etc/corerad/corerad.toml\"";
       description = "Path to CoreRAD TOML configuration file.";
     };
 
     package = mkOption {
       default = pkgs.corerad;
-      defaultText = literalExpression "pkgs.corerad";
+      defaultText = literalExample "pkgs.corerad";
       type = types.package;
       description = "CoreRAD package to use.";
     };
@@ -58,7 +64,7 @@ in {
 
   config = mkIf cfg.enable {
     # Prefer the config file over settings if both are set.
-    services.corerad.configFile = mkDefault (settingsFormat.generate "corerad.toml" cfg.settings);
+    services.corerad.configFile = mkDefault (writeTOML "corerad.toml" cfg.settings);
 
     systemd.services.corerad = {
       description = "CoreRAD IPv6 NDP RA daemon";

@@ -1,12 +1,11 @@
-{ lib, stdenv
-, rtpPath
+{ stdenv
+, rtpPath ? "share/vim-plugins"
 , vim
-, vimGenDocHook
 }:
 
 rec {
   addRtp = path: attrs: derivation:
-    derivation // { rtp = "${derivation}"; } // {
+    derivation // { rtp = "${derivation}/${path}"; } // {
       overrideAttrs = f: buildVimPlugin (attrs // f attrs);
     };
 
@@ -19,18 +18,13 @@ rec {
     buildPhase ? "",
     preInstall ? "",
     postInstall ? "",
-    path ? ".",
+    path ? stdenv.lib.getName name,
     addonInfo ? null,
     ...
   }:
     addRtp "${rtpPath}/${path}" attrs (stdenv.mkDerivation (attrs // {
       name = namePrefix + name;
 
-      # dont move the doc folder since vim expects it
-      forceShare= [ "man" "info" ];
-
-      nativeBuildInputs = attrs.nativeBuildInputs or []
-      ++ lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) vimGenDocHook;
       inherit unpackPhase configurePhase buildPhase addonInfo preInstall postInstall;
 
       installPhase = ''
@@ -40,12 +34,26 @@ rec {
         mkdir -p $out/${rtpPath}
         cp -r . $target
 
+        # build help tags
+        if [ -d "$target/doc" ]; then
+          echo "Building help tags"
+          if ! ${vim}/bin/vim -N -u NONE -i NONE -n -E -s -V1 -c "helptags $target/doc" +quit!; then
+            echo "Failed to build help tags!"
+            exit 1
+          fi
+        else
+          echo "No docs available"
+        fi
+
+        if [ -n "$addonInfo" ]; then
+          echo "$addonInfo" > $target/addon-info.json
+        fi
+
         runHook postInstall
       '';
     }));
 
   buildVimPluginFrom2Nix = attrs: buildVimPlugin ({
-    # vim plugins may override this
     buildPhase = ":";
     configurePhase =":";
   } // attrs);

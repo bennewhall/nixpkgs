@@ -1,38 +1,37 @@
-{ lib, stdenv
+{ stdenv
 , buildPythonPackage
-, fetchFromGitHub
+, fetchurl
 , vmprof
 , pyqt4
 , isPyPy
 , pkgs
-, scons
-, chrpath
 }:
 
-buildPythonPackage rec {
-  version = "0.6.14.5";
+let
+  # scons is needed but using it requires Python 2.7
+  # Therefore we create a separate env for it.
+  scons = pkgs.python27.withPackages(ps: [ pkgs.scons ]);
+in buildPythonPackage rec {
+  version = "0.6.8.4";
   pname = "Nuitka";
 
   # Latest version is not yet on PyPi
-  src = fetchFromGitHub {
-    owner = "kayhayen";
-    repo = "Nuitka";
-    rev = version;
-    sha256 = "08kcp22zdgp25kk4bp56z196mn6bdi3z4x0q2y9vyz0ywfzp9zap";
+  src = fetchurl {
+    url = "https://github.com/kayhayen/Nuitka/archive/${version}.tar.gz";
+    sha256 = "0awhwksnmqmbciimqmd11wygp7bnq57khcg4n9r4ld53s147rmqm";
   };
 
   checkInputs = [ vmprof pyqt4 ];
   nativeBuildInputs = [ scons ];
-  propagatedBuildInputs = [ chrpath ];
 
   postPatch = ''
     patchShebangs tests/run-tests
-  '' + lib.optionalString stdenv.isLinux ''
-    substituteInPlace nuitka/plugins/standard/ImplicitImports.py --replace 'locateDLL("uuid")' '"${lib.getLib pkgs.util-linux}/lib/libuuid.so"'
+  '' + stdenv.lib.optionalString stdenv.isLinux ''
+    substituteInPlace nuitka/plugins/standard/ImplicitImports.py --replace 'locateDLL("uuid")' '"${pkgs.util-linux.out}/lib/libuuid.so"'
   '';
 
   # We do not want any wrappers here.
-  postFixup = "";
+  postFixup = '''';
 
   checkPhase = ''
     tests/run-tests
@@ -44,7 +43,7 @@ buildPythonPackage rec {
   # Requires CPython
   disabled = isPyPy;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python compiler with full language support and CPython compatibility";
     license = licenses.asl20;
     homepage = "https://nuitka.net/";

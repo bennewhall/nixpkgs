@@ -1,7 +1,7 @@
 import ./make-test-python.nix ({ pkgs, ...} : {
   name = "zsh-history";
-  meta = with pkgs.lib.maintainers; {
-    maintainers = [ ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ kampka ];
   };
 
   nodes.default = { ... }: {
@@ -23,7 +23,7 @@ import ./make-test-python.nix ({ pkgs, ...} : {
     # Login
     default.wait_until_tty_matches(1, "login: ")
     default.send_chars("root\n")
-    default.wait_until_tty_matches(1, r"\nroot@default\b")
+    default.wait_until_tty_matches(1, "root@default>")
 
     # Generate some history
     default.send_chars("echo foobar\n")

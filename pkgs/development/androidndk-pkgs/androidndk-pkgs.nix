@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , makeWrapper
 , runCommand, wrapBintoolsWith, wrapCCWith
 , buildAndroidndk, androidndk, targetAndroidndkPkgs
@@ -48,7 +48,7 @@ let
   hostInfo = ndkInfoFun stdenv.hostPlatform;
   targetInfo = ndkInfoFun stdenv.targetPlatform;
 
-  prefix = lib.optionalString (stdenv.targetPlatform != stdenv.hostPlatform) (stdenv.targetPlatform.config + "-");
+  prefix = stdenv.lib.optionalString (stdenv.targetPlatform != stdenv.hostPlatform) (stdenv.targetPlatform.config + "-");
 in
 
 rec {

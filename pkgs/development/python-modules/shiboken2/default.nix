@@ -1,5 +1,5 @@
-{ python, lib, stdenv, pyside2
-, cmake, qt5, llvmPackages }:
+{ buildPythonPackage, python, fetchurl, stdenv, pyside2,
+  cmake, qt5, llvmPackages }:
 
 stdenv.mkDerivation {
   pname = "shiboken2";
@@ -23,17 +23,14 @@ stdenv.mkDerivation {
     "-DBUILD_TESTS=OFF"
   ];
 
-  dontWrapQtApps = true;
-
   postInstall = ''
     rm $out/bin/shiboken_tool.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Generator for the PySide2 Qt bindings";
     license = with licenses; [ gpl2 lgpl21 ];
     homepage = "https://wiki.qt.io/Qt_for_Python";
     maintainers = with maintainers; [ gebner ];
-    broken = stdenv.isDarwin;
   };
 }

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , unittest2
@@ -17,7 +17,7 @@ buildPythonPackage rec {
   buildInputs = [ unittest2 ];
   propagatedBuildInputs = [ six ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A quick unittest-compatible framework for repeating a test function over many fixtures";
     homepage = "https://github.com/epsy/repeated_test";
     license = licenses.mit;

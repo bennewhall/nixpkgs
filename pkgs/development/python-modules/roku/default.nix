@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildPythonPackage, requests, pytest, flask, isPy27
+{ stdenv, fetchFromGitHub, buildPythonPackage, requests, pytest, flask, isPy27
 }:
 
 buildPythonPackage rec {
@@ -18,7 +18,7 @@ buildPythonPackage rec {
   checkInputs = [ pytest flask ];
   pythonImportsCheck = [ "roku" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Screw remotes. Control your Roku with Python.";
     homepage = "https://github.com/jcarbaugh/python-roku";
     license = licenses.bsd3;

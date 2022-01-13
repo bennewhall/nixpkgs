@@ -1,4 +1,4 @@
-{ lib, fetchzip, buildDunePackage }:
+{ lib, fetchFromBitbucket, buildDunePackage }:
 
 buildDunePackage rec {
   pname = "nonstd";
@@ -6,15 +6,17 @@ buildDunePackage rec {
 
   minimumOCamlVersion = "4.02";
 
-  src = fetchzip {
-    url = "https://bitbucket.org/smondet/${pname}/get/${pname}.${version}.tar.gz";
+  src = fetchFromBitbucket {
+    owner = "smondet";
+    repo = pname;
+    rev = "${pname}.${version}";
     sha256 = "0ccjwcriwm8fv29ij1cnbc9win054kb6pfga3ygzdbjpjb778j46";
   };
 
   doCheck = true;
 
   meta = with lib; {
-    homepage = "https://bitbucket.org/smondet/nonstd";
+    homepage = https://bitbucket.org/smondet/nonstd;
     description = "Non-standard mini-library";
     license = licenses.isc;
     maintainers = [ maintainers.alexfmpe ];

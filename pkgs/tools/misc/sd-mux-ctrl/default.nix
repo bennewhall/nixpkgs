@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, cmake, pkg-config, libftdi1, popt}:
+{ stdenv, fetchgit, cmake, pkgconfig, libftdi1, popt}:
 
 stdenv.mkDerivation rec {
   pname = "sd-mux-ctrl-unstable";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "0fxl8m1zkkyxkc2zi8930m0njfgnd04a22acny6vljnzag2shjvg";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [ libftdi1 popt ];
 
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     install -D -m 644 ../doc/man/sd-mux-ctrl.1 $out/share/man/man1/sd-mux-ctrl.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for controlling multiple sd-mux devices";
     homepage = "https://wiki.tizen.org/SD_MUX";
     license = licenses.asl20;

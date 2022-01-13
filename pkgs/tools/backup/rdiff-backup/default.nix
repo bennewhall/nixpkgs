@@ -1,36 +1,23 @@
-{ lib, python3Packages, librsync }:
+{stdenv, fetchurl, python2Packages, librsync, gnused }:
 
-let
-  pypkgs = python3Packages;
+python2Packages.buildPythonApplication {
+  name = "rdiff-backup-1.3.3";
 
-in
-pypkgs.buildPythonApplication rec {
-  pname = "rdiff-backup";
-  version = "2.0.5";
-
-  src = pypkgs.fetchPypi {
-    inherit pname version;
-    sha256 = "sha256-VNFgOOYgFO2RbHHIMDsH0vphpqaAOMoYn8LTFTSw84s=";
+  src = fetchurl {
+    url = "mirror://savannah/rdiff-backup/rdiff-backup-1.3.3.tar.gz";
+    sha256 = "01hcwf5rgqi303fa4kdjkbpa7n8mvvh7h9gpgh2b23nz73k0q0zf";
   };
 
-  # pkg_resources fails to find the version and then falls back to "DEV"
-  postPatch = ''
-    substituteInPlace src/rdiff_backup/Globals.py \
-      --replace 'version = "DEV"' 'version = "${version}"'
-  '';
+  patches = [ ./fix-librsync-rs_default_strong_len.patch ];
 
-  buildInputs = [ librsync ];
+  buildInputs = [ librsync gnused ];
 
-  nativeBuildInputs = with pypkgs; [ setuptools-scm ];
-
-  # no tests from pypi
   doCheck = false;
 
-  meta = with lib; {
+  meta = {
     description = "Backup system trying to combine best a mirror and an incremental backup system";
-    homepage = "https://rdiff-backup.net";
-    license = licenses.gpl2Only;
-    maintainers = with maintainers; [ peterhoeg ];
-    platforms = platforms.all;
+    homepage = "http://rdiff-backup.nongnu.org/";
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.all;
   };
 }

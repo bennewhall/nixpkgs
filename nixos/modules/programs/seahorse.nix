@@ -31,14 +31,14 @@ with lib;
 
   config = mkIf config.programs.seahorse.enable {
 
-    programs.ssh.askPassword = mkDefault "${pkgs.gnome.seahorse}/libexec/seahorse/ssh-askpass";
+    programs.ssh.askPassword = mkDefault "${pkgs.gnome3.seahorse}/libexec/seahorse/ssh-askpass";
 
     environment.systemPackages = [
-      pkgs.gnome.seahorse
+      pkgs.gnome3.seahorse
     ];
 
     services.dbus.packages = [
-      pkgs.gnome.seahorse
+      pkgs.gnome3.seahorse
     ];
 
   };

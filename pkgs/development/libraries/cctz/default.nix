@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, darwin }:
+{ stdenv, fetchFromGitHub, darwin }:
 
 stdenv.mkDerivation rec {
   pname = "cctz";
@@ -13,17 +13,17 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  buildInputs = lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Foundation;
+  buildInputs = stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Foundation;
 
   installTargets = [ "install_hdrs" "install_shared_lib" ];
 
-  postInstall = lib.optionalString stdenv.isDarwin ''
+  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
     install_name_tool -id $out/lib/libcctz.so $out/lib/libcctz.so
   '';
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/google/cctz";
     description = "C++ library for translating between absolute and civil times";
     license = licenses.asl20;

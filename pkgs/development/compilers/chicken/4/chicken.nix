@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, darwin, bootstrap-chicken ? null }:
+{ stdenv, fetchurl, makeWrapper, darwin, bootstrap-chicken ? null }:
 
 let
   version = "4.13.0";
@@ -8,6 +8,7 @@ let
     else if (isFreeBSD || isOpenBSD) then "bsd"
     else if isSunOS then "solaris"
     else "linux"; # Should be a sane default
+  lib = stdenv.lib;
 in
 stdenv.mkDerivation {
   pname = "chicken";
@@ -69,9 +70,9 @@ stdenv.mkDerivation {
 
   meta = {
     homepage = "http://www.call-cc.org/";
-    license = lib.licenses.bsd3;
-    maintainers = with lib.maintainers; [ corngood ];
-    platforms = lib.platforms.linux ++ lib.platforms.darwin; # Maybe other Unix
+    license = stdenv.lib.licenses.bsd3;
+    maintainers = with stdenv.lib.maintainers; [ corngood ];
+    platforms = stdenv.lib.platforms.linux ++ stdenv.lib.platforms.darwin; # Maybe other Unix
     description = "A portable compiler for the Scheme programming language";
     longDescription = ''
       CHICKEN is a compiler for the Scheme programming language.

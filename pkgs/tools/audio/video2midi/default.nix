@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, pythonPackages, opencv3 }:
+{ stdenv, fetchFromGitHub, pythonPackages, opencv3 }:
 
 let
   opencv3_ = pythonPackages.toPythonModule (opencv3.override {
@@ -25,11 +25,11 @@ in pythonPackages.buildPythonApplication rec {
     install -Dm755 v2m.py $out/bin/v2m.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Youtube synthesia video to midi conversion tool";
     homepage = src.meta.homepage;
     license = licenses.gpl3;
-    maintainers = [ ];
+    maintainers = [ maintainers.gnidorah ];
     platforms = platforms.linux;
   };
 }

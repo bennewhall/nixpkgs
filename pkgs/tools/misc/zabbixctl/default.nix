@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "zabbixctl";
@@ -15,7 +15,7 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Most effective way for operating in Zabbix Server";
     homepage = "https://github.com/kovetskiy/zabbixctl";
     license = licenses.mit;

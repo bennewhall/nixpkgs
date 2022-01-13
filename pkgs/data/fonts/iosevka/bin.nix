@@ -3,15 +3,14 @@
 }:
 
 let
-  name = if lib.hasPrefix "sgr" variant then variant
-    else "iosevka" + lib.optionalString (variant != "") "-" + variant;
+  name = "iosevka" + lib.optionalString (variant != "") "-" + variant;
 
   variantHashes = import ./variants.nix;
   validVariants = map (lib.removePrefix "iosevka-")
     (builtins.attrNames (builtins.removeAttrs variantHashes [ "iosevka" ]));
 in stdenv.mkDerivation rec {
   pname = "${name}-bin";
-  version = "10.1.0";
+  version = "4.0.2";
 
   src = fetchurl {
     url = "https://github.com/be5invis/Iosevka/releases/download/v${version}/ttc-${name}-${version}.zip";
@@ -23,7 +22,7 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ unzip ];
 
-  dontInstall = true;
+  phases = [ "unpackPhase" ];
 
   unpackPhase = ''
     mkdir -p $out/share/fonts

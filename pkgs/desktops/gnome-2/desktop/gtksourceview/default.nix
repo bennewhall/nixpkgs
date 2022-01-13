@@ -1,8 +1,8 @@
-{lib, stdenv, fetchpatch, fetchurl, autoreconfHook, pkg-config, atk, cairo, glib
+{stdenv, fetchpatch, fetchurl, autoreconfHook, pkgconfig, atk, cairo, glib
 , gnome-common, gtk2, pango
 , libxml2Python, perl, intltool, gettext, gtk-mac-integration-gtk2 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "gtksourceview";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     atk cairo glib gtk2
     pango libxml2Python perl intltool

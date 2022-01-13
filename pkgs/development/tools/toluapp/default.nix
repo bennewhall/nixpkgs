@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, sconsPackages, lua }:
+{ stdenv, fetchFromGitHub, sconsPackages, lua }:
 
 stdenv.mkDerivation rec {
   version = "1.0.93";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
       --replace /usr/local $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool to integrate C/Cpp code with Lua";
     homepage = "http://www.codenix.com/~tolua/";
     license = licenses.mit;

@@ -19,7 +19,6 @@ buildPythonPackage rec {
     description = "Python bindings for Linux SPI access through spidev";
     license = licenses.mit;
     maintainers = with maintainers; [ hexa ];
-    platforms = platforms.linux;
   };
 
 }

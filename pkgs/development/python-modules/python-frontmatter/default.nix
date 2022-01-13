@@ -1,36 +1,30 @@
-{ lib, fetchFromGitHub, buildPythonPackage, pyyaml, six, pytest, pyaml }:
+{ stdenv, lib, fetchFromGitHub, python3Packages }:
 
-buildPythonPackage rec {
+python3Packages.buildPythonPackage rec {
   pname = "python-frontmatter";
-  version = "1.0.0";
+  version = "0.5.0";
 
   src = fetchFromGitHub {
     owner = "eyeseast";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0flyh2pb0z4lq66dmmsgyakvg11yhkp4dk7qnzanl34z7ikp97bx";
+    sha256 = "1iki3rcbg7zs93m3mgqzncybqgdcch25qpwy84iz96qq8pipfs6g";
   };
 
-  propagatedBuildInputs = [
+  propagatedBuildInputs = with python3Packages; [
     pyyaml
-    pyaml # yes, it's needed
     six
   ];
 
-  # tries to import test.test, which conflicts with module
-  # exported by python interpreter
-  doCheck = false;
-  checkInputs = [
+  checkInputs = with python3Packages; [
     pytest
   ];
 
-  pythonImportsCheck = [ "frontmatter" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/eyeseast/python-frontmatter";
     description = "Parse and manage posts with YAML (or other) frontmatter";
     license = licenses.mit;
     maintainers = with maintainers; [ siraben ];
-    platforms = platforms.unix;
+    platforms = lib.platforms.unix;
   };
 }

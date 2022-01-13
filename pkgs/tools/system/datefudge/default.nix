@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchgit, fetchpatch, makeWrapper, coreutils }:
+{ stdenv, fetchgit, fetchpatch }:
 
 stdenv.mkDerivation rec {
   pname = "datefudge";
@@ -10,10 +10,6 @@ stdenv.mkDerivation rec {
     sha256 = "1nh433yx4y4djp0bs6aawqbwk7miq7fsbs9wpjlyh2k9dvil2lrm";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-
-  buildInputs = [ coreutils ];
-
   postPatch = ''
     substituteInPlace Makefile \
      --replace "/usr" "/" \
@@ -24,12 +20,9 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "DESTDIR=$(out)" ];
 
-  postInstall = ''
-    chmod +x $out/lib/datefudge/datefudge.so
-    wrapProgram $out/bin/datefudge --prefix PATH : ${coreutils}/bin
-  '';
+  postInstall = "chmod +x $out/lib/datefudge/datefudge.so";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fake the system date";
     longDescription = ''
       datefudge is a small utility that pretends that the system time is

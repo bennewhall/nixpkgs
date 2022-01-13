@@ -23,10 +23,6 @@ stdenv.mkDerivation rec {
     sha256 = "0psw67mzysdb8fkh8xpcwicm7z94k8plkcc8ymxyvl6inshq0mc7";
   };
 
-  # Revert after https://github.com/NixOS/nixpkgs/issues/125008 is
-  # fixed properly
-  patches = [ ./cmake-fix-libxml2-find-package.patch ];
-
   nativeBuildInputs = [
     cmake
     flex
@@ -57,7 +53,7 @@ stdenv.mkDerivation rec {
     moveToOutput ${python.sitePackages} "$python"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "API for interfacing with the Linux Industrial I/O Subsystem";
     homepage = "https://github.com/analogdevicesinc/libiio";
     license = licenses.lgpl21Plus;

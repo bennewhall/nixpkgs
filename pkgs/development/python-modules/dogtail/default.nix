@@ -10,7 +10,7 @@
 , gsettings-desktop-schemas
 , fetchurl
 , dbus
-, xvfb-run
+, xvfb_run
 , wrapGAppsHook
 # , fetchPypi
 }:
@@ -18,8 +18,6 @@
 buildPythonPackage {
   pname = "dogtail";
   version = "0.9.11";
-
-  outputs = [ "out" "dev" ];
 
   # https://gitlab.com/dogtail/dogtail/issues/1
   # src = fetchPypi {
@@ -35,7 +33,7 @@ buildPythonPackage {
     ./nix-support.patch
   ];
 
-  nativeBuildInputs = [ gobject-introspection dbus xvfb-run wrapGAppsHook ]; # for setup hooks
+  nativeBuildInputs = [ gobject-introspection dbus xvfb_run wrapGAppsHook ]; # for setup hooks
   propagatedBuildInputs = [ at-spi2-core gtk3 pygobject3 pyatspi pycairo ];
   strictDeps = false; # issue 56943
 

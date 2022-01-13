@@ -1,4 +1,5 @@
 { lib
+, python
 , buildPythonPackage
 , bootstrapped-pip
 , fetchFromGitHub
@@ -7,18 +8,20 @@
 , virtualenv
 , pretend
 , pytest
+, setuptools
+, wheel
 }:
 
 buildPythonPackage rec {
   pname = "pip";
-  version = "21.1.3";
+  version = "20.3";
   format = "other";
 
   src = fetchFromGitHub {
     owner = "pypa";
     repo = pname;
     rev = version;
-    sha256 = "sha256-zfMz9p4I6Kmw849xuvnmGWHmWtajDntFW1jjDilKkgk=";
+    sha256 = "e/2/0MrGY3myELmvuTAbNfXCBuT8kmvz9qTwITdDtQU=";
     name = "${pname}-${version}-source";
   };
 

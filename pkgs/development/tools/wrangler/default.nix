@@ -1,29 +1,32 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, pkg-config, openssl, curl, Security, CoreServices, CoreFoundation, libiconv }:
+{ stdenv, fetchFromGitHub, rustPlatform, pkg-config, openssl, curl, darwin, perl }:
 
 rustPlatform.buildRustPackage rec {
   pname = "wrangler";
-  version = "1.19.6";
+  version = "1.12.2";
 
   src = fetchFromGitHub {
     owner = "cloudflare";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-eFrILGq6rlm/u8RAxGHRaFgOT88I8T4inAKCoJpqPYA=";
+    sha256 = "1w0j6if1fnih1036hlb9a3c6wgjw4p057llhjf0f3d568ah1244a";
   };
 
-  cargoSha256 = "sha256-8JgtaSROcS9DwcnK7Yky8Ol8AJPI7guU08iaz9yPC8g=";
+  cargoSha256 = "0d9wvdjjakznz8dnqx4gqxh0xkxrh4229460hg6dr9qn492p7nfx";
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ perl ] ++ stdenv.lib.optionals stdenv.isLinux [ pkg-config ];
 
-  buildInputs = [ openssl ]
-    ++ lib.optionals stdenv.isDarwin [ curl CoreFoundation CoreServices Security libiconv ];
-
-  OPENSSL_NO_VENDOR = 1;
+  buildInputs = stdenv.lib.optionals stdenv.isLinux [ openssl ]
+    ++ stdenv.lib.optionals stdenv.isDarwin [
+      curl
+      darwin.apple_sdk.frameworks.Security
+      darwin.apple_sdk.frameworks.CoreServices
+      darwin.apple_sdk.frameworks.CoreFoundation
+    ];
 
   # tries to use "/homeless-shelter" and fails
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A CLI tool designed for folks who are interested in using Cloudflare Workers";
     homepage = "https://github.com/cloudflare/wrangler";
     license = with licenses; [ asl20 /* or */ mit ];

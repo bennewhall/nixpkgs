@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , testtools
@@ -21,7 +21,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ testtools ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A pyunit extension for dependency injection";
     homepage = "https://pypi.python.org/pypi/testscenarios";
     license = licenses.asl20;

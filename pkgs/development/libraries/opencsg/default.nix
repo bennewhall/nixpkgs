@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, libGLU, libGL, freeglut, glew, libXmu, libXext, libX11
+{stdenv, fetchurl, libGLU, libGL, freeglut, glew, libXmu, libXext, libX11
 , qmake, GLUT, fixDarwinDylibNames }:
 
 stdenv.mkDerivation rec {
@@ -10,11 +10,11 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ qmake ]
-    ++ lib.optional stdenv.isDarwin fixDarwinDylibNames;
+    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
 
   buildInputs = [ glew ]
-    ++ lib.optionals stdenv.isLinux [ libGLU libGL freeglut libXmu libXext libX11 ]
-    ++ lib.optional stdenv.isDarwin GLUT;
+    ++ stdenv.lib.optionals stdenv.isLinux [ libGLU libGL freeglut libXmu libXext libX11 ]
+    ++ stdenv.lib.optional stdenv.isDarwin GLUT;
 
   doCheck = false;
 
@@ -27,15 +27,13 @@ stdenv.mkDerivation rec {
 
   postInstall = ''
     install -D license.txt "$out/share/doc/opencsg/license.txt"
-  '' + lib.optionalString stdenv.isDarwin ''
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
     mkdir -p $out/Applications
     mv $out/bin/*.app $out/Applications
     rmdir $out/bin || true
   '';
 
-  dontWrapQtApps = true;
-
-  postFixup = lib.optionalString stdenv.isDarwin ''
+  postFixup = stdenv.lib.optionalString stdenv.isDarwin ''
     app=$out/Applications/opencsgexample.app/Contents/MacOS/opencsgexample
     install_name_tool -change \
       $(otool -L $app | awk '/opencsg.+dylib/ { print $1 }') \
@@ -43,7 +41,7 @@ stdenv.mkDerivation rec {
       $app
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Constructive Solid Geometry library";
     homepage = "http://www.opencsg.org/";
     platforms = platforms.unix;

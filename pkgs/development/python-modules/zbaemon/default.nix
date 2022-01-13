@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , zconfig
@@ -18,7 +18,7 @@ buildPythonPackage rec {
   # too many deps..
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A daemon process control library and tools for Unix-based systems";
     homepage = "https://pypi.python.org/pypi/zdaemon";
     license = licenses.zpl20;

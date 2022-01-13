@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, isPy3k, cryptography, chardet, nose, sortedcontainers }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, isPy3k, cryptography, chardet, nose, sortedcontainers }:
 
 buildPythonPackage rec {
   pname = "pdfminer_six";
@@ -6,6 +6,7 @@ buildPythonPackage rec {
 
   disabled = !isPy3k;
 
+  # No tests in PyPi Tarball
   src = fetchFromGitHub {
     owner = "pdfminer";
     repo = "pdfminer.six";
@@ -15,18 +16,12 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ chardet cryptography sortedcontainers ];
 
-  postInstall = ''
-    for file in $out/bin/*.py; do
-      ln $file ''${file//.py/}
-    done
-  '';
-
   checkInputs = [ nose ];
   checkPhase = ''
     nosetests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PDF parser and analyzer";
     homepage = "https://github.com/pdfminer/pdfminer.six";
     license = licenses.mit;

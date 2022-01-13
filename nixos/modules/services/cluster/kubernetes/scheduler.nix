@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   top = config.services.kubernetes;
-  otop = options.services.kubernetes;
   cfg = top.scheduler;
 in
 {
@@ -22,13 +21,12 @@ in
     extraOpts = mkOption {
       description = "Kubernetes scheduler extra command line options.";
       default = "";
-      type = separatedString " ";
+      type = str;
     };
 
     featureGates = mkOption {
       description = "List set of feature gates";
       default = top.featureGates;
-      defaultText = literalExpression "config.${otop.featureGates}";
       type = listOf str;
     };
 
@@ -80,9 +78,6 @@ in
         Group = "kubernetes";
         Restart = "on-failure";
         RestartSec = 5;
-      };
-      unitConfig = {
-        StartLimitIntervalSec = 0;
       };
     };
 

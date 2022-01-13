@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
   version = "1.0.5";
@@ -11,9 +11,9 @@ stdenv.mkDerivation rec {
     sha256 = "01iqbpbhnqfifhv82m6hi8190w5sdim4qyrkss7z1zyv3gpchc5s";
   };
 
-  nativeBuildInputs = [ cmake ];
+  buildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library for parsing JSON config files";
     homepage = "https://github.com/andrewrk/liblaxjson";
     license = licenses.mit;

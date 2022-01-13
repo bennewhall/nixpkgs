@@ -1,5 +1,5 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k, python3, xvfb-run
-, wrapGAppsHook, gobject-introspection, pygobject3, graphviz, gtk3, numpy }:
+{ lib, buildPythonPackage, fetchPypi, isPy3k
+, wrapGAppsHook, gobject-introspection, pygobject3, graphviz, gtk3 }:
 
 buildPythonPackage rec {
   pname = "xdot";
@@ -11,21 +11,9 @@ buildPythonPackage rec {
   };
 
   disabled = !isPy3k;
+
   nativeBuildInputs = [ wrapGAppsHook ];
-  propagatedBuildInputs = [ gobject-introspection pygobject3 graphviz gtk3 numpy ];
-  checkInputs = [ xvfb-run ];
-
-  postInstall = ''
-    wrapProgram "$out/bin/xdot" --prefix PATH : "${lib.makeBinPath [ graphviz ]}"
-  '';
-
-  checkPhase = ''
-    xvfb-run -s '-screen 0 800x600x24' ${python3.interpreter} nix_run_setup test
-  '';
-
-  # https://github.com/NixOS/nixpkgs/pull/107872#issuecomment-752175866
-  # cannot import name '_gi' from partially initialized module 'gi' (most likely due to a circular import)
-  doCheck = false;
+  propagatedBuildInputs = [ gobject-introspection pygobject3 graphviz gtk3 ];
 
   meta = with lib; {
     description = "An interactive viewer for graphs written in Graphviz's dot";

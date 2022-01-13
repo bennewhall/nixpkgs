@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchurl
 , isPyPy
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
   disabled = isPyPy || isPy3k;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Media Meta Data retrieval framework";
     homepage = "https://sourceforge.net/projects/mmpython/";
     license = licenses.gpl2;

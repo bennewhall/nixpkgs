@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchurl, texinfo, alsa-lib, libpulseaudio, CoreAudio }:
+{ stdenv, fetchurl, texinfo, alsaLib, libpulseaudio, CoreAudio }:
 
 let
-  inherit (lib) optional optionalString;
+  inherit (stdenv.lib) optional optionalString;
 
 in stdenv.mkDerivation rec {
   name = "libmikmod-3.3.11.1";
@@ -11,14 +11,14 @@ in stdenv.mkDerivation rec {
   };
 
   buildInputs = [ texinfo ]
-    ++ optional stdenv.isLinux alsa-lib
+    ++ optional stdenv.isLinux alsaLib
     ++ optional stdenv.isDarwin CoreAudio;
   propagatedBuildInputs =
     optional stdenv.isLinux libpulseaudio;
 
   NIX_LDFLAGS = optionalString stdenv.isLinux "-lasound";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for playing tracker music module files";
     homepage    = "https://mikmod.shlomifish.org/";
     license     = licenses.lgpl2Plus;

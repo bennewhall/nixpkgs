@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27, six, attrs, twisted, pyopenssl, service-identity, autobahn, treq, mock, pytest }:
+{ stdenv, buildPythonPackage, fetchPypi, isPy27, six, attrs, twisted, pyopenssl, service-identity, autobahn, treq, mock, pytest }:
 
 buildPythonPackage rec {
   version = "0.4.1";
@@ -18,7 +18,7 @@ buildPythonPackage rec {
     pytest
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Securely transfer data between computers";
     homepage = "https://github.com/warner/magic-wormhole-mailbox-server";
     license = licenses.mit;

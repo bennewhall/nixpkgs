@@ -1,39 +1,33 @@
-{ lib, python3Packages, ffmpeg }:
+{ lib, python3Packages, ffmpeg_3 }:
 
 python3Packages.buildPythonApplication rec {
-  version = "2.2";
+  version = "2.1.1";
   pname   = "sigal";
 
   src = python3Packages.fetchPypi {
     inherit version pname;
-    sha256 = "sha256-49XsNdZuicsiYJZuF1UdqMA4q33Ly/Ug/Hc4ybJKmPo=";
+    sha256 = "0l07p457svznirz7qllgyl3qbhiisv7klhz7cbdw6417hxf9bih8";
   };
 
   disabled = !(python3Packages.pythonAtLeast "3.6");
 
+  checkInputs = with python3Packages; [ pytest ];
   propagatedBuildInputs = with python3Packages; [
-    # install_requires
     jinja2
     markdown
     pillow
     pilkit
+    clint
     click
     blinker
     natsort
-    # extras_require
-    brotli
-    feedgenerator
-    zopfli
-    cryptography
+    setuptools_scm
   ];
 
-  checkInputs = [
-    ffmpeg
-  ] ++ (with python3Packages; [
-    pytestCheckHook
-  ]);
+  makeWrapperArgs = [ "--prefix PATH : ${ffmpeg_3}/bin" ];
 
-  makeWrapperArgs = [ "--prefix PATH : ${ffmpeg}/bin" ];
+  # No tests included
+  doCheck = false;
 
   meta = with lib; {
     description = "Yet another simple static gallery generator";

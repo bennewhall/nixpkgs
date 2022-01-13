@@ -1,13 +1,11 @@
-{ lib, stdenv, fetchgit }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "numad";
-  version = "0.5";
+  name = "numad-0.5";
 
-  src = fetchgit {
-    url = "https://pagure.io/numad.git";
-    rev = "334278ff3d774d105939743436d7378a189e8693";
-    sha256 = "sha256-6nrbfooUI1ufJhsPf68li5584oKQcznXQlxfpStuX5I=";
+  src = fetchurl {
+    url = "https://git.fedorahosted.org/cgit/numad.git/snapshot/${name}.tar.xz";
+    sha256 = "08zd1yc3w00yv4mvvz5sq1gf91f6p2s9ljcd72m33xgnkglj60v4";
   };
 
   hardeningDisable = [ "format" ];
@@ -21,11 +19,11 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "prefix=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A user-level daemon that monitors NUMA topology and processes resource consumption to facilitate good NUMA resource access";
     homepage = "https://fedoraproject.org/wiki/Features/numad";
     license = licenses.lgpl21;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ domenkozar ];
   };
 }

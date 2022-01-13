@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , openfst
 , pkg-config
@@ -7,12 +7,12 @@
 
 stdenv.mkDerivation rec {
   pname = "phonetisaurus";
-  version = "0.9.1";
+  version = "2020-07-31";
 
   src = fetchFromGitHub {
     owner = "AdolfVonKleist";
     repo = pname;
-    rev = version;
+    rev = "2831870697de5b4fbcb56a6e1b975e0e1ea10deb";
     sha256 = "1b18s5zz0l0fhqh9n9jnmgjz2hzprwzf6hx5a12zibmmam3qyriv";
   };
 
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ python3 openfst ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Framework for Grapheme-to-phoneme models for speech recognition using the OpenFst framework";
     inherit (src.meta) homepage;
     license = licenses.bsd3;

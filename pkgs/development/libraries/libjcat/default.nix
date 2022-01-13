@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , docbook_xml_dtd_43
 , docbook-xsl-nons
@@ -8,6 +8,7 @@
 , gpgme
 , gobject-introspection
 , vala
+, help2man
 , gtk-doc
 , meson
 , ninja
@@ -18,7 +19,7 @@
 
 stdenv.mkDerivation rec {
   pname = "libjcat";
-  version = "0.1.7";
+  version = "0.1.4";
 
   outputs = [ "bin" "out" "dev" "devdoc" "man" "installedTests" ];
 
@@ -26,7 +27,7 @@ stdenv.mkDerivation rec {
     owner = "hughsie";
     repo = "libjcat";
     rev = version;
-    sha256 = "sha256-WYCYRFjjy9nr1p1SqzBGCBZ5vkhFybddXpHUcwdEDIQ=";
+    sha256 = "156sykcdzdfmd7va59qld4gyzhbf2yk1dfgifi494g6i99zyigfh";
   };
 
   patches = [
@@ -42,6 +43,7 @@ stdenv.mkDerivation rec {
     docbook-xsl-nons
     gobject-introspection
     vala
+    help2man
     gtk-doc
     (python3.withPackages (pkgs: with pkgs; [
       setuptools
@@ -72,7 +74,7 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library for reading and writing Jcat files";
     homepage = "https://github.com/hughsie/libjcat";
     license = licenses.lgpl21Plus;

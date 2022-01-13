@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , repoze_lru
@@ -25,7 +25,7 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "routes" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Python re-implementation of the Rails routes system for mapping URLs to application actions";
     homepage = "http://routes.groovie.org/";
     license = licenses.mit;

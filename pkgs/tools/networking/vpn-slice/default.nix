@@ -1,25 +1,19 @@
-{ lib, buildPythonApplication, nix-update-script, python3Packages, fetchFromGitHub }:
+{ lib, buildPythonApplication, python3Packages, fetchFromGitHub }:
 
 buildPythonApplication rec {
   pname = "vpn-slice";
-  version = "0.16.1";
+  version = "0.14";
 
   src = fetchFromGitHub {
     owner = "dlenski";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-T6VULLNRLWO4OcAsuTmhty6H4EhinyxQSg0dfv2DUJs=";
+    sha256 = "1z2mdl3arzl95zrj4ir57f762gcimmmq5nk91j679cshxz4snxyr";
   };
 
   propagatedBuildInputs = with python3Packages; [ setproctitle dnspython ];
 
   doCheck = false;
-
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = pname;
-    };
-  };
 
   meta = with lib; {
     homepage = "https://github.com/dlenski/vpn-slice";

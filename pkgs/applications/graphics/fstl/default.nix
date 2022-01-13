@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, mkDerivation, qtbase, mesa_glu }:
+{ stdenv, fetchFromGitHub, mkDerivation, qtbase, mesa_glu }:
 
 mkDerivation rec {
   pname = "fstl";
@@ -13,8 +13,8 @@ mkDerivation rec {
   preBuild = ''
     qmake qt/fstl.pro
   '';
-
-  postInstall = lib.optionalString stdenv.isDarwin ''
+  
+  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
     mkdir -p $out/Applications
     mv fstl.app $out/Applications
   '';
@@ -26,7 +26,7 @@ mkDerivation rec {
     sha256 = "028hzdv11hgvcpc36q5scf4nw1256qswh37xhfn5a0iv7wycmnif";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The fastest STL file viewer";
     homepage = "https://github.com/mkeeter/fstl";
     license = licenses.mit;

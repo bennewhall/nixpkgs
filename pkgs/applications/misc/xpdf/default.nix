@@ -1,7 +1,7 @@
 { enableGUI ? true
 , enablePDFtoPPM ? true
 , enablePrinting ? true
-, lib, stdenv, fetchzip, cmake, makeDesktopItem
+, stdenv, fetchzip, cmake, makeDesktopItem
 , zlib, libpng, cups ? null, freetype ? null
 , qtbase ? null, qtsvg ? null, wrapQtAppsHook
 }:
@@ -12,29 +12,31 @@ assert enablePrinting -> cups != null;
 
 stdenv.mkDerivation rec {
   pname = "xpdf";
-  version = "4.03";
+  version = "4.02";
 
   src = fetchzip {
-    url = "https://dl.xpdfreader.com/xpdf-${version}.tar.gz";
-    sha256 = "09yhvmh1vxjy763nnmawynygp5bh3j4i8ixqja64j11676yl77n6";
+    url = "https://xpdfreader-dl.s3.amazonaws.com/${pname}-${version}.tar.gz";
+    sha256 = "0dzwq6fnk013wa4l5mjpvm4mms2mh5hbrxv4rhk2ab5ljbzz7b2w";
   };
 
   # Fix "No known features for CXX compiler", see
   # https://cmake.org/pipermail/cmake/2016-December/064733.html and the note at
   # https://cmake.org/cmake/help/v3.10/command/cmake_minimum_required.html
-  patches = lib.optional stdenv.isDarwin  ./cmake_version.patch;
+  patches = stdenv.lib.optional stdenv.isDarwin  ./cmake_version.patch;
 
   nativeBuildInputs =
     [ cmake ]
-    ++ lib.optional enableGUI wrapQtAppsHook;
+    ++ stdenv.lib.optional enableGUI wrapQtAppsHook;
 
   cmakeFlags = ["-DSYSTEM_XPDFRC=/etc/xpdfrc" "-DA4_PAPER=ON" "-DOPI_SUPPORT=ON"]
-    ++ lib.optional (!enablePrinting) "-DXPDFWIDGET_PRINTING=OFF";
+    ++ stdenv.lib.optional (!enablePrinting) "-DXPDFWIDGET_PRINTING=OFF";
 
   buildInputs = [ zlib libpng ] ++
-    lib.optional enableGUI qtbase ++
-    lib.optional enablePrinting cups ++
-    lib.optional enablePDFtoPPM freetype;
+    stdenv.lib.optional enableGUI qtbase ++
+    stdenv.lib.optional enablePrinting cups ++
+    stdenv.lib.optional enablePDFtoPPM freetype;
+
+  hardeningDisable = [ "format" ];
 
   desktopItem = makeDesktopItem {
     name = "xpdf";
@@ -46,12 +48,12 @@ stdenv.mkDerivation rec {
     terminal = "false";
   };
 
-  postInstall = lib.optionalString (!stdenv.isDarwin) ''
-    install -Dm644 ${desktopItem}/share/applications/xpdf.desktop -t $out/share/applications
+  postInstall = ''
+    install -Dm644 ${desktopItem}/share/applications/xpdf.desktop $out/share/applications/xpdf.desktop
     install -Dm644 $src/xpdf-qt/xpdf-icon.svg $out/share/pixmaps/xpdf.svg
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.xpdfreader.com";
     description = "Viewer for Portable Document Format (PDF) files";
     longDescription = ''
@@ -67,7 +69,7 @@ stdenv.mkDerivation rec {
         pdffonts:  lists fonts used in PDF files
         pdfdetach: extracts attached files from PDF files
     '';
-    license = with licenses; [ gpl2Only gpl3Only ];
+    license = with licenses; [ gpl2 gpl3 ];
     platforms = platforms.unix;
     maintainers = with maintainers; [ sikmir ];
     knownVulnerabilities = [

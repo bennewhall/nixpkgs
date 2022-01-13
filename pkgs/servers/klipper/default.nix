@@ -2,17 +2,16 @@
 , lib
 , fetchFromGitHub
 , python2
-, unstableGitUpdater
 }:
 stdenv.mkDerivation rec {
-  pname = "klipper";
-  version = "unstable-2021-12-24";
+  name = "klipper";
+  version = "0.9.1";
 
   src = fetchFromGitHub {
     owner = "KevinOConnor";
     repo = "klipper";
-    rev = "247cd753e283e70a9949e76d0ba669d99c0eb144";
-    sha256 = "sha256-65wxhE/XqNK6ly+fxZFLjtImvpJlgU54RStUve40CJA=";
+    rev = "v${version}";
+    sha256 = "1wgklngsz6xxl25qxi9fkqhbyhwy61iyyk76ycq68b3miayrkgpj";
   };
 
   sourceRoot = "source/klippy";
@@ -40,12 +39,10 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  passthru.updateScript = unstableGitUpdater { url = meta.homepage; };
-
   meta = with lib; {
     description = "The Klipper 3D printer firmware";
     homepage = "https://github.com/KevinOConnor/klipper";
-    maintainers = with maintainers; [ lovesegfault zhaofengli ];
+    maintainers = with maintainers; [ lovesegfault ];
     platforms = platforms.linux;
     license = licenses.gpl3Only;
   };

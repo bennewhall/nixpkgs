@@ -2,20 +2,20 @@
 
 buildGoModule rec {
   pname = "minify";
-  version = "2.9.22";
+  version = "2.7.4";
 
   src = fetchFromGitHub {
     owner = "tdewolff";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-ph5PrM917qGwp7SLg6Ujfk5YJWFSlUBdW/JJRiwq7fw=";
+    sha256 = "06xzb681g4lfrpqa1rhpq5mm83vpik8qp6gjxqm2n21bfph88jm2";
   };
 
-  vendorSha256 = "sha256-0GKIGIVtMywpKxopsVrUZMgeXP/l76U2As8FiG2Niqw=";
+  vendorSha256 = "120d3nzk8cr5496cxp5p6ydlzw9mmpg7dllqhv1kpgwlbxmd8vr3";
 
   doCheck = false;
 
-  ldflags = [ "-s" "-w" "-X main.Version=${version}" ];
+  buildFlagsArray = [ "-ldflags=-s -w -X main.Version=${version}" ];
 
   meta = with lib; {
     description = "Minifiers for web formats";

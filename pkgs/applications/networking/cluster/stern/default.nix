@@ -1,30 +1,27 @@
-{ stdenv, lib, buildPackages, buildGoModule, fetchFromGitHub, installShellFiles }:
-let isCrossBuild = stdenv.hostPlatform != stdenv.buildPlatform;
+{ stdenv, lib, buildPackages, buildGoPackage, fetchFromGitHub, installShellFiles }:
 
-in
-buildGoModule rec {
+let isCrossBuild = stdenv.hostPlatform != stdenv.buildPlatform; in
+
+buildGoPackage rec {
   pname = "stern";
-  version = "1.20.1";
+  version = "1.11.0";
+
+  goPackagePath = "github.com/wercker/stern";
 
   src = fetchFromGitHub {
-    owner = "stern";
+    owner = "wercker";
     repo = "stern";
-    rev = "v${version}";
-    sha256 = "sha256-JredVk2hjnhoaJ9bT7D5k35skBNjcEBLa6GgO8dB2+U=";
+    rev = version;
+    sha256 = "0xndlq0ks8flzx6rdd4lnkxpkbvdy9sj1jwys5yj7p989ls8by3n";
   };
 
-  vendorSha256 = "sha256-ybsDB54kkbONi3b9URtNUusHIdUfzymOpYlNHJz4i2A=";
-
-  subPackages = [ "." ];
+  deleteVendor = true;
+  goDeps = ./deps.nix;
 
   nativeBuildInputs = [ installShellFiles ];
 
-  ldflags =
-    [ "-s" "-w" "-X github.com/stern/stern/cmd.version=${version}" ];
-
   postInstall =
-    let stern = if isCrossBuild then buildPackages.stern else "$out";
-    in
+    let stern = if isCrossBuild then buildPackages.stern else "$out"; in
     ''
       for shell in bash zsh; do
         ${stern}/bin/stern --completion $shell > stern.$shell
@@ -33,10 +30,10 @@ buildGoModule rec {
     '';
 
   meta = with lib; {
-    description = "Multi pod and container log tailing for Kubernetes";
-    homepage = "https://github.com/stern/stern";
-    license = licenses.asl20;
-    maintainers = with maintainers; [ mbode preisschild ];
-    platforms = platforms.unix;
+    description      = "Multi pod and container log tailing for Kubernetes";
+    homepage         = "https://github.com/wercker/stern";
+    license          = licenses.asl20;
+    maintainers      = with maintainers; [ mbode ];
+    platforms        = platforms.unix;
   };
 }

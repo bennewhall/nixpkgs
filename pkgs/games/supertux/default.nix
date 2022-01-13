@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, pkg-config, SDL2, SDL2_image , curl
+{ stdenv, fetchurl, cmake, pkgconfig, SDL2, SDL2_image , curl
 , libogg, libvorbis, libGLU, libGL, openal, boost, glew
 , libpng, freetype
 }:
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "167m3z4m8n76dvbv42m1fnvabpbpsxvr28zk9641916jl9pfba96";
   };
 
-  nativeBuildInputs = [ pkg-config cmake ];
+  nativeBuildInputs = [ pkgconfig cmake ];
 
   buildInputs = [ SDL2 SDL2_image curl libogg libvorbis libGLU libGL openal boost glew
     libpng freetype
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     ln -s $out/games/supertux2 $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Classic 2D jump'n run sidescroller game";
     homepage = "http://supertux.github.io/";
     license = licenses.gpl2;

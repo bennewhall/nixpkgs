@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchurl, ncurses, autoreconfHook, flex }:
+{ stdenv, fetchurl, ncurses, autoreconfHook, flex }:
 let rev = "431604647f89d5aac7b199a7883e98e56e4ccf9e";
 in stdenv.mkDerivation rec {
-  pname = "mmh";
-  version = "unstable-2019-09-08";
+  pname = "mmh-unstable";
+  version = "2019-09-08";
 
   src = fetchurl {
     url = "http://git.marmaro.de/?p=mmh;a=snapshot;h=${rev};sf=tgz";
@@ -10,15 +10,10 @@ in stdenv.mkDerivation rec {
     sha256 = "1q97p4g3f1q2m567i2dbx7mm7ixw3g91ww2rymwj42cxk9iyizhv";
   };
 
-  postPatch = ''
-    substituteInPlace sbr/Makefile.in \
-      --replace "ar " "${stdenv.cc.targetPrefix}ar "
- '';
-
   buildInputs = [ ncurses ];
   nativeBuildInputs = [ autoreconfHook flex ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Set of electronic mail handling programs";
     homepage = "http://marmaro.de/prog/mmh";
     license = licenses.bsd3;

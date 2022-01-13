@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation rec {
   pname = "wireless-tools";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   ];
 
   meta = {
-    platforms = lib.platforms.linux;
-    license = lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

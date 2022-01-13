@@ -1,12 +1,12 @@
-{ lib, stdenv, libressl, fetchzip, pkg-config }:
+{ stdenv, libressl, fetchzip, fetchpatch, pkg-config }:
 
 stdenv.mkDerivation rec {
   pname = "pounce";
-  version = "3.0";
+  version = "2.1p1";
 
   src = fetchzip {
     url = "https://git.causal.agency/pounce/snapshot/pounce-${version}.tar.gz";
-    sha256 = "17vmbfr7ika6kmq9jqa3rpd4cr71arapav7hlmggnj7a9yw5b9mg";
+    sha256 = "1gphia45swj4ws6nrklqg1hvjrc6yw921v0pf29cvjhwrfl6dl0h";
   };
 
   buildInputs = [ libressl ];
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     "PREFIX=$(out)"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://code.causal.agency/june/pounce";
     description = "Simple multi-client TLS-only IRC bouncer";
     license = licenses.gpl3;

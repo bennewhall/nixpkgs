@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, substituteAll
+, fetchsvn
 , jdk
 , jre
 , ant
@@ -9,32 +9,39 @@
 , withExamples ? false
 }:
 let
+  version = "4565";
+  sha256 = "0cfh0msky5812l28mavy6p3k2zgyxb698xk79mvla9l45zcicnvw";
+
   deps = import ./deps.nix { inherit fetchurl; };
   testInputs = import ./testinputs.nix { inherit fetchurl; };
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "mkgmap";
-  version = "4836";
+  inherit version;
 
-  src = fetchurl {
-    url = "https://www.mkgmap.org.uk/download/mkgmap-r${version}-src.tar.gz";
-    sha256 = "nmEl7pN3LW6nqo5IB6GgzcDMHhdAsMySTdANVbybznY=";
+  src = fetchsvn {
+    inherit sha256;
+    url = "https://svn.mkgmap.org.uk/mkgmap/mkgmap/trunk";
+    rev = version;
   };
 
   patches = [
-    (substituteAll {
-      # Disable automatic download of dependencies
-      src = ./build.xml.patch;
-      inherit version;
-    })
+    # Disable automatic download of dependencies
+    ./build.xml.patch
+
+    # Fix testJavaRules test
+    ./fix-failing-test.patch
   ];
 
   postPatch = with deps; ''
+    substituteInPlace build.xml \
+      --subst-var-by version ${version}
+
     mkdir -p lib/compile
     cp ${fastutil} lib/compile/${fastutil.name}
     cp ${osmpbf} lib/compile/${osmpbf.name}
     cp ${protobuf} lib/compile/${protobuf.name}
-  '' + lib.optionalString doCheck ''
+  '' + stdenv.lib.optionalString doCheck ''
     mkdir -p lib/test
     cp ${fastutil} lib/test/${fastutil.name}
     cp ${osmpbf} lib/test/${osmpbf.name}
@@ -44,7 +51,7 @@ stdenv.mkDerivation rec {
     cp ${hamcrest-core} lib/test/${hamcrest-core.name}
 
     mkdir -p test/resources/in/img
-    ${lib.concatMapStringsSep "\n" (res: ''
+    ${stdenv.lib.concatMapStringsSep "\n" (res: ''
       cp ${res} test/resources/in/${builtins.replaceStrings [ "__" ] [ "/" ] res.name}
     '') testInputs}
   '';
@@ -58,22 +65,19 @@ stdenv.mkDerivation rec {
   checkPhase = "ant test";
 
   installPhase = ''
-    install -Dm644 dist/mkgmap.jar -t $out/share/java/mkgmap
-    install -Dm644 dist/doc/mkgmap.1 -t $out/share/man/man1
+    install -Dm644 dist/mkgmap.jar $out/share/java/mkgmap/mkgmap.jar
+    install -Dm644 dist/doc/mkgmap.1 $out/share/man/man1/mkgmap.1
     cp -r dist/lib/ $out/share/java/mkgmap/
     makeWrapper ${jre}/bin/java $out/bin/mkgmap \
       --add-flags "-jar $out/share/java/mkgmap/mkgmap.jar"
-  '' + lib.optionalString withExamples ''
+  '' + stdenv.lib.optionalString withExamples ''
     mkdir -p $out/share/mkgmap
     cp -r dist/examples $out/share/mkgmap/
   '';
 
-  passthru.updateScript = [ ./update.sh "mkgmap" meta.downloadPage ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Create maps for Garmin GPS devices from OpenStreetMap (OSM) data";
-    homepage = "https://www.mkgmap.org.uk/";
-    downloadPage = "https://www.mkgmap.org.uk/download/mkgmap.html";
+    homepage = "http://www.mkgmap.org.uk";
     license = licenses.gpl2Only;
     maintainers = with maintainers; [ sikmir ];
     platforms = platforms.all;

@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, automake }:
+{ stdenv, fetchurl, automake }:
 
 stdenv.mkDerivation rec {
-  pname = "corkscrew";
-  version = "2.0";
+  name = "corkscrew-2.0";
 
   src = fetchurl {
-    url = "http://agroman.net/corkscrew/corkscrew-${version}.tar.gz";
+    url = "http://agroman.net/corkscrew/${name}.tar.gz";
     sha256 = "0d0fcbb41cba4a81c4ab494459472086f377f9edb78a2e2238ed19b58956b0be";
   };
 
@@ -14,10 +13,10 @@ stdenv.mkDerivation rec {
     ln -sf ${automake}/share/automake-*/config.guess config.guess
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "http://agroman.net/corkscrew/";
     description = "A tool for tunneling SSH through HTTP proxies";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     platforms = platforms.unix;
   };
 }

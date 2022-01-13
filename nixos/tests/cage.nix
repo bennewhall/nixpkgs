@@ -2,8 +2,8 @@ import ./make-test-python.nix ({ pkgs, ...} :
 
 {
   name = "cage";
-  meta = with pkgs.lib.maintainers; {
-    maintainers = [ matthewbauer ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ matthewbauer flokli ];
   };
 
   machine = { ... }:
@@ -13,12 +13,19 @@ import ./make-test-python.nix ({ pkgs, ...} :
     services.cage = {
       enable = true;
       user = "alice";
-      # Disable color and bold and use a larger font to make OCR easier:
-      program = "${pkgs.xterm}/bin/xterm -cm -pc -fa Monospace -fs 24";
+      program = "${pkgs.xterm}/bin/xterm -cm -pc"; # disable color and bold to make OCR easier
     };
 
-    # Need to switch to a different GPU driver than the default one (-vga std) so that Cage can launch:
-    virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+    # this needs a fairly recent kernel, otherwise:
+    #   [backend/drm/util.c:215] Unable to add DRM framebuffer: No such file or directory
+    #   [backend/drm/legacy.c:15] Virtual-1: Failed to set CRTC: No such file or directory
+    #   [backend/drm/util.c:215] Unable to add DRM framebuffer: No such file or directory
+    #   [backend/drm/legacy.c:15] Virtual-1: Failed to set CRTC: No such file or directory
+    #   [backend/drm/drm.c:618] Failed to initialize renderer on connector 'Virtual-1': initial page-flip failed
+    #   [backend/drm/drm.c:701] Failed to initialize renderer for plane
+    boot.kernelPackages = pkgs.linuxPackages_latest;
+
+    virtualisation.memorySize = 1024;
   };
 
   enableOCR = true;

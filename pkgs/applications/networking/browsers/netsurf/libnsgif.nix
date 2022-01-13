@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config
+{ stdenv, fetchurl, pkgconfig
 , buildsystem
 }:
 
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-nq6lNM1wtTxar0UxeulXcBaFprSojb407Sb0+q6Hmks=";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ buildsystem ];
 
   makeFlags = [
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     "NSSHARED=${buildsystem}/share/netsurf-buildsystem"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/projects/${libname}/";
     description = "GIF Decoder for netsurf browser";
     license = licenses.mit;

@@ -1,28 +1,28 @@
-{ lib
-, buildGoModule
+{ stdenv
+, buildGoPackage
 , fetchFromGitHub
 }:
 
-buildGoModule rec {
+with builtins;
+
+buildGoPackage rec {
   pname = "safe";
-  version = "1.6.1";
+  version = "1.5.1";
 
   src = fetchFromGitHub {
     owner = "starkandwayne";
     repo = "safe";
     rev = "v${version}";
-    sha256 = "sha256-ankX4BeMvBEd0e01mQHfaPg4z1z+IZqELaSEJ5deF8Y=";
+    sha256 = "12gzxrnyl890h79z9yx23m1wwgy8ahm74q4qwi8n2nh7ydq6mn2d";
   };
 
-  vendorSha256 = "sha256-7hX35FfFxfoiI/dSxWhZH8iJoRWa4slAJF0lULq8KL4=";
+  goPackagePath = "github.com/starkandwayne/safe";
 
-  subPackages = [ "." ];
+  preBuild = ''
+    buildFlagsArray+=("-ldflags" "-X main.Version=${version}")
+  '';
 
-  ldflags = [
-    "-X main.Version=${version}"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Vault CLI";
     homepage = "https://github.com/starkandwayne/safe";
     license = licenses.mit;

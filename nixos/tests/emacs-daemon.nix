@@ -1,6 +1,6 @@
 import ./make-test-python.nix ({ pkgs, ...} : {
   name = "emacs-daemon";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ ];
   };
 
@@ -33,7 +33,7 @@ import ./make-test-python.nix ({ pkgs, ...} : {
       )
 
       # connects to the daemon
-      machine.succeed("emacsclient --create-frame $EDITOR >&2 &")
+      machine.succeed("emacsclient --create-frame $EDITOR &")
 
       # checks that Emacs shows the edited filename
       machine.wait_for_text("emacseditor")

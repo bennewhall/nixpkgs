@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , mkDerivation
 , fetchurl
 , qtbase
@@ -6,13 +6,13 @@
 , qtquickcontrols
 , qtimageformats
 , qtxmlpatterns
-, ffmpeg
+, ffmpeg_3
 , guvcview
 , cmake
 , ninja
 , libxml2
 , gettext
-, pkg-config
+, pkgconfig
 , libgphoto2
 , gphoto2
 , v4l-utils
@@ -24,11 +24,11 @@
 
 mkDerivation rec {
   pname = "qstopmotion";
-  version = "2.5.2";
+  version = "2.4.1";
 
   src = fetchurl {
     url = "mirror://sourceforge/project/${pname}/Version_${builtins.replaceStrings ["."] ["_"] version}/${pname}-${version}-Source.tar.gz";
-    sha256 = "sha256-jyBUyadkSuQKXOrr5XZ1jy6of1Qw8S2HPxuOrPc7RnE=";
+    sha256 = "03r6jxyq0bak2vsy2b78nk27m7fm96hnl8cx11l3l17704j4iglh";
   };
 
   buildInputs = [
@@ -40,12 +40,13 @@ mkDerivation rec {
     v4l-utils
     libv4l
     pcre
+    ffmpeg_3
     guvcview
     qwt
   ];
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     cmake
     extra-cmake-modules
     ninja
@@ -63,11 +64,7 @@ mkDerivation rec {
     grep -rl 'qwt' . | xargs sed -i 's@<qwt/qwt_slider.h>@<qwt_slider.h>@g'
   '';
 
-  qtWrapperArgs = [
-    "--prefix" "PATH" ":" (lib.makeBinPath [ ffmpeg ])
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.qstopmotion.org";
     description = "Create stopmotion animation with a (web)camera";
     longDescription = ''
@@ -77,9 +74,9 @@ mkDerivation rec {
       animation to different video formats such as mpeg or avi.
     '';
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     maintainers = [ maintainers.leenaars ];
     broken = stdenv.isAarch64;
-    platforms = lib.platforms.gnu ++ lib.platforms.linux;
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;
   };
 }

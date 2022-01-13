@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   version = "0.8.post1";
@@ -11,7 +11,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "FIGlet in pure Python";
     license     = licenses.gpl2Plus;
     maintainers = with maintainers; [ thoughtpolice ];

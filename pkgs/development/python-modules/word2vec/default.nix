@@ -1,15 +1,15 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , fetchzip
 , cython
 , numpy
-, scikit-learn
+, scikitlearn
 , six
-, setuptools-scm
+, setuptools_scm
 , gcc
 , pytest
-, pytest-cov
+, pytestcov
 , isPy27
 }:
 let
@@ -28,11 +28,11 @@ buildPythonPackage rec {
     sha256 = "222d8ffb47f385c43eba45e3f308e605fc9736b2b7137d74979adf1a31e7c8b4";
   };
 
-  nativeBuildInputs = [ setuptools-scm gcc ];
+  nativeBuildInputs = [ setuptools_scm gcc ];
 
-  propagatedBuildInputs = [ cython numpy scikit-learn six ];
+  propagatedBuildInputs = [ cython numpy scikitlearn six ];
 
-  checkInputs = [ pytest pytest-cov ];
+  checkInputs = [ pytest pytestcov ];
 
   # Checks require test data downloaded separately
   # See project source Makefile:test-data rule for reference
@@ -43,7 +43,7 @@ buildPythonPackage rec {
     pytest
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for computing continuous distributed representations of words";
     homepage = "https://github.com/danielfrg/word2vec";
     license = licenses.asl20;

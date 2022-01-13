@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoreconfHook, pkg-config, fftw, speexdsp }:
+{ stdenv, fetchurl, autoreconfHook, pkgconfig, fftw, speexdsp }:
 
 stdenv.mkDerivation rec {
   name = "speex-1.2.0";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" "doc" ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ fftw speexdsp ];
 
   # TODO: Remove this will help with immediate backward compatability
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     "--with-fft=gpl-fftw3"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.speex.org/";
     description = "An Open Source/Free Software patent-free audio compression format designed for speech";
     license = licenses.bsd3;

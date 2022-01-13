@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, flask }:
+{ stdenv, buildPythonPackage, fetchPypi, flask }:
 
 buildPythonPackage rec {
   pname = "flask-swagger-ui";
@@ -15,7 +15,7 @@ buildPythonPackage rec {
     flask
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/sveint/flask-swagger-ui";
     license = licenses.mit;
     description = "Swagger UI blueprint for Flask";

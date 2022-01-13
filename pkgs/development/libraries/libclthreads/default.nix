@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "libclthreads";
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
     ln $out/lib/libclthreads.so $out/lib/libclthreads.so.2
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Zita thread library";
     homepage = "http://kokkinizita.linuxaudio.org/linuxaudio/downloads/index.html";
     license = licenses.lgpl21;

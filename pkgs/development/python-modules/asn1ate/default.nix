@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pyparsing }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, pyparsing }:
 
 buildPythonPackage rec {
   pname = "asn1ate";
@@ -13,7 +13,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ pyparsing ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python library for translating ASN.1 into other forms";
     license = licenses.bsd3;
     platforms = platforms.unix;

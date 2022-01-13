@@ -2,24 +2,26 @@
 
 buildGoModule rec {
   pname = "cod";
-  version = "0.1.0";
+  version = "unstable-2020-09-10";
+
+  goPackagePath = "cod";
 
   src = fetchFromGitHub {
     owner = "dim-an";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "0wi680sxpv0kp1ggy21qp4c4ms79hw4z9w9kvp278p8z3y8wwglr";
+    rev = "ae68da08339471dd278d6df79abbfd6fe89a10fe";
+    sha256 = "1l3gn9v8dcy72f5xq9hwbkvkis0vp4dp8qyinsrii3acmhksg9v6";
   };
 
-  vendorSha256 = "0ann1fbh8rqys3rwbz5h9mfnvkpqiw5rgkd4c30y99706h2dzv4i";
+  vendorSha256 = "1arllkiz1hk12hq5b2zpg3f8i9lxl66mil5sdv8gnhflmb37vbv3";
 
-  ldflags = [ "-s" "-w" "-X main.GitSha=${src.rev}" ];
+  buildFlagsArray = [ "-ldflags=-X main.GitSha=${src.rev}" ];
 
   doCheck = false;
 
   meta = with lib; {
-    description = "Tool for generating Bash/Fish/Zsh autocompletions based on `--help` output";
-    homepage = "https://github.com/dim-an/cod/";
+    description = "Tool for generating Bash/Zsh autocompletions based on `--help` output";
+    homepage = src.meta.homepage;
     license = licenses.asl20;
     maintainers = with maintainers; [ SuperSandro2000 ];
   };

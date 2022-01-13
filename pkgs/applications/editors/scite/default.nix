@@ -1,21 +1,19 @@
-{ lib, stdenv, fetchurl, pkg-config, gtk2 }:
+{ stdenv, fetchurl, pkgconfig, gtk2 }:
 
 stdenv.mkDerivation {
   pname = "scite";
-  version = "5.0.2";
+  version = "4.0.5";
 
   src = fetchurl {
-    url = "https://www.scintilla.org/scite502.tgz";
-    sha256 = "00n2gr915f7kvp2250dzn6n0p6lhr6qdlm1m7y2xi6qrrky0bpan";
+    url = "https://www.scintilla.org/scite405.tgz";
+    sha256 = "0h16wk2986nkkhhdv5g4lxlcn02qwyja24x1r6vf02r1hf46b9q2";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ gtk2 ];
   sourceRoot = "scintilla/gtk";
 
   buildPhase = ''
-    make
-    cd ../../lexilla/src
     make
     cd ../../scite/gtk
     make prefix=$out/
@@ -25,7 +23,7 @@ stdenv.mkDerivation {
     make install prefix=$out/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.scintilla.org/SciTE.html";
     description = "SCIntilla based Text Editor";
     license = licenses.mit;

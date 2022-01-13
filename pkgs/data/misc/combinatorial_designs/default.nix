@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 }:
 
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     mv * "$out/share/combinatorial_designs"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Data for Combinatorial Designs";
     longDescription = ''
       Current content:

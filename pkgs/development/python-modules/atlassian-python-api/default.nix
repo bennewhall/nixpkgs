@@ -1,28 +1,30 @@
 { lib
 , buildPythonPackage
-, fetchFromGitHub
+, fetchPypi
+, isPy3k
+, certifi
+, chardet
 , deprecated
+, idna
 , oauthlib
 , requests
 , requests_oauthlib
 , six
-, pytestCheckHook
+, urllib3
+, pytestrunner
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "atlassian-python-api";
-  version = "3.8.0";
+  version = "2.1.2";
 
-  src = fetchFromGitHub {
-    owner = "atlassian-api";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-J0/CtfBtOdWReKQS/VvOL/3r+j4zJfnv/ICIXepKUvc=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "f852bfd293fdcb0ab2d7a9ea907f8303cf14fe6f55e90c103d4de00393ea9555";
   };
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  checkInputs = [ pytestrunner pytest ];
 
   propagatedBuildInputs = [ deprecated oauthlib requests requests_oauthlib six ];
 

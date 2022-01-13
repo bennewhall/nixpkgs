@@ -1,7 +1,7 @@
 { qtModule, qtbase, libtiff }:
 
 qtModule {
-  pname = "qtimageformats";
+  name = "qtimageformats";
   qtInputs = [ qtbase ];
   propagatedBuildInputs = [ libtiff ];
 }

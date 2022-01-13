@@ -1,20 +1,23 @@
-{ mkDerivation, stdenv, lib, pkg-config, fetchFromGitHub, qtbase, qtsvg, qtmultimedia, qmake, boost, openssl, wrapQtAppsHook }:
+{ mkDerivation, stdenv, lib, pkgconfig, fetchFromGitHub, qtbase, qtsvg, qtmultimedia, qmake, boost, openssl, wrapQtAppsHook }:
 
 mkDerivation rec {
   pname = "chatterino2";
-  version = "2.3.4";
+  version = "2.2.2";
   src = fetchFromGitHub {
     owner = "Chatterino";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-ZmUM56+YNH98J3XE/mWOOIfb0qBld2n4iuHpImbrU4o=";
+    sha256 = "026cs48hmqkv7k4akbm205avj2pn3x1g7q46chwa707k9km325dz";
     fetchSubmodules = true;
   };
-  nativeBuildInputs = [ qmake pkg-config wrapQtAppsHook ];
+  nativeBuildInputs = [ qmake pkgconfig wrapQtAppsHook ];
   buildInputs = [ qtbase qtsvg qtmultimedia boost openssl ];
   postInstall = lib.optionalString stdenv.isDarwin ''
     mkdir -p "$out/Applications"
     mv bin/chatterino.app "$out/Applications/"
+  '';
+  postFixup = lib.optionalString stdenv.isDarwin ''
+    wrapQtApp "$out/Applications/chatterino.app/Contents/MacOS/chatterino"
   '';
   meta = with lib; {
     description = "A chat client for Twitch chat";

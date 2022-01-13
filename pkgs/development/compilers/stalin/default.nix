@@ -1,8 +1,7 @@
-{ fetchurl, lib, stdenv, ncompress, libX11 }:
+{ fetchurl, stdenv, ncompress, libX11 }:
 
 stdenv.mkDerivation rec {
-  pname = "stalin";
-  version = "0.11";
+  name = "stalin-0.11";
 
   src = fetchurl {
     url = "ftp://ftp.ecn.purdue.edu/qobi/stalin.tar.Z";
@@ -11,7 +10,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ ncompress libX11 ];
 
-  buildPhase = "./build ";
+  buildPhase = '' ./build '';
 
   installPhase = ''
     mkdir -p "$out/bin"
@@ -23,21 +22,21 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/share/emacs/site-lisp"
     cp stalin.el "$out/share/emacs/site-lisp"
 
-    mkdir -p "$out/doc/stalin-${version}"
-    cp README "$out/doc/stalin-${version}"
+    mkdir -p "$out/doc/${name}"
+    cp README "$out/doc/${name}"
 
-    mkdir -p "$out/share/stalin-${version}/include"
-    cp "include/"* "$out/share/stalin-${version}/include"
+    mkdir -p "$out/share/${name}/include"
+    cp "include/"* "$out/share/${name}/include"
 
     substituteInPlace "$out/bin/stalin" \
-      --replace "$PWD/include/stalin" "$out/share/stalin-${version}/include/stalin"
+      --replace "$PWD/include/stalin" "$out/share/${name}/include/stalin"
     substituteInPlace "$out/bin/stalin" \
-      --replace "$PWD/include" "$out/share/stalin-${version}/include"
+      --replace "$PWD/include" "$out/share/${name}/include"
   '';
 
   meta = {
     homepage = "http://www.ece.purdue.edu/~qobi/software.html";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
     description = "An optimizing Scheme compiler";
 
     maintainers = [ ];

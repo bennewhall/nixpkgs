@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 }:
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     cmake
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graph Coarsening and Partitioning Library";
     homepage = "https://github.com/ScottKolo/Mongoose";
     license = licenses.gpl3;

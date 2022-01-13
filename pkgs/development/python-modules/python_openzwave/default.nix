@@ -1,5 +1,5 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k
-, pkg-config
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k
+, pkgconfig
 , systemd, libyaml, openzwave, cython, pyserial
 , six, pydispatcher, urwid }:
 
@@ -15,7 +15,7 @@ buildPythonPackage rec {
     extension = "zip";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ systemd libyaml openzwave cython ];
   propagatedBuildInputs = [ six urwid pydispatcher pyserial ];
 
@@ -32,7 +32,7 @@ buildPythonPackage rec {
   # no tests available
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python wrapper for the OpenZWave C++ library";
     homepage = "https://github.com/OpenZWave/python-openzwave";
     license = licenses.gpl3Plus;

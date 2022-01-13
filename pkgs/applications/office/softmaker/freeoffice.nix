@@ -5,9 +5,9 @@
   # overridable. This is useful when the upstream archive was replaced
   # and nixpkgs is not in sync yet.
 , officeVersion ? {
-  version = "982";
+  version = "980";
   edition = "2018";
-  hash = "sha256-euoZfAaDDTXzoaNLc/YdTngreTiYOBi7sGU161GP83w=";
+  sha256 = "19pgil86aagiz6z4kx22gd4cxbbmrx42ix42arkfb6p6hav1plby";
 }
 
 , ... } @ args:
@@ -19,7 +19,7 @@ callPackage ./generic.nix (args // rec {
   suiteName = "FreeOffice";
 
   src = fetchurl {
-    inherit (officeVersion) hash;
+    inherit (officeVersion) sha256;
     url = "https://www.softmaker.net/down/softmaker-freeoffice-${version}-amd64.tgz";
   };
 

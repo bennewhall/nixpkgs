@@ -62,7 +62,7 @@ with lib;
       services.dbus.packages  = packages;
       systemd.packages = packages;
 
-      environment.sessionVariables = {
+      environment.variables = {
         GTK_USE_PORTAL = mkIf cfg.gtkUsePortal "1";
         XDG_DESKTOP_PORTAL_DIR = "${joinedPortals}/share/xdg-desktop-portal/portals";
       };

@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, substituteAll
+, fetchsvn
 , jdk
 , jre
 , ant
@@ -8,42 +8,46 @@
 , doCheck ? true
 }:
 let
+  version = "597";
+  sha256 = "1al3160amw0gdarrc707dsppm0kcai9mpkfak7ffspwzw9alsndx";
+
   deps = import ../deps.nix { inherit fetchurl; };
   testInputs = import ./testinputs.nix { inherit fetchurl; };
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "splitter";
-  version = "645";
+  inherit version;
 
-  src = fetchurl {
-    url = "https://www.mkgmap.org.uk/download/splitter-r${version}-src.tar.gz";
-    sha256 = "Y9feRNDjmwUbSOwxfMIaYIycCvOBMihq5LkuKbALVDY=";
+  src = fetchsvn {
+    inherit sha256;
+    url = "https://svn.mkgmap.org.uk/mkgmap/splitter/trunk";
+    rev = version;
   };
 
   patches = [
-    (substituteAll {
-      # Disable automatic download of dependencies
-      src = ./build.xml.patch;
-      inherit version;
-    })
+    # Disable automatic download of dependencies
+    ./build.xml.patch
 
     # Fix func.SolverAndProblemGeneratorTest test
     ./fix-failing-test.patch
   ];
 
   postPatch = with deps; ''
+    substituteInPlace build.xml \
+      --subst-var-by version ${version}
+
     mkdir -p lib/compile
     cp ${fastutil} lib/compile/${fastutil.name}
     cp ${osmpbf} lib/compile/${osmpbf.name}
     cp ${protobuf} lib/compile/${protobuf.name}
     cp ${xpp3} lib/compile/${xpp3.name}
-  '' + lib.optionalString doCheck ''
+  '' + stdenv.lib.optionalString doCheck ''
     mkdir -p lib/test
     cp ${junit} lib/test/${junit.name}
     cp ${hamcrest-core} lib/test/${hamcrest-core.name}
 
     mkdir -p test/resources/in/osm
-    ${lib.concatMapStringsSep "\n" (res: ''
+    ${stdenv.lib.concatMapStringsSep "\n" (res: ''
       cp ${res} test/resources/in/${builtins.replaceStrings [ "__" ] [ "/" ] res.name}
     '') testInputs}
   '';
@@ -57,19 +61,16 @@ stdenv.mkDerivation rec {
   checkPhase = "ant run.tests && ant run.func-tests";
 
   installPhase = ''
-    install -Dm644 dist/splitter.jar -t $out/share/java/splitter
-    install -Dm644 doc/splitter.1 -t $out/share/man/man1
+    install -Dm644 dist/splitter.jar $out/share/java/splitter/splitter.jar
+    install -Dm644 doc/splitter.1 $out/share/man/man1/splitter.1
     cp -r dist/lib/ $out/share/java/splitter/
     makeWrapper ${jre}/bin/java $out/bin/splitter \
       --add-flags "-jar $out/share/java/splitter/splitter.jar"
   '';
 
-  passthru.updateScript = [ ../update.sh "mkgmap-splitter" meta.downloadPage ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utility for splitting OpenStreetMap maps into tiles";
-    homepage = "https://www.mkgmap.org.uk/";
-    downloadPage = "https://www.mkgmap.org.uk/download/splitter.html";
+    homepage = "http://www.mkgmap.org.uk";
     license = licenses.gpl2Only;
     maintainers = with maintainers; [ sikmir ];
     platforms = platforms.all;

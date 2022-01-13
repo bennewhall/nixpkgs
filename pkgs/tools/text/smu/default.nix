@@ -1,7 +1,7 @@
 { stdenv, lib, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
-  pname = "smu";
+  name = "smu";
   version = "1.5";
 
   src = fetchFromGitHub {

@@ -1,15 +1,13 @@
-args@{ pkgs, nextcloudVersion ? 22, ... }:
-
-(import ../make-test-python.nix ({ pkgs, ...}: let
+import ../make-test-python.nix ({ pkgs, ...}: let
   adminpass = "notproduction";
   adminuser = "root";
 in {
   name = "nextcloud-basic";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ globin eqyiel ];
   };
 
-  nodes = rec {
+  nodes = {
     # The only thing the client needs to do is download a file.
     client = { ... }: {
       services.davfs2.enable = true;
@@ -17,7 +15,7 @@ in {
         echo "http://nextcloud/remote.php/webdav/ ${adminuser} ${adminpass}" > /tmp/davfs2-secrets
         chmod 600 /tmp/davfs2-secrets
       '';
-      virtualisation.fileSystems = {
+      fileSystems = pkgs.lib.mkVMOverride {
         "/mnt/dav" = {
           device = "http://nextcloud/remote.php/webdav/";
           fsType = "davfs";
@@ -33,37 +31,24 @@ in {
     in {
       networking.firewall.allowedTCPPorts = [ 80 ];
 
-      systemd.tmpfiles.rules = [
-        "d /var/lib/nextcloud-data 0750 nextcloud nginx - -"
-      ];
-
       services.nextcloud = {
         enable = true;
-        datadir = "/var/lib/nextcloud-data";
         hostName = "nextcloud";
         config = {
           # Don't inherit adminuser since "root" is supposed to be the default
-          adminpassFile = "${pkgs.writeText "adminpass" adminpass}"; # Don't try this at home!
-          dbtableprefix = "nixos_";
+          inherit adminpass;
         };
-        package = pkgs.${"nextcloud" + (toString nextcloudVersion)};
         autoUpdateApps = {
           enable = true;
           startAt = "20:00";
         };
-        phpExtraExtensions = all: [ all.bz2 ];
       };
 
       environment.systemPackages = [ cfg.services.nextcloud.occ ];
     };
-
-    nextcloudWithoutMagick = args@{ config, pkgs, lib, ... }:
-      lib.mkMerge
-      [ (nextcloud args)
-        { services.nextcloud.enableImagemagick = false; } ];
   };
 
-  testScript = { nodes, ... }: let
+  testScript = let
     withRcloneEnv = pkgs.writeScript "with-rclone-env" ''
       #!${pkgs.runtimeShell}
       export RCLONE_CONFIG_NEXTCLOUD_TYPE=webdav
@@ -82,19 +67,8 @@ in {
       #!${pkgs.runtimeShell}
       diff <(echo 'hi') <(${pkgs.rclone}/bin/rclone cat nextcloud:test-shared-file)
     '';
-
-    findInClosure = what: drv: pkgs.runCommand "find-in-closure" { exportReferencesGraph = [ "graph" drv ]; inherit what; } ''
-      test -e graph
-      grep "$what" graph >$out || true
-    '';
-    nextcloudUsesImagick = findInClosure "imagick" nodes.nextcloud.config.system.build.vm;
-    nextcloudWithoutDoesntUseIt = findInClosure "imagick" nodes.nextcloudWithoutMagick.config.system.build.vm;
   in ''
-    assert open("${nextcloudUsesImagick}").read() != ""
-    assert open("${nextcloudWithoutDoesntUseIt}").read() == ""
-
-    nextcloud.start()
-    client.start()
+    start_all()
     nextcloud.wait_for_unit("multi-user.target")
     # This is just to ensure the nextcloud-occ program is working
     nextcloud.succeed("nextcloud-occ status")
@@ -103,10 +77,9 @@ in {
         "${withRcloneEnv} ${copySharedFile}"
     )
     client.wait_for_unit("multi-user.target")
-    nextcloud.succeed("test -f /var/lib/nextcloud-data/data/root/files/test-shared-file")
     client.succeed(
         "${withRcloneEnv} ${diffSharedFile}"
     )
     assert "hi" in client.succeed("cat /mnt/dav/test-shared-file")
   '';
-})) args
+})

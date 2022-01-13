@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "awless";
@@ -13,7 +13,7 @@ buildGoPackage rec {
     sha256 = "187i21yrm10r3f5naj3jl0rmydr5dkhmdhxs90hhf8hjp59a89kg";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/wallix/awless/";
     description = "A Mighty CLI for AWS";
     platforms = with platforms; linux ++ darwin;

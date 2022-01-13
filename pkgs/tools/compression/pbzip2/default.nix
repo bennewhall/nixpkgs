@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, bzip2 }:
+{ stdenv, fetchurl, bzip2 }:
 
 let major = "1.1";
     version = "${major}.13";
@@ -18,9 +18,9 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  NIX_CFLAGS_COMPILE = lib.optionalString stdenv.cc.isClang "-Wno-error=reserved-user-defined-literal";
+  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.cc.isClang "-Wno-error=reserved-user-defined-literal";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://compression.ca/pbzip2/";
     description = "A parallel implementation of bzip2 for multi-core machines";
     license = licenses.bsd2;

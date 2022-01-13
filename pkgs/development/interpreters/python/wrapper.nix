@@ -1,15 +1,10 @@
-{ lib, stdenv, buildEnv, makeWrapper
-
-# manually pased
-, python
-, requiredPythonModules
-
-# extra opts
+{ stdenv, python, buildEnv, makeWrapper
 , extraLibs ? []
 , extraOutputsToInstall ? []
 , postBuild ? ""
 , ignoreCollisions ? false
 , permitUserSite ? false
+, requiredPythonModules
 # Wrap executables with the given argument.
 , makeWrapperArgs ? []
 , }:
@@ -27,22 +22,22 @@ let
     inherit ignoreCollisions;
     extraOutputsToInstall = [ "out" ] ++ extraOutputsToInstall;
 
-    nativeBuildInputs = [ makeWrapper ];
-
     postBuild = ''
+      . "${makeWrapper}/nix-support/setup-hook"
+
       if [ -L "$out/bin" ]; then
           unlink "$out/bin"
       fi
       mkdir -p "$out/bin"
 
-      for path in ${lib.concatStringsSep " " paths}; do
+      for path in ${stdenv.lib.concatStringsSep " " paths}; do
         if [ -d "$path/bin" ]; then
           cd "$path/bin"
           for prg in *; do
             if [ -f "$prg" ]; then
               rm -f "$out/bin/$prg"
               if [ -x "$prg" ]; then
-                makeWrapper "$path/bin/$prg" "$out/bin/$prg" --set NIX_PYTHONPREFIX "$out" --set NIX_PYTHONEXECUTABLE ${pythonExecutable} --set NIX_PYTHONPATH ${pythonPath} ${if permitUserSite then "" else ''--set PYTHONNOUSERSITE "true"''} ${lib.concatStringsSep " " makeWrapperArgs}
+                makeWrapper "$path/bin/$prg" "$out/bin/$prg" --set NIX_PYTHONPREFIX "$out" --set NIX_PYTHONEXECUTABLE ${pythonExecutable} --set NIX_PYTHONPATH ${pythonPath} ${if permitUserSite then "" else ''--set PYTHONNOUSERSITE "true"''} ${stdenv.lib.concatStringsSep " " makeWrapperArgs}
               fi
             fi
           done

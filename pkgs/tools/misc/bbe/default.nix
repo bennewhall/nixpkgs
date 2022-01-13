@@ -1,4 +1,4 @@
-{ lib, stdenv , fetchurl, autoreconfHook }:
+{ stdenv , fetchurl, autoreconfHook }:
 stdenv.mkDerivation rec {
   pname = "bbe";
   version = "0.2.2";
@@ -12,11 +12,11 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "doc" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A sed-like editor for binary files";
     homepage = "http://bbe-.sourceforge.net/";
     license = licenses.gpl2Plus;
-    platforms = platforms.all;
+    platforms = platforms.linux;
     maintainers = [ maintainers.hhm ];
   };
 }

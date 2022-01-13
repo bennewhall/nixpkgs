@@ -13,7 +13,7 @@ in
         Attrset that is converted and passed as TOML config file.
         For available params, see: <link xlink:href="https://github.com/DNSCrypt/dnscrypt-proxy/blob/${pkgs.dnscrypt-proxy2.version}/dnscrypt-proxy/example-dnscrypt-proxy.toml"/>
       '';
-      example = literalExpression ''
+      example = literalExample ''
         {
           sources.public-resolvers = {
             urls = [ "https://download.dnscrypt.info/resolvers-list/v2/public-resolvers.md" ];
@@ -27,16 +27,6 @@ in
       default = {};
     };
 
-    upstreamDefaults = mkOption {
-      description = ''
-        Whether to base the config declared in <option>services.dnscrypt-proxy2.settings</option> on the upstream example config (<link xlink:href="https://github.com/DNSCrypt/dnscrypt-proxy/blob/master/dnscrypt-proxy/example-dnscrypt-proxy.toml"/>)
-
-        Disable this if you want to declare your dnscrypt config from scratch.
-      '';
-      type = types.bool;
-      default = true;
-    };
-
     configFile = mkOption {
       description = ''
         Path to TOML config file. See: <link xlink:href="https://github.com/DNSCrypt/dnscrypt-proxy/blob/master/dnscrypt-proxy/example-dnscrypt-proxy.toml"/>
@@ -48,15 +38,9 @@ in
         json = builtins.toJSON cfg.settings;
         passAsFile = [ "json" ];
       } ''
-        ${if cfg.upstreamDefaults then ''
-          ${pkgs.remarshal}/bin/toml2json ${pkgs.dnscrypt-proxy2.src}/dnscrypt-proxy/example-dnscrypt-proxy.toml > example.json
-          ${pkgs.jq}/bin/jq --slurp add example.json $jsonPath > config.json # merges the two
-        '' else ''
-          cp $jsonPath config.json
-        ''}
-        ${pkgs.remarshal}/bin/json2toml < config.json > $out
+        ${pkgs.remarshal}/bin/json2toml < $jsonPath > $out
       '';
-      defaultText = literalDocBook "TOML file generated from <option>services.dnscrypt-proxy2.settings</option>";
+      defaultText = literalExample "TOML file generated from services.dnscrypt-proxy2.settings";
     };
   };
 
@@ -87,7 +71,6 @@ in
         NoNewPrivileges = true;
         NonBlocking = true;
         PrivateDevices = true;
-        ProtectClock = true;
         ProtectControlGroups = true;
         ProtectHome = true;
         ProtectHostname = true;
@@ -108,12 +91,8 @@ in
         SystemCallFilter = [
           "@system-service"
           "@chown"
-          "~@aio"
-          "~@keyring"
-          "~@memlock"
           "~@resources"
-          "~@setuid"
-          "~@timer"
+          "@privileged"
         ];
       };
     };

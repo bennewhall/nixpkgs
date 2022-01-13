@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, autoconf, automake, openssl, libgsf, gmp }:
+{ stdenv, fetchFromGitHub, pkgconfig, autoconf, automake, openssl, libgsf, gmp }:
 
 stdenv.mkDerivation rec {
 
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "0q5jl7hcds3f0rhly3iy4fhhbyh9cdrfaw7zdrazzf1wswwhyssz";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ autoconf automake openssl libgsf gmp ];
 
   installPhase =
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     cp crackxls2003 $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/GavinSmith0123/crackxls2003/";
     description = "Used to break the encryption on old Microsoft Excel and Microsoft Word files";
     platforms = platforms.linux;

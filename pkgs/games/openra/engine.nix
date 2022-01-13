@@ -7,16 +7,17 @@
     This package could be seen as providing a set of in-tree mods,
     while the `mod.nix` pacakges provide a single out-of-tree mod.
 */
-{ lib, stdenv
+{ stdenv
 , packageAttrs
 , patchEngine
 , wrapLaunchGame
 , engine
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation (recursiveUpdate packageAttrs rec {
+  name = "${pname}-${version}";
   pname = "openra";
   version = "${engine.name}-${engine.version}";
 

@@ -1,17 +1,14 @@
-{ lib
-, pythonPackages
-, fetchFromGitHub
-}:
+{ lib, pythonPackages, fetchFromGitHub }:
 
 pythonPackages.buildPythonApplication rec {
   pname = "patroni";
-  version = "2.0.2";
+  version = "1.6.5";
 
   src = fetchFromGitHub {
     owner = "zalando";
     repo = pname;
     rev = "v${version}";
-    sha256 = "048g211njwmgl2v7nx6x5x82b4bbp35n234z7ah10aybm3yrxnc7";
+    sha256 = "0iw0ra9fya4bf1vkjq3w5kij4x46yinb90v015pi9c6qfpancfdj";
   };
 
   # cdiff renamed to ydiff; remove when patroni source reflects this.
@@ -25,13 +22,12 @@ pythonPackages.buildPythonApplication rec {
     boto
     click
     consul
-    dnspython
+    dns
     kazoo
     kubernetes
     prettytable
     psutil
     psycopg2
-    pysyncobj
     python-dateutil
     python-etcd
     pyyaml
@@ -44,20 +40,18 @@ pythonPackages.buildPythonApplication rec {
     flake8
     mock
     pytestCheckHook
-    pytest-cov
+    pytestcov
     requests
   ];
 
   # Fix tests by preventing them from writing to /homeless-shelter.
   preCheck = "export HOME=$(mktemp -d)";
 
-  pythonImportsCheck = [ "patroni" ];
-
   meta = with lib; {
     homepage = "https://patroni.readthedocs.io/en/latest/";
     description = "A Template for PostgreSQL HA with ZooKeeper, etcd or Consul";
     license = licenses.mit;
     platforms = platforms.linux;
-    maintainers = teams.deshaw.members;
+    maintainers = [ maintainers.limeytexan ];
   };
 }

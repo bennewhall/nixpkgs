@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, libtool, autoconf, automake
+{ stdenv, fetchFromGitHub, pkgconfig, libtool, autoconf, automake
 , libjpeg, libexif
 }:
 
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = [ pkg-config libtool autoconf automake ];
+  nativeBuildInputs = [ pkgconfig libtool autoconf automake ];
 
   propagatedBuildInputs = [ libjpeg libexif ];
 
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     ./autogen.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/mattes/epeg";
     description = "Insanely fast JPEG/ JPG thumbnail scaling";
     platforms = platforms.linux ++ platforms.darwin;

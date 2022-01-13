@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "trimal";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     cp -a trimal readal statal $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool for the automated removal of spurious sequences or poorly aligned regions from a multiple sequence alignment";
     license = licenses.gpl3;
     platforms = platforms.linux;

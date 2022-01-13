@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "dadadodo";
@@ -9,8 +9,6 @@ stdenv.mkDerivation rec {
     sha256 = "1pzwp3mim58afjrc92yx65mmgr1c834s1v6z4f4gyihwjn8bn3if";
   };
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
-
   installPhase = ''
     mkdir -p $out/bin
     cp dadadodo $out/bin
@@ -18,10 +16,10 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Markov chain-based text generator";
     homepage = "http://www.jwz.org/dadadodo";
     maintainers = with maintainers; [ pSub ];
-    platforms = platforms.all;
+    platforms = with platforms; linux;
   };
 }

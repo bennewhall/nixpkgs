@@ -14,8 +14,10 @@ let
     dir = "bin";
     src = ./command-not-found.pl;
     isExecutable = true;
+    inherit (pkgs) perl;
     inherit (cfg) dbPath;
-    perl = pkgs.perl.withPackages (p: [ p.DBDSQLite p.StringShellQuote ]);
+    perlFlags = concatStrings (map (path: "-I ${path}/${pkgs.perl.libPrefix} ")
+      [ pkgs.perlPackages.DBI pkgs.perlPackages.DBDSQLite pkgs.perlPackages.StringShellQuote ]);
   };
 
 in
@@ -49,10 +51,10 @@ in
       ''
         # This function is called whenever a command is not found.
         command_not_found_handle() {
-          local p='${commandNotFound}/bin/command-not-found'
-          if [ -x "$p" ] && [ -f '${cfg.dbPath}' ]; then
+          local p=${commandNotFound}/bin/command-not-found
+          if [ -x $p -a -f ${cfg.dbPath} ]; then
             # Run the helper program.
-            "$p" "$@"
+            $p "$@"
             # Retry the command if we just installed it.
             if [ $? = 126 ]; then
               "$@"
@@ -70,16 +72,14 @@ in
       ''
         # This function is called whenever a command is not found.
         command_not_found_handler() {
-          local p='${commandNotFound}/bin/command-not-found'
-          if [ -x "$p" ] && [ -f '${cfg.dbPath}' ]; then
+          local p=${commandNotFound}/bin/command-not-found
+          if [ -x $p -a -f ${cfg.dbPath} ]; then
             # Run the helper program.
-            "$p" "$@"
+            $p "$@"
 
             # Retry the command if we just installed it.
             if [ $? = 126 ]; then
               "$@"
-            else
-              return 127
             fi
           else
             # Indicate than there was an error so ZSH falls back to its default handler

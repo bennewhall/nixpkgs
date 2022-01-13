@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , unstableGitUpdater
 , SDL
@@ -20,8 +20,8 @@ stdenv.mkDerivation rec {
   buildInputs = [
     SDL
   ]
-  ++ lib.optional stdenv.isDarwin Foundation
-  ++ lib.optional stdenv.isLinux jack2;
+  ++ stdenv.lib.optional stdenv.isDarwin Foundation
+  ++ stdenv.lib.optional stdenv.isLinux jack2;
 
   patches = [
     # Remove outdated (pre-64bit) checks that would fail on modern platforms
@@ -32,22 +32,20 @@ stdenv.mkDerivation rec {
   preBuild = "cd projects";
 
   makeFlags = [ "CXX=${stdenv.cc.targetPrefix}c++" ]
-    ++ lib.optionals stdenv.isLinux  [ "PLATFORM=DEB" ]
-    ++ lib.optionals stdenv.isDarwin [ "PLATFORM=OSX" ];
+    ++ stdenv.lib.optionals stdenv.isLinux  [ "PLATFORM=DEB" ]
+    ++ stdenv.lib.optionals stdenv.isDarwin [ "PLATFORM=OSX" ];
 
   NIX_CFLAGS_COMPILE = [ "-fpermissive" ] ++
-    lib.optional stdenv.hostPlatform.isAarch64 "-Wno-error=narrowing";
+    stdenv.lib.optional stdenv.hostPlatform.isAarch64 "-Wno-error=narrowing";
 
-  NIX_LDFLAGS = lib.optional stdenv.isDarwin "-framework Foundation";
+  NIX_LDFLAGS = stdenv.lib.optional stdenv.isDarwin "-framework Foundation";
 
   installPhase = let extension = if stdenv.isDarwin then "app" else "deb-exe";
     in "install -Dm555 lgpt.${extension} $out/bin/lgpt";
 
-  passthru.updateScript = unstableGitUpdater {
-    url = "https://github.com/Mdashdotdashn/littlegptracker.git";
-  };
+  passthru.updateScript = unstableGitUpdater { };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A music tracker similar to lsdj optimised to run on portable game consoles";
     longDescription = ''
       LittleGPTracker (a.k.a 'The piggy', 'lgpt') is a music tracker optimised

@@ -6,55 +6,42 @@ let
   inherit (lib.attrsets) matchAttrs;
 
   all = [
-    # Cygwin
-    "i686-cygwin" "x86_64-cygwin"
+    "aarch64-linux"
+    "armv5tel-linux" "armv6l-linux" "armv7a-linux" "armv7l-linux"
 
-    # Darwin
+    "mipsel-linux"
+
+    "i686-cygwin" "i686-freebsd" "i686-linux" "i686-netbsd" "i686-openbsd"
+
+    "x86_64-cygwin" "x86_64-freebsd" "x86_64-linux"
+    "x86_64-netbsd" "x86_64-openbsd" "x86_64-solaris"
+
     "x86_64-darwin" "i686-darwin" "aarch64-darwin" "armv7a-darwin"
 
-    # FreeBSD
-    "i686-freebsd" "x86_64-freebsd"
+    "x86_64-windows" "i686-windows"
 
-    # Genode
-    "aarch64-genode" "i686-genode" "x86_64-genode"
-
-    # illumos
-    "x86_64-solaris"
-
-    # JS
-    "js-ghcjs"
-
-    # Linux
-    "aarch64-linux" "armv5tel-linux" "armv6l-linux" "armv7a-linux"
-    "armv7l-linux" "i686-linux" "m68k-linux" "mipsel-linux"
-    "powerpc64-linux" "powerpc64le-linux" "riscv32-linux"
-    "riscv64-linux" "s390-linux" "s390x-linux" "x86_64-linux"
-
-    # MMIXware
-    "mmix-mmixware"
-
-    # NetBSD
-    "aarch64-netbsd" "armv6l-netbsd" "armv7a-netbsd" "armv7l-netbsd"
-    "i686-netbsd" "m68k-netbsd" "mipsel-netbsd" "powerpc-netbsd"
-    "riscv32-netbsd" "riscv64-netbsd" "x86_64-netbsd"
-
-    # none
-    "aarch64_be-none" "aarch64-none" "arm-none" "armv6l-none" "avr-none" "i686-none"
-    "msp430-none" "or1k-none" "m68k-none" "powerpc-none" "powerpcle-none"
-    "riscv32-none" "riscv64-none" "s390-none" "s390x-none" "vc4-none"
-    "x86_64-none"
-
-    # OpenBSD
-    "i686-openbsd" "x86_64-openbsd"
-
-    # Redox
-    "x86_64-redox"
-
-    # WASI
     "wasm64-wasi" "wasm32-wasi"
 
-    # Windows
-    "x86_64-windows" "i686-windows"
+    "x86_64-redox"
+
+    "powerpc64le-linux"
+
+    "riscv32-linux" "riscv64-linux"
+
+    "arm-none" "armv6l-none" "aarch64-none"
+    "avr-none"
+    "i686-none" "x86_64-none"
+    "powerpc-none"
+    "msp430-none"
+    "riscv64-none" "riscv32-none"
+    "vc4-none"
+    "or1k-none"
+
+    "mmix-mmixware"
+
+    "js-ghcjs"
+
+    "aarch64-genode" "i686-genode" "x86_64-genode"
   ];
 
   allParsed = map parse.mkSystemFromString all;
@@ -76,8 +63,6 @@ in {
   riscv         = filterDoubles predicates.isRiscV;
   vc4           = filterDoubles predicates.isVc4;
   or1k          = filterDoubles predicates.isOr1k;
-  m68k          = filterDoubles predicates.isM68k;
-  s390          = filterDoubles predicates.isS390;
   js            = filterDoubles predicates.isJavaScript;
 
   bigEndian     = filterDoubles predicates.isBigEndian;
@@ -100,5 +85,5 @@ in {
 
   embedded      = filterDoubles predicates.isNone;
 
-  mesaPlatforms = ["i686-linux" "x86_64-linux" "x86_64-darwin" "armv5tel-linux" "armv6l-linux" "armv7l-linux" "armv7a-linux" "aarch64-linux" "powerpc64-linux" "powerpc64le-linux" "aarch64-darwin" "riscv64-linux"];
+  mesaPlatforms = ["i686-linux" "x86_64-linux" "x86_64-darwin" "armv5tel-linux" "armv6l-linux" "armv7l-linux" "armv7a-linux" "aarch64-linux" "powerpc64le-linux"];
 }

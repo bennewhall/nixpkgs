@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , fetchpatch
 , kissfft
@@ -43,11 +43,11 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-I${kissfft}/include/kissfft";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A C++ library of functions for DSP and Music Informatics purposes";
     homepage = "https://code.soundsoftware.ac.uk/projects/qm-dsp";
     license = licenses.gpl2Plus;
     maintainers = [ maintainers.goibhniu ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

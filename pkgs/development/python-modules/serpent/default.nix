@@ -1,6 +1,7 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
+, lib
 , python
 , isPy27
 , enum34
@@ -10,11 +11,11 @@
 
 buildPythonPackage rec {
   pname = "serpent";
-  version = "1.40";
+  version = "1.30.2";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "10b34e7f8e3207ee6fb70dcdc9bce473851ee3daf0b47c58aec1b48032ac11ce";
+    sha256 = "72753820246a7d8486e8b385353e3bbf769abfceec2e850fa527a288b084ff7a";
   };
 
   propagatedBuildInputs = lib.optionals isPy27 [ enum34 ];
@@ -24,7 +25,7 @@ buildPythonPackage rec {
     ${python.interpreter} setup.py test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple serialization library based on ast.literal_eval";
     homepage = "https://github.com/irmen/Serpent";
     license = licenses.mit;

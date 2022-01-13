@@ -1,15 +1,14 @@
-{ lib, stdenv, fetchurl, unzip, makeWrapper, jre }:
+{ stdenv, fetchurl, unzip, makeWrapper, jre }:
 
 stdenv.mkDerivation rec {
-  pname = "ec2-api-tools";
-  version = "1.7.5.1";
+  name = "ec2-api-tools-1.7.5.1";
 
   src = fetchurl {
-    url = "http://tarballs.nixos.org/ec2-api-tools-${version}.zip";
+    url = "http://tarballs.nixos.org/${name}.zip";
     sha256 = "0figmvcm82ghmpz3018ihysz8zpxpysgbpdx7rmciq9y80qbw6l5";
   };
 
-  nativeBuildInputs = [ makeWrapper unzip ];
+  buildInputs = [ unzip makeWrapper ];
 
   installPhase =
     ''
@@ -30,6 +29,6 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://developer.amazonwebservices.com/connect/entry.jspa?externalID=351";
     description = "Command-line tools to create and manage Amazon EC2 virtual machines";
-    license = lib.licenses.amazonsl;
+    license = stdenv.lib.licenses.amazonsl;
   };
 }

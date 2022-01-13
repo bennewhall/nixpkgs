@@ -1,28 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, python3, serd, pcre, wafHook }:
+{ stdenv, fetchurl, pkgconfig, python3, serd, pcre, wafHook }:
 
 stdenv.mkDerivation rec {
   pname = "sord";
-  version = "unstable-2021-01-12";
+  version = "0.16.4";
 
-  # Commit picked in mitigation of #109729
-  src = fetchFromGitHub {
-    owner = "drobilla";
-    repo = pname;
-    rev = "d2efdb2d026216449599350b55c2c85c0d3efb89";
-    sha256 = "hHTwK+K6cj9MGO77a1IXiUZtEbXZ08cLGkYZ5eMOIVA=";
-    fetchSubmodules = true;
+  src = fetchurl {
+    url = "https://download.drobilla.net/${pname}-${version}.tar.bz2";
+    sha256 = "1mwh4qvp9q4vgrgg5bz9sgjhxscncrylf2b06h0q55ddwzs9hndi";
   };
 
-  preConfigure = ''
-    export PKGCONFIG="$PKG_CONFIG"
-  '';
-
-  nativeBuildInputs = [ pkg-config python3 wafHook ];
+  nativeBuildInputs = [ pkgconfig python3 wafHook ];
   buildInputs = [ pcre ];
   propagatedBuildInputs = [ serd ];
-  dontAddWafCrossFlags = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://drobilla.net/software/sord";
     description = "A lightweight C library for storing RDF data in memory";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , pkg-config
 , vala
@@ -20,9 +20,9 @@
 , libsoup
 , docbook-xsl-nons
 , docbook_xml_dtd_412
-, gnome
+, gnome3
 , gcr
-, libkrb5
+, kerberos
 , gvfs
 , dbus
 , wrapGAppsHook
@@ -30,7 +30,7 @@
 
 stdenv.mkDerivation rec {
   pname = "gnome-online-accounts";
-  version = "3.40.1";
+  version = "3.38.0";
 
   # https://gitlab.gnome.org/GNOME/gnome-online-accounts/issues/87
   src = fetchFromGitLab {
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     owner = "GNOME";
     repo = "gnome-online-accounts";
     rev = version;
-    sha256 = "sha256-q4bLGOOGoGH/Et3hu7/372tjNMouX9ePTanIo0c4Jbw=";
+    sha256 = "sha256-NRGab/CMJxe31rr20+5wYZF2rOzoSNdztfNVojBd5ag=";
   };
 
   outputs = [ "out" "man" "dev" "devdoc" ];
@@ -46,6 +46,7 @@ stdenv.mkDerivation rec {
   mesonFlags = [
     "-Dfedora=false" # not useful in NixOS or for NixOS users.
     "-Dgtk_doc=true"
+    "-Dlastfm=true"
     "-Dman=true"
     "-Dmedia_server=true"
   ];
@@ -74,7 +75,7 @@ stdenv.mkDerivation rec {
     gvfs # OwnCloud, Google Drive
     icu
     json-glib
-    libkrb5
+    kerberos
     librest
     libsecret
     libsoup
@@ -89,13 +90,12 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript = gnome.updateScript {
-      versionPolicy = "odd-unstable";
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Projects/GnomeOnlineAccounts";
     description = "Single sign-on framework for GNOME";
     platforms = platforms.linux;

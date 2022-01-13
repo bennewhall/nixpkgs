@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "docui";
@@ -15,7 +15,7 @@ buildGoModule rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "TUI Client for Docker";
     homepage = "https://github.com/skanehira/docui";
     license = licenses.mit;

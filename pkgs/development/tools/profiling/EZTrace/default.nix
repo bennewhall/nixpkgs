@@ -1,33 +1,31 @@
-{ lib,
-  stdenv,
-  fetchFromGitLab,
-  gfortran,
-  libelf,
-  libiberty,
-  zlib,
-  libbfd,
-  libopcodes,
-  buildPackages,
-  autoreconfHook
+{ stdenv
+, fetchurl, autoconf, gfortran
+, libelf, libiberty, zlib, libbfd, libopcodes
+, buildPackages
 }:
 
 stdenv.mkDerivation rec {
+  version = "1.1-7";
   pname = "EZTrace";
-  version = "1.1-11";
 
-  src = fetchFromGitLab {
-    owner = "eztrace";
-    repo = "eztrace";
-    rev = "eztrace-${version}";
-    sha256 = "sha256-A6HMr4ib5Ka1lTbbTQOdq3kIdCoN/CwAKRdXdv9wpfU=";
+  src = fetchurl {
+    url = "https://gforge.inria.fr/frs/download.php/file/37155/eztrace-${version}.tar.gz";
+    sha256 = "0cr2d4fdv4ljvag55dsz3rpha1jan2gc3jhr06ycyk43450pl58p";
   };
 
-  nativeBuildInputs = [ gfortran autoreconfHook ];
+  # Goes past the rpl_malloc linking failure; fixes silent file breakage
+  preConfigure = ''
+    export ac_cv_func_malloc_0_nonnull=yes
+    substituteInPlace ./configure \
+      --replace "/usr/bin/file" "${buildPackages.file}/bin/file"
+  '';
+
+  nativeBuildInputs = [ autoconf gfortran ];
   buildInputs = [ libelf libiberty zlib libbfd libopcodes ];
 
-  meta = with lib; {
+  meta = {
     description = "Tool that aims at generating automatically execution trace from HPC programs";
-    license = licenses.cecill-b;
-    maintainers = with maintainers; [ ];
+    license = stdenv.lib.licenses.cecill-b;
+    maintainers = with stdenv.lib.maintainers; [ ];
   };
 }

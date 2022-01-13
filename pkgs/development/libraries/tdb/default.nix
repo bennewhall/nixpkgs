@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , pkg-config
 , wafHook
@@ -11,15 +11,14 @@
 
 stdenv.mkDerivation rec {
   pname = "tdb";
-  version = "1.4.5";
+  version = "1.4.3";
 
   src = fetchurl {
     url = "mirror://samba/tdb/${pname}-${version}.tar.gz";
-    sha256 = "sha256-vPztiE9wMQgJmLXEscXc5XVnBV95QX+G26QNzemaDkE=";
+    sha256 = "06waz0k50c7v3chd08mzp2rv7w4k4q9isbxx3vhlfpx1vy9q61f8";
   };
 
   nativeBuildInputs = [
-    python3
     pkg-config
     wafHook
     libxslt
@@ -39,12 +38,7 @@ stdenv.mkDerivation rec {
     "--builtin-libraries=replace"
   ];
 
-  # python-config from build Python gives incorrect values when cross-compiling.
-  # If python-config is not found, the build falls back to using the sysconfig
-  # module, which works correctly in all cases.
-  PYTHON_CONFIG = "/invalid";
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The trivial database";
     longDescription = ''
       TDB is a Trivial Database. In concept, it is very much like GDBM,

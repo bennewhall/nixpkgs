@@ -7,9 +7,8 @@ let
 
   addCheckDesc = desc: elemType: check: types.addCheck elemType check
     // { description = "${elemType.description} (with check: ${desc})"; };
-
-  isNonEmpty = s: (builtins.match "[ \t\n]*" s) == null;
-  nonEmptyStr = addCheckDesc "non-empty" types.str isNonEmpty;
+  nonEmptyStr = addCheckDesc "non-empty" types.str
+    (x: x != "" && ! (all (c: c == " " || c == "\t") (stringToCharacters x)));
 
   fileSystems' = toposort fsBefore (attrValues config.fileSystems);
 
@@ -22,17 +21,17 @@ let
                      # their assertions too
                      (attrValues config.fileSystems);
 
-  specialFSTypes = [ "proc" "sysfs" "tmpfs" "ramfs" "devtmpfs" "devpts" ];
+  prioOption = prio: optionalString (prio != null) " pri=${toString prio}";
 
-  nonEmptyWithoutTrailingSlash = addCheckDesc "non-empty without trailing slash" types.str
-    (s: isNonEmpty s && (builtins.match ".+/" s) == null);
+  specialFSTypes = [ "proc" "sysfs" "tmpfs" "ramfs" "devtmpfs" "devpts" ];
 
   coreFileSystemOpts = { name, config, ... }: {
 
     options = {
+
       mountPoint = mkOption {
         example = "/mnt/usb";
-        type = nonEmptyWithoutTrailingSlash;
+        type = nonEmptyStr;
         description = "Location of the mounted the file system.";
       };
 
@@ -55,20 +54,6 @@ let
         example = [ "data=journal" ];
         description = "Options used to mount the file system.";
         type = types.listOf nonEmptyStr;
-      };
-
-      depends = mkOption {
-        default = [ ];
-        example = [ "/persist" ];
-        type = types.listOf nonEmptyWithoutTrailingSlash;
-        description = ''
-          List of paths that should be mounted before this one. This filesystem's
-          <option>device</option> and <option>mountPoint</option> are always
-          checked and do not need to be included explicitly. If a path is added
-          to this list, any other filesystem whose mount point is a parent of
-          the path will be mounted before this filesystem. The paths do not need
-          to actually be the <option>mountPoint</option> of some other filesystem.
-        '';
       };
 
     };
@@ -163,7 +148,7 @@ in
 
     fileSystems = mkOption {
       default = {};
-      example = literalExpression ''
+      example = literalExample ''
         {
           "/".device = "/dev/hda1";
           "/data" = {
@@ -254,18 +239,11 @@ in
         skipCheck = fs: fs.noCheck || fs.device == "none" || builtins.elem fs.fsType fsToSkipCheck;
         # https://wiki.archlinux.org/index.php/fstab#Filepath_spaces
         escape = string: builtins.replaceStrings [ " " "\t" ] [ "\\040" "\\011" ] string;
-        swapOptions = sw: concatStringsSep "," (
-          sw.options
-          ++ optional (sw.priority != null) "pri=${toString sw.priority}"
-          ++ optional (sw.discardPolicy != null) "discard${optionalString (sw.discardPolicy != "both") "=${toString sw.discardPolicy}"}"
-        );
       in ''
         # This is a generated file.  Do not edit!
         #
         # To make changes, edit the fileSystems and swapDevices NixOS options
         # in your /etc/nixos/configuration.nix file.
-        #
-        # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 
         # Filesystems.
         ${concatMapStrings (fs:
@@ -283,7 +261,7 @@ in
 
         # Swap devices.
         ${flip concatMapStrings config.swapDevices (sw:
-            "${sw.realDevice} none swap ${swapOptions sw}\n"
+            "${sw.realDevice} none swap${prioOption sw.priority}\n"
         )}
       '';
 
@@ -293,10 +271,10 @@ in
         wants = [ "local-fs.target" "remote-fs.target" ];
       };
 
-    systemd.services =
-
     # Emit systemd services to format requested filesystems.
+    systemd.services =
       let
+
         formatDevice = fs:
           let
             mountPoint' = "${escapeSystemdPath fs.mountPoint}.mount";
@@ -323,40 +301,8 @@ in
             unitConfig.DefaultDependencies = false; # needed to prevent a cycle
             serviceConfig.Type = "oneshot";
           };
-      in listToAttrs (map formatDevice (filter (fs: fs.autoFormat) fileSystems)) // {
-    # Mount /sys/fs/pstore for evacuating panic logs and crashdumps from persistent storage onto the disk using systemd-pstore.
-    # This cannot be done with the other special filesystems because the pstore module (which creates the mount point) is not loaded then.
-        "mount-pstore" = {
-          serviceConfig = {
-            Type = "oneshot";
-            # skip on kernels without the pstore module
-            ExecCondition = "${pkgs.kmod}/bin/modprobe -b pstore";
-            ExecStart = pkgs.writeShellScript "mount-pstore.sh" ''
-              set -eu
-              # if the pstore module is builtin it will have mounted the persistent store automatically. it may also be already mounted for other reasons.
-              ${pkgs.util-linux}/bin/mountpoint -q /sys/fs/pstore || ${pkgs.util-linux}/bin/mount -t pstore -o nosuid,noexec,nodev pstore /sys/fs/pstore
-              # wait up to 1.5 seconds for the backend to be registered and the files to appear. a systemd path unit cannot detect this happening; and succeeding after a restart would not start dependent units.
-              TRIES=15
-              while [ "$(cat /sys/module/pstore/parameters/backend)" = "(null)" ]; do
-                if (( $TRIES )); then
-                  sleep 0.1
-                  TRIES=$((TRIES-1))
-                else
-                  echo "Persistent Storage backend was not registered in time." >&2
-                  break
-                fi
-              done
-            '';
-            RemainAfterExit = true;
-          };
-          unitConfig = {
-            ConditionVirtualization = "!container";
-            DefaultDependencies = false; # needed to prevent a cycle
-          };
-          before = [ "systemd-pstore.service" ];
-          wantedBy = [ "systemd-pstore.service" ];
-        };
-      };
+
+      in listToAttrs (map formatDevice (filter (fs: fs.autoFormat) fileSystems));
 
     systemd.tmpfiles.rules = [
       "d /run/keys 0750 root ${toString config.ids.gids.keys}"

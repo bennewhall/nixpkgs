@@ -1,4 +1,4 @@
-{ lib, fetchurl, tex, extraFonts, chineseFonts, japaneseFonts, koreanFonts }:
+{ stdenv, fetchurl, tex, extraFonts, chineseFonts, japaneseFonts, koreanFonts }:
 rec {
   extraFontsSrc = fetchurl {
     url = "ftp://ftp.texmacs.org/pub/TeXmacs/fonts/TeXmacs-extra-fonts-1.0-noarch.tar.gz";
@@ -63,6 +63,6 @@ rec {
     collaborative authoring are planned for later.
   '';
     homepage = "http://texmacs.org/";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

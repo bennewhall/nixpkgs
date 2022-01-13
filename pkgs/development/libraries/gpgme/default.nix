@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, fetchpatch
-, autoreconfHook, libgpg-error, gnupg, pkg-config, glib, pth, libassuan
+{ stdenv, fetchurl, fetchpatch
+, autoreconfHook, libgpgerror, gnupg, pkgconfig, glib, pth, libassuan
 , file, which, ncurses
 , texinfo
 , buildPackages
@@ -8,23 +8,25 @@
 }:
 
 let
+  inherit (stdenv) lib;
   inherit (stdenv.hostPlatform) system;
 in
 
 stdenv.mkDerivation rec {
   pname = "gpgme";
-  version = "1.16.0";
+  version = "1.15.0";
 
   src = fetchurl {
     url = "mirror://gnupg/gpgme/${pname}-${version}.tar.bz2";
-    sha256 = "1l4yw9fqc1blvx1sq1jnfvp1jijla3ca2jw90p4x9m8hvfpc933c";
+    sha256 = "0nqfipv5s4npfidsm1rs3kpq0r0av9bfqfd5r035jibx5k0jniqb";
   };
 
   patches = [
-    # probably included in > 1.16.0
-    ./test_t-edit-sign.diff
-    # https://dev.gnupg.org/rMc4cf527ea227edb468a84bf9b8ce996807bd6992
-    ./fix_gpg_list_keys.diff
+    (fetchpatch { # gpg: Send --with-keygrip when listing keys
+      name = "c4cf527ea227edb468a84bf9b8ce996807bd6992.patch";
+      url = "http://git.gnupg.org/cgi-bin/gitweb.cgi?p=gpgme.git;a=patch;h=c4cf527ea227edb468a84bf9b8ce996807bd6992";
+      sha256 = "0y0b0lb2nq5p9kx13b59b2jaz157mvflliw1qdvg1v1hynvgb8m4";
+    })
     # https://lists.gnupg.org/pipermail/gnupg-devel/2020-April/034591.html
     (fetchpatch {
       name = "0001-Fix-python-tests-on-non-Linux.patch";
@@ -32,27 +34,23 @@ stdenv.mkDerivation rec {
       sha256 = "00d4sxq63601lzdp2ha1i8fvybh7dzih4531jh8bx07fab3sw65g";
     })
     # Disable python tests on Darwin as they use gpg (see configureFlags below)
-  ] ++ lib.optional stdenv.isDarwin ./disable-python-tests.patch
-  # Fix _AC_UNDECLARED_WARNING for autoconf≥2.70. See https://lists.gnupg.org/pipermail/gnupg-devel/2020-November/034643.html
-  ++ lib.optional stdenv.cc.isClang ./fix-clang-autoconf-undeclared-warning.patch;
+  ] ++ lib.optional stdenv.isDarwin ./disable-python-tests.patch;
 
   outputs = [ "out" "dev" "info" ];
   outputBin = "dev"; # gpgme-config; not so sure about gpgme-tool
 
   propagatedBuildInputs =
-    [ libgpg-error glib libassuan pth ]
+    [ libgpgerror glib libassuan pth ]
     ++ lib.optional (qtbase != null) qtbase;
 
-  nativeBuildInputs = [ pkg-config gnupg texinfo autoreconfHook ]
+  nativeBuildInputs = [ pkgconfig gnupg texinfo autoreconfHook ]
   ++ lib.optionals pythonSupport [ python swig2 which ncurses ];
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
 
-  dontWrapQtApps = true;
-
   configureFlags = [
     "--enable-fixed-path=${gnupg}/bin"
-    "--with-libgpg-error-prefix=${libgpg-error.dev}"
+    "--with-libgpg-error-prefix=${libgpgerror.dev}"
     "--with-libassuan-prefix=${libassuan.dev}"
   ] ++ lib.optional pythonSupport "--enable-languages=python"
   # Tests will try to communicate with gpg-agent instance via a UNIX socket
@@ -72,7 +70,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gnupg.org/software/gpgme/index.html";
     changelog = "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=gpgme.git;a=blob;f=NEWS;hb=refs/tags/gpgme-${version}";
     description = "Library for making GnuPG easier to use";
@@ -84,6 +82,6 @@ stdenv.mkDerivation rec {
     '';
     license = with licenses; [ lgpl21Plus gpl3Plus ];
     platforms = platforms.unix;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ primeos ];
   };
 }

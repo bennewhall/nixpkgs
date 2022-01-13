@@ -18,11 +18,11 @@ let
   arion =
     justStaticExecutables (
       overrideCabal
-        cabalOverrides
         arion-compose
+        cabalOverrides
       );
 
-  inherit (haskell.lib.compose) justStaticExecutables overrideCabal;
+  inherit (haskell.lib) justStaticExecutables overrideCabal;
 
   inherit (haskellPackages) arion-compose;
 

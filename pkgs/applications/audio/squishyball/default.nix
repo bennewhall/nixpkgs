@@ -1,5 +1,5 @@
-{ lib, stdenv, autoreconfHook, fetchsvn, flac, libao, libvorbis, ncurses
-, opusfile, pkg-config
+{ stdenv, autoreconfHook, fetchsvn, flac, libao, libvorbis, ncurses
+, opusfile, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "013vq52q9z6kpg9iyc2jnb3m2gihcjblvwpg4yj4wy1q2c05pzqp";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ flac libao libvorbis ncurses opusfile ];
 
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     cp squishyball.1 $out/share/man/man1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool to perform sample comparison testing on the command line";
     longDescription = ''
        squishyball is a simple command-line utility for performing

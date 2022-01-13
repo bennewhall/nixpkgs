@@ -1,4 +1,4 @@
-{ lib, git, setuptools, setuptools-scm, fetchFromGitHub, requests, boto3, buildPythonPackage, responses }:
+{ stdenv, git, setuptools, setuptools_scm, fetchFromGitHub, requests, boto3, buildPythonPackage, responses }:
 
 buildPythonPackage rec {
     pname = "sapi-python-client";
@@ -17,11 +17,11 @@ buildPythonPackage rec {
 
     doCheck = false; # requires API token and an active keboola bucket
 
-    nativeBuildInputs = [ git setuptools-scm ];
+    nativeBuildInputs = [ git setuptools_scm ];
 
     propagatedBuildInputs = [ setuptools requests boto3 responses ];
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
         description = "Keboola Connection Storage API client";
         homepage = "https://github.com/keboola/sapi-python-client";
         maintainers = with maintainers; [ mrmebelman ];

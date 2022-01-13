@@ -37,7 +37,7 @@ in rec {
         --replace "BR_PRT_PATH =~" "BR_PRT_PATH = \"$dir\"; #" \
         --replace "PRINTER =~" "PRINTER = \"${model}\"; #"
       wrapProgram $dir/lpd/filter_${model} \
-        --prefix PATH : ${lib.makeBinPath [
+        --prefix PATH : ${stdenv.lib.makeBinPath [
           coreutils ghostscript gnugrep gnused which
         ]}
     # need to use i686 glibc here, these are 32bit proprietary binaries
@@ -48,9 +48,9 @@ in rec {
     meta = {
       description = "Brother ${lib.strings.toUpper model} driver";
       homepage = "http://www.brother.com/";
-      license = lib.licenses.unfree;
+      license = stdenv.lib.licenses.unfree;
       platforms = [ "x86_64-linux" "i686-linux" ];
-      maintainers = [ lib.maintainers.steveej ];
+      maintainers = [ stdenv.lib.maintainers.steveej ];
     };
   };
 
@@ -70,7 +70,7 @@ in rec {
         --replace "basedir =~" "basedir = \"$basedir\"; #" \
         --replace "PRINTER =~" "PRINTER = \"${model}\"; #"
       wrapProgram $dir/cupswrapper/brother_lpdwrapper_${model} \
-        --prefix PATH : ${lib.makeBinPath [ coreutils gnugrep gnused ]}
+        --prefix PATH : ${stdenv.lib.makeBinPath [ coreutils gnugrep gnused ]}
       mkdir -p $out/lib/cups/filter
       mkdir -p $out/share/cups/model
       ln $dir/cupswrapper/brother_lpdwrapper_${model} $out/lib/cups/filter
@@ -80,9 +80,9 @@ in rec {
     meta = {
       description = "Brother ${lib.strings.toUpper model} CUPS wrapper driver";
       homepage = "http://www.brother.com/";
-      license = lib.licenses.gpl2;
+      license = stdenv.lib.licenses.gpl2;
       platforms = [ "x86_64-linux" "i686-linux" ];
-      maintainers = [ lib.maintainers.steveej ];
+      maintainers = [ stdenv.lib.maintainers.steveej ];
     };
   };
 }

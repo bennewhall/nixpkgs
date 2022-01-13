@@ -1,36 +1,27 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , makeWrapper
 , dpkg
-, glib
-, gnutar
-, gtk3-x11
 , luajit
-, sdcv
+, gtk3-x11
 , SDL2
+, glib
 , noto-fonts
 , nerdfonts }:
 let font-droid = nerdfonts.override { fonts = [ "DroidSansMono" ]; };
 in stdenv.mkDerivation rec {
   pname = "koreader";
-  version = "2021.12.1";
+  version = "2020.11";
 
   src = fetchurl {
     url =
       "https://github.com/koreader/koreader/releases/download/v${version}/koreader-${version}-amd64.deb";
-    sha256 = "sha256-Ia0oCSGs6UYcvZVEhNpiOh3D08FgXqjqpgsQJojd3dk=";
+    sha256 = "15nw8kyjyhqlr742gkpzn1b9906rdm6cssnc6jbbph5pjdlzspc4";
   };
 
   sourceRoot = ".";
   nativeBuildInputs = [ makeWrapper dpkg ];
-  buildInputs = [
-    glib
-    gnutar
-    gtk3-x11
-    luajit
-    sdcv
-    SDL2
-  ];
+  buildInputs = [ luajit gtk3-x11 SDL2 glib ];
   unpackCmd = "dpkg-deb -x ${src} .";
 
   dontConfigure = true;
@@ -39,25 +30,23 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out
     cp -R usr/* $out/
-    ln -sf ${luajit}/bin/luajit $out/lib/koreader/luajit
-    ln -sf ${sdcv}/bin/sdcv $out/lib/koreader/sdcv
-    ln -sf ${gnutar}/bin/tar $out/lib/koreader/tar
+    cp ${luajit}/bin/luajit $out/lib/koreader/luajit
     find $out -xtype l -delete
     for i in ${noto-fonts}/share/fonts/truetype/noto/*; do
         ln -s "$i" $out/lib/koreader/fonts/noto/
     done
     ln -s "${font-droid}/share/fonts/opentype/NerdFonts/Droid Sans Mono Nerd Font Complete Mono.otf" $out/lib/koreader/fonts/droid/DroidSansMono.ttf
     wrapProgram $out/bin/koreader --prefix LD_LIBRARY_PATH : ${
-      lib.makeLibraryPath [ gtk3-x11 SDL2 glib ]
+      stdenv.lib.makeLibraryPath [ gtk3-x11 SDL2 glib ]
     }
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/koreader/koreader";
     description =
       "An ebook reader application supporting PDF, DjVu, EPUB, FB2 and many more formats, running on Cervantes, Kindle, Kobo, PocketBook and Android devices";
     platforms = intersectLists platforms.x86_64 platforms.linux;
-    license = licenses.agpl3Only;
-    maintainers = with maintainers; [ contrun neonfuz];
+    license = licenses.agpl3;
+    maintainers = [ maintainers.contrun ];
   };
 }

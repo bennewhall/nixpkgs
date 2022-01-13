@@ -1,25 +1,24 @@
-{ buildPecl, lib, fetchFromGitHub, libmaxminddb }:
+{ buildPecl, lib, pkgs }:
 let
   pname = "maxminddb";
-  version = "1.11.0";
+  version = "1.8.0";
 in
 buildPecl {
   inherit pname version;
 
-  src = fetchFromGitHub {
+  src = pkgs.fetchFromGitHub {
     owner = "maxmind";
     repo = "MaxMind-DB-Reader-php";
     rev = "v${version}";
-    sha256 = "sha256-Dw1+pYJmZ3U2+rgSOEkx4a6HB8FebSr7YZodOjSipjI=";
+    sha256 = "0cpd8d1xnkxsrf28z25xzgkkf3wc13ia99v8f7hbl7csvnggs7nn";
   };
 
-  buildInputs = [ libmaxminddb ];
+  buildInputs = [ pkgs.libmaxminddb ];
   sourceRoot = "source/ext";
 
-  meta = with lib; {
+  meta = with pkgs.lib; {
     description = "C extension that is a drop-in replacement for MaxMind\\Db\\Reader";
     license = with licenses; [ asl20 ];
-    homepage = "https://github.com/maxmind/MaxMind-DB-Reader-php";
     maintainers = with maintainers; [ ajs124 das_j ] ++ teams.php.members;
   };
 }

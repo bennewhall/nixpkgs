@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, pkg-config, meson, ninja, glib, gsignond, check
+{ stdenv, fetchFromGitLab, pkgconfig, meson, ninja, glib, gsignond, check
 , json-glib, libsoup, gnutls, gtk-doc, docbook_xml_dtd_43, docbook_xml_dtd_45
 , docbook_xsl, glibcLocales, gobject-introspection }:
 
@@ -23,7 +23,7 @@ stdenv.mkDerivation {
     gtk-doc
     meson
     ninja
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -38,11 +38,11 @@ stdenv.mkDerivation {
 
   PKG_CONFIG_GSIGNOND_GPLUGINSDIR = "${placeholder "out"}/lib/gsignond/gplugins";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Plugin for the Accounts-SSO gSignOn daemon that handles the OAuth 1.0 and 2.0 authentication protocols";
     homepage = "https://gitlab.com/accounts-sso/gsignond-plugin-oa";
     license = licenses.lgpl21Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ worldofpeace ];
     platforms = platforms.linux;
   };
 }

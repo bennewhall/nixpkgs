@@ -1,26 +1,26 @@
-{ lib, stdenv, fetchFromGitHub, bison, flex }:
+{ stdenv, fetchgit, bison, flex }:
+
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "pcalc";
-  version = "20181202";
+  version = "20141224";
 
-  src = fetchFromGitHub {
-    owner = "vapier";
-    repo = "pcalc";
-    rev = "d93be9e19ecc0b2674cf00ec91cbb79d32ccb01d";
-    sha256 = "sha256-m4xdsEJGKxLgp/d5ipxQ+cKG3z7rlvpPL6hELnDu6Hk=";
+  src = fetchgit {
+    url = "git://git.code.sf.net/p/pcalc/code";
+    rev = "181d60d3c880da4344fef7138065943eb3b9255f";
+    sha256 = "1hd5bh20j5xzvv6qa0fmzmv0h8sf38r7zgi7y0b6nk17pjq33v90";
   };
 
   makeFlags = [ "DESTDIR= BINDIR=$(out)/bin" ];
-  nativeBuildInputs = [ bison flex ];
+  buildInputs = [ bison flex ];
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
-    homepage = "https://vapier.github.io/pcalc/";
+  meta = {
+    homepage = "http://pcalc.sourceforge.net/";
     description = "Programmer's calculator";
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ftrvxmtrx ];
-    platforms = platforms.unix;
+    license = licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ ftrvxmtrx ];
+    platforms = stdenv.lib.platforms.linux;
+    inherit version;
   };
 }

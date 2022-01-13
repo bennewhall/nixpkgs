@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libX11, libXext, libpng, libXft, libICE, pango, libjpeg}:
+{ stdenv, fetchurl, libX11, libXext, libpng, libXft, libICE, pango, libjpeg}:
 
 stdenv.mkDerivation rec {
   pname = "libmatchbox";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Library of the matchbox X window manager";
     homepage = "http://matchbox-project.org/";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

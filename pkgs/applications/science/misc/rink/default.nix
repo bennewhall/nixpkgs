@@ -1,30 +1,28 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, openssl, pkg-config, ncurses
-, libiconv, Security }:
+{ stdenv, fetchFromGitHub, rustPlatform, openssl, pkg-config, ncurses }:
 
 rustPlatform.buildRustPackage rec {
-  version = "0.6.2";
+  version = "0.5.1";
   pname = "rink";
 
   src = fetchFromGitHub {
     owner = "tiffany352";
     repo = "rink-rs";
     rev = "v${version}";
-    sha256 = "sha256-l2Rj15zaJm94EHwvOssfvYQNOoWj45Nq9M85n+A0vo4=";
+    sha256 = "1s67drjzd4cf93hpm7b2facfd6y1x0s60aq6pygj7i02bm0cb9l9";
   };
 
-  cargoSha256 = "sha256-GhuvwVkDRFjC6BghaNMFZZG9hResTN1u0AuvIXlFmig=";
+  cargoSha256 = "1wd70y13lly7nccaqlv7w8znxfal0fzyf9d67y5c3aikj7hkzfin";
 
   nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ ncurses ]
-    ++ (if stdenv.isDarwin then [ libiconv Security ] else [ openssl ]);
+  buildInputs = [ openssl ncurses ];
 
   # Some tests fail and/or attempt to use internet servers.
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Unit-aware calculator";
     homepage = "https://rinkcalc.app";
-    license = with licenses; [ mpl20 gpl3Plus ];
+    license = with licenses; [ mpl20 gpl3 ];
     maintainers = with maintainers; [ sb0 Br1ght0ne ];
   };
 }

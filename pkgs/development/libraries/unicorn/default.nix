@@ -1,27 +1,25 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
-, pkg-config
+, pkgconfig
 , cmake
-, IOKit
 }:
 
 stdenv.mkDerivation rec {
   pname = "unicorn";
-  version = "2.0.0-rc5";
+  version = "1.0.2";
 
   src = fetchFromGitHub {
     owner = "unicorn-engine";
     repo = pname;
     rev = version;
-    sha256 = "1q9k8swnq4qsi54zdfaap69z56w3yj4n4ggm9pscmmmr69nply5f";
+    sha256 = "0jgnyaq6ykpbg5hrwc0p3pargmr9hpzqfsj6ymp4k07pxnqal76j";
   };
 
-  nativeBuildInputs = [ pkg-config cmake ];
-  buildInputs = lib.optionals stdenv.isDarwin [ IOKit ];
+  nativeBuildInputs = [ pkgconfig cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lightweight multi-platform CPU emulator library";
-    homepage = "https://www.unicorn-engine.org";
+    homepage = "http://www.unicorn-engine.org";
     license = licenses.gpl2Only;
     platforms = platforms.unix;
     maintainers = with maintainers; [ thoughtpolice luc65r ];

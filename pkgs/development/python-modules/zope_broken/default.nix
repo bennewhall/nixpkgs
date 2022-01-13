@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , zope_interface
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   buildInputs = [ zope_interface ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://pypi.python.org/pypi/zope.broken";
     description = "Zope Broken Object Interfaces";
     license = licenses.zpl20;

@@ -1,12 +1,12 @@
 { config, lib, pkgs, ... }:
 
 with lib;
+
 let
   cfg = config.services.pykms;
   libDir = "/var/lib/pykms";
 
-in
-{
+in {
   meta.maintainers = with lib.maintainers; [ peterhoeg ];
 
   imports = [
@@ -46,14 +46,14 @@ in
       };
 
       logLevel = mkOption {
-        type = types.enum [ "CRITICAL" "ERROR" "WARNING" "INFO" "DEBUG" "MININFO" ];
+        type = types.enum [ "CRITICAL" "ERROR" "WARNING" "INFO" "DEBUG" "MINI" ];
         default = "INFO";
         description = "How much to log";
       };
 
       extraArgs = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         description = "Additional arguments";
       };
     };
@@ -74,9 +74,8 @@ in
         ExecStartPre = "${getBin pykms}/libexec/create_pykms_db.sh ${libDir}/clients.db";
         ExecStart = lib.concatStringsSep " " ([
           "${getBin pykms}/bin/server"
-          "--logfile=STDOUT"
-          "--loglevel=${cfg.logLevel}"
-          "--sqlite=${libDir}/clients.db"
+          "--logfile STDOUT"
+          "--loglevel ${cfg.logLevel}"
         ] ++ cfg.extraArgs ++ [
           cfg.listenAddress
           (toString cfg.port)

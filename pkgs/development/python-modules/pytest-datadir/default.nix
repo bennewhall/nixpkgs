@@ -1,5 +1,5 @@
-{ lib, buildPythonPackage, fetchFromGitHub
-, setuptools-scm, pytest
+{ stdenv, buildPythonPackage, fetchFromGitHub
+, setuptools_scm, pytest, cmake
 }:
 
 buildPythonPackage rec {
@@ -14,7 +14,7 @@ buildPythonPackage rec {
     sha256 = "0kwgp6sqnqnmww5r0dkmyfpi0lmw0iwxz3fnwn2fs8w6bvixzznf";
   };
 
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools_scm ];
 
   preBuild = ''
     export SETUPTOOLS_SCM_PRETEND_VERSION="${version}"
@@ -23,10 +23,10 @@ buildPythonPackage rec {
   checkInputs = [ pytest ];
   checkPhase = "pytest";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/gabrielcnr/pytest-datadir";
     description = "pytest plugin for manipulating test data directories and files";
     license = licenses.mit;
-    maintainers = with maintainers; [ kira-bruneau ];
+    maintainers = with maintainers; [ metadark ];
   };
 }

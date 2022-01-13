@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , python
 , fetchPypi
@@ -30,7 +30,7 @@ buildPythonPackage rec {
     ${python.interpreter} -m unittest discover -s tests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Adds i18n/l10n support to Flask applications";
     longDescription = ''
       Implements i18n and l10n support for Flask.

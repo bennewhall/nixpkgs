@@ -23,16 +23,12 @@ let
 
   logstashSettingsYml = pkgs.writeText "logstash.yml" cfg.extraSettings;
 
-  logstashJvmOptionsFile = pkgs.writeText "jvm.options" cfg.extraJvmOptions;
-
   logstashSettingsDir = pkgs.runCommand "logstash-settings" {
-      inherit logstashJvmOptionsFile;
       inherit logstashSettingsYml;
       preferLocalBuild = true;
     } ''
     mkdir -p $out
     ln -s $logstashSettingsYml $out/logstash.yml
-    ln -s $logstashJvmOptionsFile $out/jvm.options
   '';
 in
 
@@ -57,14 +53,15 @@ in
       package = mkOption {
         type = types.package;
         default = pkgs.logstash;
-        defaultText = literalExpression "pkgs.logstash";
+        defaultText = "pkgs.logstash";
+        example = literalExample "pkgs.logstash";
         description = "Logstash package to use.";
       };
 
       plugins = mkOption {
         type = types.listOf types.path;
         default = [ ];
-        example = literalExpression "[ pkgs.logstash-contrib ]";
+        example = literalExample "[ pkgs.logstash-contrib ]";
         description = "The paths to find other logstash plugins in.";
       };
 
@@ -103,16 +100,14 @@ in
 
       inputConfig = mkOption {
         type = types.lines;
-        default = "generator { }";
+        default = ''generator { }'';
         description = "Logstash input configuration.";
-        example = literalExpression ''
-          '''
-            # Read from journal
-            pipe {
-              command => "''${pkgs.systemd}/bin/journalctl -f -o json"
-              type => "syslog" codec => json {}
-            }
-          '''
+        example = ''
+          # Read from journal
+          pipe {
+            command => "''${pkgs.systemd}/bin/journalctl -f -o json"
+            type => "syslog" codec => json {}
+          }
         '';
       };
 
@@ -136,7 +131,7 @@ in
 
       outputConfig = mkOption {
         type = types.lines;
-        default = "stdout { codec => rubydebug }";
+        default = ''stdout { codec => rubydebug }'';
         description = "Logstash output configuration.";
         example = ''
           redis { host => ["localhost"] data_type => "list" key => "logstash" codec => json }
@@ -156,15 +151,6 @@ in
         '';
       };
 
-      extraJvmOptions = mkOption {
-        type = types.lines;
-        default = "";
-        description = "Extra JVM options, one per line (jvm.options format).";
-        example = ''
-          -Xms2g
-          -Xmx2g
-        '';
-      };
 
     };
   };
@@ -173,9 +159,10 @@ in
   ###### implementation
 
   config = mkIf cfg.enable {
-    systemd.services.logstash = {
+    systemd.services.logstash = with pkgs; {
       description = "Logstash Daemon";
       wantedBy = [ "multi-user.target" ];
+      environment = { JAVA_HOME = jre; };
       path = [ pkgs.bash ];
       serviceConfig = {
         ExecStartPre = ''${pkgs.coreutils}/bin/mkdir -p "${cfg.dataDir}" ; ${pkgs.coreutils}/bin/chmod 700 "${cfg.dataDir}"'';

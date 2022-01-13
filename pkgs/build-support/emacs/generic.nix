@@ -1,6 +1,6 @@
 # generic builder for Emacs packages
 
-{ lib, stdenv, emacs, texinfo, writeText, gcc, ... }:
+{ lib, stdenv, emacs, texinfo }:
 
 with lib;
 
@@ -49,19 +49,7 @@ stdenv.mkDerivation ({
   propagatedBuildInputs = packageRequires;
   propagatedUserEnvPkgs = packageRequires;
 
-  setupHook = writeText "setup-hook.sh" ''
-    source ${./emacs-funcs.sh}
-
-    if [[ ! -v emacsHookDone ]]; then
-      emacsHookDone=1
-
-      # If this is for a wrapper derivation, emacs and the dependencies are all
-      # run-time dependencies. If this is for precompiling packages into bytecode,
-      # emacs is a compile-time dependency of the package.
-      addEnvHooks "$hostOffset" addEmacsVars
-      addEnvHooks "$targetOffset" addEmacsVars
-    fi
-  '';
+  setupHook = ./setup-hook.sh;
 
   doCheck = false;
 
@@ -72,22 +60,10 @@ stdenv.mkDerivation ({
 
   LIBRARY_PATH = "${lib.getLib stdenv.cc.libc}/lib";
 
-  nativeBuildInputs = [ gcc ];
-
-  addEmacsNativeLoadPath = true;
-
   postInstall = ''
-    # Besides adding the output directory to the native load path, make sure
-    # the current package's elisp files are in the load path, otherwise
-    # (require 'file-b) from file-a.el in the same package will fail.
-    mkdir -p $out/share/emacs/native-lisp
-    source ${./emacs-funcs.sh}
-    addEmacsVars "$out"
-
-    find $out/share/emacs -type f -name '*.el' -print0 \
-      | xargs -0 -n 1 -I {} -P $NIX_BUILD_CORES sh -c \
-          "emacs --batch --eval '(setq large-file-warning-threshold nil)' -f batch-native-compile {} || true"
+    find $out/share/emacs -type f -name '*.el' -print0 | xargs -0 -n 1 -I {} -P $NIX_BUILD_CORES sh -c "emacs --batch -f batch-native-compile {} || true"
   '';
+
 }
 
 // removeAttrs args [ "buildInputs" "packageRequires"

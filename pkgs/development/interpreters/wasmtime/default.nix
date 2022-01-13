@@ -12,12 +12,12 @@ rustPlatform.buildRustPackage rec {
     fetchSubmodules = true;
   };
 
-  cargoSha256 = "1wlig9gls7s1k1swxwhl82vfga30bady8286livxc4y2zp0vb18w";
+  cargoSha256 = "1r1fm28zaxfbzd17jzaz8ql6ss6y6djgdhpfpkvpbw9l8l06x4lc";
 
   nativeBuildInputs = [ python cmake clang ];
   buildInputs = [ llvmPackages.libclang ] ++
    lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Security ];
-  LIBCLANG_PATH = "${llvmPackages.libclang.lib}/lib";
+  LIBCLANG_PATH = "${llvmPackages.libclang}/lib";
 
   doCheck = true;
 

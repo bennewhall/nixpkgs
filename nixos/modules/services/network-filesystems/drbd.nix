@@ -47,17 +47,19 @@ let cfg = config.services.drbd; in
         options drbd usermode_helper=/run/current-system/sw/bin/drbdadm
       '';
 
-    environment.etc."drbd.conf" =
+    environment.etc.drbd.conf =
       { source = pkgs.writeText "drbd.conf" cfg.config; };
 
     systemd.services.drbd = {
       after = [ "systemd-udev.settle.service" "network.target" ];
       wants = [ "systemd-udev.settle.service" ];
       wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.drbd}/sbin/drbdadm up all";
-        ExecStop = "${pkgs.drbd}/sbin/drbdadm down all";
-      };
+      script = ''
+        ${pkgs.drbd}/sbin/drbdadm up all
+      '';
+      serviceConfig.ExecStop = ''
+        ${pkgs.drbd}/sbin/drbdadm down all
+      '';
     };
   };
 }

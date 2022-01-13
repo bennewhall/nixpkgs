@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, libX11}:
+{stdenv, fetchFromGitHub, libX11}:
 stdenv.mkDerivation rec {
   pname = "wayv";
   version = "0.3";
@@ -22,10 +22,11 @@ stdenv.mkDerivation rec {
   '';
 
   meta = {
+    inherit version;
     description = "A gesture control for X11";
-    license = lib.licenses.gpl2Plus ;
-    maintainers = [lib.maintainers.raskin];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2Plus ;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
     homepage = "https://github.com/mikemb/wayV";
   };
 }

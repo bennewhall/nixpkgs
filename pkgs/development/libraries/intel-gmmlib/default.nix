@@ -1,32 +1,25 @@
-{ lib
-, stdenv
-, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , cmake
 }:
 
 stdenv.mkDerivation rec {
   pname = "intel-gmmlib";
-  version = "22.0.1";
+  version = "20.3.3";
 
   src = fetchFromGitHub {
-    owner = "intel";
-    repo = "gmmlib";
-    rev = "intel-gmmlib-${version}";
-    sha256 = "1s46vwcs26hdlsa8h51gq4fyi9i8k5hrcx5ffbv9g7v3x706nplf";
+    owner  = "intel";
+    repo   = "gmmlib";
+    rev    = "${pname}-${version}";
+    sha256 = "1diq1gqpfv5bawvag6bzwnd3ilhacwmwx3bl67abjvbb0m3jw4lk";
   };
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/intel/gmmlib";
     license = licenses.mit;
     description = "Intel Graphics Memory Management Library";
-    longDescription = ''
-      The Intel(R) Graphics Memory Management Library provides device specific
-      and buffer management for the Intel(R) Graphics Compute Runtime for
-      OpenCL(TM) and the Intel(R) Media Driver for VAAPI.
-    '';
-    platforms = [ "x86_64-linux" "i686-linux" ];
-    maintainers = with maintainers; [ primeos SuperSandro2000 ];
+    platforms = [ "x86_64-linux" ];
+    maintainers = with maintainers; [ danieldk ];
   };
 }

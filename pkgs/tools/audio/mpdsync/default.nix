@@ -1,8 +1,7 @@
 { stdenv, python2, fetchFromGitHub }:
 with python2.pkgs;
 stdenv.mkDerivation {
-  pname = "mpdsync";
-  version = "unstable-2017-06-15";
+  name = "mpdsync-2017-06-15";
 
   src = fetchFromGitHub {
     owner = "alphapapa";

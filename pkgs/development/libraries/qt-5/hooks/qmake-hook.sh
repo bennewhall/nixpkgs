@@ -3,9 +3,6 @@
 qmakeFlags=( ${qmakeFlags-} )
 
 qmakePrePhase() {
-    qmakeFlags_orig=( "${qmakeFlags[@]}" )
-
-    # These flags must be added _before_ the flags specified in the derivation.
     qmakeFlags=( \
         "PREFIX=$out" \
         "NIX_OUTPUT_OUT=$out" \
@@ -14,15 +11,8 @@ qmakePrePhase() {
         "NIX_OUTPUT_DOC=${!outputDev}/${qtDocPrefix:?}" \
         "NIX_OUTPUT_QML=${!outputBin}/${qtQmlPrefix:?}" \
         "NIX_OUTPUT_PLUGIN=${!outputBin}/${qtPluginPrefix:?}" \
+        "${qmakeFlags[@]}" \
     )
-
-    if [ -n "@debug@" ]; then
-        qmakeFlags+=( "CONFIG+=debug" )
-    else
-        qmakeFlags+=( "CONFIG+=release" )
-    fi
-
-    qmakeFlags+=( "${qmakeFlags_orig[@]}" )
 }
 prePhases+=" qmakePrePhase"
 

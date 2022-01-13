@@ -1,45 +1,34 @@
-{ lib
-, stdenv
-, fetchurl
-, cairo
-, ffmpeg
-, libexif
-, pango
-, pkg-config
-, wxGTK
-}:
+{ stdenv, fetchurl
+, pkgconfig, wxGTK
+, ffmpeg_3, libexif
+, cairo, pango }:
 
 stdenv.mkDerivation rec {
+
   pname = "wxSVG";
-  version = "1.5.23";
+  srcName = "wxsvg-${version}";
+  version = "1.5.22";
 
   src = fetchurl {
-    url = "mirror://sourceforge/project/wxsvg/wxsvg/${version}/wxsvg-${version}.tar.bz2";
-    hash = "sha256-Pwc2H6zH0YzBmpQN1zx4FC7V7sOMFNmTqFvwwGHcq7k=";
+    url = "mirror://sourceforge/project/wxsvg/wxsvg/${version}/${srcName}.tar.bz2";
+    sha256 = "0agmmwg0zlsw1idygvqjpj1nk41akzlbdha0hsdk1k8ckz6niq8d";
   };
 
-  nativeBuildInputs = [
-    pkg-config
-  ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildInputs = [
-    cairo
-    ffmpeg
-    libexif
-    pango
-    wxGTK
-  ];
+  propagatedBuildInputs = [ wxGTK ffmpeg_3 libexif ];
 
-  meta = with lib; {
-    homepage = "http://wxsvg.sourceforge.net/";
+  buildInputs = [ cairo pango ];
+
+  meta = with stdenv.lib; {
     description = "A SVG manipulation library built with wxWidgets";
     longDescription = ''
-      wxSVG is C++ library to create, manipulate and render Scalable Vector
-      Graphics (SVG) files with the wxWidgets toolkit.
+    wxSVG is C++ library to create, manipulate and render
+    Scalable Vector Graphics (SVG) files with the wxWidgets toolkit.
     '';
-    license = with licenses; gpl2Plus;
+    homepage = "http://wxsvg.sourceforge.net/";
+    license = with licenses; gpl2;
     maintainers = with maintainers; [ AndersonTorres ];
-    platforms = wxGTK.meta.platforms;
-    broken = stdenv.isDarwin;
+    platforms = with platforms; linux;
   };
 }

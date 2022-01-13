@@ -1,6 +1,5 @@
-{ lib, stdenv, pkgsHostHost
-, file, curl, pkg-config, python3, openssl, cmake, zlib
-, installShellFiles, makeWrapper, cacert, rustPlatform, rustc
+{ stdenv, file, curl, pkgconfig, python3, openssl, cmake, zlib
+, installShellFiles, makeWrapper, libiconv, cacert, rustPlatform, rustc
 , CoreFoundation, Security
 }:
 
@@ -17,12 +16,9 @@ rustPlatform.buildRustPackage {
   # changes hash of vendor directory otherwise
   dontUpdateAutotoolsGnuConfigScripts = true;
 
-  nativeBuildInputs = [
-    pkg-config cmake installShellFiles makeWrapper
-    (lib.getDev pkgsHostHost.curl)
-  ];
+  nativeBuildInputs = [ pkgconfig cmake installShellFiles makeWrapper ];
   buildInputs = [ cacert file curl python3 openssl zlib ]
-    ++ lib.optionals stdenv.isDarwin [ CoreFoundation Security ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreFoundation Security libiconv ];
 
   # cargo uses git-rs which is made for a version of libgit2 from recent master that
   # is not compatible with the current version in nixpkgs.
@@ -58,15 +54,7 @@ rustPlatform.buildRustPackage {
   # Disable check phase as there are failures (4 tests fail)
   doCheck = false;
 
-  doInstallCheck = !stdenv.hostPlatform.isStatic &&
-    stdenv.hostPlatform.parsed.kernel.execFormat == lib.systems.parse.execFormats.elf;
-  installCheckPhase = ''
-    runHook preInstallCheck
-    readelf -a $out/bin/.cargo-wrapped | grep -F 'Shared library: [libcurl.so'
-    runHook postInstallCheck
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://crates.io";
     description = "Downloads your Rust project's dependencies and builds your project";
     maintainers = with maintainers; [ retrry ];

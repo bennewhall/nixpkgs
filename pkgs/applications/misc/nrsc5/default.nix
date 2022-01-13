@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub,
+{ stdenv, fetchFromGitHub,
   autoconf, automake, libtool, cmake,
   rtl-sdr, libao, fftwFloat
 } :
@@ -42,11 +42,11 @@ in stdenv.mkDerivation {
 
   cmakeFlags = [ "-DUSE_COLOR=ON" "-DUSE_FAAD2=ON" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/theori-io/nrsc5";
     description = "HD-Radio decoder for RTL-SDR";
-    platforms = lib.platforms.linux;
-    license = licenses.gpl3Plus;
+    platforms = stdenv.lib.platforms.linux;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ markuskowa ];
   };
 }

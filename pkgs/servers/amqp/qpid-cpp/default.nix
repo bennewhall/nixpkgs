@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, python2, boost, libuuid, ruby, buildEnv, buildPythonPackage, qpid-python }:
+{ stdenv, fetchurl, cmake, python2, boost, libuuid, ruby, buildEnv, buildPythonPackage, qpid-python }:
 
 let
   pname = "qpid-cpp";
@@ -10,8 +10,8 @@ let
     sha256 = "088dx1l6myrksbhpr15bs09j6qm8vdliqwjp2ja5amym47md103r";
   };
 
-  meta = with lib; {
-    homepage = "https://qpid.apache.org";
+  meta = with stdenv.lib; {
+    homepage = "http://qpid.apache.org";
     repositories.git = "git://git.apache.org/qpid.git";
     repositories.svn = "http://svn.apache.org/repos/asf/qpid";
     description = "An AMQP message broker and a C++ messaging API";
@@ -41,7 +41,7 @@ let
       "-Wno-error=unused-function"
       "-Wno-error=ignored-qualifiers"
       "-Wno-error=catch-value"
-    ] ++ lib.optionals stdenv.cc.isGNU [
+    ] ++ stdenv.lib.optionals stdenv.cc.isGNU [
       "-Wno-error=deprecated-copy"
     ]);
   };

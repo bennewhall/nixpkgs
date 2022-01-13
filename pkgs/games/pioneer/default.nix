@@ -1,20 +1,20 @@
-{ fetchFromGitHub, lib, stdenv, cmake, pkg-config, curl, libsigcxx, SDL2
+{ fetchFromGitHub, stdenv, cmake, pkgconfig, curl, libsigcxx, SDL2
 , SDL2_image, freetype, libvorbis, libpng, assimp, libGLU, libGL
 , glew
 }:
 
 stdenv.mkDerivation rec {
   pname = "pioneer";
-  version = "20210723";
+  version = "20200203";
 
   src = fetchFromGitHub{
     owner = "pioneerspacesim";
     repo = "pioneer";
     rev = version;
-    sha256 = "sha256-w+ECVv96MoS69815+X0PqguDiGDhHoTnAnnYtLpMScI=";
+    sha256 = "1011xsi94jhw98mhm8kryq8ajig0qfbrdx5xdasi92bd4nk7lcp8";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [
     curl libsigcxx SDL2 SDL2_image freetype libvorbis libpng
@@ -25,9 +25,7 @@ stdenv.mkDerivation rec {
     export PIONEER_DATA_DIR="$out/share/pioneer/data";
   '';
 
-  makeFlags = [ "build-data" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A space adventure game set in the Milky Way galaxy at the turn of the 31st century";
     homepage = "https://pioneerspacesim.net";
     license = with licenses; [

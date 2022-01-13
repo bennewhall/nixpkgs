@@ -2,16 +2,16 @@
 
 buildGoModule rec {
   pname = "jx";
-  version = "2.1.155";
+  version = "2.1.149";
 
   src = fetchFromGitHub {
     owner = "jenkins-x";
     repo = "jx";
     rev = "v${version}";
-    sha256 = "sha256-kwcmZSOA26XuSgNSHitGaMohalnLobabXf4z3ybSJtk=";
+    sha256 = "0jgny09wpfab8mkxkhv9swp1baqx3lxsx75a5i78cypkj6xadc69";
   };
 
-  vendorSha256 = "sha256-ZtcCBXcJXX9ThzY6T0MhNfDDzRC9PYzRB1VyS4LLXLs=";
+  vendorSha256 = "1fswrf14nwjm0z8qqgdx236w7w1m451lyfinhx9pyp89fw2h5mv6";
 
   doCheck = false;
 
@@ -19,12 +19,13 @@ buildGoModule rec {
 
   nativeBuildInputs = [ installShellFiles ];
 
-  ldflags = [
-    "-s -w"
-    "-X github.com/jenkins-x/jx/pkg/version.Version=${version}"
-    "-X github.com/jenkins-x/jx/pkg/version.Revision=${src.rev}"
-    "-X github.com/jenkins-x/jx/pkg/version.GitTreeState=clean"
-  ];
+  buildFlagsArray = ''
+    -ldflags=
+    -s -w
+    -X github.com/jenkins-x/jx/pkg/version.Version=${version}
+    -X github.com/jenkins-x/jx/pkg/version.Revision=${src.rev}
+    -X github.com/jenkins-x/jx/pkg/version.GitTreeState=clean
+  '';
 
   postInstall = ''
     for shell in bash zsh; do

@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl
-, # Compile statically (support for packages that look for the static object)
-  staticSupport ? stdenv.hostPlatform.isStatic
+{ stdenv, fetchurl
+, staticSupport ? false # Compile statically (support for packages that look for the static object)
 }:
 
 let
   inherit (stdenv) isDarwin;
-  inherit (lib) optional optionalString;
+  inherit (stdenv.lib) optional optionalString;
 in
 
 stdenv.mkDerivation rec {
@@ -18,8 +17,6 @@ stdenv.mkDerivation rec {
   };
 
   patchPhase = ''
-    substituteInPlace Makefile \
-      --replace "= gcc " "?= gcc "
     # Fix include directory
     sed -e 's,$(GSM_INSTALL_ROOT)/inc,$(GSM_INSTALL_ROOT)/include/gsm,' -i Makefile
   '' + optionalString (!staticSupport) (
@@ -46,7 +43,7 @@ stdenv.mkDerivation rec {
 
   parallelBuild = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lossy speech compression codec";
     homepage    = "http://www.quut.com/gsm/";
     license     = licenses.bsd2;

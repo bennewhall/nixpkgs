@@ -1,6 +1,6 @@
 import ./make-test-python.nix ({ pkgs, ... }: {
   name = "wasabibackend";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ mmahut ];
   };
 
@@ -14,7 +14,7 @@ import ./make-test-python.nix ({ pkgs, ... }: {
           port = 18332;
         };
       };
-      services.bitcoind."testnet" = {
+      services.bitcoind = {
         enable = true;
         testnet = true;
         rpc.users = {

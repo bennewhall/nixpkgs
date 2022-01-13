@@ -1,7 +1,12 @@
-{ lib, stdenv, fetchurl, cmake, hwloc, fftw, perl, blas, lapack, mpi, cudatoolkit
+{ stdenv
+, fetchurl
+, cmake
+, hwloc
+, fftw
+, openmpi
+, perl
 , singlePrec ? true
-, enableMpi ? false
-, enableCuda ? false
+, mpiEnabled ? false
 , cpuAcceleration ? null
 }:
 
@@ -14,37 +19,25 @@ let
     if stdenv.hostPlatform.system == "i686-linux" then "SSE2" else
     if stdenv.hostPlatform.system == "x86_64-linux" then "SSE4.1" else
     if stdenv.hostPlatform.system == "x86_64-darwin" then "SSE4.1" else
-    if stdenv.hostPlatform.system == "aarch64-linux" then "ARM_NEON_ASIMD" else
+    if stdenv.hostPlatform.system == "aarch64-linux" then "ARM_NEON" else
     "None";
 
 in stdenv.mkDerivation rec {
   pname = "gromacs";
-  version = "2021.4";
+  version = "2020.4";
 
   src = fetchurl {
     url = "ftp://ftp.gromacs.org/pub/gromacs/gromacs-${version}.tar.gz";
-    sha256 = "07ds8abxq0k7vfpjvxb8in3fhb6lz0pbdzbmlidyzaw37qz8lw6b";
+    sha256 = "1rplvgna60nqyb8nspaz3bfkwb044kv3zxdaa5whql5m441nj6am";
   };
 
   nativeBuildInputs = [ cmake ];
-
-  buildInputs = [
-    fftw
-    perl
-    hwloc
-    blas
-    lapack
-  ] ++ lib.optional enableMpi mpi
-    ++ lib.optional enableCuda cudatoolkit
-  ;
-
-  propagatedBuildInputs = lib.optional enableMpi mpi;
-  propagatedUserEnvPkgs = lib.optional enableMpi mpi;
+  buildInputs = [ fftw perl hwloc ]
+  ++ (stdenv.lib.optionals mpiEnabled [ openmpi ]);
 
   cmakeFlags = [
     "-DGMX_SIMD:STRING=${SIMD cpuAcceleration}"
     "-DGMX_OPENMP:BOOL=TRUE"
-    "-DBUILD_SHARED_LIBS=ON"
   ] ++ (
     if singlePrec then [
       "-DGMX_DOUBLE=OFF"
@@ -53,17 +46,15 @@ in stdenv.mkDerivation rec {
       "-DGMX_DEFAULT_SUFFIX=OFF"
     ]
   ) ++ (
-    if enableMpi
-      then [
-        "-DGMX_MPI:BOOL=TRUE"
-        "-DGMX_THREAD_MPI:BOOL=FALSE"
-      ]
-     else [
-       "-DGMX_MPI:BOOL=FALSE"
-     ]
-  ) ++ lib.optional enableCuda "-DGMX_GPU=CUDA";
+    if mpiEnabled then [
+      "-DGMX_MPI:BOOL=TRUE"
+      "-DGMX_THREAD_MPI:BOOL=FALSE"
+    ] else [
+      "-DGMX_MPI:BOOL=FALSE"
+    ]
+  );
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.gromacs.org";
     license = licenses.gpl2;
     description = "Molecular dynamics software package";
@@ -87,6 +78,5 @@ in stdenv.mkDerivation rec {
       See: http://www.gromacs.org/About_Gromacs for details.
     '';
     platforms = platforms.unix;
-    maintainers = with maintainers; [ sheepforce markuskowa ];
   };
 }

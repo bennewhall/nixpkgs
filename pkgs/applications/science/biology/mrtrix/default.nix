@@ -1,17 +1,17 @@
 { stdenv, lib, fetchFromGitHub, python, makeWrapper
 , eigen, fftw, libtiff, libpng, zlib, ants, bc
 , qt5, libGL, libGLU, libX11, libXext
-, withGui ? true, less }:
+, withGui ? true }:
 
 stdenv.mkDerivation rec {
   pname = "mrtrix";
-  version = "unstable-2021-11-25";
+  version = "3.0.2";
 
   src = fetchFromGitHub {
     owner  = "MRtrix3";
     repo   = "mrtrix3";
-    rev    = "994498557037c9e4f7ba67f255820ef84ea899d9";
-    sha256 = "sha256-8eFDS5z4ZxMzi9Khk90KAS4ndma/Syd6JDXM2Fpr0M8=";
+    rev    = version;
+    sha256 = "0p4d1230j6664rnb9l65cpyfj9ncbcm39yv1r9y77br9rkkv1za3";
     fetchSubmodules = true;
   };
 
@@ -44,9 +44,6 @@ stdenv.mkDerivation rec {
 
     substituteInPlace ./run_tests  \
       --replace 'git submodule update --init $datadir >> $LOGFILE 2>&1' ""
-
-    substituteInPlace ./build  \
-      --replace '"less -RX "' '"${less}/bin/less -RX "'
   '';
 
   configurePhase = ''

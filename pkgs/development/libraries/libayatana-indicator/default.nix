@@ -20,12 +20,12 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkg-config autoreconfHook ];
 
   buildInputs = [ ayatana-ido ]
-    ++ lib.optionals (gtkVersion == "2") [ gtk2 ]
-    ++ lib.optionals (gtkVersion == "3") [ gtk3 ];
+    ++ lib.lists.optionals (gtkVersion == "2") [ gtk2 ]
+    ++ lib.lists.optionals (gtkVersion == "3") [ gtk3 ];
 
   configureFlags = [ "--with-gtk=${gtkVersion}" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Ayatana Indicators Shared Library";
     homepage = "https://github.com/AyatanaIndicators/libayatana-indicator";
     changelog = "https://github.com/AyatanaIndicators/libayatana-indicator/blob/${version}/ChangeLog";

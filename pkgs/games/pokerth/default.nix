@@ -1,7 +1,9 @@
-{ lib, mkDerivation, fetchFromGitHub, runCommand, fetchpatch, patchutils, qmake, qtbase
+{ mkDerivation, stdenv, fetchFromGitHub, runCommand, fetchpatch, patchutils, qmake, qtbase
 , SDL, SDL_mixer, boost, curl, gsasl, libgcrypt, libircclient, protobuf, sqlite
 , wrapQtAppsHook
 , tinyxml2, target ? "client" }:
+
+with stdenv.lib;
 
 let
   hiDPI = fetchpatch {
@@ -15,7 +17,7 @@ let
 in
 
 mkDerivation rec {
-  pname = "pokerth-${target}";
+  name = "pokerth-${target}-${version}";
   version = "1.1.2";
 
   src = fetchFromGitHub {
@@ -61,11 +63,13 @@ mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-I${SDL.dev}/include/SDL";
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = {
     homepage = "https://www.pokerth.net";
     description = "Poker game ${target}";
     license = licenses.gpl3;
-    maintainers = with maintainers; [ obadz yana ];
+    maintainers = with maintainers; [ obadz yegortimoshenko ];
     platforms = platforms.all;
   };
 }

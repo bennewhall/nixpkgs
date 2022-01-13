@@ -1,27 +1,29 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , pcre, windows ? null
 , variant ? null
 }:
 
-with lib;
+with stdenv.lib;
 
 assert elem variant [ null "cpp" "pcre16" "pcre32" ];
 
-stdenv.mkDerivation rec {
-  pname = "pcre"
-    + lib.optionalString (variant == "cpp") "-cpp"
-    + lib.optionalString (variant != "cpp" && variant != null) variant;
+let
   version = "8.44";
+  pname = if (variant == null) then "pcre"
+    else  if (variant == "cpp") then "pcre-cpp"
+    else  variant;
+
+in stdenv.mkDerivation {
+  name = "${pname}-${version}";
 
   src = fetchurl {
-    url = "mirror://sourceforge/project/pcre/pcre/${version}/pcre-${version}.tar.bz2";
+    url = "https://ftp.pcre.org/pub/pcre/pcre-${version}.tar.bz2";
     sha256 = "0v9nk51wh55pcbnf2jr36yarz8ayajn6d7ywiq2wagivn9c8c40r";
   };
 
   outputs = [ "bin" "dev" "out" "doc" "man" ];
 
-  # Disable jit on Apple Silicon, https://github.com/zherczeg/sljit/issues/51
-  configureFlags = optional (!stdenv.hostPlatform.isRiscV && !(stdenv.hostPlatform.isDarwin && stdenv.hostPlatform.isAarch64)) "--enable-jit" ++ [
+  configureFlags = optional (!stdenv.hostPlatform.isRiscV) "--enable-jit" ++ [
     "--enable-unicode-properties"
     "--disable-cpp"
   ]
@@ -40,14 +42,15 @@ stdenv.mkDerivation rec {
 
   postFixup = ''
     moveToOutput bin/pcre-config "$dev"
-  '' + optionalString (variant != null) ''
+  ''
+    + optionalString (variant != null) ''
     ln -sf -t "$out/lib/" '${pcre.out}'/lib/libpcre{,posix}.{so.*.*.*,*dylib}
   '';
 
   meta = {
     homepage = "http://www.pcre.org/";
     description = "A library for Perl Compatible Regular Expressions";
-    license = lib.licenses.bsd3;
+    license = stdenv.lib.licenses.bsd3;
 
     longDescription = ''
       The PCRE library is a set of functions that implement regular
@@ -58,6 +61,5 @@ stdenv.mkDerivation rec {
     '';
 
     platforms = platforms.all;
-    maintainers = with maintainers; [ ];
   };
 }

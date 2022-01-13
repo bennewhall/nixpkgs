@@ -1,9 +1,9 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , acl
 , cyrus_sasl
 , docbook_xsl
-, libepoxy
+, epoxy
 , gettext
 , gobject-introspection
 , gst_all_1
@@ -23,7 +23,7 @@
 , perl
 , phodav
 , pixman
-, pkg-config
+, pkgconfig
 , polkit
 , python3
 , spice-protocol
@@ -81,7 +81,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     perl
-    pkg-config
+    pkgconfig
     python3
     python3.pkgs.pyparsing
     python3.pkgs.six
@@ -94,7 +94,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     cyrus_sasl
-    libepoxy
+    epoxy
     gtk3
     json-glib
     libcacard
@@ -109,7 +109,7 @@ stdenv.mkDerivation rec {
     spice-protocol
     usbredir
     zlib
-  ] ++ lib.optionals withPolkit [ polkit acl usbutils ] ;
+  ] ++ stdenv.lib.optionals withPolkit [ polkit acl usbutils ] ;
 
   PKG_CONFIG_POLKIT_GOBJECT_1_POLICYDIR = "${placeholder "out"}/share/polkit-1/actions";
 
@@ -118,7 +118,7 @@ stdenv.mkDerivation rec {
     "-Dpulse=disabled" # is deprecated upstream
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GTK 3 SPICE widget";
     longDescription = ''
       spice-gtk is a GTK 3 SPICE widget. It features glib-based

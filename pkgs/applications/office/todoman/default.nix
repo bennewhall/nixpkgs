@@ -1,33 +1,31 @@
-{ lib
+{ stdenv
 , python3
 , glibcLocales
 , installShellFiles
 , jq
 }:
+
 let
-  inherit (python3.pkgs) buildPythonApplication fetchPypi setuptools-scm;
+  inherit (python3.pkgs) buildPythonApplication fetchPypi;
 in
 buildPythonApplication rec {
   pname = "todoman";
-  version = "4.1.0";
+  version = "3.9.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "ce3caa481d923e91da9b492b46509810a754e2d3ef857f5d20bc5a8e362b50c8";
+    sha256 = "e7e5cab13ecce0562b1f13f46ab8cbc079caed4b462f2371929f8a4abff2bcbe";
   };
-
-  SETUPTOOLS_SCM_PRETEND_VERSION = version;
 
   nativeBuildInputs = [
     installShellFiles
-    setuptools-scm
   ];
-
   propagatedBuildInputs = with python3.pkgs; [
     atomicwrites
     click
     click-log
     click-repl
+    configobj
     humanize
     icalendar
     parsedatetime
@@ -42,16 +40,13 @@ buildPythonApplication rec {
     flake8-import-order
     freezegun
     hypothesis
-    pytestCheckHook
+    pytest
+    pytestrunner
+    pytestcov
     glibcLocales
   ];
 
   LC_ALL = "en_US.UTF-8";
-
-  postPatch = ''
-    substituteInPlace setup.cfg \
-      --replace " --cov=todoman --cov-report=term-missing" ""
-  '';
 
   postInstall = ''
     installShellCompletion --bash contrib/completion/bash/_todo
@@ -59,22 +54,13 @@ buildPythonApplication rec {
     installShellCompletion --zsh contrib/completion/zsh/_todo
   '';
 
-  disabledTests = [
-    # Testing of the CLI part and output
-    "test_color_due_dates"
-    "test_color_flag"
-    "test_default_command"
-    "test_main"
-    "test_missing_cache_dir"
-    "test_sorting_null_values"
-    "test_xdg_existant"
-  ];
+  preCheck = ''
+    # Remove one failing test that only checks whether the command line works
+    rm tests/test_main.py
+    rm tests/test_cli.py
+  '';
 
-  pythonImportsCheck = [
-    "todoman"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pimutils/todoman";
     description = "Standards-based task manager based on iCalendar";
     longDescription = ''
@@ -90,8 +76,8 @@ buildPythonApplication rec {
 
       Todoman is part of the pimutils project
     '';
-    changelog = "https://github.com/pimutils/todoman/raw/v${version}/CHANGELOG.rst";
     license = licenses.isc;
     maintainers = with maintainers; [ leenaars ];
+    platforms = platforms.linux;
   };
 }

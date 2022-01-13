@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , kernel
 , kmod
@@ -28,7 +28,7 @@ in stdenv.mkDerivation rec {
     install -D {,$out/${kerneldir}/extra/}gcadapter_oc.ko
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Kernel module for overclocking the Nintendo Wii U/Mayflash GameCube adapter";
     homepage = "https://github.com/HannesMann/gcadapter-oc-kmod";
     license = licenses.gpl2;

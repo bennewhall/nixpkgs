@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, makeWrapper, ocl-icd, vulkan-loader, linuxPackages }:
+{ stdenv, fetchurl, makeWrapper, ocl-icd, vulkan-loader, linuxPackages }:
 
 stdenv.mkDerivation rec {
   pname = "geekbench";
-  version = "5.4.3";
+  version = "5.3.1";
 
   src = fetchurl {
     url = "https://cdn.geekbench.com/Geekbench-${version}-Linux.tar.gz";
-    sha256 = "sha256-A/+XnLusceJXik86EiYeVFi4iplp4+izbYpWNp8QPiM=";
+    sha256 = "0hil3mvrwpwy60x9s16bf8vgvfv11sdarcbk45zjlgjzfhh8h2qr";
   };
 
   dontConfigure = true;
@@ -27,11 +27,11 @@ stdenv.mkDerivation rec {
 
     for f in geekbench5 geekbench_x86_64 ; do
       patchelf --set-interpreter $(cat ${stdenv.cc}/nix-support/dynamic-linker) $out/bin/$f
-      wrapProgram $out/bin/$f --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ stdenv.cc.cc.lib ]}:$out/lib/"
+      wrapProgram $out/bin/$f --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath [ stdenv.cc.cc.lib ]}:$out/lib/"
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Cross-platform benchmark";
     homepage = "https://geekbench.com/";
     license = licenses.unfree;

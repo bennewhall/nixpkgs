@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, tcl }:
+{ stdenv, fetchFromGitHub, tcl }:
 
 stdenv.mkDerivation rec {
   pname = "eggdrop";
-  version = "1.9.1";
+  version = "1.8.4";
 
   src = fetchFromGitHub {
     owner = "eggheads";
     repo = "eggdrop";
     rev = "v${version}";
-    sha256 = "sha256-vh8nym7aYeTRUQ7FBZRy4ToG2ajwRDhzi4jNiJQOEyQ=";
+    sha256 = "0xqdrv4ydxw72a740lkmpg3fs7ldicaf08b0sfqdyaj7cq8l5x5l";
   };
 
   buildInputs = [ tcl ];
@@ -29,10 +29,10 @@ stdenv.mkDerivation rec {
     "--with-tclinc=${tcl}/include/tcl.h"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.gpl2;
     platforms = platforms.unix;
-    homepage = "https://www.eggheads.org";
+    homepage = "http://www.eggheads.org";
     description = "An Internet Relay Chat (IRC) bot";
   };
 }

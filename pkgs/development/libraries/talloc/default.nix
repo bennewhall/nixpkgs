@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , python3
 , pkg-config
@@ -10,13 +10,13 @@
 , wafHook
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (rec {
   pname = "talloc";
-  version = "2.3.3";
+  version = "2.3.1";
 
   src = fetchurl {
     url = "mirror://samba/talloc/${pname}-${version}.tar.gz";
-    sha256 = "sha256-a+lbI2i9CvHEzXqIFG62zuoY5Gw//JMwv2JitA0diqo=";
+    sha256 = "0xwzgzrqamfdlklwacp9d219pqkah0yfrhxb1j7bxlmgzp924j7g";
   };
 
   nativeBuildInputs = [
@@ -42,13 +42,8 @@ stdenv.mkDerivation rec {
     "--builtin-libraries=replace"
   ];
 
-  # python-config from build Python gives incorrect values when cross-compiling.
-  # If python-config is not found, the build falls back to using the sysconfig
-  # module, which works correctly in all cases.
-  PYTHON_CONFIG = "/invalid";
-
   # this must not be exported before the ConfigurePhase otherwise waf whines
-  preBuild = lib.optionalString stdenv.hostPlatform.isMusl ''
+  preBuild = stdenv.lib.optionalString stdenv.hostPlatform.isMusl ''
     export NIX_CFLAGS_LINK="-no-pie -shared";
   '';
 
@@ -56,10 +51,15 @@ stdenv.mkDerivation rec {
     ${stdenv.cc.targetPrefix}ar q $out/lib/libtalloc.a bin/default/talloc.c.[0-9]*.o
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Hierarchical pool based memory allocator with destructors";
     homepage = "https://tdb.samba.org/";
     license = licenses.gpl3;
     platforms = platforms.all;
   };
-}
+} // stdenv.lib.optionalAttrs (stdenv.hostPlatform != stdenv.buildPlatform) {
+  # python-config from build Python gives incorrect values when cross-compiling.
+  # If python-config is not found, the build falls back to using the sysconfig
+  # module, which works correctly when cross-compiling.
+  PYTHON_CONFIG = "/invalid";
+})

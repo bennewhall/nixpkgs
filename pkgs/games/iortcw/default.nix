@@ -12,7 +12,7 @@ in buildEnv {
 
   pathsToLink = [ "/opt" ];
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   # so we can launch sp from mp game and vice versa
   postBuild = ''

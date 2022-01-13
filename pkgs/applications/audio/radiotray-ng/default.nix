@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub
-, cmake, pkg-config
+{ stdenv, fetchFromGitHub
+, cmake, pkgconfig
 # Transport
 , curl
 # Libraries
@@ -40,16 +40,16 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "radiotray-ng";
-  version = "0.2.8";
+  version = "0.2.7";
 
   src = fetchFromGitHub {
     owner = "ebruck";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-/0GlQdSsIPKGrDT9CgxvaH8TpAbqxFduwL2A2+BSrEI=";
+    sha256 = "1v2nsz7s0jj0wmqabzk6akcf1353rachm1lfq77hxbq9z5pw8pgb";
   };
 
-  nativeBuildInputs = [ cmake pkg-config wrapGAppsHook makeWrapper ];
+  nativeBuildInputs = [ cmake pkgconfig wrapGAppsHook makeWrapper ];
 
   buildInputs = [
     curl
@@ -80,15 +80,17 @@ stdenv.mkDerivation rec {
     "-DBUILD_TESTS=${if doCheck then "ON" else "OFF"}"
   ];
 
+  enableParallelBuilding = true;
+
   checkInputs = [ gtest ];
   doCheck = !stdenv.isAarch64; # single failure that I can't explain
 
   preFixup = ''
-    gappsWrapperArgs+=(--suffix PATH : ${lib.makeBinPath [ dbus ]})
+    gappsWrapperArgs+=(--suffix PATH : ${stdenv.lib.makeBinPath [ dbus ]})
     wrapProgram $out/bin/rt2rtng --prefix PYTHONPATH : $PYTHONPATH
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An internet radio player for linux";
     homepage = "https://github.com/ebruck/radiotray-ng";
     license = licenses.gpl3;

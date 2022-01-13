@@ -1,6 +1,6 @@
-{ lib
+{ stdenv
 , buildPythonPackage
-, fetchFromGitHub
+, fetchurl
 , simplejson
 , pytz
 , requests
@@ -11,11 +11,9 @@ buildPythonPackage rec {
   version = "2.0.8";
 
   # PyPI package is incomplete
-  src = fetchFromGitHub {
-    owner = "dsoprea";
-    repo = "PythonEtcdClient";
-    rev = version;
-    sha256 = "sha256-h+jYIRSNdrGkW3tBV1ifIDEXU46EQGyeJoz/Mxym4pI=";
+  src = fetchurl {
+    url = "https://github.com/dsoprea/PythonEtcdClient/archive/${version}.tar.gz";
+    sha256 = "0fi6rxa1yxvz7nwrc7dw6fax3041d6bj3iyhywjgbkg7nadi9i8v";
   };
 
   patchPhase = ''
@@ -27,7 +25,7 @@ buildPythonPackage rec {
   # No proper tests are available
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Python etcd client that just works";
     homepage = "https://github.com/dsoprea/PythonEtcdClient";
     license = licenses.gpl2;

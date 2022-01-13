@@ -1,25 +1,24 @@
-{ stdenv, lib, fetchurl, buildDunePackage, ocaml, dune-configurator, pkg-config, cairo }:
+{ stdenv, lib, fetchurl, buildDunePackage, ocaml
+, pkgconfig, cairo
+}:
 
 buildDunePackage rec {
   pname = "cairo2";
-  version = "0.6.2";
+  version = "0.6.1";
 
   src = fetchurl {
     url = "https://github.com/Chris00/ocaml-cairo/releases/download/${version}/cairo2-${version}.tbz";
-    sha256 = "sha256-a7P1kiVmIwT6Fhtwxs29ffgO4iexsulxUoc9cnJmEK4=";
+    sha256 = "1ik4qf4b9443sliq2z7x9acd40rmzvyzjh3bh98wvjklxbb84a9i";
   };
 
-  minimalOCamlVersion = "4.02";
-  useDune2 = true;
-
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ cairo dune-configurator ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ cairo ];
 
   doCheck = !(stdenv.isDarwin
   # https://github.com/Chris00/ocaml-cairo/issues/19
   || lib.versionAtLeast ocaml.version "4.10");
 
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/Chris00/ocaml-cairo";
     description = "Binding to Cairo, a 2D Vector Graphics Library";
     longDescription = ''
@@ -28,7 +27,7 @@ buildDunePackage rec {
       the X Window System, Quartz, Win32, image buffers, PostScript, PDF,
       and SVG file output.
     '';
-    license = licenses.lgpl3;
-    maintainers = with maintainers; [ jirkamarsik vbgl ];
+    license = lib.licenses.lgpl3;
+    maintainers = with lib.maintainers; [ jirkamarsik vbgl ];
   };
 }

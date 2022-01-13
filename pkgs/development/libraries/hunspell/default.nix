@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, ncurses, readline, autoreconfHook }:
+{ stdenv, fetchurl, fetchpatch, ncurses, readline, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   version = "1.7.0";
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://hunspell.sourceforge.net";
     description = "Spell checker";
     longDescription = ''
@@ -58,6 +58,6 @@ stdenv.mkDerivation rec {
     '';
     platforms = platforms.all;
     license = with licenses; [ gpl2 lgpl21 mpl11 ];
-    maintainers = with lib.maintainers; [ ];
+    maintainers = with stdenv.lib.maintainers; [ ];
   };
 }

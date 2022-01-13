@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl, which
+{ stdenv, fetchFromGitHub, perl, which
 , openssl, sqlite }:
 
 # Instead of writing directly into $HOME, we change the default db location
@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   pname = "dupd";
-  version = "1.7.1";
+  version = "1.7";
 
   src = fetchFromGitHub {
     owner = "jvirkki";
     repo  = "dupd";
     rev   = version;
-    sha256 = "sha256-jDFPvJqIUEu0/8bvq2PaaA1NnWakApegW8bxn+NKffs=";
+    sha256 = "0vg4vbiwjc5p22cisj8970mym4y2r29fcm08ibik92786vsbxcqk";
   };
 
   postPatch = ''
@@ -40,7 +40,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "CLI utility to find duplicate files";
     homepage = "http://www.virkki.com/dupd";
     license = licenses.gpl3;

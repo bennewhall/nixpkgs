@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, jre, makeWrapper }:
+{ stdenv, fetchurl, jre, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "jnetmap";
@@ -9,8 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0nxsfa600jhazwbabxmr9j37mhwysp0fyrvczhv3f1smiy8rjanl";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jre ];
+  buildInputs = [ jre makeWrapper ];
 
   dontUnpack = true;
 
@@ -23,7 +22,7 @@ stdenv.mkDerivation rec {
         --add-flags "-jar \"$out/lib/jnetmap.jar\""
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graphical network monitoring and documentation tool";
     homepage = "http://www.rakudave.ch/jnetmap/";
     license = licenses.gpl3Plus;

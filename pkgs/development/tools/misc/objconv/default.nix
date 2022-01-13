@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip }:
+{ stdenv, fetchurl, unzip }:
 
 stdenv.mkDerivation rec {
   pname = "objconv";
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     mv objconv-instructions.pdf $out/doc/objconv
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Object and executable file converter, modifier and disassembler";
     homepage = "https://www.agner.org/optimize/";
     license = licenses.gpl2;

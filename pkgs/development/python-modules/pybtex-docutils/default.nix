@@ -1,7 +1,7 @@
-{ lib, buildPythonPackage, fetchPypi, docutils, pybtex, six }:
+{ stdenv, buildPythonPackage, fetchPypi, docutils, pybtex, six }:
 
 buildPythonPackage rec {
-  version = "1.0.1";
+  version = "0.2.2";
   pname = "pybtex-docutils";
 
   doCheck = false;
@@ -9,12 +9,12 @@ buildPythonPackage rec {
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "d53aa0c31dc94d61fd30ea3f06c749e6f510f9ff0e78cb2765a9300f173d8626";
+    sha256 = "ea90935da188a0f4de2fe6b32930e185c33a0e306154322ccc12e519ebb5fa7d";
   };
 
-  meta = with lib; {
+  meta = {
     description = "A docutils backend for pybtex";
     homepage = "https://github.com/mcmtroffaes/pybtex-docutils";
-    license = licenses.mit;
+    license = stdenv.lib.licenses.mit;
   };
 }

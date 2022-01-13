@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, pythonPackages }:
+{ stdenv, fetchFromGitHub, pythonPackages }:
 
 pythonPackages.buildPythonApplication rec {
   pname = "volatility";
@@ -13,12 +13,12 @@ pythonPackages.buildPythonApplication rec {
 
   doCheck = false;
 
-  propagatedBuildInputs = with pythonPackages; [ pycrypto distorm3 pillow ];
+  propagatedBuildInputs = [ pythonPackages.pycrypto pythonPackages.distorm3 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.volatilityfoundation.org/";
     description = "Advanced memory forensics framework";
     maintainers = with maintainers; [ bosu ];
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

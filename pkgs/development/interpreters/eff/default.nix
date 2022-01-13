@@ -1,8 +1,11 @@
-{ lib, stdenv, fetchFromGitHub, which, ocamlPackages }:
+{ stdenv, fetchFromGitHub, which, ocamlPackages }:
 
-stdenv.mkDerivation rec {
+let version = "5.0"; in
+
+stdenv.mkDerivation {
+
   pname = "eff";
-  version = "5.0";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "matijapretnar";
@@ -22,7 +25,7 @@ stdenv.mkDerivation rec {
   doCheck = true;
   checkTarget = "test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.eff-lang.org";
     description = "A functional programming language based on algebraic effects and their handlers";
     longDescription = ''

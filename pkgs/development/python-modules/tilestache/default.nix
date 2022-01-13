@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , modestmaps
@@ -23,7 +23,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ modestmaps pillow pycairo python-mapnik simplejson werkzeug ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tile server for rendered geographic data";
     homepage = "http://tilestache.org";
     license = licenses.bsd3;

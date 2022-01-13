@@ -46,14 +46,12 @@ in
 
       user = mkOption {
         default = null;
-        type = types.nullOr types.str;
         description = ''
           The user the yandex-disk daemon should run as.
         '';
       };
 
       directory = mkOption {
-        type = types.path;
         default = "/home/Yandex.Disk";
         description = "The directory to use for Yandex.Disk storage";
       };

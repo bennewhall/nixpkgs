@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , autoreconfHook
 , docbook_xsl
@@ -8,24 +8,19 @@
 , libidn2
 , libunistring
 , libxslt
-, pkg-config
+, pkgconfig
 , python3
 , valgrind
 , publicsuffix-list
 }:
 
-let
-  enableValgrindTests = !stdenv.isDarwin && lib.meta.availableOn stdenv.hostPlatform valgrind
-    # Apparently valgrind doesn't support some new ARM features on (some) Hydra machines:
-    #  VEX: Mismatch detected between RDMA and atomics features.
-    && !stdenv.isAarch64;
-in stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "libpsl";
-  version = "0.21.1";
+  version = "0.21.0";
 
   src = fetchurl {
-    url = "https://github.com/rockdaboot/libpsl/releases/download/${version}/libpsl-${version}.tar.lz";
-    sha256 = "1a9kp2rj71jb9q030lmp3zhy33rqxscawbfzhp288fxvazapahv4";
+    url = "https://github.com/rockdaboot/${pname}/releases/download/${pname}-${version}/${pname}-${version}.tar.lz";
+    sha256 = "183hadbira0d2zvv8272lspy31dgm9x26z35c61s5axcd5wd9g9i";
   };
 
   nativeBuildInputs = [
@@ -34,10 +29,10 @@ in stdenv.mkDerivation rec {
     docbook_xml_dtd_43
     gtk-doc
     lzip
-    pkg-config
+    pkgconfig
     python3
     libxslt
-  ] ++ lib.optionals enableValgrindTests [
+  ] ++ stdenv.lib.optionals (!stdenv.isDarwin) [
     valgrind
   ];
 
@@ -65,7 +60,7 @@ in stdenv.mkDerivation rec {
     "--with-psl-distfile=${publicsuffix-list}/share/publicsuffix/public_suffix_list.dat"
     "--with-psl-file=${publicsuffix-list}/share/publicsuffix/public_suffix_list.dat"
     "--with-psl-testfile=${publicsuffix-list}/share/publicsuffix/test_psl.txt"
-  ] ++ lib.optionals enableValgrindTests [
+  ] ++ stdenv.lib.optionals (!stdenv.isDarwin) [
     "--enable-valgrind-tests"
   ];
 
@@ -73,7 +68,7 @@ in stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C library for the Publix Suffix List";
     longDescription = ''
       libpsl is a C library for the Publix Suffix List (PSL). A "public suffix"

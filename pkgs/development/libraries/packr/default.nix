@@ -1,7 +1,7 @@
 { buildGoModule
 , fetchFromGitHub
 , lib
-
+, stdenv
 , symlinkJoin
 }:
 
@@ -22,7 +22,7 @@ let p2 = buildGoModule rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The simple and easy way to embed static files into Go binaries";
     homepage = "https://github.com/gobuffalo/packr";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, autoreconfHook, pkg-config
+{ stdenv, fetchgit, autoreconfHook, pkgconfig
 , boost, curl, openssl, log4shib, xercesc, xml-security-c
 }:
 
@@ -13,11 +13,11 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ boost curl openssl log4shib xercesc xml-security-c ];
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A low-level library that provides a high level interface to XML processing for OpenSAML 2";
     platforms   = platforms.unix;
     license     = licenses.asl20;

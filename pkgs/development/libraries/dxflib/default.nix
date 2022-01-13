@@ -1,19 +1,18 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , qmake
 }:
 
 stdenv.mkDerivation rec {
-  version = "3.26.4";
+  version = "3.17.0";
   pname = "dxflib";
   src = fetchurl {
-    url = "https://qcad.org/archives/dxflib/${pname}-${version}-src.tar.gz";
-    sha256 = "0pwic33mj6bp4axai5jiyn4xqf31y0xmb1i0pcf55b2h9fav8zah";
+    url = "http://www.qcad.org/archives/dxflib/${pname}-${version}-src.tar.gz";
+    sha256 = "09yjgzh8677pzkkr7a59pql5d11451c22pxksk2my30mapxsri96";
   };
   nativeBuildInputs = [
     qmake
   ];
-  dontWrapQtApps = true;
   preConfigure = ''
     sed -i 's/CONFIG += staticlib/CONFIG += shared/' dxflib.pro
   '';
@@ -22,7 +21,7 @@ stdenv.mkDerivation rec {
     cp -pr *.so* $out/lib
     install -d -m 0755 $out/include/dxflib
     cp -pr src/*.h $out/include/dxflib
-    # Generate pkg-config file
+    # Generate pkgconfig file
     install -d -m 0755 $out/lib/pkgconfig
     cat << 'EOF' > $out/lib/pkgconfig/dxflib.pc
     prefix=${placeholder "out"}
@@ -38,9 +37,8 @@ stdenv.mkDerivation rec {
   doCheck = true;
 
   meta = {
-    homepage = "https://qcad.org/en/90-dxflib";
-    maintainers = with lib.maintainers; [raskin];
-    platforms = lib.platforms.linux;
-    description = "DXF file format library";
+    maintainers = with stdenv.lib.maintainers; [raskin];
+    platforms = stdenv.lib.platforms.linux;
+    description = ''DXF file format library'';
   };
 }

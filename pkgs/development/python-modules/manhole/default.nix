@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pytest
@@ -8,11 +8,11 @@
 
 buildPythonPackage rec {
   pname = "manhole";
-  version = "1.8.0";
+  version = "1.6.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "bada20a25b547b395d472e2e08928f0437df26bbdbda4797c55863198e29a21f";
+    sha256 = "d4ab98198481ed54a5b95c0439f41131f56d7d3755eedaedce5a45ca7ff4aa42";
   };
 
   # test_help expects architecture-dependent Linux signal numbers.
@@ -38,7 +38,7 @@ buildPythonPackage rec {
     py.test -vv -k "not test_uwsgi"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ionelmc/python-manhole";
     description = "Debugging manhole for Python applications";
     license = licenses.bsd2;

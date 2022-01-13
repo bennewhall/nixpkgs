@@ -1,10 +1,11 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pyparsing
 , six
 , pytestCheckHook
 , pretend
+, flit-core
 }:
 
 # We keep 20.4 because it uses setuptools instead of flit-core
@@ -30,7 +31,7 @@ buildPythonPackage rec {
   # Prevent circular dependency
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Core utilities for Python packages";
     homepage = "https://github.com/pypa/packaging";
     license = [ licenses.bsd2 licenses.asl20 ];

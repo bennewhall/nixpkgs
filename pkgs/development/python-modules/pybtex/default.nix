@@ -1,32 +1,20 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, latexcodec
-, pyyaml
-, setuptools
-}:
+{ stdenv, buildPythonPackage, fetchPypi, latexcodec, pyyaml }:
 
 buildPythonPackage rec {
-  version = "0.24.0";
+  version = "0.23.0";
   pname = "pybtex";
 
   doCheck = false;
-  pythonImportsCheck = [ "pybtex" ];
-
-  propagatedBuildInputs = [
-    latexcodec
-    pyyaml
-    setuptools
-  ];
+  propagatedBuildInputs = [ latexcodec pyyaml ];
 
   src = fetchPypi {
     inherit version pname;
-    sha256 = "818eae35b61733e5c007c3fcd2cfb75ed1bc8b4173c1f70b56cc4c0802d34755";
+    sha256 = "b92be18ccd5e9a37895949dcf359a1f6890246b73646dddf1129178ee12e4bef";
   };
 
-  meta = with lib; {
+  meta = {
     homepage = "https://pybtex.org/";
     description = "A BibTeX-compatible bibliography processor written in Python";
-    license = licenses.mit;
+    license = stdenv.lib.licenses.mit;
   };
 }

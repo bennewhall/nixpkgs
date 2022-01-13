@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "safecopy";
-  version = "1.7";
+  name = "safecopy-1.7";
 
   src = fetchurl {
-    url = "mirror://sourceforge/project/safecopy/safecopy/safecopy-${version}/safecopy-${version}.tar.gz";
+    url = "mirror://sourceforge/project/safecopy/safecopy/${name}/${name}.tar.gz";
     sha256 = "1zf4kk9r8za9pn4hzy1y3j02vrhl1rxfk5adyfq0w0k48xfyvys2";
   };
 
@@ -23,9 +22,9 @@ stdenv.mkDerivation rec {
 
     homepage = "http://safecopy.sourceforge.net";
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.bluescreen303 ];
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.bluescreen303 ];
   };
 }

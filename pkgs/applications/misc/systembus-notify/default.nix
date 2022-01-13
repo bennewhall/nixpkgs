@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, systemd }:
+{ stdenv, fetchFromGitHub, systemd }:
 
 stdenv.mkDerivation rec {
   pname = "systembus-notify";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "System bus notification daemon";
     homepage = "https://github.com/rfjakob/systembus-notify";
     license = licenses.mit;

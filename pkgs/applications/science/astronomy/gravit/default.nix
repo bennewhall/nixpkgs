@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, SDL, SDL_ttf, SDL_image, libSM, libICE, libGLU, libGL, libpng, lua5, autoconf, automake }:
+{ stdenv, fetchurl, SDL, SDL_ttf, SDL_image, libSM, libICE, libGLU, libGL, libpng, lua5, autoconf, automake }:
 
 stdenv.mkDerivation rec {
-  pname = "gravit";
-  version = "0.5.1";
+  name = "gravit-0.5.1";
 
   src = fetchurl {
-    url = "https://gravit.slowchop.com/media/downloads/gravit-${version}.tgz";
+    url = "https://gravit.slowchop.com/media/downloads/${name}.tgz";
     sha256 = "14vf7zj2bgrl96wsl3f1knsggc8h9624354ajzd72l46y09x5ky7";
   };
 
@@ -25,7 +24,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://gravit.slowchop.com";
     description = "Beautiful OpenGL-based gravity simulator";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
 
     longDescription = ''
       Gravit is a gravity simulator which runs under Linux, Windows and
@@ -37,7 +36,7 @@ stdenv.mkDerivation rec {
       view in 3D and zoom in and out.
     '';
 
-    platforms = lib.platforms.mesaPlatforms;
-    hydraPlatforms = lib.platforms.linux; # darwin times out
+    platforms = stdenv.lib.platforms.mesaPlatforms;
+    hydraPlatforms = stdenv.lib.platforms.linux; # darwin times out
   };
 }

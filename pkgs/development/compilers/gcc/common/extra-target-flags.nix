@@ -1,7 +1,7 @@
-{ lib, stdenv, crossStageStatic, langD ? false, libcCross, threadsCross }:
+{ stdenv, crossStageStatic, langD ? false, libcCross, threadsCross }:
 
 let
-  inherit (stdenv) hostPlatform targetPlatform;
+  inherit (stdenv) lib hostPlatform targetPlatform;
 in
 
 {
@@ -11,7 +11,7 @@ in
   EXTRA_FLAGS_FOR_TARGET = let
       mkFlags = dep: langD: lib.optionals (targetPlatform != hostPlatform && dep != null && !langD) ([
         "-O2 -idirafter ${lib.getDev dep}${dep.incdir or "/include"}"
-      ] ++ lib.optionals (! crossStageStatic) [
+      ] ++ stdenv.lib.optionals (! crossStageStatic) [
         "-B${lib.getLib dep}${dep.libdir or "/lib"}"
       ]);
     in mkFlags libcCross langD

@@ -11,15 +11,6 @@ in
     services.xserver.windowManager.herbstluftwm = {
       enable = mkEnableOption "herbstluftwm";
 
-      package = mkOption {
-        type = types.package;
-        default = pkgs.herbstluftwm;
-        defaultText = literalExpression "pkgs.herbstluftwm";
-        description = ''
-          Herbstluftwm package to use.
-        '';
-      };
-
       configFile = mkOption {
         default     = null;
         type        = with types; nullOr path;
@@ -40,8 +31,8 @@ in
             (cfg.configFile != null)
             ''-c "${cfg.configFile}"''
             ;
-        in "${cfg.package}/bin/herbstluftwm ${configFileClause}";
+        in "${pkgs.herbstluftwm}/bin/herbstluftwm ${configFileClause}";
     };
-    environment.systemPackages = [ cfg.package ];
+    environment.systemPackages = [ pkgs.herbstluftwm ];
   };
 }

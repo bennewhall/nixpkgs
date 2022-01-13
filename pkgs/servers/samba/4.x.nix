@@ -1,23 +1,22 @@
-{ lib, stdenv
-, buildPackages
+{ stdenv
 , fetchurl
-, wafHook
-, pkg-config
+, python
+, pkgconfig
 , bison
 , flex
 , perl
 , libxslt
-, heimdal
 , docbook_xsl
+, rpcgen
 , fixDarwinDylibNames
 , docbook_xml_dtd_45
 , readline
 , popt
-, dbus
 , libbsd
 , libarchive
 , zlib
 , liburing
+, fam
 , gnutls
 , libunwind
 , systemd
@@ -26,7 +25,6 @@
 , tdb
 , cmocka
 , rpcsvc-proto
-, python3Packages
 , nixosTests
 
 , enableLDAP ? false, openldap
@@ -35,21 +33,21 @@
 , enableMDNS ? false, avahi
 , enableDomainController ? false, gpgme, lmdb
 , enableRegedit ? true, ncurses
-, enableCephFS ? false, ceph
+, enableCephFS ? false, libceph
 , enableGlusterFS ? false, glusterfs, libuuid
 , enableAcl ? (!stdenv.isDarwin), acl
 , enablePam ? (!stdenv.isDarwin), pam
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "samba";
-  version = "4.15.1";
+  version = "4.12.6";
 
   src = fetchurl {
     url = "mirror://samba/pub/samba/stable/${pname}-${version}.tar.gz";
-    sha256 = "sha256-oYEfu0EQ1klp9sEI+NFh4sPiDd9HVSmj0yvZS7dFnwA=";
+    sha256 = "1v3cmw40csmi3jd8mhlx4bm7bk4m0426zkyin7kq11skwnsrna02";
   };
 
   outputs = [ "out" "dev" "man" ];
@@ -59,54 +57,47 @@ stdenv.mkDerivation rec {
     ./patch-source3__libads__kerberos_keytab.c.patch
     ./4.x-no-persistent-install-dynconfig.patch
     ./4.x-fix-makeflags-parsing.patch
-    ./build-find-pre-built-heimdal-build-tools-in-case-of-.patch
   ];
 
   nativeBuildInputs = [
-    python3Packages.python
-    wafHook
-    pkg-config
+    pkgconfig
     bison
     flex
     perl
     perl.pkgs.ParseYapp
     libxslt
-    buildPackages.stdenv.cc
-    heimdal
     docbook_xsl
     docbook_xml_dtd_45
     cmocka
     rpcsvc-proto
   ] ++ optionals stdenv.isDarwin [
+    rpcgen
     fixDarwinDylibNames
   ];
 
   buildInputs = [
-    python3Packages.python
-    python3Packages.wrapPython
+    python
     readline
     popt
-    dbus
     jansson
     libbsd
     libarchive
     zlib
+    fam
     libunwind
     gnutls
     libtasn1
     tdb
   ] ++ optionals stdenv.isLinux [ liburing systemd ]
-    ++ optionals enableLDAP [ openldap.dev python3Packages.markdown ]
+    ++ optional enableLDAP openldap
     ++ optional (enablePrinting && stdenv.isLinux) cups
     ++ optional enableMDNS avahi
-    ++ optionals enableDomainController [ gpgme lmdb python3Packages.dnspython ]
+    ++ optionals enableDomainController [ gpgme lmdb ]
     ++ optional enableRegedit ncurses
-    ++ optional (enableCephFS && stdenv.isLinux) (lib.getDev ceph)
+    ++ optional (enableCephFS && stdenv.isLinux) libceph
     ++ optionals (enableGlusterFS && stdenv.isLinux) [ glusterfs libuuid ]
     ++ optional enableAcl acl
     ++ optional enablePam pam;
-
-  wafPath = "buildtools/bin/waf";
 
   postPatch = ''
     # Removes absolute paths in scripts
@@ -118,11 +109,7 @@ stdenv.mkDerivation rec {
     patchShebangs ./buildtools/bin
   '';
 
-  preConfigure = ''
-    export PKGCONFIG="$PKG_CONFIG"
-  '';
-
-  wafConfigureFlags = [
+  configureFlags = [
     "--with-static-modules=NONE"
     "--with-shared-modules=ALL"
     "--enable-fhs"
@@ -136,20 +123,7 @@ stdenv.mkDerivation rec {
     "--without-ads"
   ] ++ optional enableProfiling "--with-profiling-data"
     ++ optional (!enableAcl) "--without-acl-support"
-    ++ optional (!enablePam) "--without-pam"
-    ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "--bundled-libraries=!asn1_compile,!compile_et"
-  ] ++ optional stdenv.isAarch32 [
-    # https://bugs.gentoo.org/683148
-    "--jobs 1"
-  ];
-
-  # python-config from build Python gives incorrect values when cross-compiling.
-  # If python-config is not found, the build falls back to using the sysconfig
-  # module, which works correctly in all cases.
-  PYTHON_CONFIG = "/invalid";
-
-  pythonPath = [ python3Packages.dnspython tdb ];
+    ++ optional (!enablePam) "--without-pam";
 
   preBuild = ''
     export MAKEFLAGS="-j $NIX_BUILD_CORES"
@@ -159,7 +133,7 @@ stdenv.mkDerivation rec {
   # Use find -type f -executable -exec echo {} \; -exec sh -c 'ldd {} | grep "not found"' \;
   # Looks like a bug in installer scripts.
   postFixup = ''
-    export SAMBA_LIBS="$(find $out -type f -regex '.*\.so\(\..*\)?' -exec dirname {} \; | sort | uniq)"
+    export SAMBA_LIBS="$(find $out -type f -name \*.so -exec dirname {} \; | sort | uniq)"
     read -r -d "" SCRIPT << EOF || true
     [ -z "\$SAMBA_LIBS" ] && exit 1;
     BIN='{}';
@@ -168,27 +142,18 @@ stdenv.mkDerivation rec {
     patchelf --set-rpath "\$ALL_LIBS" "\$BIN" 2>/dev/null || exit $?;
     patchelf --shrink-rpath "\$BIN";
     EOF
-    find $out -type f -regex '.*\.so\(\..*\)?' -exec $SHELL -c "$SCRIPT" \;
-
-    # Samba does its own shebang patching, but uses build Python
-    find "$out/bin" -type f -executable -exec \
-      sed -i '1 s^#!${python3Packages.python.pythonForBuild}/bin/python.*^#!${python3Packages.python.interpreter}^' {} \;
-
-    # Fix PYTHONPATH for some tools
-    wrapPythonPrograms
+    find $out -type f -name \*.so -exec $SHELL -c "$SCRIPT" \;
   '';
 
   passthru = {
     tests.samba = nixosTests.samba;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.samba.org";
     description = "The standard Windows interoperability suite of programs for Linux and Unix";
     license = licenses.gpl3;
     platforms = platforms.unix;
-    # N.B. enableGlusterFS does not build
-    broken = stdenv.isDarwin || enableGlusterFS;
     maintainers = with maintainers; [ aneeshusa ];
   };
 }

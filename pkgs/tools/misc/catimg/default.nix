@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, cmake } :
+{ stdenv, fetchFromGitHub, cmake } :
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "catimg";

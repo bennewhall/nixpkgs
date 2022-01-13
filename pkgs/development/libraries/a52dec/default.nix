@@ -1,32 +1,27 @@
-{lib, stdenv, fetchurl}:
+{stdenv, fetchurl}:
 
 stdenv.mkDerivation rec {
-  pname = "a52dec";
-  version = "0.7.4";
+  name = "a52dec-0.7.4p4";
 
   src = fetchurl {
-    url = "https://liba52.sourceforge.io/files/${pname}-${version}.tar.gz";
-    sha256 = "oh1ySrOzkzMwGUNTaH34LEdbXfuZdRPu9MJd5shl7DM=";
+    url = "${meta.homepage}/files/a52dec-0.7.4.tar.gz";
+    sha256 = "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2";
   };
 
   configureFlags = [
     "--enable-shared"
   ];
 
-  makeFlags = [
-    "AR=${stdenv.cc.targetPrefix}ar"
-  ];
-
   # fails 1 out of 1 tests with "BAD GLOBAL SYMBOLS" on i686
   # which can also be fixed with
-  # hardeningDisable = lib.optional stdenv.isi686 "pic";
+  # hardeningDisable = stdenv.lib.optional stdenv.isi686 "pic";
   # but it's better to disable tests than loose ASLR on i686
   doCheck = !stdenv.isi686;
 
-  meta = with lib; {
+  meta = {
     description = "ATSC A/52 stream decoder";
-    homepage = "https://liba52.sourceforge.io/";
-    platforms = platforms.unix;
-    license = licenses.gpl2Plus;
+    homepage = "http://liba52.sourceforge.net/";
+    platforms = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

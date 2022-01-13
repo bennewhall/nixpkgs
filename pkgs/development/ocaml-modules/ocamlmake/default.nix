@@ -1,4 +1,4 @@
-{stdenv, lib, fetchurl}:
+{stdenv, fetchurl}:
 
 let
 
@@ -25,6 +25,6 @@ in stdenv.mkDerivation {
     homepage = "http://www.ocaml.info/home/ocaml_sources.html";
     description = "Generic OCaml Makefile for GNU Make";
     license = "LGPL";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

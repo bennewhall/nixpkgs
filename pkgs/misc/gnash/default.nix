@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchgit, fetchpatch, autoreconfHook
-, pkg-config, libtool, boost, SDL
+{ stdenv, fetchgit, fetchpatch, autoreconfHook
+, pkgconfig, libtool, boost, SDL
 , glib, pango, gettext, curl, xorg
 , libpng, libjpeg, giflib, speex, atk
 
@@ -16,7 +16,7 @@
 , enableQt  ? false, qt4  ? null
 
 # media
-, enableFFmpeg   ? true, ffmpeg ? null
+, enableFFmpeg   ? true, ffmpeg_2 ? null
 
 # misc
 , enableJemalloc ? true, jemalloc ? null
@@ -24,7 +24,7 @@
 , enablePlugins  ? false, xulrunner ? null, npapi_sdk ? null
 }:
 
-with lib;
+with stdenv.lib;
 
 let
   available = x: x != null;
@@ -55,7 +55,7 @@ assert enableSDL -> available SDL;
 assert enableQt  -> available qt4;
 
 # media libraries
-assert enableFFmpeg    -> available ffmpeg ;
+assert enableFFmpeg    -> available ffmpeg_2 ;
 
 # misc
 assert enableJemalloc -> available jemalloc;
@@ -80,7 +80,7 @@ stdenv.mkDerivation {
     sed -i 's|jemalloc.h|jemalloc/jemalloc.h|' libbase/jemalloc_gnash.c
   '';
 
-  nativeBuildInputs = [ autoreconfHook pkg-config libtool ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig libtool ];
   buildInputs = [
     glib gettext boost curl SDL speex
     xorg.libXmu xorg.libSM xorg.libXt
@@ -88,7 +88,7 @@ stdenv.mkDerivation {
   ] ++ optional  enableAGG       agg
     ++ optional  enableCairo     cairo
     ++ optional  enableQt        qt4
-    ++ optional  enableFFmpeg    ffmpeg
+    ++ optional  enableFFmpeg    ffmpeg_2
     ++ optional  enableJemalloc  jemalloc
     ++ optional  enableHwAccel   [ libGL libGLU ]
     ++ optionals enableOpenGL    [ libGL libGLU ]
@@ -107,11 +107,9 @@ stdenv.mkDerivation {
       url = "https://savannah.gnu.org/file/0001-Do-not-depend-on-pangox.patch?file_id=48366";
       sha256 = "02x7sl5zwd1ld2n4b6bp16c5gk91qsap0spfbb5iwpglq3galv2l";
     })
-
-    ./0001-fix-build-with-ffmepg-4.patch
   ];
 
-  configureFlags = with lib; [
+  configureFlags = with stdenv.lib; [
     "--with-boost-incl=${boost.dev}/include"
     "--with-boost-lib=${boost.out}/lib"
     "--enable-renderer=${concatStringsSep "," renderers}"

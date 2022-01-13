@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, glib, libsndfile, lilv, lv2, pkg-config, serd, sord, sratom }:
+{ stdenv, fetchFromGitHub, glib, libsndfile, lilv, lv2, pkgconfig, serd, sord, sratom }:
 
 stdenv.mkDerivation rec {
   pname = "lv2bm";
@@ -11,14 +11,14 @@ stdenv.mkDerivation rec {
     sha256 = "0vlppxfb9zbmffazs1kiyb79py66s8x9hihj36m2vz86zsq7ybl0";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ glib libsndfile lilv lv2 serd sord sratom ];
 
   installPhase = ''
     make install PREFIX=$out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/portalmod/lv2bm";
     description = "A benchmark tool for LV2 plugins";
     license = licenses.gpl3;

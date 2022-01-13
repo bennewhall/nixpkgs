@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, gtk3 }:
+{ stdenv, fetchFromGitHub, pkg-config, gtk3 }:
 
 stdenv.mkDerivation rec {
   pname = "xdragon";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     ln -s $out/bin/dragon $out/bin/xdragon
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple drag-and-drop source/sink for X (called dragon in upstream)";
     homepage = "https://github.com/mwh/dragon";
     license = licenses.gpl3;

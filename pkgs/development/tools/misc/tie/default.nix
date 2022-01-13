@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "tie";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
   };
 
   buildPhase = ''
-    ${stdenv.cc.targetPrefix}cc tie.c -o tie
+    cc tie.c -o tie
   '';
 
   installPhase = ''
@@ -18,10 +18,10 @@ stdenv.mkDerivation rec {
     cp tie $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.ctan.org/tex-archive/web/tie";
     description = "Allow multiple web change files";
-    platforms = platforms.all;
+    platforms = with platforms; unix;
     maintainers = with maintainers; [ vrthra ];
     license = licenses.abstyles;
   };

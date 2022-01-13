@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , pkg-config
 , cairo
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/brummer10/XTuner";
     description = "Tuner for Jack Audio Connection Kit";
     license = licenses.gpl2Plus;

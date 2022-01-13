@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libiconv }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "ripmime";
@@ -8,7 +8,6 @@ stdenv.mkDerivation rec {
     sha256 = "0sj06ibmlzy34n8v0mnlq2gwidy7n2aqcwgjh0xssz3vi941aqc9";
   };
 
-  buildInputs = [ libiconv ];
   preInstall = ''
     sed -i Makefile -e "s@LOCATION=.*@LOCATION=$out@" -e "s@man/man1@share/&@"
     mkdir -p "$out/bin" "$out/share/man/man1"
@@ -16,11 +15,11 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE=" -Wno-error ";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Attachment extractor for MIME messages";
     maintainers = with maintainers; [ raskin ];
     homepage = "http://www.pldaniels.com/ripmime/";
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 
   passthru = {

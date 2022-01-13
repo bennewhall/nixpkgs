@@ -1,5 +1,5 @@
-{ lib, stdenv, buildPackages
-, fetchurl, pkg-config
+{ stdenv, buildPackages
+, fetchurl, pkgconfig
 , libbfd, popt, zlib, linuxHeaders, libiberty_static
 , withGUI ? false, qt4 ? null
 }:
@@ -8,11 +8,10 @@
 assert withGUI -> qt4 != null;
 
 stdenv.mkDerivation rec {
-  pname = "oprofile";
-  version = "1.4.0";
+  name = "oprofile-1.4.0";
 
   src = fetchurl {
-    url = "mirror://sourceforge/oprofile/${pname}-${version}.tar.gz";
+    url = "mirror://sourceforge/oprofile/${name}.tar.gz";
     sha256 = "04m46ni0ryk4sqmzd6mahwzp7iwhwqzfbmfi42fki261sycnz83v";
   };
 
@@ -22,15 +21,15 @@ stdenv.mkDerivation rec {
       --replace "/bin/cp" "${buildPackages.coreutils}/bin/cp"
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libbfd zlib popt linuxHeaders libiberty_static ]
-    ++ lib.optionals withGUI [ qt4 ];
+    ++ stdenv.lib.optionals withGUI [ qt4 ];
 
   configureFlags = [
       "--with-kernel=${linuxHeaders}"
       "--disable-shared"   # needed because only the static libbfd is available
     ]
-    ++ lib.optional withGUI "--with-qt-dir=${qt4} --enable-gui=qt4";
+    ++ stdenv.lib.optional withGUI "--with-qt-dir=${qt4} --enable-gui=qt4";
 
   meta = {
     description = "System-wide profiler for Linux";
@@ -46,10 +45,10 @@ stdenv.mkDerivation rec {
       is profiled: hardware and software interrupt handlers, kernel
       modules, the kernel, shared libraries, and applications.
     '';
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     homepage = "http://oprofile.sourceforge.net/";
 
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = [ ];
   };
 }

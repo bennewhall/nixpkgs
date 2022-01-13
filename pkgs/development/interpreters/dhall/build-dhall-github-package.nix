@@ -25,10 +25,8 @@ lib.makePackageOverridable
     }@args:
 
     let
-      versionedName = "${name}-${rev}";
-
       src = fetchFromGitHub ({
-        name = "${versionedName}-source";
+        name = "${name}-source";
 
         inherit owner repo rev;
       } // removeAttrs args [
@@ -43,20 +41,15 @@ lib.makePackageOverridable
         "rev"
       ]);
 
-      prefix = lib.optionalString (directory != "") "/${directory}";
+      prefix = lib.optionalString (directory != "") "${directory}/";
 
     in
       buildDhallPackage
-        ( { inherit dependencies source;
+        ( { inherit name dependencies source;
 
-            name = versionedName;
-
-            code = "${src}${prefix}/${file}";
+            code = "${src}/${prefix}${file}";
           }
         // lib.optionalAttrs document
-          { documentationRoot = "${src}/${prefix}";
-
-            baseImportUrl = "https://raw.githubusercontent.com/${owner}/${repo}/${rev}${prefix}";
-          }
+          { documentationRoot = "${src}/${prefix}"; }
         )
   )

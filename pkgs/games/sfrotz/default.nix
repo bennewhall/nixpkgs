@@ -10,7 +10,7 @@
 , pkg-config
 , SDL2
 , SDL2_mixer
-, lib, stdenv
+, stdenv
 , zlib }:
 
 stdenv.mkDerivation rec {
@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
   buildPhase = "make sdl";
   installTargets = [ "install_sfrotz" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description =
       "Interpreter for Infocom and other Z-Machine games (SDL interface)";
     longDescription = ''

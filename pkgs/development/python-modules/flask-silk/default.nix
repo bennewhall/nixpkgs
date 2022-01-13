@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , flask
@@ -21,7 +21,7 @@ buildPythonPackage {
     flask
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Adds silk icons to your Flask application or module, or extension";
     license = licenses.bsd3;
     maintainers = teams.sage.members;

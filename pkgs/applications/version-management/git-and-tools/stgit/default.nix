@@ -1,74 +1,30 @@
-{ lib
-, fetchFromGitHub
-, installShellFiles
-, python3Packages
-, asciidoc
-, docbook_xsl
-, docbook_xml_dtd_45
-, git
-, perl
-, xmlto
-}:
+{ stdenv, python3Packages, fetchFromGitHub, git, installShellFiles }:
 
 python3Packages.buildPythonApplication rec {
   pname = "stgit";
-  version = "1.4";
+  version = "0.23";
 
   src = fetchFromGitHub {
-    owner = "stacked-git";
+    owner = "ctmarinas";
     repo = "stgit";
     rev = "v${version}";
-    sha256 = "0yx81d61kp33h7n0c14wvcrh8vvjjjq4xjh1qwq2sdbmqc43p3hg";
+    sha256 = "1r9y8qnl6kdvq61788pnfhhgyv2xrnyrizbhy4qz4l1bpqkwfr2r";
   };
 
-  nativeBuildInputs = [ installShellFiles asciidoc xmlto docbook_xsl docbook_xml_dtd_45 ];
+  nativeBuildInputs = [ installShellFiles ];
 
-  format = "other";
+  checkInputs = [ git ];
 
-  checkInputs = [ git perl ];
-
-  postPatch = ''
-    for f in Documentation/*.xsl; do
-      substituteInPlace $f \
-        --replace http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl \
-                  ${docbook_xsl}/xml/xsl/docbook/manpages/docbook.xsl \
-        --replace http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl \
-                  ${docbook_xsl}/xml/xsl/docbook/html/docbook.xsl
-    done
-
-    substituteInPlace Documentation/texi.xsl \
-      --replace http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd \
-                ${docbook_xml_dtd_45}/xml/dtd/docbook/docbookx.dtd
-
-    cat > stgit/_version.py <<EOF
-    __version__ = "${version}"
-    EOF
-  '';
-
-  makeFlags = [
-    "prefix=${placeholder "out"}"
-    "MAN_BASE_URL=${placeholder "out"}/share/man"
-    "XMLTO_EXTRA=--skip-validation"
-  ];
-
-  buildFlags = [ "all" "doc" ];
-
-  checkTarget = "test";
-  checkFlags = [ "PERL_PATH=${perl}/bin/perl" ];
-
-  installTargets = [ "install" "install-doc" "install-html" ];
   postInstall = ''
-    installShellCompletion --cmd stg \
-      --fish completion/stg.fish \
-      --bash completion/stgit.bash \
-      --zsh completion/stgit.zsh
+    installShellCompletion $out/share/stgit/completion/stg.fish
+    installShellCompletion --name stg $out/share/stgit/completion/stgit.bash
+    installShellCompletion --name _stg $out/share/stgit/completion/stgit.zsh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A patch manager implemented on top of Git";
-    homepage = "https://stacked-git.github.io/";
-    license = licenses.gpl2Only;
+    homepage = "http://procode.org/stgit/";
+    license = licenses.gpl2;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ jshholland ];
   };
 }

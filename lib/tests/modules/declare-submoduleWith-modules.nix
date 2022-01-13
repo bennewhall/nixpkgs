@@ -8,6 +8,9 @@
             default = false;
           };
         }
+        {
+          outer = true;
+        }
       ];
     };
     default = {};
@@ -22,7 +25,6 @@
     })
     {
       inner = true;
-      outer = true;
     }
   ];
 }

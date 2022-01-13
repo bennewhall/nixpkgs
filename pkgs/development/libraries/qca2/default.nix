@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, openssl, cmake, pkg-config, qt, darwin }:
+{ stdenv, fetchurl, openssl, cmake, pkgconfig, qt, darwin }:
 
 stdenv.mkDerivation rec {
   pname = "qca";
@@ -9,9 +9,11 @@ stdenv.mkDerivation rec {
     sha256 = "00kv1vsrc8fp556hm8s6yw3240vx3l4067q6vfxrb3gdwgcd45np";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ openssl qt ]
-    ++ lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+    ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+
+  enableParallelBuilding = true;
 
   # tells CMake to use this CA bundle file if it is accessible
   preConfigure = ''
@@ -25,7 +27,7 @@ stdenv.mkDerivation rec {
     sed -i -e '1i cmake_policy(SET CMP0025 NEW)' CMakeLists.txt
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Qt Cryptographic Architecture";
     license = "LGPL";
     homepage = "http://delta.affinix.com/qca";

@@ -1,5 +1,5 @@
 { lib, stdenv, fetchgit
-, pkg-config, wrapGAppsHook
+, pkgconfig, wrapGAppsHook
 , glib, gcr, glib-networking, gsettings-desktop-schemas, gtk, libsoup, webkitgtk
 , xorg, dmenu, findutils, gnused, coreutils
 , patches ? null
@@ -7,16 +7,15 @@
 
 stdenv.mkDerivation rec {
   pname = "surf";
-  version = "2.1";
+  version = "unstable-2019-02-08";
 
-  # tarball is missing file common.h
   src = fetchgit {
     url = "git://git.suckless.org/surf";
-    rev = version;
-    sha256 = "1v926hiayddylq79n8l7dy51bm0dsa9n18nx9bkhg666cx973x4z";
+    rev = "d068a3878b6b9f2841a49cd7948cdf9d62b55585";
+    sha256 = "0pjsv2q8c74sdmqsalym8wa2lv55lj4pd36miam5wd12769xw68m";
   };
 
-  nativeBuildInputs = [ pkg-config wrapGAppsHook ];
+  nativeBuildInputs = [ pkgconfig wrapGAppsHook ];
   buildInputs = [ glib gcr glib-networking gsettings-desktop-schemas gtk libsoup webkitgtk ];
 
   inherit patches;
@@ -33,7 +32,7 @@ stdenv.mkDerivation rec {
     )
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple web browser based on WebKitGTK";
     longDescription = ''
       surf is a simple web browser based on WebKitGTK. It is able to display

@@ -1,22 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config }:
+{ stdenv, fetchFromGitHub, cmake, pkgconfig }:
+
 stdenv.mkDerivation rec {
   pname = "libuinputplus";
-  version = "2021-04-02";
-
-  # adds missing cmake install directives
-  # https://github.com/YukiWorkshop/libuInputPlus/pull/7
-  patches = [ ./0001-Add-cmake-install-directives.patch];
+  version = "2019-10-01";
 
   src  = fetchFromGitHub {
     owner  = "YukiWorkshop";
     repo   = "libuInputPlus";
-    rev    = "f7f18eb339bba61a43f2cad481a9b1a453a66957";
-    sha256 = "0sind2ghhy4h9kfkr5hsmhcq0di4ifwqyv4gac96rgj5mwvs33lp";
+    rev    = "962f180b4cc670e1f5cc73c2e4d5d196ae52d630";
+    sha256 = "0jy5i7bmjad7hw1qcyjl4swqribp2027s9g3609zwj7lj8z5x0bg";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Easy-to-use uinput library in C++";
     license = licenses.mit;

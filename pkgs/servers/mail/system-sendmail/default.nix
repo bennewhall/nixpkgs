@@ -1,4 +1,4 @@
-{ lib, stdenv, writeText, runtimeShell }:
+{ stdenv, writeText, runtimeShell }:
 
 let script = writeText "script" ''
   #!${runtimeShell}
@@ -15,21 +15,18 @@ let script = writeText "script" ''
   fi
 ''; in
 stdenv.mkDerivation {
-  pname = "system-sendmail";
-  version = "1.0";
+  name = "system-sendmail-1.0";
 
   src = script;
 
-  dontUnpack = true;
-  dontInstall = true;
-
+  phases = [ "buildPhase" ];
   buildPhase = ''
     mkdir -p $out/bin
     < $src sed "s#{{MYPATH}}#$out/bin/sendmail#" > $out/bin/sendmail
     chmod +x $out/bin/sendmail
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       A sendmail wrapper that calls the system sendmail. Do not install as system-wide sendmail!
     '';

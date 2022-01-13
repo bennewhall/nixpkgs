@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, libnotify, gdk-pixbuf }:
+{ stdenv, fetchFromGitHub, pkgconfig, libnotify, gdk-pixbuf }:
 
 stdenv.mkDerivation rec {
   pname = "et";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ libnotify gdk-pixbuf ];
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     cp et-status.sh $out/bin/et-status
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Minimal libnotify-based (egg) timer";
     homepage = "https://github.com/oxzi/et";
     license = licenses.gpl3;

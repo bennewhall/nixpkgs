@@ -1,5 +1,5 @@
-{ lib, buildGoPackage, fetchgit
-, pkg-config
+{ stdenv, buildGoPackage, fetchgit
+, pkgconfig
 , glib, libxml2
 }:
 
@@ -18,14 +18,14 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ glib libxml2 ];
 
   meta = {
     homepage = "https://github.com/sloonz/ua";
-    license = lib.licenses.isc;
+    license = stdenv.lib.licenses.isc;
     description = "Universal Aggregator";
-    platforms = lib.platforms.unix;
-    maintainers = with lib.maintainers; [ ttuegel ];
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = with stdenv.lib.maintainers; [ ttuegel ];
   };
 }

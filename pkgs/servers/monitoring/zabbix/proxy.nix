@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, libevent, libiconv, openssl, pcre, zlib
+{ stdenv, fetchurl, pkgconfig, libevent, libiconv, openssl, pcre, zlib
 , odbcSupport ? true, unixODBC
 , snmpSupport ? true, net-snmp
 , sshSupport ? true, libssh2
@@ -13,7 +13,7 @@ assert postgresqlSupport -> !mysqlSupport && !sqliteSupport;
 assert sqliteSupport -> !mysqlSupport && !postgresqlSupport;
 
 let
-  inherit (lib) optional optionalString;
+  inherit (stdenv.lib) optional optionalString;
 in
   import ./versions.nix ({ version, sha256 }:
     stdenv.mkDerivation {
@@ -21,11 +21,11 @@ in
       inherit version;
 
       src = fetchurl {
-        url = "https://cdn.zabbix.com/zabbix/sources/stable/${lib.versions.majorMinor version}/zabbix-${version}.tar.gz";
+        url = "https://cdn.zabbix.com/zabbix/sources/stable/${stdenv.lib.versions.majorMinor version}/zabbix-${version}.tar.gz";
         inherit sha256;
       };
 
-      nativeBuildInputs = [ pkg-config ];
+      nativeBuildInputs = [ pkgconfig ];
       buildInputs = [
         libevent
         libiconv
@@ -41,7 +41,6 @@ in
       ++ optional postgresqlSupport postgresql;
 
       configureFlags = [
-        "--enable-ipv6"
         "--enable-proxy"
         "--with-iconv"
         "--with-libevent"
@@ -73,7 +72,7 @@ in
         cp -prvd database/postgresql/schema.sql $out/share/zabbix/database/postgresql/
       '';
 
-      meta = with lib; {
+      meta = with stdenv.lib; {
         description = "An enterprise-class open source distributed monitoring solution (client-server proxy)";
         homepage = "https://www.zabbix.com/";
         license = licenses.gpl2;

@@ -1,21 +1,17 @@
-{ lib, stdenv, fetchurl, fetchpatch, flex }:
+{ stdenv, fetchurl, flex }:
 
 stdenv.mkDerivation rec {
   pname = "libsepol";
-  version = "3.3";
+  version = "3.0";
+  se_release = "20191204";
   se_url = "https://github.com/SELinuxProject/selinux/releases/download";
 
   outputs = [ "bin" "out" "dev" "man" ];
 
   src = fetchurl {
-    url = "${se_url}/${version}/libsepol-${version}.tar.gz";
-    sha256 = "12r39ygn7aa1kz52wibfr4520m0cp75hlrn3i6rnjqa6p0zdz5rd";
+    url = "${se_url}/${se_release}/libsepol-${version}.tar.gz";
+    sha256 = "0ygb6dh5lng91xs6xiqf5v0nxa68qmjc787p0s5h9w89364f2yjv";
   };
-
-  postPatch = lib.optionalString stdenv.hostPlatform.isStatic ''
-    substituteInPlace src/Makefile --replace 'all: $(LIBA) $(LIBSO)' 'all: $(LIBA)'
-    sed -i $'/^\t.*LIBSO/d' src/Makefile
-  '';
 
   nativeBuildInputs = [ flex ];
 
@@ -31,13 +27,13 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-Wno-error";
 
-  passthru = { inherit se_url; };
+  passthru = { inherit se_release se_url; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "SELinux binary policy manipulation library";
     homepage = "http://userspace.selinuxproject.org";
     platforms = platforms.linux;
-    maintainers = [ ];
-    license = lib.licenses.gpl2Plus;
+    maintainers = [ maintainers.phreedom ];
+    license = stdenv.lib.licenses.gpl2;
   };
 }

@@ -1,12 +1,10 @@
-{ lib, stdenv, fetchurl, unzip
-, bdftopcf, mkfontscale, fonttosfnt
+{ stdenv, fetchurl, unzip
+, bdftopcf, mkfontscale, fontforge
 }:
 
 stdenv.mkDerivation {
   pname = "dina-font";
   version = "2.92";
-
-  outputs = [ "out" "bdf" ];
 
   src = fetchurl {
     url = "http://www.donationcoder.com/Software/Jibz/Dina/downloads/Dina.zip";
@@ -14,48 +12,44 @@ stdenv.mkDerivation {
   };
 
   nativeBuildInputs =
-    [ unzip bdftopcf mkfontscale fonttosfnt ];
+    [ unzip bdftopcf mkfontscale fontforge ];
 
-  postPatch = ''
-    sed -i 's/microsoft-cp1252/ISO8859-1/' *.bdf
-  '';
+  patchPhase = "sed -i 's/microsoft-cp1252/ISO8859-1/' *.bdf";
 
   buildPhase = ''
-    runHook preBuild
-
     newName() {
-        test "''${1:5:1}" = i && _it=Italic || _it=
-        case ''${1:6:3} in
-            400) test -z $it && _weight=Medium ;;
-            700) _weight=Bold ;;
-        esac
-        _pt=''${1%.bdf}
-        _pt=''${_pt#*-}
-        echo "Dina$_weight$_it$_pt"
+      test "''${1:5:1}" = i && _it=Italic || _it=
+      case ''${1:6:3} in
+        400) test -z $it && _weight=Medium ;;
+        700) _weight=Bold ;;
+      esac
+      _pt=''${1%.bdf}
+      _pt=''${_pt#*-}
+      echo "Dina$_weight$_it$_pt"
     }
 
-    for f in *.bdf; do
-        name=$(newName "$f")
-        bdftopcf -t -o "$name.pcf" "$f"
-        fonttosfnt -v -o "$name.otb" "$f"
+    # convert bdf fonts to pcf
+    for i in *.bdf; do
+      bdftopcf -t -o $(newName "$i").pcf "$i"
     done
     gzip -n -9 *.pcf
 
-    runHook postBuild
+    # convert bdf fonts to otb
+    for i in *.bdf; do
+      fontforge -lang=ff -c "Open(\"$i\"); Generate(\"$(newName $i).otb\")"
+    done
   '';
 
   installPhase = ''
-    runHook preInstall
-
     install -D -m 644 -t "$out/share/fonts/misc" *.pcf.gz *.otb
     install -D -m 644 -t "$bdf/share/fonts/misc" *.bdf
     mkfontdir "$out/share/fonts/misc"
     mkfontdir "$bdf/share/fonts/misc"
-
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  outputs = [ "out" "bdf" ];
+
+  meta = with stdenv.lib; {
     description = "A monospace bitmap font aimed at programmers";
     longDescription = ''
       Dina is a monospace bitmap font, primarily aimed at programmers. It is

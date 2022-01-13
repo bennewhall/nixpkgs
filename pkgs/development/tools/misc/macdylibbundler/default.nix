@@ -1,17 +1,17 @@
-{ lib, stdenv, makeWrapper, fetchFromGitHub, cctools }:
+{ stdenv, makeWrapper, fetchFromGitHub, cctools }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "macdylibbundler";
-  version = "1.0.0";
+  version = "20180825";
 
   src = fetchFromGitHub {
     owner = "auriamg";
     repo = "macdylibbundler";
-    rev = version;
-    sha256 = "02w04qvaf9v8yw8bgncx5qj3jx08xdfa855isvq92q27hsb8m8hv";
+    rev = "ce13cb585ead5237813b85e68fe530f085fc0a9e";
+    sha256 = "149p3dcnap4hs3nhq5rfvr3m70rrb5hbr5xkj1h0gsfp0d7gvxnj";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   makeFlags = [ "PREFIX=$(out)" ];
 
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
       --prefix PATH ":" "${cctools}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utility to ease bundling libraries into executables for OSX";
     longDescription = ''
       dylibbundler is a small command-line programs that aims to make bundling

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libusb-compat-0_1, readline }:
+{ stdenv, fetchurl, libusb-compat-0_1, readline }:
 
 stdenv.mkDerivation {
   pname = "libnfc";
@@ -11,9 +11,7 @@ stdenv.mkDerivation {
 
   buildInputs = [ libusb-compat-0_1 readline ];
 
-  configureFlags = [ "sysconfdir=/etc" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Open source library libnfc for Near Field Communication";
     license = licenses.gpl3;
     homepage = "https://github.com/nfc-tools/libnfc";

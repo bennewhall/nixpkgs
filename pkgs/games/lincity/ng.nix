@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, jam, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, jam, pkgconfig
 , zlib, libxml2, libxslt, xorgproto, libX11, libGLU, libGL, SDL
 , SDL_mixer, SDL_image, SDL_ttf, SDL_gfx, physfs
 }:
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
   hardeningDisable = [ "format" ];
 
   nativeBuildInputs = [
-    autoreconfHook jam pkg-config
+    autoreconfHook jam pkgconfig
   ];
 
   buildInputs = [
@@ -46,7 +46,7 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "City building game";
     license = licenses.gpl2;
     maintainers = with maintainers; [ raskin ];

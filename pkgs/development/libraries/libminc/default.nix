@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, zlib, netcdf, nifticlib, hdf5 }:
+{ stdenv, fetchFromGitHub, cmake, zlib, netcdf, nifticlib, hdf5 }:
 
 stdenv.mkDerivation rec {
   pname   = "libminc";
@@ -35,7 +35,7 @@ stdenv.mkDerivation rec {
     # ezminc_rw_test: can't find libminc_io.so.5.2.0
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/BIC-MNI/libminc";
     description = "Medical imaging library based on HDF5";
     maintainers = with maintainers; [ bcdarwin ];

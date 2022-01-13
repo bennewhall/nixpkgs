@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pythonOlder
@@ -19,13 +19,13 @@ buildPythonPackage rec {
 
   checkInputs = [ pytest ];
   propagatedBuildInputs = [ six mypy-extensions ]
-    ++ lib.optionals (pythonOlder "3.5") [ typing ];
+    ++ stdenv.lib.optionals (pythonOlder "3.5") [ typing ];
 
   checkPhase = ''
     py.test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/dropbox/pyannotate";
     description = "Auto-generate PEP-484 annotations";
     license = licenses.mit;

@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation rec {
   pname = "kubetail";
-  version = "1.6.13";
+  version = "1.6.12";
 
   src = fetchFromGitHub {
     owner = "johanhaleby";
     repo = "kubetail";
     rev = version;
-    sha256 = "sha256-EkOewNInzEEEgMOffYoRaKwhgYuBXgHaCkVgWg2mIDE=";
+    sha256 = "0hayfd7yvdhd2klfmhvl04hfqk0nfsimjyg3kbq8c5dbgbpz05nd";
   };
 
   installPhase = ''

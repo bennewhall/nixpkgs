@@ -1,5 +1,5 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27, pythonAtLeast
-, keras, numpy, scipy, six, tensorflow }:
+{ stdenv, buildPythonPackage, fetchPypi, isPy27, pythonAtLeast
+, Keras, numpy, scipy, six, tensorflow }:
 
 buildPythonPackage rec {
   pname = "edward";
@@ -15,9 +15,9 @@ buildPythonPackage rec {
   # disabled for now due to Tensorflow trying to create files in $HOME:
   doCheck = false;
 
-  propagatedBuildInputs = [ keras numpy scipy six tensorflow ];
+  propagatedBuildInputs = [ Keras numpy scipy six tensorflow ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Probabilistic programming language using Tensorflow";
     homepage = "https://github.com/blei-lab/edward";
     license = licenses.asl20;

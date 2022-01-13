@@ -1,20 +1,20 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ lib, buildPythonPackage, fetchPypi, stdenv }:
 
 buildPythonPackage rec {
   pname = "Cheetah3";
-  version = "3.2.6.post2";
+  version = "3.2.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "63157d7a00a273b59676b5be5aa817c75c37efc88478231f1a160f4cfb7f7878";
+    sha256 = "f1c2b693cdcac2ded2823d363f8459ae785261e61c128d68464c8781dba0466b";
   };
 
   doCheck = false; # Circular dependency
 
-  meta = with lib; {
+  meta = {
     homepage = "http://www.cheetahtemplate.org/";
     description = "A template engine and code generation tool";
-    license = licenses.mit;
-    maintainers = with maintainers; [ pjjw ];
+    license = lib.licenses.mit;
+    maintainers = with stdenv.lib.maintainers; [ pjjw ];
   };
 }

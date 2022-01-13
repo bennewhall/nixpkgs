@@ -1,5 +1,4 @@
 #! @runtimeShell@ -e
-# shellcheck shell=bash
 
 # Shows the usage of this command to the user
 
@@ -30,12 +29,12 @@ while [ $# -gt 0 ]; do
         nixBuildArgs+=("--option" "$1" "$2"); shift
         ;;
       *)
-        if [ -n "$networkExpr" ]; then
+        if [ ! -z "$networkExpr" ]; then
           echo "Network expression already set!"
           showUsage
           exit 1
         fi
-        networkExpr="$(readlink -f "$1")"
+        networkExpr="$(readlink -f $1)"
         ;;
     esac
 
@@ -50,4 +49,4 @@ fi
 
 # Build a network of VMs
 nix-build '<nixpkgs/nixos/modules/installer/tools/nixos-build-vms/build-vms.nix>' \
-    --argstr networkExpr "$networkExpr" "${nixBuildArgs[@]}"
+    --argstr networkExpr $networkExpr "${nixBuildArgs[@]}"

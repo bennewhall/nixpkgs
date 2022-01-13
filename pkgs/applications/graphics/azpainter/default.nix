@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , libX11, libXext, libXi
 , freetype, fontconfig
 , libpng, libjpeg
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     zlib
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Full color painting software for illustration drawing";
     homepage = "https://osdn.net/projects/azpainter";
     license = licenses.gpl3Plus;

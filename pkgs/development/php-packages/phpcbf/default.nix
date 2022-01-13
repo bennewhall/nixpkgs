@@ -1,19 +1,18 @@
-{ mkDerivation, fetchurl, lib, php, makeWrapper }:
+{ mkDerivation, fetchurl, pkgs, lib, php }:
 let
   pname = "phpcbf";
-  version = "3.6.0";
+  version = "3.5.8";
 in
 mkDerivation {
   inherit pname version;
 
   src = fetchurl {
     url = "https://github.com/squizlabs/PHP_CodeSniffer/releases/download/${version}/phpcbf.phar";
-    sha256 = "04wb1imm4934mpy2hxcmqh4cn7md1vwmfii39p6mby809325b5z1";
+    sha256 = "15ci30yvw3p9zlmzsk9s4mxzb3wax3gl9p55slhf1bzwn1xxwyb0";
   };
 
-  dontUnpack = true;
-
-  nativeBuildInputs = [ makeWrapper ];
+  phases = [ "installPhase" ];
+  nativeBuildInputs = [ pkgs.makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -22,7 +21,7 @@ mkDerivation {
       --add-flags "$out/libexec/phpcbf/phpcbf.phar"
   '';
 
-  meta = with lib; {
+  meta = with pkgs.lib; {
     description = "PHP coding standard beautifier and fixer";
     license = licenses.bsd3;
     homepage = "https://squizlabs.github.io/PHP_CodeSniffer/";

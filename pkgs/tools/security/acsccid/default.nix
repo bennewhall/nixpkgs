@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , autoconf
 , automake
@@ -7,7 +6,7 @@
 , gettext
 , flex
 , perl
-, pkg-config
+, pkgconfig
 , pcsclite
 , libusb1
 , libiconv
@@ -25,7 +24,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     autoconf
     automake
     libtool
@@ -37,7 +36,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     pcsclite
     libusb1
-  ] ++ lib.optionals stdenv.isDarwin [
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
     libiconv
   ];
 
@@ -61,7 +60,7 @@ stdenv.mkDerivation rec {
     autoconf
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A PC/SC driver for Linux/Mac OS X and it supports ACS CCID smart card readers";
     longDescription = ''
       acsccid is a PC/SC driver for Linux/Mac OS X and it supports ACS CCID smart card
@@ -78,7 +77,7 @@ stdenv.mkDerivation rec {
     '';
     homepage = src.meta.homepage;
     license = licenses.lgpl2Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ roberth ];
     platforms = with platforms; unix;
   };
 }

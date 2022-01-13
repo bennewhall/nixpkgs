@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   version = "1.0";
@@ -21,8 +21,8 @@ stdenv.mkDerivation {
   meta = {
     homepage = "https://github.com/jlhonora/lsusb";
     description = "lsusb command for Mac OS X";
-    platforms = lib.platforms.darwin;
-    license = lib.licenses.mit;
-    maintainers = [ lib.maintainers.varunpatro ];
+    platforms = stdenv.lib.platforms.darwin;
+    license = stdenv.lib.licenses.mit;
+    maintainers = [ stdenv.lib.maintainers.varunpatro ];
   };
 }

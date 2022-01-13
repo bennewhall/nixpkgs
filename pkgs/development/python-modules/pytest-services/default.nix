@@ -5,7 +5,8 @@
 , requests
 , psutil
 , pytest
-, setuptools-scm
+, setuptools_scm
+, subprocess32
 , toml
 , zc_lockfile
 }:
@@ -20,17 +21,16 @@ buildPythonPackage rec {
   };
 
   nativeBuildInputs = [
-    setuptools-scm
+    setuptools_scm
     toml
   ];
-
-  buildInputs = [ pytest ];
 
   propagatedBuildInputs = [
     requests
     psutil
+    pytest
     zc_lockfile
-  ];
+  ] ++ lib.optional (!isPy3k) subprocess32;
 
   # no tests in PyPI tarball
   doCheck = false;

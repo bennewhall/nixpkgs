@@ -1,7 +1,5 @@
-{ lib, stdenv, fetchurl, openssl, python, zlib, libuv, util-linux, http-parser
-, pkg-config, which
-# for `.pkgs` attribute
-, callPackage
+{ stdenv, fetchurl, openssl, python, zlib, libuv, util-linux, http-parser
+, pkgconfig, which
 # Updater dependencies
 , writeScript, coreutils, gnugrep, jq, curl, common-updater-scripts, nix, runtimeShell
 , gnupg
@@ -9,7 +7,7 @@
 , procps, icu
 }:
 
-with lib;
+with stdenv.lib;
 
 { enableNpm ? true, version, sha256, patches ? [] } @args:
 
@@ -30,7 +28,7 @@ let
     "--shared-${name}-libpath=${getLib sharedLibDeps.${name}}/lib"
     /** Closure notes: we explicitly avoid specifying --shared-*-includes,
      *  as that would put the paths into bin/nodejs.
-     *  Including pkg-config in build inputs would also have the same effect!
+     *  Including pkgconfig in build inputs would also have the same effect!
      */
   ]) (builtins.attrNames sharedLibDeps) ++ [
     "--with-intl=system-icu"
@@ -42,7 +40,9 @@ let
       (builtins.attrNames sharedLibDeps);
 
   extraConfigFlags = optionals (!enableNpm) [ "--without-npm" ];
-  self = stdenv.mkDerivation {
+in
+
+  stdenv.mkDerivation {
     inherit version;
 
     name = "${baseName}-${version}";
@@ -55,26 +55,23 @@ let
     buildInputs = optionals stdenv.isDarwin [ CoreServices ApplicationServices ]
       ++ [ zlib libuv openssl http-parser icu ];
 
-    nativeBuildInputs = [ which pkg-config python ]
+    nativeBuildInputs = [ which util-linux pkgconfig python ]
       ++ optionals stdenv.isDarwin [ xcbuild ];
-
-    outputs = [ "out" "libv8" ];
-    setOutputFlags = false;
-    moveToDev = false;
 
     configureFlags = let
       isCross = stdenv.hostPlatform != stdenv.buildPlatform;
-      inherit (stdenv.hostPlatform) gcc isAarch32;
+      host = stdenv.hostPlatform.platform;
+      isAarch32 = stdenv.hostPlatform.isAarch32;
     in sharedConfigureFlags ++ [
       "--without-dtrace"
     ] ++ (optionals isCross [
       "--cross-compiling"
       "--without-intl"
       "--without-snapshot"
-    ]) ++ (optionals (isCross && isAarch32 && hasAttr "fpu" gcc) [
-      "--with-arm-fpu=${gcc.fpu}"
-    ]) ++ (optionals (isCross && isAarch32 && hasAttr "float-abi" gcc) [
-      "--with-arm-float-abi=${gcc.float-abi}"
+    ]) ++ (optionals (isCross && isAarch32 && hasAttr "fpu" host.gcc) [
+      "--with-arm-fpu=${host.gcc.fpu}"
+    ]) ++ (optionals (isCross && isAarch32 && hasAttr "float-abi" host.gcc) [
+      "--with-arm-float-abi=${host.gcc.float-abi}"
     ]) ++ (optionals (isCross && isAarch32) [
       "--dest-cpu=arm"
     ]) ++ extraConfigFlags;
@@ -86,10 +83,6 @@ let
     enableParallelBuilding = true;
 
     passthru.interpreterName = "nodejs";
-
-    passthru.pkgs = callPackage ../../node-packages/default.nix {
-      nodejs = self;
-    };
 
     setupHook = ./setup-hook.sh;
 
@@ -134,56 +127,23 @@ let
 
       # install the missing headers for node-gyp
       cp -r ${concatStringsSep " " copyLibHeaders} $out/include/node
-
-      # assemble a static v8 library and put it in the 'libv8' output
-      mkdir -p $libv8/lib
-      pushd out/Release/obj.target
-      find . -path "./torque_*/**/*.o" -or -path "./v8*/**/*.o" | sort -u >files
-      ${if stdenv.buildPlatform.isGnu then ''
-        ar -cqs $libv8/lib/libv8.a @files
-      '' else ''
-        cat files | while read -r file; do
-          ar -cqS $libv8/lib/libv8.a $file
-        done
-      ''}
-      popd
-
-      # copy v8 headers
-      cp -r deps/v8/include $libv8/
-
-      # create a pkgconfig file for v8
-      major=$(grep V8_MAJOR_VERSION deps/v8/include/v8-version.h | cut -d ' ' -f 3)
-      minor=$(grep V8_MINOR_VERSION deps/v8/include/v8-version.h | cut -d ' ' -f 3)
-      patch=$(grep V8_PATCH_LEVEL deps/v8/include/v8-version.h | cut -d ' ' -f 3)
-      mkdir -p $libv8/lib/pkgconfig
-      cat > $libv8/lib/pkgconfig/v8.pc << EOF
-      Name: v8
-      Description: V8 JavaScript Engine
-      Version: $major.$minor.$patch
-      Libs: -L$libv8/lib -lv8 -pthread -licui18n
-      Cflags: -I$libv8/include
-      EOF
     '' + optionalString (stdenv.isDarwin && enableNpm) ''
       sed -i 's/raise.*No Xcode or CLT version detected.*/version = "7.0.0"/' $out/lib/node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py
     '';
 
     passthru.updateScript = import ./update.nix {
       inherit writeScript coreutils gnugrep jq curl common-updater-scripts gnupg nix runtimeShell;
-      inherit lib;
+      inherit (stdenv) lib;
       inherit majorVersion;
     };
 
     meta = {
       description = "Event-driven I/O framework for the V8 JavaScript engine";
       homepage = "https://nodejs.org";
-      changelog = "https://github.com/nodejs/node/releases/tag/v${version}";
       license = licenses.mit;
       maintainers = with maintainers; [ goibhniu gilligan cko marsam ];
       platforms = platforms.linux ++ platforms.darwin;
-      mainProgram = "node";
-      knownVulnerabilities = optional (versionOlder version "12") "This NodeJS release has reached its end of life. See https://nodejs.org/en/about/releases/.";
     };
 
     passthru.python = python; # to ensure nodeEnv uses the same version
-  };
-in self
+}

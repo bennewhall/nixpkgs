@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 }:
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "chameleon" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://chameleon.readthedocs.io/";
     description = "Fast HTML/XML Template Compiler";
     license = licenses.bsd0;

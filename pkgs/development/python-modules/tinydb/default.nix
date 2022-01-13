@@ -2,15 +2,17 @@
 , buildPythonPackage
 , pythonOlder
 , fetchFromGitHub
-, poetry-core
+, poetry
 , pytestCheckHook
+, pytestcov
+, pytestrunner
 , pycodestyle
 , pyyaml
 }:
 
 buildPythonPackage rec {
   pname = "tinydb";
-  version = "4.5.2";
+  version = "4.1.1";
   disabled = pythonOlder "3.5";
   format = "pyproject";
 
@@ -18,28 +20,20 @@ buildPythonPackage rec {
     owner = "msiemens";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0gyc9rk1adw4gynwnv4kfas0hxv1cql0sm5b3fsms39088ha894l";
+    sha256 = "09cwdmpj91c6q7jympip1lrcd3idbm9cqblgvmrh0v1vy1iv2ki7";
   };
 
-  nativeBuildInputs = [
-    poetry-core
-  ];
-
-  postPatch = ''
-    substituteInPlace pytest.ini \
-      --replace "--cov-append --cov-report term --cov tinydb" ""
-  '';
+  nativeBuildInputs = [ poetry ];
 
   checkInputs = [
     pytestCheckHook
+    pytestcov
     pycodestyle
     pyyaml
   ];
 
-  pythonImportsCheck = [ "tinydb" ];
-
   meta = with lib; {
-    description = "Lightweight document oriented database written in Python";
+    description = "A lightweight document oriented database written in pure Python with no external dependencies";
     homepage = "https://tinydb.readthedocs.org/";
     changelog = "https://tinydb.readthedocs.io/en/latest/changelog.html";
     license = licenses.mit;

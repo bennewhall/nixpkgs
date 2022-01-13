@@ -1,6 +1,6 @@
 { qtModule, qtbase, qttools }:
 
 qtModule {
-  pname = "qtscript";
+  name = "qtscript";
   qtInputs = [ qtbase qttools ];
 }

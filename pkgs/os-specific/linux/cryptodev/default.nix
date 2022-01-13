@@ -1,14 +1,14 @@
-{ fetchFromGitHub, lib, stdenv, kernel ? false }:
+{ fetchFromGitHub, stdenv, kernel ? false }:
 
 stdenv.mkDerivation rec {
-  pname = "cryptodev-linux-1.12";
+  pname = "cryptodev-linux-1.11";
   name = "${pname}-${kernel.version}";
 
   src = fetchFromGitHub {
     owner = "cryptodev-linux";
     repo = "cryptodev-linux";
     rev = pname;
-    sha256 = "sha256-vJQ10rG5FGbeEOqCUmH/pZ0P77kAW/MtUarywbtIyHw=";
+    sha256 = "1ky850qiyacq8p3lng7n3w6h3x2clqrz4lkv2cv3psy92mg9pvc9";
   };
 
   hardeningDisable = [ "pic" ];
@@ -20,8 +20,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Device that allows access to Linux kernel cryptographic drivers";
     homepage = "http://cryptodev-linux.org/";
-    maintainers = with lib.maintainers; [ fortuneteller2k ];
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , libGLU, libGL, SDL, freeglut, SDL_mixer, autoconf, automake, libtool
 }:
 
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libGLU libGL SDL freeglut SDL_mixer autoconf automake libtool ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An air combat simulator";
     homepage = "https://sourceforge.net/projects/gl-117";
     maintainers = with maintainers; [ raskin ];

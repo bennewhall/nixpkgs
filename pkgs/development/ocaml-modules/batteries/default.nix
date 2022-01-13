@@ -1,28 +1,20 @@
-{ stdenv, lib, fetchFromGitHub, ocaml, findlib, ocamlbuild, qtest, num
-, doCheck ? lib.versionAtLeast ocaml.version "4.08" && !stdenv.isAarch64
-}:
+{ stdenv, fetchurl, ocaml, findlib, ocamlbuild, qtest, num }:
 
-if !lib.versionAtLeast ocaml.version "4.02"
-then throw "batteries is not available for OCaml ${ocaml.version}"
-else
-
-let version = "3.4.0"; in
+let version = "3.2.0"; in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-batteries-${version}";
 
-  src = fetchFromGitHub {
-    owner = "ocaml-batteries-team";
-    repo = "batteries-included";
-    rev = "v${version}";
-    sha256 = "sha256:1cd7475n1mxhq482aidmhh27mq5p2vmb8d9fkb1mlza9pz5z66yq";
+  src = fetchurl {
+    url = "https://github.com/ocaml-batteries-team/batteries-included/releases/download/v${version}/batteries-${version}.tar.gz";
+    sha256 = "0a77njgc6c6kz4rpwqgmnii7f1na6hzsa55nqqm3dndhq9xh628w";
   };
 
   buildInputs = [ ocaml findlib ocamlbuild ];
   checkInputs = [ qtest ];
   propagatedBuildInputs = [ num ];
 
-  inherit doCheck;
+  doCheck = stdenv.lib.versionAtLeast ocaml.version "4.04" && !stdenv.isAarch64;
   checkTarget = "test";
 
   createFindlibDestdir = true;
@@ -35,10 +27,10 @@ stdenv.mkDerivation {
       and comprehensive development platform for the OCaml programming
       language.
     '';
-    license = lib.licenses.lgpl21Plus;
-    inherit (ocaml.meta) platforms;
+    license = stdenv.lib.licenses.lgpl21Plus;
+    platforms = ocaml.meta.platforms or [];
     maintainers = [
-      lib.maintainers.maggesi
+      stdenv.lib.maintainers.maggesi
     ];
   };
 }

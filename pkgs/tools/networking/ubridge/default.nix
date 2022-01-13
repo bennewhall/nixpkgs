@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , libpcap
 }:
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bridge for UDP tunnels, Ethernet, TAP, and VMnet interfaces";
     longDescription = ''
       uBridge is a simple application to create user-land bridges between

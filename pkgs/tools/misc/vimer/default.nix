@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   version = "0.2.0";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/vimer
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/susam/vimer";
     description = ''
       A convenience wrapper for gvim/mvim --remote(-tab)-silent to open files
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     '';
     license = licenses.mit;
     maintainers = [ maintainers.matthiasbeyer ];
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 
 }

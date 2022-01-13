@@ -41,7 +41,7 @@ let
     validated =  pkgs.runCommand "nagios-checked.cfg" {preferLocalBuild=true;} ''
       cp ${file} nagios.cfg
       # nagios checks the existence of /var/lib/nagios, but
-      # it does not exist in the build sandbox, so we fake it
+      # it does not exists in the build sandbox, so we fake it
       mkdir lib
       lib=$(readlink -f lib)
       sed -i s@=${nagiosState}@=$lib@ nagios.cfg
@@ -97,13 +97,13 @@ in
           network that you want Nagios to monitor.
         ";
         type = types.listOf types.path;
-        example = literalExpression "[ ./objects.cfg ]";
+        example = literalExample "[ ./objects.cfg ]";
       };
 
       plugins = mkOption {
         type = types.listOf types.package;
-        default = with pkgs; [ monitoring-plugins ssmtp mailutils ];
-        defaultText = literalExpression "[pkgs.monitoring-plugins pkgs.ssmtp pkgs.mailutils]";
+        default = with pkgs; [ nagiosPluginsOfficial ssmtp mailutils ];
+        defaultText = "[pkgs.nagiosPluginsOfficial pkgs.ssmtp pkgs.mailutils]";
         description = "
           Packages to be added to the Nagios <envar>PATH</envar>.
           Typically used to add plugins, but can be anything.
@@ -131,14 +131,13 @@ in
       validateConfig = mkOption {
         type = types.bool;
         default = pkgs.stdenv.hostPlatform == pkgs.stdenv.buildPlatform;
-        defaultText = literalExpression "pkgs.stdenv.hostPlatform == pkgs.stdenv.buildPlatform";
         description = "if true, the syntax of the nagios configuration file is checked at build time";
       };
 
       cgiConfigFile = mkOption {
         type = types.package;
         default = nagiosCGICfgFile;
-        defaultText = literalExpression "nagiosCGICfgFile";
+        defaultText = "nagiosCGICfgFile";
         description = "
           Derivation for the configuration file of Nagios CGI scripts
           that can be used in web servers for running the Nagios web interface.
@@ -156,7 +155,7 @@ in
 
       virtualHost = mkOption {
         type = types.submodule (import ../web-servers/apache-httpd/vhost-options.nix);
-        example = literalExpression ''
+        example = literalExample ''
           { hostName = "example.org";
             adminAddr = "webmaster@example.org";
             enableSSL = true;
@@ -193,7 +192,6 @@ in
       path     = [ pkgs.nagios ] ++ cfg.plugins;
       wantedBy = [ "multi-user.target" ];
       after    = [ "network.target" ];
-      restartTriggers = [ nagiosCfgFile ];
 
       serviceConfig = {
         User = "nagios";
@@ -203,6 +201,7 @@ in
         LogsDirectory = "nagios";
         StateDirectory = "nagios";
         ExecStart = "${pkgs.nagios}/bin/nagios /etc/nagios.cfg";
+        X-ReloadIfChanged = nagiosCfgFile;
       };
     };
 

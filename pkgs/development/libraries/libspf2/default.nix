@@ -1,17 +1,23 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchurl, autoreconfHook }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "libspf2";
-  version = "2.2.12";
+  version = "1.2.10";
 
-  src = fetchFromGitHub {
-    owner = "helsinki-systems";
-    repo = "libspf2";
-    rev = "v${version}";
-    sha256 = "03iiaafdcwh220pqignk407h6klrakwz0zkb8iwk6nkwipkwvhsx";
+  src = fetchurl {
+    url = "https://www.libspf2.org/spf/libspf2-${version}.tar.gz";
+    sha256 = "1j91p0qiipzf89qxq4m1wqhdf01hpn1h5xj4djbs51z23bl3s7nr";
   };
+
+  patches = [
+    (fetchurl {
+      name = "0001-gcc-variadic-macros.patch";
+      url = "https://github.com/shevek/libspf2/commit/5852828582f556e73751076ad092f72acf7fc8b6.patch";
+      sha256 = "1v6ashqzpr0xidxq0vpkjd8wd66cj8df01kyzj678ljzcrax35hk";
+    })
+  ];
 
   postPatch = ''
     # disable static bins compilation
@@ -31,7 +37,7 @@ stdenv.mkDerivation rec {
     description = "Implementation of the Sender Policy Framework for SMTP authorization";
     homepage = "https://www.libspf2.org";
     license = with licenses; [ lgpl21Plus bsd2 ];
-    maintainers = with maintainers; [ pacien ajs124 das_j ];
+    maintainers = with maintainers; [ pacien ];
     platforms = platforms.all;
   };
 }

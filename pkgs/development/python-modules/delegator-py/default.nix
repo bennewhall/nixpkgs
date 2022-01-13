@@ -2,6 +2,7 @@
 , lib
 , fetchFromGitHub
 , pexpect
+, pytest
 }:
 
 buildPythonPackage rec {

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "ajpy";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # ajpy doesn't have tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "AJP package crafting library";
     homepage = "https://github.com/hypn0s/AJPy/";
     license = licenses.lgpl2;

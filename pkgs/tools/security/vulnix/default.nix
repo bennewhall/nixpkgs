@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , python3Packages
 , nix
 , ronn
@@ -6,11 +6,11 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "vulnix";
-  version = "1.10.0";
+  version = "1.9.6";
 
   src = python3Packages.fetchPypi {
     inherit pname version;
-    sha256 = "1d5mqpc4g1wkqcwxp8m9k130i3ii3q7n1n4b1fyb5wijidmyn3xv";
+    sha256 = "0anyxmqgn4kx102l3qjhh1f2b0cg7mnlapfhriyjw0zyy5gyqvng";
   };
 
   outputs = [ "out" "doc" "man" ];
@@ -19,7 +19,7 @@ python3Packages.buildPythonApplication rec {
   checkInputs = with python3Packages; [
     freezegun
     pytest
-    pytest-cov
+    pytestcov
     pytest-flake8
   ];
 
@@ -48,7 +48,7 @@ python3Packages.buildPythonApplication rec {
 
   dontStrip = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "NixOS vulnerability scanner";
     homepage = "https://github.com/flyingcircusio/vulnix";
     license = licenses.bsd3;

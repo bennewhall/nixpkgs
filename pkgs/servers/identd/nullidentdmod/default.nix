@@ -1,6 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ... }:
-
-stdenv.mkDerivation rec {
+{ stdenv, fetchFromGitHub, ... }: stdenv.mkDerivation rec {
   pname = "nullidentdmod";
   version = "1.3";
 
@@ -17,7 +15,7 @@ stdenv.mkDerivation rec {
     install -Dm755 nullidentdmod $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple identd that just replies with a random string or customized userid";
     license = licenses.gpl2;
     homepage = "http://acidhub.click/NullidentdMod";

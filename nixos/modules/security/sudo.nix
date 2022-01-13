@@ -45,7 +45,7 @@ in
     security.sudo.package = mkOption {
       type = types.package;
       default = pkgs.sudo;
-      defaultText = literalExpression "pkgs.sudo";
+      defaultText = "pkgs.sudo";
       description = ''
         Which package to use for `sudo`.
       '';
@@ -60,17 +60,6 @@ in
           provide a password to run commands as super user via <command>sudo</command>.
         '';
       };
-
-    security.sudo.execWheelOnly = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Only allow members of the <code>wheel</code> group to execute sudo by
-        setting the executable's permissions accordingly.
-        This prevents users that are not members of <code>wheel</code> from
-        exploiting vulnerabilities in sudo such as CVE-2021-3156.
-      '';
-    };
 
     security.sudo.configFile = mkOption {
       type = types.lines;
@@ -91,7 +80,7 @@ in
         this is the case when configuration options are merged.
       '';
       default = [];
-      example = literalExpression ''
+      example = literalExample ''
         [
           # Allow execution of any command by all users in group sudo,
           # requiring a password.
@@ -227,20 +216,9 @@ in
         ${cfg.extraConfig}
       '';
 
-    security.wrappers = let
-      owner = "root";
-      group = if cfg.execWheelOnly then "wheel" else "root";
-      setuid = true;
-      permissions = if cfg.execWheelOnly then "u+rx,g+x" else "u+rx,g+x,o+x";
-    in {
-      sudo = {
-        source = "${cfg.package.out}/bin/sudo";
-        inherit owner group setuid permissions;
-      };
-      sudoedit = {
-        source = "${cfg.package.out}/bin/sudoedit";
-        inherit owner group setuid permissions;
-      };
+    security.wrappers = {
+      sudo.source = "${cfg.package.out}/bin/sudo";
+      sudoedit.source = "${cfg.package.out}/bin/sudoedit";
     };
 
     environment.systemPackages = [ sudo ];

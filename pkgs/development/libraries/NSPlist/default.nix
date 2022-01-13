@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation {
-  pname = "NSPlist";
-  version = "unstable-2017-04-11";
+  name = "NSPlist-713decf";
 
   src = fetchFromGitHub {
     owner = "matthewbauer";
@@ -11,9 +10,9 @@ stdenv.mkDerivation {
     sha256 = "0v4yfiwfd08hmh2ydgy6pnmlzjbd96k78dsla9pfd56ka89aw74r";
   };
 
-  nativeBuildInputs = [ cmake ];
+  buildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ matthewbauer ];
     description = "Parses .plist files";
     license = licenses.mit;

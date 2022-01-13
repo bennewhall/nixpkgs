@@ -3,7 +3,7 @@
 {config, pkgs, lib, ...}:
 
 let
-  inherit (lib) mkOption mkIf types;
+  inherit (lib) mkOption mkIf;
 
   cfg = config.services.gvpe;
 
@@ -27,7 +27,7 @@ let
     text = ''
       #! /bin/sh
 
-      export PATH=$PATH:${pkgs.iproute2}/sbin
+      export PATH=$PATH:${pkgs.iproute}/sbin
 
       ip link set $IFNAME up
       ip address add ${cfg.ipAddress} dev $IFNAME
@@ -46,14 +46,12 @@ in
 
       nodename = mkOption {
         default = null;
-        type = types.nullOr types.str;
         description =''
           GVPE node name
         '';
       };
       configText = mkOption {
         default = null;
-        type = types.nullOr types.lines;
         example = ''
           tcp-port = 655
           udp-port = 655
@@ -74,7 +72,6 @@ in
       };
       configFile = mkOption {
         default = null;
-        type = types.nullOr types.path;
         example = "/root/my-gvpe-conf";
         description = ''
           GVPE config file, if already present
@@ -82,14 +79,12 @@ in
       };
       ipAddress = mkOption {
         default = null;
-        type = types.nullOr types.str;
         description = ''
           IP address to assign to GVPE interface
         '';
       };
       subnet = mkOption {
         default = null;
-        type = types.nullOr types.str;
         example = "10.0.0.0/8";
         description = ''
           IP subnet assigned to GVPE network
@@ -97,7 +92,6 @@ in
       };
       customIFSetup = mkOption {
         default = "";
-        type = types.lines;
         description = ''
           Additional commands to apply in ifup script
         '';

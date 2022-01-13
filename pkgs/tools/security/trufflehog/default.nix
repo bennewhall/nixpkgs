@@ -12,11 +12,11 @@ let
 in
   python3Packages.buildPythonApplication rec {
     pname = "truffleHog";
-    version = "2.2.1";
+    version = "2.1.11";
 
     src = python3Packages.fetchPypi {
       inherit pname version;
-      sha256 = "sha256-fw0JyM2iqQrkL4FAXllEozJdkKWELS3eAURx5NZcceQ=";
+      sha256 = "53619f0c5be082abd377f987291ace80bc3b88f864972b1a30494780980f769e";
     };
 
     # Relax overly restricted version constraint

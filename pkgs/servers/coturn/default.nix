@@ -1,48 +1,28 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, fetchpatch
-, openssl
-, libevent
-, pkg-config
-, libprom
-, libpromhttp
-, libmicrohttpd
-, nixosTests
-}:
+{ stdenv, fetchFromGitHub, fetchpatch, openssl, libevent }:
 
 stdenv.mkDerivation rec {
   pname = "coturn";
-  version = "4.5.2";
+  version = "4.5.1.3";
 
   src = fetchFromGitHub {
     owner = "coturn";
     repo = "coturn";
     rev = version;
-    sha256 = "1s7ncc82ny4bb3qkn3fqr0144xsr7h2y8xmzsf5037h6j8f7j3v8";
+    sha256 = "1801931k4qdvc7jvaqxvjyhbh1xsvjz0pjajf6xc222n4ggar1q5";
   };
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [
-    openssl
-    libevent
-    libprom
-    libpromhttp
-    libmicrohttpd
-  ];
+  buildInputs = [ openssl libevent ];
 
   patches = [
     ./pure-configure.patch
   ];
 
-  passthru.tests.coturn = nixosTests.coturn;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://coturn.net/";
     license = with licenses; [ bsd3 ];
     description = "A TURN server";
     platforms = platforms.all;
     broken = stdenv.isDarwin; # 2018-10-21
-    maintainers = with maintainers; [ ralith _0x4A6F ];
+    maintainers = [ maintainers.ralith ];
   };
 }

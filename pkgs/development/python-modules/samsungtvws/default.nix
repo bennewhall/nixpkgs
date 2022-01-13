@@ -1,20 +1,24 @@
 { lib, buildPythonPackage, fetchPypi, isPy27
 , requests
-, websocket-client
+, websocket_client
 }:
 
 buildPythonPackage rec {
   pname = "samsungtvws";
-  version = "1.7.0";
+  version = "1.5.3";
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "431af8348164cbb56b62492c3fde7ab81911b7905c8009580ccc54bd3f50f7ee";
+    sha256 = "054rr8hiacdjfxqssnxnd3xp9hh8350zjzzjvh1199bpps4l1l6n";
   };
 
+  patchPhase = ''
+    substituteInPlace setup.py --replace "websocket-client==" "websocket-client>="
+  '';
+
   propagatedBuildInputs = [
-    websocket-client
+    websocket_client
     requests
   ];
 

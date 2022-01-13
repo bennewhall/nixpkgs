@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, asciidoc
+{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, asciidoc
 , jansson, jose, http-parser, systemd
 }:
 
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     "--with-systemdsystemunitdir=${placeholder "out"}/lib/systemd/system"
   ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config asciidoc ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig asciidoc ];
   buildInputs = [ jansson jose http-parser systemd ];
 
   outputs = [ "out" "man" ];

@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, utils, ... }:
+{ config, lib, pkgs, utils, ... }:
 
 with lib;
 
 let
   gcfg = config.services.tarsnap;
-  opt = options.services.tarsnap;
 
   configFile = name: cfg: ''
     keyfile ${cfg.keyfile}
@@ -30,7 +29,13 @@ in
 
   options = {
     services.tarsnap = {
-      enable = mkEnableOption "periodic tarsnap backups";
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Enable periodic tarsnap backups.
+        '';
+      };
 
       keyfile = mkOption {
         type = types.str;
@@ -60,13 +65,12 @@ in
       };
 
       archives = mkOption {
-        type = types.attrsOf (types.submodule ({ config, options, ... }:
+        type = types.attrsOf (types.submodule ({ config, ... }:
           {
             options = {
               keyfile = mkOption {
                 type = types.str;
                 default = gcfg.keyfile;
-                defaultText = literalExpression "config.${opt.keyfile}";
                 description = ''
                   Set a specific keyfile for this archive. This defaults to
                   <literal>"/root/tarsnap.key"</literal> if left unspecified.
@@ -89,9 +93,6 @@ in
               cachedir = mkOption {
                 type = types.nullOr types.path;
                 default = "/var/cache/tarsnap/${utils.escapeSystemdPath config.keyfile}";
-                defaultText = literalExpression ''
-                  "/var/cache/tarsnap/''${utils.escapeSystemdPath config.${options.keyfile}}"
-                '';
                 description = ''
                   The cache allows tarsnap to identify previously stored data
                   blocks, reducing archival time and bandwidth usage.
@@ -219,7 +220,7 @@ in
               maxbwRateUp = mkOption {
                 type = types.nullOr types.int;
                 default = null;
-                example = literalExpression "25 * 1000";
+                example = literalExample "25 * 1000";
                 description = ''
                   Upload bandwidth rate limit in bytes.
                 '';
@@ -228,7 +229,7 @@ in
               maxbwRateDown = mkOption {
                 type = types.nullOr types.int;
                 default = null;
-                example = literalExpression "50 * 1000";
+                example = literalExample "50 * 1000";
                 description = ''
                   Download bandwidth rate limit in bytes.
                 '';
@@ -261,7 +262,7 @@ in
 
         default = {};
 
-        example = literalExpression ''
+        example = literalExample ''
           {
             nixos =
               { directories = [ "/home" "/root/ssl" ];
@@ -278,8 +279,7 @@ in
           Tarsnap archive configurations. Each attribute names an archive
           to be created at a given time interval, according to the options
           associated with it. When uploading to the tarsnap server,
-          archive names are suffixed by a 1 second resolution timestamp,
-          with the format <literal>%Y%m%d%H%M%S</literal>.
+          archive names are suffixed by a 1 second resolution timestamp.
 
           For each member of the set is created a timer which triggers the
           instanced <literal>tarsnap-archive-name</literal> service unit. You may use
@@ -315,7 +315,7 @@ in
         # the service - therefore we sleep in a loop until we can ping the
         # endpoint.
         preStart = ''
-          while ! ping -4 -q -c 1 v1-0-0-server.tarsnap.com &> /dev/null; do sleep 3; done
+          while ! ping -q -c 1 v1-0-0-server.tarsnap.com &> /dev/null; do sleep 3; done
         '';
 
         script = let
@@ -325,22 +325,21 @@ in
                         ${optionalString cfg.explicitSymlinks "-H"} \
                         ${optionalString cfg.followSymlinks "-L"} \
                         ${concatStringsSep " " cfg.directories}'';
-          cachedir = escapeShellArg cfg.cachedir;
           in if (cfg.cachedir != null) then ''
-            mkdir -p ${cachedir}
-            chmod 0700 ${cachedir}
+            mkdir -p ${cfg.cachedir}
+            chmod 0700 ${cfg.cachedir}
 
             ( flock 9
-              if [ ! -e ${cachedir}/firstrun ]; then
+              if [ ! -e ${cfg.cachedir}/firstrun ]; then
                 ( flock 10
                   flock -u 9
                   ${tarsnap} --fsck
                   flock 9
-                ) 10>${cachedir}/firstrun
+                ) 10>${cfg.cachedir}/firstrun
               fi
-            ) 9>${cachedir}/lockf
+            ) 9>${cfg.cachedir}/lockf
 
-             exec flock ${cachedir}/firstrun ${run}
+             exec flock ${cfg.cachedir}/firstrun ${run}
           '' else "exec ${run}";
 
         serviceConfig = {
@@ -360,25 +359,24 @@ in
 
         script = let
           tarsnap = ''tarsnap --configfile "/etc/tarsnap/${name}.conf"'';
-          lastArchive = "$(${tarsnap} --list-archives | sort | tail -1)";
+          lastArchive = ''$(${tarsnap} --list-archives | sort | tail -1)'';
           run = ''${tarsnap} -x -f "${lastArchive}" ${optionalString cfg.verbose "-v"}'';
-          cachedir = escapeShellArg cfg.cachedir;
 
         in if (cfg.cachedir != null) then ''
-          mkdir -p ${cachedir}
-          chmod 0700 ${cachedir}
+          mkdir -p ${cfg.cachedir}
+          chmod 0700 ${cfg.cachedir}
 
           ( flock 9
-            if [ ! -e ${cachedir}/firstrun ]; then
+            if [ ! -e ${cfg.cachedir}/firstrun ]; then
               ( flock 10
                 flock -u 9
                 ${tarsnap} --fsck
                 flock 9
-              ) 10>${cachedir}/firstrun
+              ) 10>${cfg.cachedir}/firstrun
             fi
-          ) 9>${cachedir}/lockf
+          ) 9>${cfg.cachedir}/lockf
 
-           exec flock ${cachedir}/firstrun ${run}
+           exec flock ${cfg.cachedir}/firstrun ${run}
         '' else "exec ${run}";
 
         serviceConfig = {

@@ -1,9 +1,11 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , libGL, libGLU, freeglut, libX11 }:
 
-stdenv.mkDerivation rec {
+let
+  version = "2018-04-19";
+in stdenv.mkDerivation rec {
   pname = "twilight";
-  version = "unstable-2018-04-19";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "tweakoz";
@@ -18,11 +20,11 @@ stdenv.mkDerivation rec {
     install -Dm755 twilight $out/bin/twilight
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Redo of IRIX twilight backdrop in old school OpenGL";
     homepage = src.meta.homepage;
     license = licenses.mit;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ gnidorah ];
   };
 }

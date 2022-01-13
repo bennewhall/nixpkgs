@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchurl
 , dimensions ? 6 # works for <= dimensions dimensions, but is only optimized for that exact value
 , doSymlink ? true # symlink the executables to the default location (without dimension postfix)
@@ -10,24 +9,24 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "palp";
-  version = "2.20";
+  version = "2.11";
 
   src = fetchurl {
-    url = "http://hep.itp.tuwien.ac.at/~kreuzer/CY/palp/${pname}-${version}.tar.gz";
-    sha256 = "1q1cl3vpdir16szy0jcadysydcrjp48hqxyx42kr8g9digkqjgkj";
+    url = "http://hep.itp.tuwien.ac.at/~kreuzer/CY/palp/palp-${version}.tar.gz";
+    sha256 = "00jpm73fw9jjq58z6rysr1mwv489j6rpfqqlhm9ab0dln4kyhh05";
   };
 
   hardeningDisable = [
     "format"
   ];
 
-  patchPhase = lib.optionalString stdenv.isDarwin ''
+  patchPhase = stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace GNUmakefile --replace gcc cc
   '';
 
   preBuild = ''
-    echo Building PALP optimized for ${dim} dimensions
-    sed -i "s/^#define[^a-zA-Z]*POLY_Dmax.*/#define POLY_Dmax ${dim}/" Global.h
+      echo Building PALP optimized for ${dim} dimensions
+      sed -i "s/^#define[^a-zA-Z]*POLY_Dmax.*/#define POLY_Dmax ${dim}/" Global.h
   '';
 
   # palp has no tests of its own. This test is an adapted sage test that failed
@@ -43,18 +42,18 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir -p $out/bin
+    mkdir -p "$out/bin"
     for file in poly class cws nef mori; do
-      cp -p $file.x "$out/bin/$file-${dim}d.x"
+        cp -p $file.x "$out/bin/$file-${dim}d.x"
     done
-  '' + lib.optionalString doSymlink ''
-    cd $out/bin
+  '' + stdenv.lib.optionalString doSymlink ''
+    cd "$out/bin"
     for file in poly class cws nef mori; do
-      ln -sf $file-6d.x $file.x
+        ln -sf $file-6d.x $file.x
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Package for Analyzing Lattice Polytopes";
     longDescription = ''
       A Package for Analyzing Lattice Polytopes (PALP) is a set of C

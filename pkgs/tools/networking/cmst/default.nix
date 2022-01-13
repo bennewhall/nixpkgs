@@ -1,28 +1,26 @@
-{ mkDerivation, lib, fetchFromGitHub, qmake, qtbase, qttools }:
+{ mkDerivation, lib, fetchFromGitHub, qmake, qtbase }:
 
 mkDerivation rec {
   pname = "cmst";
-  version = "2021.12.02";
+  version = "2019.01.13";
 
   src = fetchFromGitHub {
     repo = "cmst";
     owner = "andrew-bibb";
     rev = "${pname}-${version}";
-    sha256 = "1561bwc1h62w1zfazcs18aqaz17k5n5gr3jal4aw5cw8dgxhvxcb";
+    sha256 = "13739f0ddld34dcqlfhylzn1zqz5a7jbp4a4id7gj7pcxjx1lafh";
   };
 
-  nativeBuildInputs = [ qmake qttools ];
+  nativeBuildInputs = [ qmake ];
 
   buildInputs = [ qtbase ];
+
+  enableParallelBuilding = true;
 
   postPatch = ''
     for f in $(find . -name \*.cpp -o -name \*.pri -o -name \*.pro); do
       substituteInPlace $f --replace /etc $out/etc --replace /usr $out
     done
-  '';
-
-  preBuild = ''
-    lrelease translations/*.ts
   '';
 
   meta = {

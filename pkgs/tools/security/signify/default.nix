@@ -1,26 +1,26 @@
-{ lib, stdenv, fetchFromGitHub, libbsd, pkg-config }:
+{ stdenv, fetchFromGitHub, libbsd, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "signify";
-  version = "30";
+  version = "25";
 
   src = fetchFromGitHub {
     owner = "aperezdc";
     repo = "signify";
     rev = "v${version}";
-    sha256 = "02xh6x6rszkvk3rf6zai7n3ivchmw0d8mwllpinjxc7k6sd415c3";
+    sha256 = "0zg0rffxwj2a71s1bllhrn491xsmirg9sshpq8f3vl25lv4c2cnq";
   };
 
   doCheck = true;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libbsd ];
 
   preInstall = ''
     export PREFIX=$out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "OpenBSD signing tool";
     longDescription = ''
       OpenBSDs signing tool, which uses the Ed25519 public key signature system

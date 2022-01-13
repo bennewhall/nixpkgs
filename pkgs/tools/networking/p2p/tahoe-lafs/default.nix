@@ -1,19 +1,18 @@
-{ lib, nettools, python3Packages, texinfo, fetchFromGitHub }:
+{ fetchurl, lib, nettools, pythonPackages, texinfo }:
 
 # FAILURES: The "running build_ext" phase fails to compile Twisted
 # plugins, because it tries to write them into Twisted's (immutable)
 # store path. The problem appears to be non-fatal, but there's probably
 # some loss of functionality because of it.
 
-python3Packages.buildPythonApplication rec {
+pythonPackages.buildPythonApplication rec {
+  version = "1.13.0";
   pname = "tahoe-lafs";
-  version = "unstable-2021-07-09";
+  namePrefix = "";
 
-  src = fetchFromGitHub {
-    owner = "tahoe-lafs";
-    repo = "tahoe-lafs";
-    rev = "8e28a9d0e02fde2388aca549da2b5c452ac4337f";
-    sha256 = "sha256-MuD/ZY+die7RCsuVdcePSD0DdwatXRi7CxW2iFt22L0=";
+  src = fetchurl {
+    url = "https://tahoe-lafs.org/downloads/tahoe-lafs-${version}.tar.bz2";
+    sha256 = "11pfz9yyy6qkkyi0kskxlbn2drfppx6yawqyv4kpkrkj4q7x5m42";
   };
 
   outputs = [ "out" "doc" "info" ];
@@ -39,30 +38,26 @@ python3Packages.buildPythonApplication rec {
       cd src/allmydata/test
 
       # Buggy?
-      rm cli/test_create.py test_client.py
+      rm cli/test_create.py test_backupdb.py
 
       # These require Tor and I2P.
       rm test_connections.py test_iputil.py test_hung_server.py test_i2p_provider.py test_tor_provider.py
-
-      # Fails due to the above tests missing
-      rm test_python3.py
 
       # Expensive
       rm test_system.py
     )
   '';
 
-  nativeBuildInputs = with python3Packages; [ sphinx texinfo ];
+  nativeBuildInputs = with pythonPackages; [ sphinx texinfo ];
 
   # The `backup' command requires `sqlite3'.
-  propagatedBuildInputs = with python3Packages; [
-    appdirs beautifulsoup4 characteristic distro eliot fixtures foolscap future
-    html5lib magic-wormhole netifaces pyasn1 pycrypto pyutil pyyaml recommonmark
-    service-identity simplejson sphinx_rtd_theme testtools treq twisted zfec
-    zope_interface
+  propagatedBuildInputs = with pythonPackages; [
+    twisted foolscap nevow simplejson zfec pycryptopp darcsver
+    setuptoolsTrial setuptoolsDarcs pycrypto pyasn1 zope_interface
+    service-identity pyyaml magic-wormhole treq characteristic
   ];
 
-  checkInputs = with python3Packages; [ mock hypothesis twisted ];
+  checkInputs = with pythonPackages; [ mock hypothesis twisted ];
 
   # Install the documentation.
   postInstall = ''
@@ -83,7 +78,7 @@ python3Packages.buildPythonApplication rec {
     trial --rterrors allmydata
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Tahoe-LAFS, a decentralized, fault-tolerant, distributed storage system";
     longDescription = ''
       Tahoe-LAFS is a secure, decentralized, fault-tolerant filesystem.
@@ -91,9 +86,10 @@ python3Packages.buildPythonApplication rec {
       such a way that it remains available even when some of the peers
       are unavailable, malfunctioning, or malicious.
     '';
-    homepage = "https://tahoe-lafs.org/";
-    license = [ licenses.gpl2Plus /* or */ "TGPPLv1+" ];
+    homepage = "http://tahoe-lafs.org/";
+    license = [ lib.licenses.gpl2Plus /* or */ "TGPPLv1+" ];
     maintainers = with lib.maintainers; [ MostAwesomeDude ];
-    platforms = platforms.gnu ++ platforms.linux;
+    platforms = lib.platforms.gnu ++ lib.platforms.linux;
+    broken = true;
   };
 }

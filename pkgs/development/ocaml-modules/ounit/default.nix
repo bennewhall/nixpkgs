@@ -7,7 +7,7 @@ stdenv.mkDerivation {
   buildInputs = [ findlib ];
   propagatedBuildInputs = [ ounit2 ];
 
-  dontBuild = true;
+  phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
 
   createFindlibDestdir = true;
 

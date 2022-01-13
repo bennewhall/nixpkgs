@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pytest, six, mock }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest, six, mock }:
 
 buildPythonPackage rec {
   version = "2.0.2";
@@ -20,7 +20,7 @@ buildPythonPackage rec {
   # E   ImportError: cannot import name 'unittest'
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pure Python client for Apache Kafka";
     homepage = "https://github.com/dpkp/kafka-python";
     license = licenses.asl20;

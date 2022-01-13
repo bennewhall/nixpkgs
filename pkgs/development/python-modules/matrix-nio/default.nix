@@ -1,95 +1,60 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
-, Logbook
-, aiofiles
-, aiohttp
-, aiohttp-socks
-, aioresponses
-, atomicwrites
-, attrs
-, cachetools
-, faker
-, future
 , git
+, attrs
+, future
+, aiohttp
+, aiofiles
 , h11
 , h2
-, hypothesis
+, Logbook
 , jsonschema
-, peewee
-, poetry-core
-, pycryptodome
-, pytest-aiohttp
-, pytest-benchmark
-, pytestCheckHook
-, python-olm
 , unpaddedbase64
+, pycryptodome
+, python-olm
+, peewee
+, cachetools
+, atomicwrites
 }:
 
 buildPythonPackage rec {
   pname = "matrix-nio";
-  version = "0.18.7";
-  format = "pyproject";
+  version = "0.15.2";
 
   src = fetchFromGitHub {
     owner = "poljar";
     repo = "matrix-nio";
     rev = version;
-    hash = "sha256-eti9kvfv3y7m+mJzcxftyn8OyVSd2Ehqd3eU2ezMV5Q=";
+    sha256 = "190xw3cvk4amr9pl8ip2i7k3xdjd0231kn2zl6chny5axx22p1dv";
   };
-
-  postPatch = ''
-    substituteInPlace pyproject.toml \
-      --replace 'aiofiles = "^0.6.0"' 'aiofiles = "*"'
-    # Remove after https://github.com/poljar/matrix-nio/pull/288
-    substituteInPlace pyproject.toml \
-      --replace 'aiohttp-socks = "^0.6.0"' 'aiohttp-socks = "^0.7.0"'
-  '';
 
   nativeBuildInputs = [
     git
-    poetry-core
   ];
 
   propagatedBuildInputs = [
-    Logbook
-    aiofiles
-    aiohttp
-    aiohttp-socks
-    atomicwrites
     attrs
-    cachetools
     future
+    aiohttp
+    aiofiles
     h11
     h2
+    Logbook
     jsonschema
-    peewee
+    unpaddedbase64
     pycryptodome
     python-olm
-    unpaddedbase64
+    peewee
+    cachetools
+    atomicwrites
   ];
 
-  checkInputs = [
-    aioresponses
-    faker
-    hypothesis
-    pytest-aiohttp
-    pytest-benchmark
-    pytestCheckHook
-  ];
-
-  pytestFlagsArray = [ "--benchmark-disable" ];
-
-  disabledTests = [
-    # touches network
-    "test_connect_wrapper"
-    # time dependent and flaky
-    "test_transfer_monitor_callbacks"
-  ];
+  doCheck = false;
 
   meta = with lib; {
-    homepage = "https://github.com/poljar/matrix-nio";
     description = "A Python Matrix client library, designed according to sans I/O principles";
+    homepage = "https://github.com/poljar/matrix-nio";
     license = licenses.isc;
     maintainers = with maintainers; [ tilpner emily symphorien ];
   };

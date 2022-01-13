@@ -1,58 +1,43 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, makeWrapper
-, pkg-config
-, which
-, bison
-, gnuplot
-, libxls
-, libxlsxwriter
-, libxml2
-, libzip
-, ncurses
-}:
+{ stdenv, fetchFromGitHub, yacc, ncurses, libxml2, libzip, libxls, pkgconfig }:
 
 stdenv.mkDerivation rec {
+  version = "0.7.0";
   pname = "sc-im";
-  version = "0.8.2";
 
   src = fetchFromGitHub {
     owner = "andmarti1424";
     repo = "sc-im";
     rev = "v${version}";
-    sha256 = "sha256-H+GQUpouiXc/w6GWdkSVvTXZ/Dtb7sUmBLGcpxG3Mts=";
+    sha256 = "0xi0n9qzby012y2j7hg4fgcwyly698sfi4i9gkvy0q682jihprbk";
   };
 
-  sourceRoot = "${src.name}/src";
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ yacc ncurses libxml2 libzip libxls ];
 
-  nativeBuildInputs = [
-    makeWrapper
-    pkg-config
-    which
-    bison
-  ];
+  buildPhase = ''
+    cd src
 
-  buildInputs = [
-    gnuplot
-    libxls
-    libxlsxwriter
-    libxml2
-    libzip
-    ncurses
-  ];
+    sed 's/LDLIBS += -lm/& -lncurses/' -i Makefile
 
-  makeFlags = [ "prefix=${placeholder "out"}" ];
+    sed -e "\|^prefix  = /usr/local|   s|/usr/local|$out|" \
+        -e "\|^#LDLIBS += -lxlsreader| s|^#||            " \
+        -e "\|^#CFLAGS += -DXLS|       s|^#||            " \
+        -i Makefile
 
-  postInstall = ''
-    wrapProgram "$out/bin/sc-im" --prefix PATH : "${lib.makeBinPath [ gnuplot ]}"
+    make
+    export DESTDIR=$out
   '';
 
-  meta = with lib; {
+  installPhase = ''
+    make install prefix=
+  '';
+
+  meta = with stdenv.lib; {
     homepage = "https://github.com/andmarti1424/sc-im";
-    description = "An ncurses spreadsheet program for terminal";
+    description = "SC-IM - Spreadsheet Calculator Improvised - SC fork";
     license = licenses.bsdOriginal;
-    maintainers = with maintainers; [ dotlambda ];
+    maintainers = [ ];
     platforms = platforms.unix;
   };
+
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, gtk_engines, gtk-engine-murrine }:
+{ stdenv, fetchFromGitHub, gtk_engines, gtk-engine-murrine }:
 
 stdenv.mkDerivation rec {
   pname = "shades-of-gray-theme";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     cp -a Shades-of-gray* $out/share/themes/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Flat dark GTK theme with ergonomic contrasts";
     homepage = "https://github.com/WernerFP/Shades-of-gray-theme";
     license = licenses.gpl3Plus;

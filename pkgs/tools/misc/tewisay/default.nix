@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub, makeWrapper }:
+{ stdenv, buildGoPackage, fetchFromGitHub, makeWrapper }:
 
 buildGoPackage rec {
   pname = "tewisay-unstable";
@@ -29,7 +29,7 @@ buildGoPackage rec {
   meta = {
     homepage = "https://github.com/lucy/tewisay";
     description = "Cowsay replacement with unicode and partial ansi escape support";
-    license = lib.licenses.cc0;
-    maintainers = [ lib.maintainers.chiiruno ];
+    license = stdenv.lib.licenses.cc0;
+    maintainers = [ stdenv.lib.maintainers.chiiruno ];
   };
 }

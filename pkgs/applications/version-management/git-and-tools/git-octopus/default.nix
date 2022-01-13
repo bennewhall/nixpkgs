@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, git, perl, makeWrapper }:
+{ stdenv, fetchFromGitHub, git, perl, makeWrapper }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "git-octopus";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "prefix=$(out)" ];
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   # perl provides shasum
   postInstall = ''

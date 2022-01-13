@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchurl
 , nose
@@ -19,7 +19,7 @@ buildPythonPackage rec {
     ./test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A minimalistic mocking library for python";
     homepage = "https://pypi.python.org/pypi/MiniMock";
     license = licenses.mit;

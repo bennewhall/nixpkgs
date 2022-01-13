@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   doCheck = true;
   checkTarget = "test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Advanced version string comparison library";
     homepage = "https://github.com/repology/libversion";
     license = with licenses; [ mit ];

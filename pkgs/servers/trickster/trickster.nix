@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "trickster";
@@ -17,7 +17,7 @@ buildGoPackage rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Reverse proxy cache for the Prometheus HTTP APIv1";
     homepage = "https://github.com/Comcast/trickster";
     license = licenses.asl20;

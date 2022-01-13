@@ -46,6 +46,8 @@ stdenv.mkDerivation rec {
     sha256 = "104jp3cm823i3cdph7hgsnj6l77ygbwsy35mdmzhmsi4jxprd9j3";
   };
 
+  enableParallelBuilding = true;
+
   nativeBuildInputs = [ cmake doxygen ];
 
   cmakeFlags =
@@ -76,7 +78,7 @@ stdenv.mkDerivation rec {
     let pp = python.pkgs; in ([
       pp.numpy pp.scipy pp.scikitimage pp.h5py
       pp.matplotlib pp.ipython pp.networkx pp.nose
-      pp.pandas pp.python-dateutil pp.protobuf pp.gflags
+      pp.pandas pp.dateutil pp.protobuf pp.gflags
       pp.pyyaml pp.pillow pp.six
     ] ++ lib.optional leveldbSupport pp.leveldb)
   );
@@ -91,11 +93,7 @@ stdenv.mkDerivation rec {
     inherit (python.sourceVersion) major minor;  # Should be changed in case of PyPy
   });
 
-  postPatch = ''
-    substituteInPlace src/caffe/util/io.cpp --replace \
-      'SetTotalBytesLimit(kProtoReadBytesLimit, 536870912)' \
-      'SetTotalBytesLimit(kProtoReadBytesLimit)'
-  '' + lib.optionalString (cudaSupport && lib.versionAtLeast cudatoolkit.version "9.0") ''
+  postPatch = lib.optionalString (cudaSupport && lib.versionAtLeast cudatoolkit.version "9.0") ''
     # CUDA 9.0 doesn't support sm_20
     sed -i 's,20 21(20) ,,' cmake/Cuda.cmake
   '';
@@ -129,7 +127,7 @@ stdenv.mkDerivation rec {
       -weights "${test_model_weights}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Deep learning framework";
     longDescription = ''
       Caffe is a deep learning framework made with expression, speed, and

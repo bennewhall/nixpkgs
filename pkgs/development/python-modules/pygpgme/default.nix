@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchurl, isPyPy
+{ stdenv, buildPythonPackage, fetchurl, isPyPy
 , gpgme }:
 
 buildPythonPackage rec {
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ gpgme ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://launchpad.net/pygpgme";
     description = "A Python wrapper for the GPGME library";
     license = licenses.lgpl21;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, fetchurl, python2, makeWrapper, pkg-config, gcc,
+{ stdenv, fetchgit, fetchurl, python2, makeWrapper, pkgconfig, gcc,
   pypy, libffi, libedit, libuv, boost, zlib,
   variant ? "jit", buildWithPypy ? false }:
 
@@ -23,16 +23,16 @@ let
     sha256 = "0ylbqvhbcp5m09l15i2q2h3a0vjd055x2r37cq71lkhgmmaxrwbq";
   };
   libs = [ libffi libedit libuv boost.dev boost.out zlib ];
-  include-path = lib.concatStringsSep ":"
+  include-path = stdenv.lib.concatStringsSep ":"
                    (map (p: "${p}/include") libs);
-  library-path = lib.concatStringsSep ":"
+  library-path = stdenv.lib.concatStringsSep ":"
                    (map (p: "${p}/lib") libs);
-  bin-path = lib.concatStringsSep ":"
+  bin-path = stdenv.lib.concatStringsSep ":"
                (map (p: "${p}/bin") [ gcc ]);
   build = {flags, target}: stdenv.mkDerivation rec {
     pname = "pixie";
     version = "0-r${commit-count}-${variant}";
-    nativeBuildInputs = [ makeWrapper pkg-config ];
+    nativeBuildInputs = [ makeWrapper pkgconfig ];
     buildInputs = libs;
     PYTHON = if buildWithPypy
       then "${pypy}/pypy-c/pypy-c"
@@ -85,9 +85,9 @@ let
     meta = {
       description = "A clojure-like lisp, built with the pypy vm toolkit";
       homepage = "https://github.com/pixie-lang/pixie";
-      license = lib.licenses.lgpl3;
+      license = stdenv.lib.licenses.lgpl3;
       platforms = ["x86_64-linux" "i686-linux" "x86_64-darwin"];
-      maintainers = with lib.maintainers; [ bendlas ];
+      maintainers = with stdenv.lib.maintainers; [ bendlas ];
     };
   };
 in build (builtins.getAttr variant variants)

@@ -1,13 +1,12 @@
-{ lib, stdenv, fetchFromGitLab, postgresql }:
+{ stdenv, fetchurl, postgresql }:
 
 stdenv.mkDerivation rec {
   pname = "pg_ed25519";
   version = "0.2";
-  src = fetchFromGitLab {
-    owner = "dwagin";
-    repo = "pg_ed25519";
-    rev = version;
-    sha256 = "16w3qx3wj81bzfhydl2pjhn8b1jak6h7ja9wq1kc626g0siggqi0";
+
+  src = fetchurl {
+    url = "https://gitlab.com/dwagin/${pname}/-/archive/${version}/${pname}-${version}.tar.bz2";
+    sha256 = "0q46pvk1vq5w3al6i3inzlw6w7za3n7p1gd4wfbbxzvzh7qnynda";
   };
 
   buildInputs = [ postgresql ];
@@ -21,7 +20,7 @@ stdenv.mkDerivation rec {
     cp *.control $out/share/postgresql/extension
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PostgreSQL extension for signing and verifying ed25519 signatures";
     homepage = "https://gitlab.com/dwagin/pg_ed25519";
     maintainers = [ maintainers.renzo ];

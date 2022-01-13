@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , meson
@@ -11,24 +10,22 @@
 , gettext
 , glib
 , gtk3
-, libwnck
+, bamf
+, libwnck3
 , libgee
 , libgtop
-, libhandy
-, sassc
-, udisks2
 , wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {
   pname = "monitor";
-  version = "0.11.0";
+  version = "0.8.1";
 
   src = fetchFromGitHub {
     owner = "stsdc";
     repo = "monitor";
     rev = version;
-    sha256 = "sha256-xWhhjn7zk/juXx50wLG2TpB5aqU+588kWBBquWrVJbM=";
+    sha256 = "111g2f3y5lmz91m755jz0x8yx5cx9ym484gch8wcv80dmr7ilb1y";
     fetchSubmodules = true;
   };
 
@@ -43,16 +40,14 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
+    bamf
     glib
     gtk3
     pantheon.granite
     pantheon.wingpanel
     libgee
     libgtop
-    libhandy
-    libwnck
-    sassc
-    udisks2
+    libwnck3
   ];
 
   postPatch = ''
@@ -66,7 +61,7 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Manage processes and monitor system resources";
     longDescription = ''
       Manage processes and monitor system resources.
@@ -74,9 +69,8 @@ stdenv.mkDerivation rec {
       section in the NixOS manual.
     '';
     homepage = "https://github.com/stsdc/monitor";
-    maintainers = with maintainers; [ xiorcale ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [ xiorcale ] ++ pantheon.maintainers;
     platforms = platforms.linux;
     license = licenses.gpl3;
-    mainProgram = "com.github.stsdc.monitor";
   };
 }

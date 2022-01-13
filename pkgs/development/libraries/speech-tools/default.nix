@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, alsa-lib, ncurses }:
+{ stdenv, fetchurl, alsaLib, ncurses }:
 
 stdenv.mkDerivation rec {
   name = "speech_tools-${version}.0";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1k2xh13miyv48gh06rgsq2vj25xwj7z6vwq9ilsn8i7ig3nrgzg4";
   };
 
-  buildInputs = [ alsa-lib ncurses ];
+  buildInputs = [ alsaLib ncurses ];
 
   preConfigure = ''
     sed -e s@/usr/bin/@@g -i $( grep -rl '/usr/bin/' . )
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
 
   checkTarget = "test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Text-to-speech engine";
     maintainers = with maintainers; [ raskin ];
     platforms = platforms.linux;

@@ -37,7 +37,7 @@ let
 
     autoLogin = {
       name = "sddm-autologin";
-      meta = with pkgs.lib.maintainers; {
+      meta = with pkgs.stdenv.lib.maintainers; {
         maintainers = [ ttuegel ];
       };
 

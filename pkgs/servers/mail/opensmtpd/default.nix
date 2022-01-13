@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchurl, autoconf, automake, libtool, bison
+{ stdenv, fetchurl, autoconf, automake, libtool, bison
 , libasr, libevent, zlib, libressl, db, pam, nixosTests
 }:
 
 stdenv.mkDerivation rec {
   pname = "opensmtpd";
-  version = "6.8.0p2";
+  version = "6.7.1p1";
 
   nativeBuildInputs = [ autoconf automake libtool bison ];
   buildInputs = [ libasr libevent zlib libressl db pam ];
 
   src = fetchurl {
     url = "https://www.opensmtpd.org/archives/${pname}-${version}.tar.gz";
-    sha256 = "05sd7bmq29ibnqbl2z53hiyprfxzf0qydfdaixs68rz55wqhbgsi";
+    sha256 = "1jh8vxfajm1mvp1v5yh6llrhjzv0n9fgab88mlwllwqynhcfjy3l";
   };
 
   patches = [
@@ -33,7 +33,6 @@ stdenv.mkDerivation rec {
     "--with-auth-pam"
     "--without-auth-bsdauth"
     "--with-path-socket=/run"
-    "--with-path-pidfile=/run"
     "--with-user-smtpd=smtpd"
     "--with-user-queue=smtpq"
     "--with-group-queue=smtpq"
@@ -50,7 +49,7 @@ stdenv.mkDerivation rec {
     "localstatedir=\${TMPDIR}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.opensmtpd.org/";
     description = ''
       A free implementation of the server-side SMTP protocol as defined by
@@ -62,6 +61,5 @@ stdenv.mkDerivation rec {
   };
   passthru.tests = {
     basic-functionality-and-dovecot-interaction = nixosTests.opensmtpd;
-    rspamd-integration = nixosTests.opensmtpd-rspamd;
   };
 }

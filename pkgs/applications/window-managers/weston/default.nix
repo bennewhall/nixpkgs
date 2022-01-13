@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, meson, ninja, pkg-config, wayland-scanner
-, wayland, libGL, mesa, libxkbcommon, cairo, libxcb
+{ stdenv, fetchurl, meson, ninja, pkg-config, wayland
+, libGL, mesa, libxkbcommon, cairo, libxcb
 , libXcursor, xlibsWrapper, udev, libdrm, mtdev, libjpeg, pam, dbus, libinput, libevdev
 , colord, lcms2, pipewire ? null
 , pango ? null, libunwind ? null, freerdp ? null, vaapi ? null, libva ? null
@@ -7,7 +7,7 @@
 # beware of null defaults, as the parameters *are* supplied by callPackage by default
 }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "weston";
   version = "9.0.0";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     sha256 = "1zlql0xgiqc3pvgbpnnvj4xvpd91pwva8qf83xfb23if377ddxaw";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config wayland-scanner ];
+  nativeBuildInputs = [ meson ninja pkg-config wayland ];
   buildInputs = [
     wayland libGL mesa libxkbcommon cairo libxcb libXcursor xlibsWrapper udev libdrm
     mtdev libjpeg pam dbus libinput libevdev pango libunwind freerdp vaapi libva

@@ -1,4 +1,4 @@
-{ mkDerivation, cmake, fetchFromGitHub, libvncserver, qemu, qtbase, lib
+{ mkDerivation, cmake, fetchFromGitHub, libvncserver, qemu, qtbase, stdenv
 }:
 
 mkDerivation rec {
@@ -16,12 +16,11 @@ mkDerivation rec {
 
   buildInputs = [ libvncserver qtbase qemu ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A virtual machine manager GUI for qemu";
     homepage = "https://github.com/tobimensch/aqemu";
     license = licenses.gpl2;
     maintainers = with maintainers; [ hrdinka ];
     platforms = with platforms; linux;
-    broken = true;
   };
 }

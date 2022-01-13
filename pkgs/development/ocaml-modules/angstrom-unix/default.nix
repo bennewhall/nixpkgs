@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildDunePackage, angstrom }:
+{ stdenv, fetchFromGitHub, buildDunePackage, angstrom }:
 
 buildDunePackage rec {
   pname = "angstrom-unix";
@@ -14,6 +14,6 @@ buildDunePackage rec {
   meta = {
     inherit (angstrom.meta) homepage license;
     description = "Unix support for Angstrom";
-    maintainers = with lib.maintainers; [ romildo ];
+    maintainers = with stdenv.lib.maintainers; [ romildo ];
   };
 }

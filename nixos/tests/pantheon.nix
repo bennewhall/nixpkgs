@@ -1,10 +1,10 @@
-import ./make-test-python.nix ({ pkgs, lib, ...} :
+import ./make-test-python.nix ({ pkgs, ...} :
 
 {
   name = "pantheon";
 
-  meta = with lib; {
-    maintainers = teams.pantheon.members;
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = pkgs.pantheon.maintainers;
   };
 
   machine = { ... }:
@@ -15,6 +15,7 @@ import ./make-test-python.nix ({ pkgs, lib, ...} :
     services.xserver.enable = true;
     services.xserver.desktopManager.pantheon.enable = true;
 
+    virtualisation.memorySize = 1024;
   };
 
   enableOCR = true;
@@ -44,13 +45,13 @@ import ./make-test-python.nix ({ pkgs, lib, ...} :
     with subtest("Check if pantheon session components actually start"):
         machine.wait_until_succeeds("pgrep gala")
         machine.wait_for_window("gala")
-        machine.wait_until_succeeds("pgrep -f io.elementary.wingpanel")
-        machine.wait_for_window("io.elementary.wingpanel")
+        machine.wait_until_succeeds("pgrep wingpanel")
+        machine.wait_for_window("wingpanel")
         machine.wait_until_succeeds("pgrep plank")
         machine.wait_for_window("plank")
 
     with subtest("Open elementary terminal"):
-        machine.execute("su - ${user.name} -c 'DISPLAY=:0 io.elementary.terminal >&2 &'")
+        machine.execute("su - ${user.name} -c 'DISPLAY=:0 io.elementary.terminal &'")
         machine.wait_for_window("io.elementary.terminal")
         machine.sleep(20)
         machine.screenshot("screen")

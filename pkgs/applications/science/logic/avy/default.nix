@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, cmake, zlib, boost }:
+{ stdenv, fetchgit, cmake, zlib, boost }:
 
 stdenv.mkDerivation rec {
   pname = "avy";
@@ -11,11 +11,10 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ zlib boost.out boost.dev ];
+  buildInputs = [ cmake zlib boost.out boost.dev ];
   NIX_CFLAGS_COMPILE = toString ([ "-Wno-narrowing" ]
     # Squelch endless stream of warnings on same few things
-    ++ lib.optionals stdenv.cc.isClang [
+    ++ stdenv.lib.optionals stdenv.cc.isClang [
       "-Wno-empty-body"
       "-Wno-tautological-compare"
       "-Wc++11-compat-deprecated-writable-strings"
@@ -40,9 +39,9 @@ stdenv.mkDerivation rec {
   meta = {
     description = "AIGER model checking for Property Directed Reachability";
     homepage    = "https://arieg.bitbucket.io/avy/";
-    license     = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ thoughtpolice ];
-    platforms   = lib.platforms.linux;
+    license     = stdenv.lib.licenses.mit;
+    maintainers = with stdenv.lib.maintainers; [ thoughtpolice ];
+    platforms   = stdenv.lib.platforms.linux;
     # See pkgs/applications/science/logic/glucose/default.nix
     # (The error is different due to glucose-fenv.patch, but the same)
     badPlatforms = [ "aarch64-linux" ];

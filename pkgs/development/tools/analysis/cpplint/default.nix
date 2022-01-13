@@ -2,23 +2,21 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "cpplint";
-  version = "1.5.5";
+  version = "1.5.1";
 
   # Fetch from github instead of pypi, since the test cases are not in the pypi archive
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = version;
-    sha256 = "sha256-JXz2Ufo7JSceZVqYwCRkuAsOR08znZlIUk8GCLAyiI4=";
+    sha256 = "0k927mycj1k4l3fbxrk597bhcjl2nrpaas1imbjgk64cyq8dv7lh";
   };
-
-  patches = [ ./0001-Remove-pytest-runner-version-pin.patch ];
 
   postPatch = ''
     patchShebangs cpplint_unittest.py
   '';
 
-  checkInputs = with python3Packages; [ pytest pytest-runner ];
+  checkInputs = with python3Packages; [ pytest pytestrunner ];
   checkPhase = ''
     ./cpplint_unittest.py
   '';

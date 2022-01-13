@@ -1,9 +1,11 @@
 { config, lib, pkgs, ... }:
 
+with lib;
+
 {
   options = {
-    gnu = lib.mkOption {
-      type = lib.types.bool;
+    gnu = mkOption {
+      type = types.bool;
       default = false;
       description = ''
         When enabled, GNU software is chosen by default whenever a there is
@@ -13,7 +15,7 @@
     };
   };
 
-  config = lib.mkIf config.gnu {
+  config = mkIf config.gnu {
 
     environment.systemPackages = with pkgs;
       # TODO: Adjust `requiredPackages' from `system-path.nix'.
@@ -24,7 +26,7 @@
         nano zile
         texinfo # for the stand-alone Info reader
       ]
-      ++ lib.optional (!stdenv.isAarch32) grub2;
+      ++ stdenv.lib.optional (!stdenv.isAarch32) grub2;
 
 
     # GNU GRUB, where available.

@@ -1,17 +1,17 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , appstream-glib
 , desktop-file-utils
 , gettext
 , glib
-, gnome
+, gnome3
 , gtk3
 , gusb
 , libcanberra-gtk3
 , libgudev
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , wrapGAppsHook
 , polkit
 , udisks
@@ -19,11 +19,11 @@
 
 stdenv.mkDerivation rec {
   pname = "gnome-multi-writer";
-  version = "3.35.90";
+  version = "3.32.1";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "07vgzjjdrxcp7h73z13h9agafxb4vmqx5i81bcfyw0ilw9kkdzmp";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1apdd8yi12zagf82k376a9wmdm27wzwdxpm2wf2pnwkaf786rmdw";
   };
 
   nativeBuildInputs = [
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     gettext
     meson
     ninja
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -47,12 +47,12 @@ stdenv.mkDerivation rec {
   ];
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for writing an ISO file to multiple USB devices at once";
     homepage = "https://wiki.gnome.org/Apps/MultiWriter";
     license = licenses.gpl2Plus;

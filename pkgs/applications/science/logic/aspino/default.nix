@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchFromGitHub, zlib, boost }:
+{ stdenv, fetchurl, fetchFromGitHub, zlib, boost }:
 
 let
   glucose' = fetchurl {
@@ -8,8 +8,7 @@ let
 in
 
 stdenv.mkDerivation {
-  pname = "aspino";
-  version = "unstable-2017-03-09";
+  name = "aspino-unstable-2017-03-09";
 
   src = fetchFromGitHub {
     owner = "alviano";
@@ -39,7 +38,7 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "SAT/PseudoBoolean/MaxSat/ASP solver using glucose";
     maintainers = with maintainers; [ gebner ];
     platforms = platforms.unix;

@@ -70,7 +70,7 @@ nixev() {
 }
 
 desc_system() {
-    nixev '(import <nixpkgs> {}).stdenv.hostPlatform.system'
+    nixev '(import <nixpkgs> {}).system'
 }
 
 desc_host_os() {

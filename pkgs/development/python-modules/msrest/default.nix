@@ -6,19 +6,19 @@
 , requests_oauthlib
 , isodate
 , certifi
-, enum34 ? null
+, enum34
 , typing
 , aiohttp
 , aiodns
 , pytest
 , httpretty
 , mock
-, futures ? null
+, futures
 , trio
 }:
 
 buildPythonPackage rec {
-  version = "0.6.21";
+  version = "0.6.18";
   pname = "msrest";
 
   # no tests in PyPI tarball
@@ -27,7 +27,7 @@ buildPythonPackage rec {
     owner = "Azure";
     repo = "msrest-for-python";
     rev = "v${version}";
-    sha256 = "sha256-IlBwlVQ/v+vJmCWNbFZKGL6a9K09z4AYrPm3kwaA/nI=";
+    sha256 = "0j0dbca47qnxnhpfgj3v5bglg8dpx2cy1psix8kp3ldrkf6rjwdb";
   };
 
   propagatedBuildInputs = [

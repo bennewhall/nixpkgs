@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, curl, recode, spidermonkey_78 }:
+{ stdenv, fetchFromGitHub, makeWrapper, curl, recode, spidermonkey_38 }:
 
 stdenv.mkDerivation rec {
 
@@ -12,15 +12,15 @@ stdenv.mkDerivation rec {
     sha256 = "1p8s60dlzaldp006yj710s371aan915asyjhd99188vrj4jj1x79";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
-  dontBuild = true;
+  phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
 
   installPhase = ''
     make PREFIX="$out" install
 
     for fn in plow{del,down,list,mod,probe,up}; do
-      wrapProgram "$out/bin/$fn" --prefix PATH : "${lib.makeBinPath [ curl recode spidermonkey_78 ]}"
+      wrapProgram "$out/bin/$fn" --prefix PATH : "${stdenv.lib.makeBinPath [ curl recode spidermonkey_38 ]}"
     done
   '';
 
@@ -28,8 +28,8 @@ stdenv.mkDerivation rec {
     description = ''
       A command-line download/upload tool for popular file sharing websites
     '';
-    license = lib.licenses.gpl3;
-    maintainers = with lib.maintainers; [ aforemny jfrankenau ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3;
+    maintainers = with stdenv.lib.maintainers; [ aforemny jfrankenau ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

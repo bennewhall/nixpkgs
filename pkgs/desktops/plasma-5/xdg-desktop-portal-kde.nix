@@ -1,19 +1,18 @@
 {
-  mkDerivation, lib,
-  extra-cmake-modules, gettext, kdoctools,
-  cups, libepoxy, mesa, pcre, pipewire, wayland, wayland-protocols,
+  mkDerivation,
+  extra-cmake-modules, gettext, kdoctools, python,
+  cups, epoxy, mesa, pcre, pipewire,
   kcoreaddons, knotifications, kwayland, kwidgetsaddons, kwindowsystem,
-  kirigami2, kdeclarative, plasma-framework, plasma-wayland-protocols, kio,
-  qtbase
+  kirigami2, kdeclarative, plasma-framework, kio
 }:
 
 mkDerivation {
   name = "xdg-desktop-portal-kde";
-  nativeBuildInputs = [ extra-cmake-modules gettext kdoctools ];
+  nativeBuildInputs = [ extra-cmake-modules gettext kdoctools python ];
   buildInputs = [
-    cups libepoxy mesa pcre pipewire wayland wayland-protocols
+    cups epoxy mesa pcre pipewire
 
     kio kcoreaddons knotifications kwayland kwidgetsaddons kwindowsystem
-    kirigami2 kdeclarative plasma-framework plasma-wayland-protocols
+    kirigami2 kdeclarative plasma-framework
   ];
 }

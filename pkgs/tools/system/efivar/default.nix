@@ -1,4 +1,4 @@
-{ lib, stdenv, buildPackages, fetchFromGitHub, fetchurl, pkg-config, popt }:
+{ stdenv, buildPackages, fetchFromGitHub, fetchurl, pkgconfig, popt }:
 
 stdenv.mkDerivation rec {
   pname = "efivar";
@@ -39,13 +39,10 @@ stdenv.mkDerivation rec {
       sha256 = "1ajj11wwsvamfspq4naanvw08h63gr0g71q0dfbrrywrhc0jlmdw";
     })
   ];
+  # We have no LTO here since commit 22284b07.
+  postPatch = if stdenv.isi686 then "sed '/^OPTIMIZE /s/-flto//' -i Make.defaults" else null;
 
-  NIX_CFLAGS_COMPILE = [
-    "-Wno-error=stringop-truncation"
-    "-flto-partition=none"
-  ];
-
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ popt ];
   depsBuildBuild = [ buildPackages.stdenv.cc ];
 
@@ -58,7 +55,7 @@ stdenv.mkDerivation rec {
     "PCDIR=$(dev)/lib/pkgconfig"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Tools and library to manipulate EFI variables";
     platforms = platforms.linux;

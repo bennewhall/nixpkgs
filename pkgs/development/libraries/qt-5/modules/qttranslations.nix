@@ -1,6 +1,6 @@
 { qtModule, qttools }:
 
 qtModule {
-  pname = "qttranslations";
+  name = "qttranslations";
   qtInputs = [ qttools ];
 }

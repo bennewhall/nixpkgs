@@ -1,6 +1,7 @@
 { stdenv
 , lib
 , rustPlatform
+, fetchpatch
 , fetchFromGitHub
 , pkg-config
 , dbus
@@ -10,27 +11,26 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "tiny";
-  version = "0.10.0";
+  version = "0.7.0";
 
   src = fetchFromGitHub {
     owner = "osa1";
     repo = pname;
     rev = "v${version}";
-    sha256 = "177d1x4z0mh0p7c5ldq70cn1j3pac50d8cil2ni50hl49c3x6yy1";
+    sha256 = "11kjndd4rzj83hzhcqvvp9nxjkana63m0h5r51xwp1ww9sn63km9";
   };
 
-  cargoSha256 = "05q3f1wp48mwkz8n0102rwb6jzrgpx3dlbxzf3zcw8r1mblgzim1";
+  cargoSha256 = "079ns78acsff2qb59s7q0ck3j2fygcfqy8is6vfa71jyq7a0rjqm";
+
+  RUSTC_BOOTSTRAP = 1;
 
   nativeBuildInputs = lib.optional stdenv.isLinux pkg-config;
   buildInputs = lib.optionals stdenv.isLinux [ dbus openssl ] ++ lib.optional stdenv.isDarwin Foundation;
 
-  buildFeatures = lib.optional stdenv.isLinux "desktop-notifications";
-
   meta = with lib; {
     description = "A console IRC client";
     homepage = "https://github.com/osa1/tiny";
-    changelog = "https://github.com/osa1/tiny/raw/v${version}/CHANGELOG.md";
     license = licenses.mit;
-    maintainers = with maintainers; [ Br1ght0ne vyp ];
+    maintainers = with maintainers; [ Br1ght0ne ];
   };
 }

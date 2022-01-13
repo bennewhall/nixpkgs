@@ -1,12 +1,11 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , doxygen
 , pkg-config
 , python3
 , python3Packages
 , wafHook
-, boost175
+, boost
 , openssl
 , sqlite
 }:
@@ -19,30 +18,21 @@ stdenv.mkDerivation rec {
     owner = "named-data";
     repo = "ndn-cxx";
     rev = "${pname}-${version}";
-    sha256 = "sha256-oTSc/lh0fDdk7dQeDhYKX5+gFl2t2Xlu1KkNmw7DitE=";
+    sha256 = "1lcaqc79n3d9sip7knddblba17sz18b0w7nlxmj3fz3lb3z9qd51";
   };
 
   nativeBuildInputs = [ doxygen pkg-config python3 python3Packages.sphinx wafHook ];
 
-  buildInputs = [ boost175 openssl sqlite ];
+  buildInputs = [ boost openssl sqlite ];
 
   wafConfigureFlags = [
     "--with-openssl=${openssl.dev}"
-    "--boost-includes=${boost175.dev}/include"
-    "--boost-libs=${boost175.out}/lib"
-    # "--with-tests" # disabled since upstream tests fail (Net/TestFaceUri/ParseDev Bug #3896)
+    "--boost-includes=${boost.dev}/include"
+    "--boost-libs=${boost.out}/lib"
   ];
 
-
-  doCheck = false; # disabled since upstream tests fail (Net/TestFaceUri/ParseDev Bug #3896)
-  checkPhase = ''
-    runHook preCheck
-    LD_PRELOAD=build/ndn-cxx.so build/unit-tests
-    runHook postCheck
-  '';
-
-  meta = with lib; {
-    homepage = "https://named-data.net/";
+  meta = with stdenv.lib; {
+    homepage = "http://named-data.net/";
     description = "A Named Data Neworking (NDN) or Content Centric Networking (CCN) abstraction";
     longDescription = ''
       ndn-cxx is a C++ library, implementing Named Data Networking (NDN)
@@ -59,6 +49,6 @@ stdenv.mkDerivation rec {
     '';
     license = licenses.lgpl3;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ sjmackenzie bertof ];
+    maintainers = with maintainers; [ sjmackenzie ];
   };
 }

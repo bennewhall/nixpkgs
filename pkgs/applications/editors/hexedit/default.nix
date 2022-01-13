@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ncurses }:
+{ stdenv, fetchurl, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "hexedit";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "View and edit files in hexadecimal or in ASCII";
     homepage = "http://prigaux.chez.com/hexedit.html";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

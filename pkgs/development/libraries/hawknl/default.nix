@@ -1,15 +1,14 @@
-{lib, stdenv, fetchurl, unzip}:
+{stdenv, fetchurl, unzip}:
 
-stdenv.mkDerivation rec {
-  pname = "hawknl";
-  version = "1.68";
+stdenv.mkDerivation {
+  name = "hawknl-1.68";
 
   src = fetchurl {
-    url = "http://urchlay.naptime.net/~urchlay/src/HawkNL${lib.replaceStrings ["."] [""] version}src.zip";
+    url = "http://urchlay.naptime.net/~urchlay/src/HawkNL168src.zip";
     sha256 = "11shn2fbxj3w0j77w0234pqyj1368x686kkgv09q5yqhi1cdp028";
   };
 
-  nativeBuildInputs = [ unzip ];
+  buildInputs = [ unzip ];
 
   makefile = "makefile.linux";
 
@@ -25,7 +24,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://hawksoft.com/hawknl/";
     description = "Free, open source, game oriented network API";
-    license = lib.licenses.lgpl2Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.lgpl2Plus;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

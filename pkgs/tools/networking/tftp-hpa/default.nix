@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "tftp-hpa";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "12vidchglhyc20znq5wdsbhi9mqg90jnl7qr9qs8hbvaz4fkdvmg";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "TFTP tools - a lot of fixes on top of BSD TFTP";
     maintainers = with maintainers; [ raskin ];
     platforms = platforms.linux;

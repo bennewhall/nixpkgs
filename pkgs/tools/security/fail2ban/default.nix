@@ -1,19 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, python3 }:
+{ stdenv, fetchFromGitHub, python3 }:
 
+let version = "0.11.1"; in
 
-python3.pkgs.buildPythonApplication rec {
+python3.pkgs.buildPythonApplication {
   pname = "fail2ban";
-  version = "0.11.2";
+  inherit version;
 
   src = fetchFromGitHub {
-    owner = "fail2ban";
-    repo = "fail2ban";
-    rev = version;
-    sha256 = "q4U9iWCa1zg8sA+6pPNejt6v/41WGIKN5wITJCrCqQE=";
+    owner  = "fail2ban";
+    repo   = "fail2ban";
+    rev    = version;
+    sha256 = "0kqvkxpb72y3kgmxf6g36w67499c6gcd2a9yyblagwx12y05f1sh";
   };
 
   pythonPath = with python3.pkgs;
-    lib.optionals stdenv.isLinux [
+    stdenv.lib.optionals stdenv.isLinux [
       systemd
     ];
 
@@ -41,23 +42,18 @@ python3.pkgs.buildPythonApplication rec {
     ${stdenv.shell} ./fail2ban-2to3
   '';
 
-  postInstall =
-    let
-      sitePackages = "$out/${python3.sitePackages}";
-    in
-    ''
-      # see https://github.com/NixOS/nixpkgs/issues/4968
-      rm -r "${sitePackages}/etc"
-    '' + lib.optionalString stdenv.isLinux ''
-      # see https://github.com/NixOS/nixpkgs/issues/4968
-      rm -r "${sitePackages}/usr"
-    '';
+  postInstall = let
+    sitePackages = "$out/${python3.sitePackages}";
+  in ''
+    # see https://github.com/NixOS/nixpkgs/issues/4968
+    rm -rf ${sitePackages}/etc ${sitePackages}/usr ${sitePackages}/var;
+  '';
 
-  meta = with lib; {
-    homepage = "https://www.fail2ban.org/";
+  meta = with stdenv.lib; {
+    homepage    = "https://www.fail2ban.org/";
     description = "A program that scans log files for repeated failing login attempts and bans IP addresses";
-    license = licenses.gpl2Plus;
+    license     = licenses.gpl2Plus;
     maintainers = with maintainers; [ eelco lovek323 fpletz ];
-    platforms = platforms.unix;
+    platforms   = platforms.linux ++ platforms.darwin;
   };
 }

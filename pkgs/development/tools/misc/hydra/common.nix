@@ -1,11 +1,11 @@
-{ stdenv, nix, perlPackages, buildEnv
-, makeWrapper, autoconf, automake, libtool, unzip, pkg-config, sqlite, libpqxx_6
-, top-git, mercurial, darcs, subversion, breezy, openssl, bzip2, libxslt
-, perl, postgresql, nukeReferences, git, boehmgc, nlohmann_json
-, docbook_xsl, openssh, gnused, coreutils, findutils, gzip, xz, gnutar
+{ stdenv, nix, perlPackages, buildEnv, fetchFromGitHub
+, makeWrapper, autoconf, automake, libtool, unzip, pkgconfig, sqlite, libpqxx
+, gitAndTools, mercurial, darcs, subversion, breezy, openssl, bzip2, libxslt
+, guile, perl, postgresql, nukeReferences, git, boehmgc, nlohmann_json
+, docbook_xsl, openssh, gnused, coreutils, findutils, gzip, lzma, gnutar
 , rpm, dpkg, cdrkit, pixz, lib, boost, autoreconfHook, src ? null, version ? null
 , migration ? false, patches ? []
-, tests ? {}, mdbook
+, tests ? {}
 }:
 
 with stdenv;
@@ -26,7 +26,6 @@ let
         CatalystPluginAccessLog
         CatalystPluginAuthorizationRoles
         CatalystPluginCaptcha
-        CatalystPluginPrometheusTiny
         CatalystPluginSessionStateCookie
         CatalystPluginSessionStoreFastMmap
         CatalystPluginSmartURI
@@ -38,8 +37,6 @@ let
         CatalystViewTT
         CatalystXScriptServerStarman
         CatalystXRoleApplicator
-        CryptPassphrase
-        CryptPassphraseArgon2
         CryptRandPasswd
         DBDPg
         DBDSQLite
@@ -60,12 +57,10 @@ let
         NetPrometheus
         NetStatsd
         PadWalker
-        PrometheusTinyShared
         Readonly
         SQLSplitStatement
         SetScalar
         Starman
-        StringCompareConstantTime
         SysHostnameLong
         TermSizeAny
         TextDiff
@@ -84,8 +79,8 @@ in stdenv.mkDerivation rec {
   inherit stdenv src version patches;
 
   buildInputs =
-    [ makeWrapper autoconf automake libtool unzip nukeReferences sqlite libpqxx_6
-      top-git mercurial /*darcs*/ subversion breezy openssl bzip2 libxslt
+    [ makeWrapper autoconf automake libtool unzip nukeReferences sqlite libpqxx
+      gitAndTools.top-git mercurial /*darcs*/ subversion breezy openssl bzip2 libxslt
       perlDeps perl nix
       postgresql # for running the tests
       nlohmann_json
@@ -94,10 +89,10 @@ in stdenv.mkDerivation rec {
 
   hydraPath = lib.makeBinPath (
     [ sqlite subversion openssh nix coreutils findutils pixz
-      gzip bzip2 xz gnutar unzip git top-git mercurial /*darcs*/ gnused breezy
+      gzip bzip2 lzma gnutar unzip git gitAndTools.top-git mercurial /*darcs*/ gnused breezy
     ] ++ lib.optionals stdenv.isLinux [ rpm dpkg cdrkit ] );
 
-  nativeBuildInputs = [ autoreconfHook pkg-config mdbook ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   configureFlags = [ "--with-docbook-xsl=${docbook_xsl}/xml/xsl/docbook" ];
 
@@ -133,7 +128,7 @@ in stdenv.mkDerivation rec {
 
   passthru = { inherit perlDeps migration tests; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Nix-based continuous build system";
     license = licenses.gpl3;
     platforms = platforms.linux;

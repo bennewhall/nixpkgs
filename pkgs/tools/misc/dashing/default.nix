@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "dashing";
@@ -15,9 +15,9 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  ldflags = [ "-X main.version=${version}" ];
+  buildFlagsArray = [ "-ldflags=-X main.version=${version}" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Dash Generator Script for Any HTML";
     homepage    = "https://github.com/technosophos/dashing";
     license     = licenses.mit;

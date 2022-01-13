@@ -3,8 +3,6 @@
 
 set -eu -o pipefail
 
-version="$(curl -Ls https://zoom.us/download\?os\=linux | \
-  pup '.linux-ver-text text{}' | \
-  awk -F'[ ().]' '{printf $2"."$3"."$4"."$6"\n"}')"
+version="$(curl -Ls https://zoom.us/download\?os\=linux | pup '.linux-ver-text text{}' | cut -d' ' -f2)"
 
 update-source-version zoom-us "$version"

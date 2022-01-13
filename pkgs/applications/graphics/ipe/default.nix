@@ -1,89 +1,43 @@
-{ lib
-, mkDerivation
-, makeDesktopItem
-, fetchurl
-, pkg-config
-, copyDesktopItems
-, cairo
-, freetype
-, ghostscript
-, gsl
-, libjpeg
-, libpng
-, libspiro
-, lua5
-, qtbase
-, texlive
-, zlib
+{ stdenv, fetchurl, makeWrapper, pkgconfig, zlib, freetype, cairo, lua5, texlive, ghostscript
+, libjpeg, libpng, qtbase, mkDerivation
 }:
 
 mkDerivation rec {
-  pname = "ipe";
-  version = "7.2.23";
+  name = "ipe-7.2.13";
 
   src = fetchurl {
-    url = "https://dl.bintray.com/otfried/generic/ipe/7.2/${pname}-${version}-src.tar.gz";
-    sha256 = "0yvm3zfba1ljyy518vjnvwpyg7lgnmdwm19v5k0wfgz64aca56x1";
+    url = "https://dl.bintray.com/otfried/generic/ipe/7.2/${name}-src.tar.gz";
+    sha256 = "1a6a88r7j5z01z6k1z72a8g3n6lxdjjxxkdrzrfdd6df2gbs6g5g";
   };
 
-  sourceRoot = "${pname}-${version}/src";
+  sourceRoot = "${name}/src";
 
-  nativeBuildInputs = [ pkg-config copyDesktopItems ];
-
-  buildInputs = [
-    cairo
-    freetype
-    ghostscript
-    gsl
-    libjpeg
-    libpng
-    libspiro
-    lua5
-    qtbase
-    texlive
-    zlib
-  ];
-
-  IPEPREFIX = placeholder "out";
-  URWFONTDIR = "${texlive}/texmf-dist/fonts/type1/urw/";
+  IPEPREFIX=placeholder "out";
+  URWFONTDIR="${texlive}/texmf-dist/fonts/type1/urw/";
   LUA_PACKAGE = "lua";
 
-  qtWrapperArgs = [ "--prefix PATH : ${lib.makeBinPath [ texlive ]}" ];
+  buildInputs = [
+    libjpeg libpng zlib qtbase freetype cairo lua5 texlive ghostscript
+  ];
+
+  nativeBuildInputs = [ pkgconfig ];
+
+  qtWrapperArgs = [ ''--prefix PATH : ${texlive}/bin''  ];
 
   enableParallelBuilding = true;
 
-  desktopItems = [
-    (makeDesktopItem {
-      name = pname;
-      desktopName = "Ipe";
-      genericName = "Drawing editor";
-      comment = "A drawing editor for creating figures in PDF format";
-      exec = "ipe";
-      icon = "ipe";
-      mimeType = "text/xml;application/pdf";
-      categories = "Graphics;Qt;";
-      extraDesktopEntries = {
-        StartupWMClass = "ipe";
-        StartupNotify = "true";
-      };
-    })
-  ];
+  #TODO: make .desktop entry
 
-  postInstall = ''
-    mkdir -p $out/share/icons/hicolor/128x128/apps
-    ln -s $out/share/ipe/${version}/icons/icon_128x128.png $out/share/icons/hicolor/128x128/apps/ipe.png
-  '';
-
-  meta = with lib; {
+  meta = {
     description = "An editor for drawing figures";
-    homepage = "http://ipe.otfried.org"; # https not available
-    license = licenses.gpl3Plus;
+    homepage = "http://ipe.otfried.org";
+    license = stdenv.lib.licenses.gpl3Plus;
     longDescription = ''
       Ipe is an extensible drawing editor for creating figures in PDF and Postscript format.
       It supports making small figures for inclusion into LaTeX-documents
       as well as presentations in PDF.
     '';
-    maintainers = with maintainers; [ ttuegel ];
-    platforms = platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.ttuegel ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

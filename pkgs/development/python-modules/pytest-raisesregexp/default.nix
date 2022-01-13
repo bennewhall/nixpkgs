@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , py, pytest }:
 
 buildPythonPackage rec {
@@ -18,7 +18,7 @@ buildPythonPackage rec {
     substituteInPlace setup.py --replace "long_description=open('README.rst').read()," "long_description=io.open('README.rst', encoding='utf-8').read(),"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple pytest plugin to look for regex in Exceptions";
     homepage = "https://github.com/Walkman/pytest_raisesregexp";
     license = with licenses; [ mit ];

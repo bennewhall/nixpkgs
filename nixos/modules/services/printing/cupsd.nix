@@ -104,7 +104,7 @@ let
     ignoreCollisions = true;
   };
 
-  filterGutenprint = filter (pkg: pkg.meta.isGutenprint or false == true);
+  filterGutenprint = pkgs: filter (pkg: pkg.meta.isGutenprint or false == true) pkgs;
   containsGutenprint = pkgs: length (filterGutenprint pkgs) > 0;
   getGutenprint = pkgs: head (filterGutenprint pkgs);
 
@@ -270,7 +270,7 @@ in
       drivers = mkOption {
         type = types.listOf types.path;
         default = [];
-        example = literalExpression "with pkgs; [ gutenprint hplip splix ]";
+        example = literalExample "with pkgs; [ gutenprint hplip splix cups-googlecloudprint ]";
         description = ''
           CUPS drivers to use. Drivers provided by CUPS, cups-filters,
           Ghostscript and Samba are added unconditionally. If this list contains

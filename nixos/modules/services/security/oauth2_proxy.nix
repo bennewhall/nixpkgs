@@ -90,10 +90,10 @@ in
 
     package = mkOption {
       type = types.package;
-      default = pkgs.oauth2-proxy;
-      defaultText = literalExpression "pkgs.oauth2-proxy";
+      default = pkgs.oauth2_proxy;
+      defaultText = "pkgs.oauth2_proxy";
       description = ''
-        The package that provides oauth2-proxy.
+        The package that provides oauth2_proxy.
       '';
     };
 
@@ -538,7 +538,6 @@ in
 
     extraConfig = mkOption {
       default = {};
-      type = types.attrsOf types.anything;
       description = ''
         Extra config to pass to oauth2-proxy.
       '';

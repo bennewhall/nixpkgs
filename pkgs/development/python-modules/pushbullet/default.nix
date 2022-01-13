@@ -1,12 +1,6 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, requests
-, websocket-client
-, python_magic
-, cryptography
-, pytestCheckHook
-}:
+{ lib, buildPythonPackage, fetchPypi
+, requests, websocket_client, python_magic
+, pytest, mock }:
 
 buildPythonPackage rec {
   pname = "pushbullet.py";
@@ -17,17 +11,13 @@ buildPythonPackage rec {
     sha256 = "917883e1af4a0c979ce46076b391e0243eb8fe0a81c086544bcfa10f53e5ae64";
   };
 
-  propagatedBuildInputs = [ cryptography requests websocket-client python_magic ];
+  propagatedBuildInputs = [ requests websocket_client python_magic ];
 
-  preCheck = ''
-    export PUSHBULLET_API_KEY=""
+  checkInputs = [ pytest mock ];
+
+  checkPhase = ''
+    PUSHBULLET_API_KEY="" py.test -k "not test_e2e and not test_auth"
   '';
-  checkInputs = [ pytestCheckHook ];
-  disabledTests = [
-    "test_auth_fail"
-    "test_auth_success"
-    "test_decryption"
-  ];
 
   meta = with lib; {
     description = "A simple python client for pushbullet.com";

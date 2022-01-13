@@ -1,61 +1,43 @@
 { lib
-, appdirs
 , buildPythonPackage
-, cachelib
-, cssselect
-, fetchFromGitHub
-, keep
-, lxml
+, fetchPypi
+, six
 , pygments
 , pyquery
-, requests
-, pytestCheckHook
+, cachelib
+, appdirs
+, keep
 }:
 
 buildPythonPackage rec {
   pname = "howdoi";
-  version = "2.0.19";
+  version = "2.0.7";
 
-  src = fetchFromGitHub {
-    owner = "gleitz";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "0hl7cpxm4llsgw6390bpjgkzrprrpb0vxx2flgly7wiy9zl1rc5q";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "09362f7390119dffd83c61a942801ad4d19aee499340ef7e8d5871167391d3d6";
   };
 
-  propagatedBuildInputs = [
-    appdirs
-    cachelib
-    cssselect
-    keep
-    lxml
-    pygments
-    pyquery
-    requests
-  ];
-
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  preCheck = ''
-    export HOME=$(mktemp -d)
+  postPatch = ''
+    substituteInPlace setup.py --replace 'cachelib==0.1' 'cachelib'
   '';
 
-  disabledTests = [
-    # AssertionError: "The...
-    "test_get_text_with_one_link"
-    "test_get_text_without_links"
-  ];
+  propagatedBuildInputs = [ six pygments pyquery cachelib appdirs keep ];
 
-  pythonImportsCheck = [
-    "howdoi"
-  ];
+  # author hasn't included page_cache directory (which allows tests to run without
+  # external requests) in pypi tarball. github repo doesn't have release revisions
+  # clearly tagged. re-enable tests when either is sorted.
+  doCheck = false;
+  preCheck = ''
+    mv howdoi _howdoi
+    export HOME=$(mktemp -d)
+  '';
+  pythonImportsCheck = [ "howdoi" ];
 
   meta = with lib; {
     description = "Instant coding answers via the command line";
     homepage = "https://pypi.python.org/pypi/howdoi";
     license = licenses.mit;
-    maintainers = with maintainers; [ costrouc ];
+    maintainers = [ maintainers.costrouc ];
   };
 }

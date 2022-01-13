@@ -1,4 +1,4 @@
-{ lib, python3, fetchFromGitHub }:
+{ stdenv, python3, fetchFromGitHub }:
 python3.pkgs.buildPythonApplication rec {
   pname = "perfect-hash";
   version = "0.4.1";
@@ -18,7 +18,7 @@ python3.pkgs.buildPythonApplication rec {
     cp -r examples $out/share/doc/perfect-hash
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Minimal perfect hash function generator";
     longDescription = ''
       Generate a minimal perfect hash function for a given set of keys.

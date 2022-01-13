@@ -4,47 +4,52 @@
 , plotly
 , flask
 , flask-compress
+, future
 , dash-core-components
+, dash-renderer
 , dash-html-components
 , dash-table
+, pytest
 , pytest-mock
 , mock
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "dash";
-  version = "2.0.0";
+  version = "1.17.0";
 
   src = fetchFromGitHub {
     owner = "plotly";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-0RvA5qkwQJGyy81D5kW+IR6LbaD/KBwMy6kYxTETubg=";
+    sha256 = "1fbnhpmkxavv6yirmhx7659q1y9bqynwjd1g6cscv1mfv9m59l60";
   };
 
   propagatedBuildInputs = [
     plotly
     flask
     flask-compress
+    future
     dash-core-components
+    dash-renderer
     dash-html-components
     dash-table
   ];
 
   checkInputs = [
-    pytestCheckHook
+    pytest
     pytest-mock
     mock
   ];
 
-  disabledTestPaths = [
-    "tests/unit/test_browser.py"
-    "tests/unit/test_app_runners.py" # Use selenium
-    "tests/integration"
-  ];
+  checkPhase = ''
+    pytest tests/unit/test_{configs,fingerprint,import,resources}.py \
+      tests/unit/dash/
+  '';
 
-  pythonImportsCheck = [ "dash" ];
+  pythonImportsCheck = [
+    "dash"
+  ];
 
   meta = with lib; {
     description = "Python framework for building analytical web applications";

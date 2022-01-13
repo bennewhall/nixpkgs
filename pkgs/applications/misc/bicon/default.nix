@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
   , fetchFromGitHub
   , autoreconfHook
   , pkg-config
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     patchShebangs .
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A bidirectional console";
     homepage =  "https://github.com/behdad/bicon";
     license = [ licenses.lgpl21 licenses.psfl licenses.bsd0 ];

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , six
@@ -29,7 +29,7 @@ buildPythonPackage rec {
     sed -i 's/version=VERSION/version=str(VERSION)/' setup.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A backport of the new features added to the unittest testing framework";
     homepage = "https://pypi.python.org/pypi/unittest2";
     license = licenses.bsd0;

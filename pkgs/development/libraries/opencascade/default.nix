@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, libGL, libGLU, libXmu, cmake, ninja,
-  pkg-config, fontconfig, freetype, expat, freeimage, vtk, gl2ps, tbb,
+{ stdenv, fetchFromGitHub, fetchpatch, libGL, libGLU, libXmu, cmake, ninja,
+  pkgconfig, fontconfig, freetype, expat, freeimage, vtk, gl2ps, tbb,
   OpenCL, Cocoa
 }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "opencascade-oce";
   version = "0.18.3";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     sha256 = "17wy8dcf44vqisishv1jjf3cmcxyygqq29y9c3wjdj983qi2hsig";
   };
 
-  nativeBuildInputs = [ cmake ninja pkg-config ];
+  nativeBuildInputs = [ cmake ninja pkgconfig ];
   buildInputs = [
     libGL libGLU libXmu freetype fontconfig expat freeimage vtk
     gl2ps tbb

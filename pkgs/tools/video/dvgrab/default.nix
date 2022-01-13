@@ -1,9 +1,8 @@
-{ fetchFromGitHub, lib, stdenv, libunwind, libraw1394, libjpeg, libiec61883, libdv
-, libavc1394, pkg-config, autoreconfHook }:
+{ fetchFromGitHub, stdenv, libunwind, libraw1394, libjpeg, libiec61883, libdv
+, libavc1394, pkgconfig, autoreconfHook }:
 
 stdenv.mkDerivation {
-  pname = "dvgrab";
-  version = "2016-05-16";
+  name = "dvgrab-2016-05-16";
 
   src = fetchFromGitHub {
     # mirror of original project with some build fixes
@@ -18,10 +17,10 @@ stdenv.mkDerivation {
   ];
 
   nativeBuildInputs = [
-    autoreconfHook pkg-config
+    autoreconfHook pkgconfig
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Receive and store audio & video over IEEE1394";
 
     longDescription = ''

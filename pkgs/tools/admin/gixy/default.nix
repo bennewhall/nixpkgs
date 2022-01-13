@@ -1,11 +1,11 @@
-{ lib, fetchFromGitHub, python3 }:
+{ lib, fetchFromGitHub, python }:
 
-python3.pkgs.buildPythonApplication rec {
+python.pkgs.buildPythonApplication rec {
   pname = "gixy";
   version = "0.1.20";
 
   # package is only compatible with python 2.7 and 3.5+
-  disabled = with python3.pkgs; !(pythonAtLeast "3.5" || isPy27);
+  disabled = with python.pkgs; !(pythonAtLeast "3.5" || isPy27);
 
   # fetching from GitHub because the PyPi source is missing the tests
   src = fetchFromGitHub {
@@ -19,9 +19,9 @@ python3.pkgs.buildPythonApplication rec {
     sed -ie '/argparse/d' setup.py
   '';
 
-  propagatedBuildInputs = with python3.pkgs; [
+  propagatedBuildInputs = with python.pkgs; [
     cached-property
-    configargparse
+    ConfigArgParse
     pyparsing
     jinja2
     nose
@@ -38,6 +38,6 @@ python3.pkgs.buildPythonApplication rec {
     homepage = "https://github.com/yandex/gixy";
     license = licenses.mpl20;
     maintainers = [ maintainers.willibutz ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

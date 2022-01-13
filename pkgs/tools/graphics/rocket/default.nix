@@ -1,4 +1,4 @@
-{ mkDerivation, lib, fetchFromGitHub, qmake, qtbase }:
+{ mkDerivation, stdenv, fetchFromGitHub, qmake, qtbase }:
 
 mkDerivation {
   pname = "rocket";
@@ -21,7 +21,7 @@ mkDerivation {
     cp -r editor/editor $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool for synchronizing music and visuals in demoscene productions";
     homepage = "https://github.com/rocket/rocket";
     license = licenses.zlib;

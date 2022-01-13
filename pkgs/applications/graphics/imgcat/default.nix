@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, libtool, ncurses }:
+{ stdenv, fetchFromGitHub, autoconf, automake, libtool, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "imgcat";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-Wno-error";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "It's like cat, but for images";
     homepage = "https://github.com/eddieantonio/imgcat";
     license = licenses.isc;

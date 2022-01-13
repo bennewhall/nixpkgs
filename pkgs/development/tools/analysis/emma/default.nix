@@ -1,15 +1,14 @@
-{lib, stdenv, fetchurl, unzip}:
+{stdenv, fetchurl, unzip}:
 
-stdenv.mkDerivation rec {
-  pname = "emma";
-  version = "2.0.5312";
-
+stdenv.mkDerivation {
+  name = "emma-2.0.5312";
+  
   src = fetchurl {
-    url = "mirror://sourceforge/${pname}/${pname}-${version}.zip";
+    url = "mirror://sourceforge/emma/emma-2.0.5312.zip";
     sha256 = "0xxy39s2lvgs56vicjzpcz936l1vjaplliwa0dm7v3iyvw6jn7vj";
   };
 
-  nativeBuildInputs = [ unzip ];
+  buildInputs = [unzip];
 
   installPhase = ''
     mkdir -p $out/lib/jars
@@ -19,7 +18,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://emma.sourceforge.net/";
     description = "A code coverage tool for Java";
-    platforms = lib.platforms.unix;
-    license = lib.licenses.cpl10;
+    platforms = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.cpl10;
   };
 }

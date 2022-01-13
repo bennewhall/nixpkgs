@@ -22,6 +22,8 @@ mkDerivation rec {
     openal libmodplug libvorbis
     qtbase glm ];
 
+  enableParallelBuilding = true;
+
   preFixup = ''
     mkdir $lib/
     mv $out/lib $lib

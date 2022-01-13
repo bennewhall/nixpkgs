@@ -1,22 +1,15 @@
-{ lib, python3Packages, fetchFromGitHub }:
+{ lib, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
-  pname = "flexget";
-  version = "3.2.7";
+  pname = "FlexGet";
+  version = "3.1.71";
 
-  # Fetch from GitHub in order to use `requirements.in`
-  src = fetchFromGitHub {
-    owner = "flexget";
-    repo = "flexget";
-    rev = "v${version}";
-    sha256 = "12nj1jcxbkpc0x59rg59fsryignpppsx0wiwncdv6fzr58pdhd3v";
+  src = python3Packages.fetchPypi {
+    inherit pname version;
+    sha256 = "4c25d8733c8eb54c7d3ce60a17d8020049fb137b796e5ada9d15f41cdd0e1655";
   };
 
   postPatch = ''
-    # Symlink requirements.in because upstream uses `pip-compile` which yields
-    # python-version dependent requirements
-    ln -sf requirements.in requirements.txt
-
     # remove dependency constraints
     sed 's/==\([0-9]\.\?\)\+//' -i requirements.txt
 
@@ -32,43 +25,41 @@ python3Packages.buildPythonApplication rec {
     # See https://github.com/Flexget/Flexget/blob/master/requirements.in
     APScheduler
     beautifulsoup4
-    feedparser
-    guessit
-    html5lib
-    jinja2
-    jsonschema
-    loguru
-    more-itertools
-    psutil
-    pynzb
-    PyRSS2Gen
-    python-dateutil
-    pyyaml
-    rebulk
-    requests
-    rich
-    rpyc
-    sqlalchemy
-
-    # WebUI requirements
     cherrypy
+    colorclass
+    feedparser
     flask-compress
     flask-cors
     flask_login
     flask-restful
     flask-restx
     flask
+    guessit
+    html5lib
+    jinja2
+    jsonschema
+    loguru
+    more-itertools
+    progressbar
+    pynzb
     pyparsing
+    PyRSS2Gen
+    dateutil
+    pyyaml
+    rebulk
+    requests
+    rpyc
+    sqlalchemy
+    terminaltables
     zxcvbn
-
-    # Plugins requirements
-    transmission-rpc
+    # plugins
+    transmissionrpc
   ];
 
   meta = with lib; {
-    homepage = "https://flexget.com/";
+    homepage    = "https://flexget.com/";
     description = "Multipurpose automation tool for all of your media";
-    license = licenses.mit;
+    license     = licenses.mit;
     maintainers = with maintainers; [ marsam ];
   };
 }

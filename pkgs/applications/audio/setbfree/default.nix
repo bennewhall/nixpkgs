@@ -1,16 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, alsa-lib, freetype, ftgl, libjack2, libX11, lv2
-, libGLU, libGL, pkg-config, ttf_bitstream_vera
+{ stdenv, fetchzip, alsaLib, freetype, ftgl, libjack2, libX11, lv2
+, libGLU, libGL, pkgconfig, ttf_bitstream_vera
 }:
 
 stdenv.mkDerivation  rec {
   pname = "setbfree";
   version = "0.8.11";
 
-  src = fetchFromGitHub {
-    owner = "pantherb";
-    repo = "setBfree";
-    rev = "v${version}";
-    sha256 = "sha256-OYrsq3zVaotmS1KUgDIQbVQgxpfweMKiB17/PC1iXDA=";
+  src = fetchzip {
+    url = "https://github.com/pantherb/setBfree/archive/v${version}.tar.gz";
+    sha256 = "0c2wc8nkrzsy0yic4y7hjz320m3d20r8152j9dk8nsnmgjmyr2ir";
   };
 
   postPatch = ''
@@ -19,15 +17,15 @@ stdenv.mkDerivation  rec {
       -i b_synth/Makefile
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    alsa-lib freetype ftgl libjack2 libX11 lv2 libGLU libGL
+    alsaLib freetype ftgl libjack2 libX11 lv2 libGLU libGL
     ttf_bitstream_vera
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A DSP tonewheel organ emulator";
-    homepage = "https://setbfree.org";
+    homepage = "http://setbfree.org";
     license = licenses.gpl2;
     platforms = [ "x86_64-linux" "i686-linux" ]; # fails on ARM and Darwin
     maintainers = [ maintainers.goibhniu ];

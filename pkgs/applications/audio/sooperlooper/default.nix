@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , autoreconfHook
-, pkg-config
+, pkgconfig
 , which
 , libtool
 , liblo
@@ -14,7 +14,7 @@
 , rubberband
 , gettext
 , ncurses
-, alsa-lib
+, alsaLib
 , fftw
 }:
 
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
     ./autogen.sh
   '';
 
-  nativeBuildInputs = [ autoreconfHook pkg-config which libtool ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig which libtool ];
 
   buildInputs = [
     liblo
@@ -47,13 +47,13 @@ stdenv.mkDerivation rec {
     rubberband
     gettext
     ncurses
-    alsa-lib
+    alsaLib
     fftw
   ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A live looping sampler capable of immediate loop recording, overdubbing, multiplying, reversing and more";
     longDescription = ''
       It allows for multiple simultaneous multi-channel loops limited only by your computer's available memory.

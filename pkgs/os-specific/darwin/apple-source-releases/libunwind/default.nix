@@ -1,7 +1,7 @@
-{ lib, appleDerivation }:
+{ stdenv, appleDerivation }:
 
 appleDerivation {
-  dontBuild = true;
+  buildPhase = ":";
 
   # install headers only
   installPhase = ''
@@ -9,7 +9,7 @@ appleDerivation {
     cp -R include $out/include
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ copumpkin lnl7 ];
     platforms   = platforms.darwin;
     license     = licenses.apsl20;

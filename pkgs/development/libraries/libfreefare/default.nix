@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, libnfc, openssl
+{ stdenv, fetchurl, pkgconfig, libnfc, openssl
 , libobjc ? null }:
 
 stdenv.mkDerivation {
@@ -10,10 +10,10 @@ stdenv.mkDerivation {
     sha256 = "0r5wfvwgf35lb1v65wavnwz2wlfyfdims6a9xpslf4lsm4a1v8xz";
   };
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ libnfc openssl ] ++ lib.optional stdenv.isDarwin libobjc;
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ libnfc openssl ] ++ stdenv.lib.optional stdenv.isDarwin libobjc;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The libfreefare project aims to provide a convenient API for MIFARE card manipulations";
     license = licenses.lgpl3;
     homepage = "https://github.com/nfc-tools/libfreefare";

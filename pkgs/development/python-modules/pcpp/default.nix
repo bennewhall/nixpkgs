@@ -1,6 +1,6 @@
 { buildPythonPackage
 , fetchFromGitHub
-, lib
+, stdenv
 }:
 
 buildPythonPackage rec {
@@ -15,7 +15,7 @@ buildPythonPackage rec {
     fetchSubmodules = true;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ned14/pcpp";
     description = "A C99 preprocessor written in pure Python";
     license = licenses.bsd0;

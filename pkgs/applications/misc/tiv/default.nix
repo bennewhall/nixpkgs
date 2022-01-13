@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, imagemagick }:
+{ stdenv, fetchFromGitHub, imagemagick }:
 
 stdenv.mkDerivation rec {
   pname = "tiv";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
 
   preConfigure = "cd src/main/cpp";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/stefanhaustein/TerminalImageViewer";
     description = "Small C++ program to display images in a (modern) terminal using RGB ANSI codes and unicode block graphics characters";
     license = licenses.asl20;

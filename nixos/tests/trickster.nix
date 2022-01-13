@@ -1,6 +1,6 @@
 import ./make-test-python.nix ({ pkgs, ... }: {
   name = "trickster";
-  meta = with pkgs.lib; {
+  meta = with pkgs.stdenv.lib; {
     maintainers = with maintainers; [ _1000101 ];
   };
 

@@ -1,19 +1,19 @@
-{ lib, stdenv, fetchurl, fetchFromGitHub, makeWrapper
+{ stdenv, fetchurl, fetchFromGitHub, makeWrapper
 , meson
 , ninja
 , pkg-config
+, fetchpatch
 
 , platform-tools
 , ffmpeg
-, libusb1
 , SDL2
 }:
 
 let
-  version = "1.21";
+  version = "1.15.1";
   prebuilt_server = fetchurl {
     url = "https://github.com/Genymobile/scrcpy/releases/download/v${version}/scrcpy-server-v${version}";
-    sha256 = "sha256-28zKtSPuJnluVeozZSZJ5LevSY7a6ap15NTXhpwKuEg=";
+    sha256 = "1hrp2rfwl06ff2b2i12ccka58l1brvn6xqgm1f38k36s61mbs1py";
   };
 in
 stdenv.mkDerivation rec {
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     owner = "Genymobile";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-9MzOaQj+lR1F+E/yoxbL/HMOOuKOU82zkPVq7x6AH3c=";
+    sha256 = "0ijar1cycj42p39cgpnwdwr6nz5pyr6vacr1gvc0f6k92pl8vr13";
   };
 
   # postPatch:
@@ -38,9 +38,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ makeWrapper meson ninja pkg-config ];
 
-  buildInputs = [ ffmpeg SDL2 ] ++ lib.optionals stdenv.isLinux [
-    libusb1
-  ];
+  buildInputs = [ ffmpeg SDL2 ];
 
   # Manually install the server jar to prevent Meson from "fixing" it
   preConfigure = ''
@@ -56,11 +54,11 @@ stdenv.mkDerivation rec {
     wrapProgram "$out/bin/scrcpy" --prefix PATH : "${platform-tools}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Display and control Android devices over USB or TCP/IP";
     homepage = "https://github.com/Genymobile/scrcpy";
     license = licenses.asl20;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ deltaevo lukeadams msfjarvis ];
+    maintainers = with maintainers; [ deltaevo lukeadams ];
   };
 }

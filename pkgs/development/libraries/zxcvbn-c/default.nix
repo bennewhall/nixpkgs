@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   pname = "zxcvbn-c";
   version = "2.4";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     install -D -t $out/lib libzxcvbn.so*
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/tsyrogit/zxcvbn-c";
     description = "A C/C++ implementation of the zxcvbn password strength estimation";
     license = licenses.mit;

@@ -1,6 +1,7 @@
-import ./make-test-python.nix ({ pkgs, lib, ... }:
+import ./make-test-python.nix ({ pkgs, lib, ...} :
 let
   client_base = {
+
     containers.test1 = {
       autoStart = true;
       config = {
@@ -15,8 +16,8 @@ let
   };
 in {
   name = "containers-reloadable";
-  meta = {
-    maintainers = with lib.maintainers; [ danbst ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ danbst ];
   };
 
   nodes = {

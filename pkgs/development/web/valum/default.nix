@@ -1,4 +1,4 @@
-{ lib, stdenv, meson, ninja, pkg-config, fetchFromGitHub, glib, vala, ctpl
+{ stdenv, meson, ninja, pkgconfig, fetchFromGitHub, glib, vala, ctpl
 , libgee, libsoup, fcgi }:
 
 stdenv.mkDerivation rec {
@@ -12,14 +12,14 @@ stdenv.mkDerivation rec {
     sha256 = "15lnk91gykm60rv31x3r1swp2bhzl3gwp12mf39smzi4bmf7h38f";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
   buildInputs = [ glib vala ctpl libgee libsoup fcgi ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/valum-framework/valum";
     description = "Web micro-framework written in Vala";
     license = licenses.lgpl3;
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [ maintainers.lethalman ];
   };
 }

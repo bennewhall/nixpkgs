@@ -1,6 +1,6 @@
-{ python3, lib, fetchFromGitHub }:
+{buildPythonPackage, lib, fetchFromGitHub, statistics}:
 
-python3.pkgs.buildPythonApplication rec {
+buildPythonPackage rec {
   pname = "xenomapper";
   version = "1.0.2";
 
@@ -11,7 +11,7 @@ python3.pkgs.buildPythonApplication rec {
     sha256 = "0mnmfzlq5mhih6z8dq5bkx95vb8whjycz9mdlqwbmlqjb3gb3zhr";
   };
 
-  propagatedBuildInputs = with python3.pkgs; [ statistics ];
+  propagatedBuildInputs = [ statistics ];
 
   meta = with lib; {
     homepage = "https://github.com/genomematt/xenomapper";

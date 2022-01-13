@@ -5,7 +5,7 @@ with lib;
 let cfg = config.services.cloud-init;
     path = with pkgs; [
       cloud-init
-      iproute2
+      iproute
       nettools
       openssh
       shadow
@@ -98,7 +98,7 @@ in
            - final-message
            - power-state-change
           '';
-        description = "cloud-init configuration.";
+        description = ''cloud-init configuration.'';
       };
 
     };

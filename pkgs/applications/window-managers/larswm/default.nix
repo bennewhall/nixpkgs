@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, imake, gccmakedep, libX11, libXext, libXmu }:
+{ stdenv, fetchurl, imake, gccmakedep, libX11, libXext, libXmu }:
 
-stdenv.mkDerivation rec {
-  pname = "larswm";
-  version = "7.5.3";
+stdenv.mkDerivation {
+  name = "larswm-7.5.3";
 
   src = fetchurl {
-    url = "mirror://sourceforge/larswm/larswm-${version}.tar.gz";
+    url = "mirror://sourceforge/larswm/larswm-7.5.3.tar.gz";
     sha256 = "1xmlx9g1nhklxjrg0wvsya01s4k5b9fphnpl9zdwp29mm484ni3v";
   };
 
@@ -18,7 +17,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.fnurt.net/larswm";
     description = "9wm-like tiling window manager";
-    license = lib.licenses.free;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.free;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

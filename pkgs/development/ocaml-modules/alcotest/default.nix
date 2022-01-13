@@ -4,13 +4,13 @@
 
 buildDunePackage rec {
   pname = "alcotest";
-  version = "1.4.0";
+  version = "1.2.3";
 
   useDune2 = true;
 
   src = fetchurl {
     url = "https://github.com/mirage/alcotest/releases/download/${version}/alcotest-mirage-${version}.tbz";
-    sha256 = "sha256:1h9yp44snb6sgm5g1x3wg4gwjscic7i56jf0j8jr07355pxwrami";
+    sha256 = "1bmjcivbmd4vib15v4chycgd1gl8js9dk94vzxkdg06zxqd4hp08";
   };
 
   propagatedBuildInputs = [ astring cmdliner fmt uuidm re stdlib-shims uutf ];

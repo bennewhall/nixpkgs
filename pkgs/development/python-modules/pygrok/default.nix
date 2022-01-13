@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, regex, pytest }:
+{ stdenv, lib, buildPythonPackage, fetchFromGitHub, regex, pytest }:
 
 buildPythonPackage rec {
   pname = "pygrok";

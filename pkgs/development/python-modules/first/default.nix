@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "first";
@@ -11,7 +11,7 @@ buildPythonPackage rec {
 
   doCheck = false; # no tests
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The function you always missed in Python";
     homepage = "https://github.com/hynek/first/";
     license = licenses.mit;

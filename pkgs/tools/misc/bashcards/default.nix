@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 }:
 
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     cp bashcards $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Practice flashcards in bash";
     homepage = "https://github.com/rpearce/bashcards/";
     license = licenses.bsd3;

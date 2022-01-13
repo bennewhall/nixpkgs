@@ -1,4 +1,4 @@
-{ lib, stdenv, rustPlatform, fetchFromGitHub }:
+{ stdenv, rustPlatform, fetchFromGitHub }:
 
 rustPlatform.buildRustPackage rec {
   pname = "diskonaut";
@@ -11,15 +11,12 @@ rustPlatform.buildRustPackage rec {
     sha256 = "1pmbag3r2ka30zmy2rs9jps2qxj2zh0gy4a774v9yhf0b6qjid54";
   };
 
-  cargoSha256 = "10jrcy8m9ll4136ghq3fhmnphd9g3rw863x708vm17n44kgdxyab";
+  cargoSha256 = "0y86ikf235lp5j85fgzawgp4vx66rmzqd6p5n8iy3mqwn3c1ggb8";
 
-  # 1 passed; 44 failed https://hydra.nixos.org/build/148943783/nixlog/1
-  doCheck = !stdenv.isDarwin;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Terminal disk space navigator";
     homepage = "https://github.com/imsnif/diskonaut";
     license = licenses.mit;
-    maintainers = with maintainers; [ evanjs SuperSandro2000 ];
+    maintainers = with maintainers; [ evanjs ];
   };
 }

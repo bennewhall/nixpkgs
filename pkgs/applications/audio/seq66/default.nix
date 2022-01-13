@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, qttools, which
-, alsa-lib, libjack2, liblo, qtbase
+{ stdenv, fetchFromGitHub, autoreconfHook, pkg-config, qttools, which
+, alsaLib, libjack2, liblo, qtbase
 }:
 
 stdenv.mkDerivation rec {
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook pkg-config qttools which ];
 
-  buildInputs = [ alsa-lib libjack2 liblo qtbase ];
+  buildInputs = [ alsaLib libjack2 liblo qtbase ];
 
   postPatch = ''
     for d in libseq66/include libseq66/src libsessions/include libsessions/src seq_qt5/src seq_rtmidi/include seq_rtmidi/src Seqtool/src; do
@@ -25,9 +25,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  dontWrapQtApps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ahlstromcj/seq66";
     description = "Loop based midi sequencer with Qt GUI derived from seq24 and sequencer64";
     license = licenses.gpl2Plus;

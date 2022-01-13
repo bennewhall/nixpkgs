@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , python
@@ -25,7 +25,7 @@ buildPythonPackage rec {
   '';
 
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A TOML parser/writer for Python";
     homepage    = "https://github.com/avakar/pytoml";
     license     = licenses.mit;

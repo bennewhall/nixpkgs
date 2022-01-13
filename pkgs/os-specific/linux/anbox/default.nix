@@ -1,28 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, fetchurl
-, cmake, pkg-config, dbus, makeWrapper
-, boost
-, elfutils # for libdw
-, git
-, glib
-, glm
+{ stdenv, fetchFromGitHub, fetchurl
+, cmake, pkgconfig, dbus, makeWrapper
 , gtest
-, libbfd
+, boost
 , libcap
-, libdwarf
+, systemd
+, mesa
 , libGL
 , libglvnd
-, lxc
-, mesa
+, glib
+, git
+, SDL2
+, SDL2_image
 , properties-cpp
 , protobuf
 , protobufc
-, python3
-, runtimeShell
-, SDL2
-, SDL2_image
-, systemd
+, python
+, lxc
 , writeText
 , writeScript
+, runtimeShell
 }:
 
 let
@@ -49,41 +45,26 @@ in
 
 stdenv.mkDerivation rec {
   pname = "anbox";
-  version = "unstable-2020-11-29";
+  version = "unstable-2019-11-15";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
-    rev = "6c10125a7f13908d2cbe56d2d9ab09872755f265";
-    sha256 = "00bqssh4zcs0jj6w07b91719xkrpdw75vpcplwrvlhwsvl55f901";
-    fetchSubmodules = true;
+    rev = "0a49ae08f76de7f886a3dbed4422711c2fa39d10";
+    sha256 = "09l56nv9cnyhykclfmvam6bkcxlamwbql6nrz9n022553w92hkjf";
   };
 
   nativeBuildInputs = [
-    cmake
-    pkg-config
     makeWrapper
   ];
 
   buildInputs = [
-    boost
-    dbus
-    elfutils # libdw
-    glib
-    glm
-    gtest
-    libbfd
-    libcap
-    libdwarf
+    cmake pkgconfig dbus boost libcap gtest systemd mesa glib
+    SDL2 SDL2_image protobuf protobufc properties-cpp lxc python
     libGL
-    lxc
-    mesa
-    properties-cpp
-    protobuf protobufc
-    python3
-    SDL2 SDL2_image
-    systemd
   ];
+
+  NIX_CFLAGS_COMPILE = "-Wno-error=missing-field-initializers";
 
   patchPhase = ''
     patchShebangs scripts
@@ -115,7 +96,7 @@ stdenv.mkDerivation rec {
 
   postInstall = ''
     wrapProgram $out/bin/anbox \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [libGL libglvnd]} \
+      --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [libGL libglvnd]} \
       --prefix PATH : ${git}/bin
 
     mkdir -p $out/share/dbus-1/services
@@ -148,7 +129,7 @@ stdenv.mkDerivation rec {
       };
     }.${stdenv.system} or null;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://anbox.io";
     description = "Android in a box";
     license = licenses.gpl2;

@@ -1,15 +1,15 @@
-{ mkDerivation, lib, graphicsmagick, fetchFromGitHub, qmake, qtbase, qttools
+{ mkDerivation, stdenv, graphicsmagick, fetchFromGitHub, qmake, qtbase, qttools
 }:
 
 mkDerivation rec {
   pname = "photoflare";
-  version = "1.6.7.1";
+  version = "1.6.6";
 
   src = fetchFromGitHub {
     owner = "PhotoFlare";
     repo = "photoflare";
     rev = "v${version}";
-    sha256 = "sha256-7b7ICcHuMjOMtyQDkokoHeZrF4G+bOzgRJP4mkns+Zc=";
+    sha256 = "07lrlxagv1bljj607s8m0zsbzx9jrvi18bnxahnm7r4i5car5x2d";
   };
 
   nativeBuildInputs = [ qmake qttools ];
@@ -19,11 +19,13 @@ mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-I${graphicsmagick}/include/GraphicsMagick";
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "A cross-platform image editor with a powerful features and a very friendly graphical user interface";
     homepage = "https://photoflare.io";
     maintainers = [ maintainers.omgbebebe ];
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     platforms = platforms.linux;
   };
 }

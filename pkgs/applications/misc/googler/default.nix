@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, python, installShellFiles }:
+{ stdenv, fetchFromGitHub, python, installShellFiles }:
 
 stdenv.mkDerivation rec {
   pname = "googler";
-  version = "4.3.2";
+  version = "4.3.1";
 
   src = fetchFromGitHub {
     owner = "jarun";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-PgWg396AQ15CAnfTXGDpSg1UXx7mNCtknEjJd/KV4MU=";
+    sha256 = "04wa0mlbfjnzwham2dpd9lch7800js4vp3ikgjl4qnwilvr1lw74";
   };
 
   buildInputs = [ python ];
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     installShellCompletion --zsh auto-completion/zsh/_googler
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jarun/googler";
     description = "Google Search, Google Site Search, Google News from the terminal";
     license = licenses.gpl3Plus;

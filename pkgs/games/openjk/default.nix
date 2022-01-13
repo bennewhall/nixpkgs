@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeDesktopItem, makeWrapper, cmake, libjpeg, zlib, libpng, libGL, SDL2 }:
+{ stdenv, fetchFromGitHub, makeDesktopItem, makeWrapper, cmake, libjpeg, zlib, libpng, libGL, SDL2 }:
 
 let
   jamp = makeDesktopItem rec {
@@ -31,6 +31,7 @@ in stdenv.mkDerivation {
   };
 
   dontAddPrefix = true;
+  enableParallelBuilding = true;
 
   nativeBuildInputs = [ makeWrapper cmake ];
   buildInputs = [ libjpeg zlib libpng libGL SDL2 ];
@@ -53,11 +54,11 @@ in stdenv.mkDerivation {
     ln -s ${jasp}/share/applications/* $out/share/applications
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An open-source engine for Star Wars Jedi Academy game";
     homepage = "https://github.com/JACoders/OpenJK";
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ gnidorah ];
   };
 }

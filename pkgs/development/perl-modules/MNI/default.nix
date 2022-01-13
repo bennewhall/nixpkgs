@@ -1,4 +1,4 @@
-{ fetchFromGitHub, buildPerlPackage, lib }:
+{ fetchFromGitHub, buildPerlPackage, stdenv }:
 
 buildPerlPackage {
   pname = "MNI-Perllib";
@@ -15,7 +15,7 @@ buildPerlPackage {
 
   doCheck = false;  # TODO: almost all tests fail ... is this a real problem?
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/BIC-MNI/mni-perllib";
     license = with licenses; [ artistic1 gpl1Plus ];
     maintainers = with maintainers; [ bcdarwin ];

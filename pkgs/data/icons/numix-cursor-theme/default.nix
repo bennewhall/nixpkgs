@@ -1,17 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, inkscape, xcursorgen }:
+{ stdenv, fetchFromGitHub, fetchpatch, inkscape, xcursorgen }:
 
 stdenv.mkDerivation rec {
-  pname = "numix-cursor-theme";
-  version = "1.2";
+  version = "1.1";
+  package-name = "numix-cursor-theme";
+  name = "${package-name}-${version}";
 
   src = fetchFromGitHub {
     owner = "numixproject";
-    repo = pname;
+    repo = package-name;
     rev = "v${version}";
-    sha256 = "1q3w5i0h3ly6i7s9pqjdrb14kp89i78s0havri7lhiqyxizjvcvh";
+    sha256 = "0p8h48wsy3z5dz9vdnp01fpn6q8ky0h74l5qgixlip557bsa1spi";
   };
 
   nativeBuildInputs = [ inkscape xcursorgen ];
+
+  patches = [
+    # Remove when https://github.com/numixproject/numix-cursor-theme/pull/7 is merged
+    (fetchpatch {
+      url = "https://github.com/stephaneyfx/numix-cursor-theme/commit/3b647bf768cebb8f127b88e3786f6a9640460197.patch";
+      sha256 = "174kmhlvv76wwvndkys78aqc32051sqg3wzc0xg6b7by4agrbg76";
+      name = "support-inkscape-1-in-numix-cursor-theme.patch";
+    })
+  ];
 
   buildPhase = ''
     patchShebangs .
@@ -23,7 +33,7 @@ stdenv.mkDerivation rec {
     cp -dr --no-preserve='ownership' Numix-Cursor{,-Light} $out/share/icons/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Numix cursor theme";
     homepage = "https://numixproject.github.io";
     license = licenses.gpl3;

@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch
+{ stdenv, fetchFromGitHub, fetchpatch
 , audiofile, libvorbis, fltk, fftw, fftwFloat
-, minixml, pkg-config, libmad, libjack2, portaudio, libsamplerate
+, minixml, pkgconfig, libmad, libjack2, portaudio, libsamplerate
 }:
 
 stdenv.mkDerivation {
@@ -14,7 +14,7 @@ stdenv.mkDerivation {
     sha256 = "06dy03dbz1yznhsn0xvsnkpc5drzwrgxbxdx0hfpsjn2xcg0jrnc";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [
     audiofile
@@ -44,7 +44,7 @@ stdenv.mkDerivation {
     install -Dm555 ./paulstretch $out/bin/paulstretch
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Produces high quality extreme sound stretching";
     longDescription = ''
       This is a program for stretching the audio. It is suitable only for

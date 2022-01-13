@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libpng, rlottie, zlib }:
+{ stdenv, fetchFromGitHub, libpng, rlottie, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "LottieConverter";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/sot-tech/LottieConverter/";
     description = "Lottie converter utility";
     license = licenses.lgpl21Plus;

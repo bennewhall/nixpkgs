@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "hashi-ui";
+  name = "hashi-ui";
   version = "1.3.8";
 
   src = fetchurl {
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     install -m755 -D $src $out/bin/hashi-ui
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jippi/hashi-ui";
     description = "A modern user interface for hashicorp Consul & Nomad";
     platforms = [ "x86_64-linux" ];

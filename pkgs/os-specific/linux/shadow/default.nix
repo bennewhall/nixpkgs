@@ -1,5 +1,5 @@
-{ lib, stdenv, nixosTests, fetchpatch, fetchFromGitHub, autoreconfHook, libxslt
-, libxml2 , docbook_xml_dtd_45, docbook_xsl, itstool, flex, bison, runtimeShell
+{ stdenv, fetchpatch, fetchFromGitHub, autoreconfHook, libxslt, libxml2
+, docbook_xml_dtd_45, docbook_xsl, itstool, flex, bison
 , pam ? null, glibcCross ? null
 }:
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     sha256 = "13407r6qwss00504qy740jghb2dzd561la7dhp47rg8w3g8jarpn";
   };
 
-  buildInputs = lib.optional (pam != null && stdenv.isLinux) pam;
+  buildInputs = stdenv.lib.optional (pam != null && stdenv.isLinux) pam;
   nativeBuildInputs = [autoreconfHook libxslt libxml2
     docbook_xml_dtd_45 docbook_xsl flex bison itstool
     ];
@@ -38,10 +38,7 @@ stdenv.mkDerivation rec {
       # Obtain XML resources from XML catalog (patch adapted from gtk-doc)
       ./respect-xml-catalog-files-var.patch
       dots_in_usernames
-      ./runtime-shell.patch
     ];
-
-  RUNTIME_SHELL = runtimeShell;
 
   # The nix daemon often forbids even creating set[ug]id files.
   postPatch =
@@ -62,9 +59,9 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--enable-man"
     "--with-group-name-max-length=32"
-  ] ++ lib.optional (stdenv.hostPlatform.libc != "glibc") "--disable-nscd";
+  ] ++ stdenv.lib.optional (stdenv.hostPlatform.libc != "glibc") "--disable-nscd";
 
-  preBuild = lib.optionalString (stdenv.hostPlatform.libc == "glibc")
+  preBuild = stdenv.lib.optionalString (stdenv.hostPlatform.libc == "glibc")
     ''
       substituteInPlace lib/nscd.c --replace /usr/sbin/nscd ${glibc.bin}/bin/nscd
     '';
@@ -80,9 +77,7 @@ stdenv.mkDerivation rec {
       mv $out/bin/su $su/bin
     '';
 
-  disallowedReferences = lib.optional (stdenv.buildPlatform != stdenv.hostPlatform) stdenv.shellPackage;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/shadow-maint";
     description = "Suite containing authentication-related tools such as passwd and su";
     license = licenses.bsd3;
@@ -91,6 +86,5 @@ stdenv.mkDerivation rec {
 
   passthru = {
     shellPath = "/bin/nologin";
-    tests = { inherit (nixosTests) shadow; };
   };
 }

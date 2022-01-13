@@ -1,14 +1,13 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.privacyidea;
-  opt = options.services.privacyidea;
 
   uwsgi = pkgs.uwsgi.override { plugins = [ "python3" ]; };
   python = uwsgi.python3;
-  penv = python.withPackages (const [ pkgs.privacyidea ]);
+  penv = python.withPackages (ps: [ ps.privacyidea ]);
   logCfg = pkgs.writeText "privacyidea-log.cfg" ''
     [formatters]
     keys=detail
@@ -58,26 +57,6 @@ in
     services.privacyidea = {
       enable = mkEnableOption "PrivacyIDEA";
 
-      environmentFile = mkOption {
-        type = types.nullOr types.path;
-        default = null;
-        example = "/root/privacyidea.env";
-        description = ''
-          File to load as environment file. Environment variables
-          from this file will be interpolated into the config file
-          using <package>envsubst</package> which is helpful for specifying
-          secrets:
-          <programlisting>
-          { <xref linkend="opt-services.privacyidea.secretKey" /> = "$SECRET"; }
-          </programlisting>
-
-          The environment-file can now specify the actual secret key:
-          <programlisting>
-          SECRET=veryverytopsecret
-          </programlisting>
-        '';
-      };
-
       stateDir = mkOption {
         type = types.str;
         default = "/var/lib/privacyidea";
@@ -113,7 +92,6 @@ in
       encFile = mkOption {
         type = types.str;
         default = "${cfg.stateDir}/enckey";
-        defaultText = literalExpression ''"''${config.${opt.stateDir}}/enckey"'';
         description = ''
           This is used to encrypt the token data and token passwords
         '';
@@ -122,7 +100,6 @@ in
       auditKeyPrivate = mkOption {
         type = types.str;
         default = "${cfg.stateDir}/private.pem";
-        defaultText = literalExpression ''"''${config.${opt.stateDir}}/private.pem"'';
         description = ''
           Private Key for signing the audit log.
         '';
@@ -131,7 +108,6 @@ in
       auditKeyPublic = mkOption {
         type = types.str;
         default = "${cfg.stateDir}/public.pem";
-        defaultText = literalExpression ''"''${config.${opt.stateDir}}/public.pem"'';
         description = ''
           Public key for checking signatures of the audit log.
         '';
@@ -173,6 +149,7 @@ in
 
         configFile = mkOption {
           type = types.path;
+          default = "";
           description = ''
             Path to PrivacyIDEA LDAP Proxy configuration (proxy.ini).
           '';
@@ -197,14 +174,13 @@ in
 
     (mkIf cfg.enable {
 
-      environment.systemPackages = [ pkgs.privacyidea ];
+      environment.systemPackages = [ python.pkgs.privacyidea ];
 
       services.postgresql.enable = mkDefault true;
 
       systemd.services.privacyidea = let
         piuwsgi = pkgs.writeText "uwsgi.json" (builtins.toJSON {
           uwsgi = {
-            buffer-size = 8192;
             plugins = [ "python3" ];
             pythonpath = "${penv}/${uwsgi.python3.sitePackages}";
             socket = "/run/privacyidea/socket";
@@ -230,21 +206,17 @@ in
         wantedBy = [ "multi-user.target" ];
         after = [ "postgresql.service" ];
         path = with pkgs; [ openssl ];
-        environment.PRIVACYIDEA_CONFIGFILE = "${cfg.stateDir}/privacyidea.cfg";
+        environment.PRIVACYIDEA_CONFIGFILE = piCfgFile;
         preStart = let
-          pi-manage = "${config.security.sudo.package}/bin/sudo -u privacyidea -HE ${penv}/bin/pi-manage";
+          pi-manage = "${pkgs.sudo}/bin/sudo -u privacyidea -HE ${penv}/bin/pi-manage";
           pgsu = config.services.postgresql.superUser;
           psql = config.services.postgresql.package;
         in ''
           mkdir -p ${cfg.stateDir} /run/privacyidea
           chown ${cfg.user}:${cfg.group} -R ${cfg.stateDir} /run/privacyidea
-          umask 077
-          ${lib.getBin pkgs.envsubst}/bin/envsubst -o ${cfg.stateDir}/privacyidea.cfg \
-                                                   -i "${piCfgFile}"
-          chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/privacyidea.cfg
           if ! test -e "${cfg.stateDir}/db-created"; then
-            ${config.security.sudo.package}/bin/sudo -u ${pgsu} ${psql}/bin/createuser --no-superuser --no-createdb --no-createrole ${cfg.user}
-            ${config.security.sudo.package}/bin/sudo -u ${pgsu} ${psql}/bin/createdb --owner ${cfg.user} privacyidea
+            ${pkgs.sudo}/bin/sudo -u ${pgsu} ${psql}/bin/createuser --no-superuser --no-createdb --no-createrole ${cfg.user}
+            ${pkgs.sudo}/bin/sudo -u ${pgsu} ${psql}/bin/createdb --owner ${cfg.user} privacyidea
             ${pi-manage} create_enckey
             ${pi-manage} create_audit_keys
             ${pi-manage} createdb
@@ -259,7 +231,6 @@ in
           Type = "notify";
           ExecStart = "${uwsgi}/bin/uwsgi --json ${piuwsgi}";
           ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
-          EnvironmentFile = lib.mkIf (cfg.environmentFile != null) cfg.environmentFile;
           ExecStop = "${pkgs.coreutils}/bin/kill -INT $MAINPID";
           NotifyAccess = "main";
           KillSignal = "SIGQUIT";
@@ -268,7 +239,6 @@ in
 
       users.users.privacyidea = mkIf (cfg.user == "privacyidea") {
         group = cfg.group;
-        isSystemUser = true;
       };
 
       users.groups.privacyidea = mkIf (cfg.group == "privacyidea") {};
@@ -277,7 +247,7 @@ in
     (mkIf cfg.ldap-proxy.enable {
 
       systemd.services.privacyidea-ldap-proxy = let
-        ldap-proxy-env = pkgs.python3.withPackages (ps: [ ps.privacyidea-ldap-proxy ]);
+        ldap-proxy-env = pkgs.python2.withPackages (ps: [ ps.privacyidea-ldap-proxy ]);
       in {
         description = "privacyIDEA LDAP proxy";
         wantedBy = [ "multi-user.target" ];
@@ -299,7 +269,6 @@ in
 
       users.users.pi-ldap-proxy = mkIf (cfg.ldap-proxy.user == "pi-ldap-proxy") {
         group = cfg.ldap-proxy.group;
-        isSystemUser = true;
       };
 
       users.groups.pi-ldap-proxy = mkIf (cfg.ldap-proxy.group == "pi-ldap-proxy") {};

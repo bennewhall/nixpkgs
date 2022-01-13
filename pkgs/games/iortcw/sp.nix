@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, opusfile, libogg, SDL2, openal, freetype
+{ stdenv, fetchFromGitHub, opusfile, libogg, SDL2, openal, freetype
 , libjpeg, curl, makeWrapper }:
 
 stdenv.mkDerivation rec {
@@ -42,11 +42,11 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Single player version of game engine for Return to Castle Wolfenstein";
     homepage = src.meta.homepage;
     license = licenses.gpl3;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ gnidorah ];
   };
 }

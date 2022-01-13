@@ -1,6 +1,6 @@
-{ lib, fetchurl, tcl }:
+{ stdenv, fetchurl, tcl }:
 
-tcl.mkTclDerivation rec {
+stdenv.mkDerivation rec {
   pname = "tcllib";
   version = "1.20";
 
@@ -9,10 +9,16 @@ tcl.mkTclDerivation rec {
     sha256 = "0wax281h6ksz974a5qpfgf9y34lmlpd8i87lkm1w94ybbd3rgc73";
   };
 
+  passthru = {
+    libPrefix = "tcllib${version}";
+  };
+
+  buildInputs = [ tcl ];
+
   meta = {
     homepage = "https://sourceforge.net/projects/tcllib/";
     description = "Tcl-only library of standard routines for Tcl";
-    license = lib.licenses.tcltk;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.tcltk;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

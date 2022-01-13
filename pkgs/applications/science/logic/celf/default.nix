@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, smlnj }:
+{ stdenv, fetchFromGitHub, smlnj }:
 
 stdenv.mkDerivation rec {
   pname = "celf";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     ./.mkexec ${smlnj}/bin/sml $out/bin celf
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Linear logic programming system";
     homepage = "https://github.com/clf/celf";
     license = licenses.gpl3;

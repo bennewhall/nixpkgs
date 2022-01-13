@@ -7,7 +7,7 @@
 , gtk2-x11
 , makeWrapper
 , pango
-, lib, stdenv
+, stdenv
 , xorg
 }:
 
@@ -15,14 +15,14 @@
 let
   wrapBinary = libPaths: binaryName: ''
     wrapProgram "$out/bin/${binaryName}" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath libPaths}"
+      --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath libPaths}"
   '';
   pkg = stdenv.mkDerivation (rec {
     inherit (attrs) version src;
 
     name = "${toolName}-${version}";
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       homepage = "http://bitscope.com/software/";
       license = licenses.unfree;
       platforms = [ "x86_64-linux" ];

@@ -1,27 +1,26 @@
-{ lib, fetchFromGitHub, stdenv, rustPlatform, coreutils, bash, installShellFiles, libiconv }:
+{ stdenv, fetchFromGitHub, rustPlatform, coreutils, bash, installShellFiles }:
 
 rustPlatform.buildRustPackage rec {
   pname = "just";
-  version = "0.10.5";
+  version = "0.7.1";
 
   src = fetchFromGitHub {
     owner = "casey";
     repo = pname;
-    rev = version;
-    sha256 = "sha256-PbWV8It/ubDbZooJdt/KWihnp221Pexs0U6zMa8KSMw=";
+    rev = "v${version}";
+    sha256 = "07fjixz8y5rxfwpyr1kiimnn27jhc20gacd17i0yvfcpy5qf8z5p";
   };
-  cargoSha256 = "sha256-VRfk6566SNmvCxtD9EdDxDdBvQuEfjPVggXzt4VoYRg=";
+
+  cargoSha256 = "1zn0kiqi8p25lscjd661gczay631nwzadl36cfzqnbww6blayy1j";
 
   nativeBuildInputs = [ installShellFiles ];
-  buildInputs = lib.optionals stdenv.isDarwin [ libiconv ];
 
   postInstall = ''
     installManPage man/just.1
 
-    installShellCompletion --cmd just \
-      --bash completions/just.bash \
-      --fish completions/just.fish \
-      --zsh  completions/just.zsh
+    installShellCompletion --bash --name just.bash completions/just.bash
+    installShellCompletion --fish --name just.fish completions/just.fish
+    installShellCompletion --zsh  --name _just     completions/just.zsh
   '';
 
   checkInputs = [ coreutils bash ];
@@ -30,33 +29,23 @@ rustPlatform.buildRustPackage rec {
     # USER must not be empty
     export USER=just-user
     export USERNAME=just-user
-    export JUST_CHOOSER="${coreutils}/bin/cat"
-
-    # Prevent string.rs from being changed
-    cp tests/string.rs $TMPDIR/string.rs
 
     sed -i src/justfile.rs \
         -i tests/*.rs \
         -e "s@/bin/echo@${coreutils}/bin/echo@g" \
-        -e "s@/usr/bin/env@${coreutils}/bin/env@g"
-
-    # Return unchanged string.rs
-    cp $TMPDIR/string.rs tests/string.rs
+        -e "s@#!/usr/bin/env sh@#!${bash}/bin/sh@g" \
+        -e "s@#!/usr/bin/env cat@#!${coreutils}/bin/cat@g" \
+        -e "s@#!/usr/bin/env bash@#!${bash}/bin/sh@g"
   '';
 
-  checkFlags = [
-    "--skip=edit" # trying to run "vim" fails as there's no /usr/bin/env or which in the sandbox to find vim and the dependency is not easily patched
-    "--skip=run_shebang" # test case very rarely fails with "Text file busy"
-    "--skip=invoke_error_function" # wants JUST_CHOOSER to be fzf
-    "--skip=status_error" # "exit status" instead of "exit code"
-    "--skip=exit_status" # "exit status" instead of "exit code"
-  ];
+  # Skip "edit" when running "cargo test",
+  # since this test case needs "cat".
+  checkFlagsArray = [ "--skip=edit" ];
 
-  meta = with lib; {
-    homepage = "https://github.com/casey/just";
-    changelog = "https://github.com/casey/just/blob/${version}/CHANGELOG.md";
+  meta = with stdenv.lib; {
     description = "A handy way to save and run project-specific commands";
+    homepage = "https://github.com/casey/just";
     license = licenses.cc0;
-    maintainers = with maintainers; [ xrelkd jk ];
+    maintainers = with maintainers; [ xrelkd ];
   };
 }

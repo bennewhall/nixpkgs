@@ -1,20 +1,21 @@
-{ lib
-, buildPythonApplication
+{ buildPythonApplication
 , isPy3k
 , daemonize
 , dbus-python
 , fetchFromGitHub
+, fetchpatch
 , gobject-introspection
 , gtk3
 , makeWrapper
 , pygobject3
 , pyudev
 , setproctitle
+, stdenv
 , wrapGAppsHook
 }:
 
 let
-  common = import ./common.nix { inherit lib fetchFromGitHub; };
+  common = import ./common.nix { inherit stdenv fetchFromGitHub; };
 in
 buildPythonApplication (common // rec {
   pname = "openrazer_daemon";
@@ -36,10 +37,6 @@ buildPythonApplication (common // rec {
     pyudev
     setproctitle
   ];
-
-  postPatch = ''
-    substituteInPlace openrazer_daemon/daemon.py --replace "plugdev" "openrazer"
-  '';
 
   postBuild = ''
     DESTDIR="$out" PREFIX="" make install manpages

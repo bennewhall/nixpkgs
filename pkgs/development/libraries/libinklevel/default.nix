@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, libusb1 }:
+{ stdenv, fetchurl, pkg-config, libusb1 }:
 
 stdenv.mkDerivation rec {
   pname = "libinklevel";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" "doc" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for checking the ink level of your printer";
     longDescription = ''
       Libinklevel is a library for checking the ink level of your printer on a

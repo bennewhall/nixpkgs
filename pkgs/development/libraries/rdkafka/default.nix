@@ -1,19 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, zlib, zstd, pkg-config, python3, openssl }:
+{ stdenv, fetchFromGitHub, zlib, perl, pkgconfig, python, openssl }:
 
 stdenv.mkDerivation rec {
   pname = "rdkafka";
-  version = "1.8.2";
+  version = "1.5.2";
 
   src = fetchFromGitHub {
     owner = "edenhill";
     repo = "librdkafka";
     rev = "v${version}";
-    sha256 = "sha256-YagvXeusHThUo5/1mMs+r+Nr03vAagdnFMkwX3hJsq4=";
+    sha256 = "0qm9rvvkqypqh0vpgkrlqgaxkqdvs3finpr5niwxc6ypblc3ir1g";
   };
 
-  nativeBuildInputs = [ pkg-config python3 ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildInputs = [ zlib zstd openssl ];
+  buildInputs = [ zlib perl python openssl ];
 
   NIX_CFLAGS_COMPILE = "-Wno-error=strict-overflow";
 
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "librdkafka - Apache Kafka C/C++ client library";
     homepage = "https://github.com/edenhill/librdkafka";
     license = licenses.bsd2;

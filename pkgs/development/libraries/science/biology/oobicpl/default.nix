@@ -1,36 +1,28 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, cmake
-, libminc
-, bicpl
-, arguments
-, pcre-cpp }:
+{ stdenv, fetchFromGitHub, cmake, libminc, bicpl, arguments, pcre-cpp }:
 
 stdenv.mkDerivation rec {
   pname = "oobicpl";
-  version = "unstable-2020-08-12";
+  version = "unstable-2016-03-02";
+
+  owner = "BIC-MNI";
 
   src = fetchFromGitHub {
-    owner  = "BIC-MNI";
+    inherit owner;
     repo   = pname;
-    rev    = "a9409da8a5bb4925438f32aff577b6333faec28b";
-    sha256 = "0b4chjhr32wbb1sash8cq1jfnr7rzdq84hif8anlrjqd3l0gw357";
+    rev    = "bc062a65dead2e58461f5afb37abedfa6173f10c";
+    sha256 = "05l4ml9djw17bgdnrldhcxydrzkr2f2scqlyak52ph5azj5n4zsx";
   };
 
   nativeBuildInputs = [ cmake ];
-
   buildInputs = [ libminc bicpl arguments pcre-cpp ];
 
-  cmakeFlags = [
-    "-DLIBMINC_DIR=${libminc}/lib/cmake"
-    "-DBICPL_DIR=${bicpl}/lib"
-    "-DARGUMENTS_DIR=${arguments}/lib"
-    "-DOOBICPL_BUILD_SHARED_LIBS=TRUE"
-  ];
+  cmakeFlags = [ "-DLIBMINC_DIR=${libminc}/lib/cmake"
+                 "-DBICPL_DIR=${bicpl}/lib"
+                 "-DARGUMENTS_DIR=${arguments}/lib"
+                 "-DOOBICPL_BUILD_SHARED_LIBS=TRUE" ];
 
-  meta = with lib; {
-    homepage = "https://github.com/BIC-MNI/oobicpl";
+  meta = with stdenv.lib; {
+    homepage = "https://github.com/${owner}/${pname}";
     description = "Brain Imaging Centre object-oriented programming library (and tools)";
     maintainers = with maintainers; [ bcdarwin ];
     platforms = platforms.unix;

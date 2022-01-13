@@ -1,4 +1,4 @@
-{ stdenv, lib }:
+{stdenv}:
 
 rec {
   composeXcodeWrapper = import ./compose-xcodewrapper.nix {
@@ -6,10 +6,10 @@ rec {
   };
 
   buildApp = import ./build-app.nix {
-    inherit stdenv lib composeXcodeWrapper;
+    inherit stdenv composeXcodeWrapper;
   };
 
   simulateApp = import ./simulate-app.nix {
-    inherit stdenv lib composeXcodeWrapper;
+    inherit stdenv composeXcodeWrapper;
   };
 }

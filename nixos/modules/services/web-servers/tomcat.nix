@@ -24,8 +24,8 @@ in
       package = mkOption {
         type = types.package;
         default = pkgs.tomcat85;
-        defaultText = literalExpression "pkgs.tomcat85";
-        example = lib.literalExpression "pkgs.tomcat9";
+        defaultText = "pkgs.tomcat85";
+        example = lib.literalExample "pkgs.tomcat9";
         description = ''
           Which tomcat package to use.
         '';
@@ -74,7 +74,6 @@ in
 
       extraGroups = mkOption {
         default = [];
-        type = types.listOf types.str;
         example = [ "users" ];
         description = "Defines extra groups to which the tomcat user belongs.";
       };
@@ -127,7 +126,7 @@ in
       webapps = mkOption {
         type = types.listOf types.path;
         default = [ tomcat.webapps ];
-        defaultText = literalExpression "[ pkgs.tomcat85.webapps ]";
+        defaultText = "[ pkgs.tomcat85.webapps ]";
         description = "List containing WAR files or directories with WAR files which are web applications to be deployed on Tomcat";
       };
 
@@ -166,7 +165,7 @@ in
       jdk = mkOption {
         type = types.package;
         default = pkgs.jdk;
-        defaultText = literalExpression "pkgs.jdk";
+        defaultText = "pkgs.jdk";
         description = "Which JDK to use.";
       };
 

@@ -1,22 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, kernel }:
+{ stdenv, fetchFromGitHub, kernel }:
 
 stdenv.mkDerivation rec {
   pname = "acpi-call";
-  version = "1.2.2";
-  name = "${pname}-${version}-${kernel.version}";
+  version = "2020-04-07-${kernel.version}";
 
   src = fetchFromGitHub {
     owner = "nix-community";
     repo = "acpi_call";
-    rev = "v${version}";
-    sha256 = "1s7h9y3adyfhw7cjldlfmid79lrwz3vqlvziw9nwd6x5qdj4w9vp";
+    rev = "3d7c9fe5ed3fc5ed5bafd39d54b1fdc7a09ce710";
+    sha256 = "09kp8zl392h99wjwzqrdw2xcfnsc944hzmfwi8n1y7m2slpdybv3";
   };
 
   hardeningDisable = [ "pic" ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
 
-  makeFlags = kernel.makeFlags ++ [
+  makeFlags = [
     "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
   ];
 
@@ -25,11 +24,10 @@ stdenv.mkDerivation rec {
     install -D -m755 examples/turn_off_gpu.sh $out/bin/test_discrete_video_off.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ raskin mic92 ];
-    homepage = "https://github.com/nix-community/acpi_call";
+    inherit (src.meta) homepage;
     platforms = platforms.linux;
     description = "A module allowing arbitrary ACPI calls; use case: hybrid video";
-    license = licenses.gpl3Plus;
   };
 }

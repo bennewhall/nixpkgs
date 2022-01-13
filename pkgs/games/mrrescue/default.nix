@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, love, lua, makeWrapper, makeDesktopItem }:
+{ stdenv, fetchurl, love, lua, makeWrapper, makeDesktopItem }:
 
 let
   pname = "mrrescue";
@@ -13,13 +13,13 @@ let
     name = "mrrescue";
     exec = pname;
     icon = icon;
-    comment = "Arcade-style fire fighting game";
+    comment = "Arcade-style fire fighting game"; 
     desktopName = "Mr. Rescue";
     genericName = "mrrescue";
     categories = "Game;";
   };
 
-in
+in 
 
 stdenv.mkDerivation {
   name = "${pname}-${version}";
@@ -29,9 +29,10 @@ stdenv.mkDerivation {
     sha256 = "0kzahxrgpb4vsk9yavy7f8nc34d62d1jqjrpsxslmy9ywax4yfpi";
   };
 
-  nativeBuildInputs = [ lua love makeWrapper ];
+  nativeBuildInputs = [ lua love ];
+  buildInputs = [ makeWrapper ];
 
-  dontUnpack = true;
+  phases = "installPhase";
 
   installPhase =
   ''
@@ -47,7 +48,7 @@ stdenv.mkDerivation {
     ln -s ${desktopItem}/share/applications/* $out/share/applications/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Arcade-style fire fighting game";
     maintainers = with maintainers; [ ];
     platforms = platforms.linux;

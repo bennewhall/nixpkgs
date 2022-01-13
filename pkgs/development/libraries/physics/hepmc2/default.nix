@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake }:
+{ stdenv, fetchurl, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "hepmc";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     "-Dlength:STRING=MM"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The HepMC package is an object oriented event record written in C++ for High Energy Physics Monte Carlo Generators";
     license     = licenses.lgpl21;
     homepage    = "http://hepmc.web.cern.ch/hepmc/";

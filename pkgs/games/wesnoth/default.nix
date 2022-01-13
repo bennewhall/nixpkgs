@@ -1,26 +1,31 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, SDL2, SDL2_image, SDL2_mixer, SDL2_net, SDL2_ttf
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, SDL2, SDL2_image, SDL2_mixer, SDL2_net, SDL2_ttf
 , pango, gettext, boost, libvorbis, fribidi, dbus, libpng, pcre, openssl, icu
 , Cocoa, Foundation
+, enableTools ? false
 }:
 
 stdenv.mkDerivation rec {
   pname = "wesnoth";
-  version = "1.16.1";
+  version = "1.14.14";
 
   src = fetchFromGitHub {
     rev = version;
     owner = "wesnoth";
     repo = "wesnoth";
-    sha256 = "sha256-eRegE+Q5dEtuT2XRKAK0sycRuK6sdSXKS6aLCsBDU8g=";
+    sha256 = "0rawcm3d1qwf4wxqcbjipl6h30sfv7z70viji28q4givi5hysvka";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [ SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf pango gettext boost
                   libvorbis fribidi dbus libpng pcre openssl icu ]
-                ++ lib.optionals stdenv.isDarwin [ Cocoa Foundation];
+                ++ stdenv.lib.optionals stdenv.isDarwin [ Cocoa Foundation];
 
-  meta = with lib; {
+  cmakeFlags = [ "-DENABLE_TOOLS=${if enableTools then "ON" else "OFF"}" ];
+
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "The Battle for Wesnoth, a free, turn-based strategy game with a fantasy theme";
     longDescription = ''
       The Battle for Wesnoth is a Free, turn-based tactical strategy
@@ -31,7 +36,7 @@ stdenv.mkDerivation rec {
     '';
 
     homepage = "https://www.wesnoth.org/";
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ abbradar ];
     platforms = platforms.unix;
   };

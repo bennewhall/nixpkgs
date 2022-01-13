@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , rustPlatform
 , fetchFromGitHub
 , pkg-config
@@ -18,22 +17,17 @@ rustPlatform.buildRustPackage rec {
     sha256 = "07zz0dj0wjwrc1rmayz7s8kpcv03i0ygl4vfwsam72qd4nf6v538";
   };
 
-  cargoSha256 = "04gj9gaysjcm2d81ds2raak847hr8w84jgfdwqd51wi8xm32w5jf";
+  cargoSha256 = "1nbfbmm9v1yp7380zdzz7qrc7x6krwlvgn5x5yzb8yn1rc99jzx4";
 
-  nativeBuildInputs = lib.optionals stdenv.isLinux [
-    pkg-config
-  ];
+  nativeBuildInputs = stdenv.lib.optionals stdenv.isLinux [ pkg-config ];
+  buildInputs = [ ]
+    ++ stdenv.lib.optionals stdenv.isLinux [ openssl ]
+    ++ stdenv.lib.optionals stdenv.isDarwin [ Security ];
 
-  buildInputs = lib.optionals stdenv.isLinux [
-    openssl
-  ] ++ lib.optionals stdenv.isDarwin [
-    Security
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "HTTP load testing application inspired by Ansible syntax";
     homepage = "https://github.com/fcsonline/drill";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ Br1ght0ne ];
   };
 }

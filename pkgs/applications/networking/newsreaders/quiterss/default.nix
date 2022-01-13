@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, qmake, pkg-config, wrapQtAppsHook
+{ stdenv, fetchFromGitHub, qmake, pkg-config, wrapQtAppsHook
 , qtbase, qttools, qtwebkit, sqlite
 }:
 
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ qmake pkg-config wrapQtAppsHook ];
   buildInputs = [ qtbase qttools qtwebkit sqlite.dev ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Qt-based RSS/Atom news feed reader";
     longDescription = ''
       QuiteRSS is a open-source cross-platform RSS/Atom news feeds reader

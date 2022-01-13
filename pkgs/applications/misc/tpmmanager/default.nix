@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit, qt4, qmake4Hook, trousers }:
+{ stdenv, fetchgit, qt4, qmake4Hook, trousers }:
 
 stdenv.mkDerivation rec {
   version = "0.8.1";
@@ -33,8 +33,9 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://projects.sirrix.com/trac/tpmmanager";
     description = "Tool for managing the TPM";
-    license = lib.licenses.gpl2;
-    maintainers = with lib.maintainers; [ tstrobel ];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ tstrobel ];
+    platforms = with stdenv.lib.platforms; linux;
+    inherit version;
   };
 }

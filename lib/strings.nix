@@ -89,13 +89,13 @@ rec {
         => "usr/local/bin"
   */
   concatStringsSep = builtins.concatStringsSep or (separator: list:
-    lib.foldl' (x: y: x + y) "" (intersperse separator list));
+    concatStrings (intersperse separator list));
 
   /* Maps a function over a list of strings and then concatenates the
      result with the specified separator interspersed between
      elements.
 
-     Type: concatMapStringsSep :: string -> (a -> string) -> [a] -> string
+     Type: concatMapStringsSep :: string -> (string -> string) -> [string] -> string
 
      Example:
         concatMapStringsSep "-" (x: toUpper x)  ["foo" "bar" "baz"]
@@ -112,7 +112,7 @@ rec {
   /* Same as `concatMapStringsSep`, but the mapping function
      additionally receives the position of its argument.
 
-     Type: concatIMapStringsSep :: string -> (int -> a -> string) -> [a] -> string
+     Type: concatIMapStringsSep :: string -> (int -> string -> string) -> [string] -> string
 
      Example:
        concatImapStringsSep "-" (pos: x: toString (x / pos)) [ 6 6 6 ]
@@ -362,19 +362,6 @@ rec {
     if match "[a-zA-Z_][a-zA-Z0-9_'-]*" s != null
     then s else escapeNixString s;
 
-  /* Escapes a string such that it is safe to include verbatim in an XML
-     document.
-
-     Type: string -> string
-
-     Example:
-       escapeXML ''"test" 'test' < & >''
-       => "&quot;test&quot; &apos;test&apos; &lt; &amp; &gt;"
-  */
-  escapeXML = builtins.replaceStrings
-    ["\"" "'" "<" ">" "&"]
-    ["&quot;" "&apos;" "&lt;" "&gt;" "&amp;"];
-
   # Obsolete - use replaceStrings instead.
   replaceChars = builtins.replaceStrings or (
     del: new: s:
@@ -619,7 +606,7 @@ rec {
      This function will fail if the input string is longer than the
      requested length.
 
-     Type: fixedWidthString :: int -> string -> string -> string
+     Type: fixedWidthString :: int -> string -> string
 
      Example:
        fixedWidthString 5 "0" (toString 15)
@@ -657,8 +644,8 @@ rec {
   floatToString = float: let
     result = toString float;
     precise = float == fromJSON result;
-  in lib.warnIf (!precise) "Imprecise conversion from float to string ${result}"
-    result;
+  in if precise then result
+    else lib.warn "Imprecise conversion from float to string ${result}" result;
 
   /* Check whether a value can be coerced to a string */
   isCoercibleToString = x:
@@ -672,7 +659,7 @@ rec {
      Example:
        isStorePath "/nix/store/d945ibfx9x185xf04b890y4f9g3cbb63-python-2.7.11/bin/python"
        => false
-       isStorePath "/nix/store/d945ibfx9x185xf04b890y4f9g3cbb63-python-2.7.11"
+       isStorePath "/nix/store/d945ibfx9x185xf04b890y4f9g3cbb63-python-2.7.11/"
        => true
        isStorePath pkgs.python
        => true
@@ -680,7 +667,7 @@ rec {
        => false
   */
   isStorePath = x:
-    if !(isList x) && isCoercibleToString x then
+    if isCoercibleToString x then
       let str = toString x; in
       substring 0 1 str == "/"
       && dirOf str == storeDir

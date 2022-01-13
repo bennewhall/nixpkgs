@@ -1,34 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, pkg-config, asciidoc
-, makeWrapper, jansson, jose, cryptsetup, curl, libpwquality, luksmeta
-, coreutils, tpm2-tools
+{ lib, stdenv, fetchFromGitHub, meson, ninja, pkgconfig, asciidoc
+, jansson, jose, cryptsetup, curl, libpwquality, luksmeta
 }:
 
 stdenv.mkDerivation rec {
   pname = "clevis";
-  version = "18";
+  version = "15";
 
   src = fetchFromGitHub {
     owner = "latchset";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-m1UhyjD5ydSgCTBu6sECLlxFx0rnQxFnBA7frbdUqU8=";
+    sha256 = "0wfgd2v1r47ckh5qp60b903191fx0fa27zyadxlsb8riqszhmwvz";
   };
 
-  postPatch = ''
-    for f in $(find src/ -type f); do
-      grep -q "/bin/cat" "$f" && substituteInPlace "$f" \
-        --replace '/bin/cat' '${coreutils}/bin/cat' || true
-    done
-  '';
-
-  postInstall = ''
-    # We wrap the main clevis binary entrypoint but not the sub-binaries.
-    wrapProgram $out/bin/clevis \
-      --prefix PATH ':' "${tpm2-tools}/bin:${jose}/bin:${placeholder "out"}/bin"
-  '';
-
-  nativeBuildInputs = [ meson ninja pkg-config asciidoc makeWrapper ];
-  buildInputs = [ jansson jose cryptsetup curl libpwquality luksmeta tpm2-tools ];
+  nativeBuildInputs = [ meson ninja pkgconfig asciidoc ];
+  buildInputs = [ jansson jose cryptsetup curl libpwquality luksmeta ];
 
   outputs = [ "out" "man" ];
 

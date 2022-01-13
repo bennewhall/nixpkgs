@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip, libpng, zlib, zopfli }:
+{ stdenv, fetchzip, libpng, zlib, zopfli }:
 
 stdenv.mkDerivation rec {
   pname = "apngasm";
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Create highly optimized Animated PNG files from PNG/TGA images";
     homepage = "http://apngasm.sourceforge.net/";
     license = licenses.zlib;

@@ -1,12 +1,7 @@
-{ lib, stdenv, fetchurl, makeWrapper }:
+{ stdenv, fetchurl, makeWrapper }:
 
 let
   options = rec {
-    aarch64-darwin = {
-      version = "2.1.2";
-      system = "arm64-darwin";
-      sha256 = "sha256-H0ALigXcWIypdA+fTf7jERscwbb7QIAfcoxCtGDh0RU=";
-    };
     x86_64-darwin = {
       version = "1.2.11";
       system = "x86-64-darwin";
@@ -56,7 +51,7 @@ stdenv.mkDerivation rec {
     sha256 = cfg.sha256;
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -70,11 +65,11 @@ stdenv.mkDerivation rec {
       --add-flags "--core $out/share/sbcl/sbcl.core"
   '';
 
-  postFixup = lib.optionalString (!stdenv.isAarch32 && stdenv.isLinux) ''
+  postFixup = stdenv.lib.optionalString (!stdenv.isAarch32 && stdenv.isLinux) ''
     patchelf --set-interpreter $(cat $NIX_CC/nix-support/dynamic-linker) $out/share/sbcl/sbcl
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lisp compiler";
     homepage = "http://www.sbcl.org";
     license = licenses.publicDomain; # and FreeBSD

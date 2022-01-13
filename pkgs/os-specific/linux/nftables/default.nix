@@ -1,25 +1,25 @@
-{ lib, stdenv, fetchurl, pkg-config, bison, file, flex
+{ stdenv, fetchurl, pkgconfig, bison, file, flex
 , asciidoc, libxslt, findXMLCatalogs, docbook_xml_dtd_45, docbook_xsl
 , libmnl, libnftnl, libpcap
 , gmp, jansson, readline
 , withDebugSymbols ? false
 , withPython ? false , python3
-, withXtables ? true , iptables
+, withXtables ? false , iptables
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
-  version = "1.0.1";
+  version = "0.9.7";
   pname = "nftables";
 
   src = fetchurl {
     url = "https://netfilter.org/projects/nftables/files/${pname}-${version}.tar.bz2";
-    sha256 = "08x4xw0s5sap3q7jfr91v7mrkxrydi4dvsckw85ims0qb1ibmviw";
+    sha256 = "1c1c2475nifncv0ng8z77h2dpanlsx0bhqm15k00jb3a6a68lszy";
   };
 
   nativeBuildInputs = [
-    pkg-config bison file flex
+    pkgconfig bison file flex
     asciidoc docbook_xml_dtd_45 docbook_xsl findXMLCatalogs libxslt
   ];
 
@@ -35,7 +35,6 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--with-json"
-    "--with-cli=readline"  # TODO: maybe switch to editline
   ] ++ optional (!withDebugSymbols) "--disable-debug"
     ++ optional (!withPython) "--disable-python"
     ++ optional withPython "--enable-python"
@@ -44,8 +43,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "The project that aims to replace the existing {ip,ip6,arp,eb}tables framework";
     homepage = "https://netfilter.org/projects/nftables/";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ izorkin ajs124 ];
+    maintainers = with maintainers; [ izorkin ];
   };
 }

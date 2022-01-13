@@ -5,7 +5,7 @@
 , stups-cli-support
 , stups-zign
 , pytest
-, pytest-cov
+, pytestcov
 , isPy3k
 }:
 
@@ -33,7 +33,7 @@ buildPythonPackage rec {
 
   checkInputs = [
     pytest
-    pytest-cov
+    pytestcov
   ];
 
   meta = with lib; {

@@ -1,45 +1,57 @@
 { stdenv
-, boost
-, cmake
-, cudatoolkit
-, cudnn
-, eigen
-, fetchFromGitHub
-, gperftools
+, gcc8Stdenv
 , lib
 , libzip
+, boost
+, cmake
 , makeWrapper
-, mesa
-, ocl-icd
-, opencl-headers
-, openssl
-, writeShellScriptBin
-, enableAVX2 ? stdenv.hostPlatform.avx2Support
+, fetchFromGitHub
+, fetchpatch
+, cudnn ? null
+, cudatoolkit ? null
+, mesa ? null
+, opencl-headers ? null
+, ocl-icd ? null
+, gperftools ? null
+, eigen ? null
+, enableAVX2 ? false
 , enableBigBoards ? false
 , enableCuda ? false
-, enableContrib ? false
 , enableGPU ? true
-, enableTcmalloc ? true
-}:
+, enableTcmalloc ? true}:
 
 assert !enableGPU -> (
+  eigen != null &&
   !enableCuda);
 
-# N.b. older versions of cuda toolkit (e.g. 10) do not support newer versions
-# of gcc.  If you need to use cuda10, please override stdenv with gcc8Stdenv
-stdenv.mkDerivation rec {
+assert enableCuda -> (
+  mesa != null &&
+  cudatoolkit != null &&
+  cudnn != null);
+
+assert !enableCuda -> (
+  !enableGPU || (
+    opencl-headers != null &&
+    ocl-icd != null));
+
+assert enableTcmalloc -> (
+  gperftools != null);
+
+let
+  env = if enableCuda
+    then gcc8Stdenv
+    else stdenv;
+
+in env.mkDerivation rec {
   pname = "katago";
-  version = "1.10.0";
-  githash = "ff49d04ad6bcfa056c63492439a41e2f3bce0847";
+  version = "1.6.1";
 
   src = fetchFromGitHub {
     owner = "lightvector";
     repo = "katago";
     rev = "v${version}";
-    sha256 = "sha256-ZLJNNjZ5RdOktWDp88d/ItpokANl2EJ0Gbt9oMGm1Og=";
+    sha256 = "030ff9prnvpadgcb4x4hx6b6ggg10bwqcj8vd8nwrdz9sjq67yf7";
   };
-
-  fakegit = writeShellScriptBin "git" "echo ${githash}";
 
   nativeBuildInputs = [
     cmake
@@ -57,8 +69,6 @@ stdenv.mkDerivation rec {
   ] ++ lib.optionals (enableGPU && !enableCuda) [
     opencl-headers
     ocl-icd
-  ] ++ lib.optionals enableContrib [
-    openssl
   ] ++ lib.optionals enableTcmalloc [
     gperftools
   ];
@@ -73,10 +83,6 @@ stdenv.mkDerivation rec {
     "-DUSE_BACKEND=CUDA"
   ] ++ lib.optionals (enableGPU && !enableCuda) [
     "-DUSE_BACKEND=OPENCL"
-  ] ++ lib.optionals enableContrib [
-    "-DBUILD_DISTRIBUTED=1"
-    "-DNO_GIT_REVISION=OFF"
-    "-DGIT_EXECUTABLE=${fakegit}/bin/git"
   ] ++ lib.optionals enableTcmalloc [
     "-DUSE_TCMALLOC=ON"
   ] ++ lib.optionals enableBigBoards [
@@ -91,16 +97,15 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    runHook preInstall
     mkdir -p $out/bin; cp katago $out/bin;
   '' + lib.optionalString enableCuda ''
     wrapProgram $out/bin/katago \
       --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib"
-  '' + ''
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "Go engine modeled after AlphaGo Zero";
     homepage    = "https://github.com/lightvector/katago";
     license     = licenses.mit;

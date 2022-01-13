@@ -1,4 +1,4 @@
-{lib, stdenv, fetchgit
+{stdenv, fetchgit
 , wxGTK, perl, python2, zlib, libGLU, libGL, libX11
 , automake, autoconf
 }:
@@ -41,10 +41,11 @@ stdenv.mkDerivation rec {
   '';
 
   meta = {
+    inherit version;
     description = "Cellular automata simulation program";
-    license = lib.licenses.gpl2;
-    maintainers = [lib.maintainers.raskin];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
     downloadPage = "https://sourceforge.net/projects/golly/files/golly";
   };
 }

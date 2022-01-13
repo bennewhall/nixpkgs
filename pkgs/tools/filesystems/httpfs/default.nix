@@ -1,17 +1,16 @@
-{ fetchurl, lib, stdenv, pkg-config, fuse, openssl, asciidoc
+{ fetchurl, stdenv, pkgconfig, fuse, openssl, asciidoc
 , docbook_xml_dtd_45, docbook_xsl , libxml2, libxslt }:
 
 stdenv.mkDerivation rec {
-  pname = "httpfs2";
-  version = "0.1.5";
+  name = "httpfs2-0.1.5";
 
   src = fetchurl {
-    url = "mirror://sourceforge/httpfs/httpfs2/httpfs2-${version}.tar.gz";
+    url = "mirror://sourceforge/httpfs/httpfs2/${name}.tar.gz";
     sha256 = "1h8ggvhw30n2r6w11n1s458ypggdqx6ldwd61ma4yd7binrlpjq1";
   };
 
   buildInputs =
-    [ pkg-config fuse openssl
+    [ pkgconfig fuse openssl
       asciidoc docbook_xml_dtd_45 docbook_xsl libxml2 libxslt
     ];
 
@@ -28,9 +27,9 @@ stdenv.mkDerivation rec {
 
     homepage = "http://httpfs.sourceforge.net/";
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = [ ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pbr
@@ -19,11 +19,7 @@ buildPythonPackage rec {
   buildInputs = [ pbr ];
   propagatedBuildInputs = [ pythonix ];
 
-  # does not have any tests
-  doCheck = false;
-  pythonImportsCheck = [ "nixpkgs" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Allows to `from nixpkgs import` stuff in interactive Python sessions";
     homepage = "https://github.com/t184256/nixpkgs-python-importer";
     license = licenses.mit;

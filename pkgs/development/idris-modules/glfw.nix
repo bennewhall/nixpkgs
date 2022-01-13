@@ -10,7 +10,7 @@ build-idris-package  {
 
   idrisDeps = [ effects ];
 
-  nativeBuildInputs = [ pkgs.pkg-config ];
+  nativeBuildInputs = [ pkgs.pkgconfig ];
   extraBuildInputs = [ pkgs.glfw ];
 
   postPatch = ''

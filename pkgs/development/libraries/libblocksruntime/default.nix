@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, clang }:
+{ stdenv, fetchFromGitHub, clang }:
 
 stdenv.mkDerivation {
-  pname = "blocksruntime";
-  version = "unstable-2014-06-24";
+  name = "blocksruntime-20140624";
 
   src = fetchFromGitHub {
     owner = "mackyle";
@@ -26,7 +25,7 @@ stdenv.mkDerivation {
 
   installPhase = ''prefix="/" DESTDIR=$out ./installlib'';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Installs the BlocksRuntime library from the compiler-rt";
     homepage = "https://github.com/mackyle/blocksruntime";
     license = licenses.mit;

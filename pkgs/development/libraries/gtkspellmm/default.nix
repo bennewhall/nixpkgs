@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl
-, pkg-config
+{ stdenv, fetchurl
+, pkgconfig
 , gtk3, glib, glibmm, gtkmm3, gtkspell3
 }:
 
@@ -17,12 +17,12 @@ stdenv.mkDerivation rec {
     gtkspell3
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     gtk3 glib glibmm gtkmm3
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ binding for the gtkspell library";
     homepage = "http://gtkspell.sourceforge.net/";
     license = licenses.gpl2;

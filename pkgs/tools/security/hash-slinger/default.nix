@@ -1,63 +1,45 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, python3
-, unbound
-, libreswan
-}:
+{ stdenv, fetchFromGitHub, pythonPackages, unbound, libreswan }:
 
-stdenv.mkDerivation rec {
-  pname = "hash-slinger";
-  version = "3.1";
+let
+  inherit (pythonPackages) python;
+in stdenv.mkDerivation rec {
+  pname    = "hash-slinger";
+  version = "2.7";
 
   src = fetchFromGitHub {
     owner = "letoams";
     repo = pname;
     rev = version;
-    sha256 = "sha256-mhMUdZt846QjwRIh2m/4EE+93fUcCKc2FFeoFpzKYvk=";
+    sha256 = "05wn744ydclpnpyah6yfjqlfjlasrrhzj48lqmm5a91nyps5yqyn";
   };
 
-  pythonPath = with python3.pkgs; [
-    dnspython
-    m2crypto
-    python-gnupg
-    pyunbound
-  ];
+  pythonPath = with pythonPackages; [ dnspython m2crypto ipaddr python-gnupg
+                                      pyunbound ];
 
-  buildInputs = [
-    python3.pkgs.wrapPython
-  ];
+  buildInputs = [ pythonPackages.wrapPython ];
+  propagatedBuildInputs = [ unbound libreswan ] ++ pythonPath;
+  propagatedUserEnvPkgs = [ unbound libreswan ];
 
-  propagatedBuildInputs = [
-    unbound
-    libreswan
-  ] ++ pythonPath;
-
-  propagatedUserEnvPkgs = [
-    unbound
-    libreswan
-  ];
-
-  postPatch = ''
+  patchPhase = ''
     substituteInPlace Makefile \
       --replace "$(DESTDIR)/usr" "$out"
     substituteInPlace ipseckey \
       --replace "/usr/sbin/ipsec" "${libreswan}/sbin/ipsec"
     substituteInPlace tlsa \
-      --replace "/var/lib/unbound/root" "${python3.pkgs.pyunbound}/etc/pyunbound/root"
+      --replace "/var/lib/unbound/root" "${pythonPackages.pyunbound}/etc/pyunbound/root"
     patchShebangs *
-  '';
+    '';
 
   installPhase = ''
-    mkdir -p $out/bin $out/man $out/lib/${python3.libPrefix}/site-packages
+    mkdir -p $out/bin $out/man $out/${python.sitePackages}/
     make install
     wrapPythonPrograms
-  '';
+   '';
 
-  meta = with lib; {
+   meta = {
     description = "Various tools to generate special DNS records";
-    homepage = "https://github.com/letoams/hash-slinger";
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ leenaars ];
+    homepage    = "https://github.com/letoams/hash-slinger";
+    license     = stdenv.lib.licenses.gpl2Plus;
+    maintainers = [ stdenv.lib.maintainers.leenaars ];
   };
 }

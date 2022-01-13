@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "ratools";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     install -vD man/* -t $out/share/man/man8
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A fast, dynamic, multi-threading framework for IPv6 Router Advertisements";
     homepage = "https://github.com/danrl/ratools";
     license = licenses.asl20;

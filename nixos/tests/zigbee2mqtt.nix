@@ -1,4 +1,4 @@
-import ./make-test-python.nix ({ pkgs, lib, ... }:
+import ./make-test-python.nix ({ pkgs, ... }:
 
   {
     machine = { pkgs, ... }:
@@ -6,8 +6,6 @@ import ./make-test-python.nix ({ pkgs, lib, ... }:
         services.zigbee2mqtt = {
           enable = true;
         };
-
-        systemd.services.zigbee2mqtt.serviceConfig.DevicePolicy = lib.mkForce "auto";
       };
 
     testScript = ''
@@ -16,8 +14,6 @@ import ./make-test-python.nix ({ pkgs, lib, ... }:
       machine.succeed(
           "journalctl -eu zigbee2mqtt | grep \"Error: Error while opening serialport 'Error: Error: No such file or directory, cannot open /dev/ttyACM0'\""
       )
-
-      machine.log(machine.succeed("systemd-analyze security zigbee2mqtt.service"))
     '';
   }
 )

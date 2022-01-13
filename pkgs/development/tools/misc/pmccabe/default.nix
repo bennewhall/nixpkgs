@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "pmccabe";
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "McCabe-style function complexity and line counting for C and C++";
     homepage = "https://people.debian.org/~bame/pmccabe/";
     license = licenses.gpl2Plus;

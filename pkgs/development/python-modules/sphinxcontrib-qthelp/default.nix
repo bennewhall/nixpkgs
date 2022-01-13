@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy27
@@ -18,7 +18,7 @@ buildPythonPackage rec {
   # Check is disabled due to circular dependency of sphinx
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "sphinxcontrib-qthelp is a sphinx extension which outputs QtHelp document.";
     homepage = "http://sphinx-doc.org/";
     license = licenses.bsd0;

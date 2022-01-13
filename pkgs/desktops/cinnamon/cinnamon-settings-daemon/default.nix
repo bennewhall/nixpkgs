@@ -1,19 +1,20 @@
 { fetchFromGitHub
+, autoconf-archive
+, autoreconfHook
 , cinnamon-desktop
-, cinnamon-translations
 , colord
 , glib
 , gsettings-desktop-schemas
 , gtk3
+, intltool
 , lcms2
 , libcanberra-gtk3
 , libgnomekbd
 , libnotify
 , libxklavier
 , wrapGAppsHook
-, pkg-config
+, pkgconfig
 , pulseaudio
-, lib
 , stdenv
 , systemd
 , upower
@@ -28,15 +29,11 @@
 , tzdata
 , nss
 , libgudev
-, meson
-, ninja
-, dbus
-, dbus-glib
 }:
 
 stdenv.mkDerivation rec {
   pname = "cinnamon-settings-daemon";
-  version = "5.2.0";
+  version = "4.6.4";
 
   /* csd-power-manager.c:50:10: fatal error: csd-power-proxy.h: No such file or directory
    #include "csd-power-proxy.h"
@@ -51,15 +48,14 @@ stdenv.mkDerivation rec {
     owner = "linuxmint";
     repo = pname;
     rev = version;
-    hash = "sha256-6omif4UxMrXWxL+R9lQ8ogxotW+3E9Kp99toH3PJtaU=";
+    sha256 = "1xcjzjfwnzvkv9jiyw8adsjyhz92almzhyfwb91115774zgqnb7m";
   };
 
   patches = [
     ./csd-backlight-helper-fix.patch
-    ./use-sane-install-dir.patch
   ];
 
-  mesonFlags = [ "-Dc_args=-I${glib.dev}/include/gio-unix-2.0" ];
+  NIX_CFLAGS_COMPILE = "-I${glib.dev}/include/gio-unix-2.0"; # TODO: https://github.com/NixOS/nixpkgs/issues/36468
 
   buildInputs = [
     cinnamon-desktop
@@ -89,15 +85,14 @@ stdenv.mkDerivation rec {
     fontconfig
     nss
     libgudev
-    dbus
-    dbus-glib
   ];
 
   nativeBuildInputs = [
-    meson
-    ninja
+    autoconf-archive
+    autoreconfHook
     wrapGAppsHook
-    pkg-config
+    intltool
+    pkgconfig
   ];
 
   outputs = [ "out" "dev" ];
@@ -106,22 +101,17 @@ stdenv.mkDerivation rec {
     sed "s|/usr/share/zoneinfo|${tzdata}/share/zoneinfo|g" -i plugins/datetime/system-timezone.h
   '';
 
-  # use locales from cinnamon-translations (not using --localedir because datadir is used)
-  postInstall = ''
-    ln -s ${cinnamon-translations}/share/locale $out/share/locale
-  '';
-
   # So the polkit policy can reference /run/current-system/sw/bin/cinnamon-settings-daemon/csd-backlight-helper
   postFixup = ''
     mkdir -p $out/bin/cinnamon-settings-daemon
     ln -s $out/libexec/csd-backlight-helper $out/bin/cinnamon-settings-daemon/csd-backlight-helper
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/linuxmint/cinnamon-settings-daemon";
     description = "The settings daemon for the Cinnamon desktop";
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = teams.cinnamon.members;
+    maintainers = [ maintainers.mkg20001 ];
   };
 }

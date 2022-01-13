@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, bison, flex }:
+{ stdenv, fetchFromGitHub, bison, flex }:
 
 stdenv.mkDerivation rec {
   pname = "iouyap";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     install -D -m555 iouyap $out/bin/iouyap;
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bridge IOU to UDP, TAP and Ethernet";
     inherit (src.meta) homepage;
     license = licenses.gpl3Plus;

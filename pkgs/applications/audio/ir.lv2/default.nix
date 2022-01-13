@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fftw, gtk2, lv2, libsamplerate, libsndfile, pkg-config, zita-convolver }:
+{ stdenv, fetchFromGitHub, fftw, gtk2, lv2, libsamplerate, libsndfile, pkgconfig, zita-convolver }:
 
 stdenv.mkDerivation rec {
   pname = "ir.lv2";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ fftw gtk2 lv2 libsamplerate libsndfile zita-convolver ];
 
-  nativeBuildInputs = [  pkg-config ];
+  nativeBuildInputs = [  pkgconfig ];
 
   postPatch = ''
      # Fix build with lv2 1.18: https://github.com/tomszilagyi/ir.lv2/pull/20
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     install -Dm755 convert4chan "$out/bin/convert4chan"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://factorial.hu/plugins/lv2/ir";
     description = "Zero-latency, realtime, high performance signal convolver especially for creating reverb effects";
     license = licenses.gpl2;

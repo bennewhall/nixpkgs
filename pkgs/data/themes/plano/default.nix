@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , meson
 , ninja
@@ -11,13 +11,13 @@
 
 stdenv.mkDerivation rec {
   pname = "plano-theme";
-  version = "3.38-1";
+  version = "3.36-2";
 
   src = fetchFromGitHub {
     owner = "lassekongo83";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0g2mwvzc04z3dsdfhwqgw9s7987406pv22s9rbazfvprk4ddc5b6";
+    sha256 = "01dkjck9rlrf8wa30ad7kfv0gbpdf3l05rw7nxrvb1gh5d2vxig9";
   };
 
   nativeBuildInputs = [
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     gtk-engine-murrine
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Flat theme for GNOME and Xfce";
     homepage = "https://github.com/lassekongo83/plano-theme";
     license = licenses.gpl3Only;

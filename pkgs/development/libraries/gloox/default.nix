@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , zlibSupport ? true, zlib ? null
 , sslSupport ? true, openssl ? null
 , idnSupport ? true, libidn ? null
@@ -8,11 +8,14 @@ assert zlibSupport -> zlib != null;
 assert sslSupport -> openssl != null;
 assert idnSupport -> libidn != null;
 
-with lib;
+with stdenv.lib;
 
-stdenv.mkDerivation rec{
-  pname = "gloox";
+let
   version = "1.0.24";
+in
+stdenv.mkDerivation {
+  pname = "gloox";
+  inherit version;
 
   src = fetchurl {
     url = "https://camaya.net/download/gloox-${version}.tar.bz2";

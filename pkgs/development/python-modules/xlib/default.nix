@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , six
-, setuptools-scm
+, setuptools_scm
 , xorg
 , python
 , mock
@@ -12,13 +12,13 @@
 
 buildPythonPackage rec {
   pname = "xlib";
-  version = "0.29";
+  version = "0.28";
 
   src = fetchFromGitHub {
     owner = "python-xlib";
     repo = "python-xlib";
     rev = version;
-    sha256 = "sha256-zOG1QzRa5uN36Ngv8i5s3mq+VIoRzxFj5ltUbKdonJ0=";
+    sha256 = "13551vi65034pjf2g7zkw5dyjqcjfyk32a640g5jr055ssf0bjkc";
   };
 
   checkPhase = ''
@@ -26,13 +26,13 @@ buildPythonPackage rec {
   '';
 
   checkInputs = [ mock nose util-linux /* mcookie */ xorg.xauth xorg.xorgserver /* xvfb */ ];
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools_scm ];
   buildInputs = [ xorg.libX11 ];
   propagatedBuildInputs = [ six ];
 
   doCheck = !stdenv.isDarwin;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fully functional X client library for Python programs";
     homepage = "http://python-xlib.sourceforge.net/";
     license = licenses.gpl2Plus;

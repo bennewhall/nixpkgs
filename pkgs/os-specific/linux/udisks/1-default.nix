@@ -1,31 +1,12 @@
-{ lib
-, stdenv
-, fetchurl
-, pkg-config
-, sg3_utils
-, udev
-, glib
-, dbus
-, dbus-glib
-, polkit
-, parted
-, lvm2
-, libatasmart
-, intltool
-, libuuid
-, mdadm
-, libxslt
-, docbook_xsl
-, util-linux
-, libgudev
-}:
+{ stdenv, fetchurl, pkgconfig, sg3_utils, udev, glib, dbus, dbus-glib
+, polkit, parted, lvm2, libatasmart, intltool, libuuid, mdadm
+, libxslt, docbook_xsl, util-linux, libgudev }:
 
 stdenv.mkDerivation rec {
-  pname = "udisks";
-  version = "1.0.5";
+  name = "udisks-1.0.5";
 
   src = fetchurl {
-    url = "https://hal.freedesktop.org/releases/udisks-${version}.tar.gz";
+    url = "https://hal.freedesktop.org/releases/${name}.tar.gz";
     sha256 = "0wbg3jrv8limdgvcygf4dqin3y6d30y9pcmmk711vq571vmq5v7j";
   };
 
@@ -46,33 +27,20 @@ stdenv.mkDerivation rec {
     '';
 
   buildInputs =
-    [
-      sg3_utils
-      udev
-      glib
-      dbus
-      dbus-glib
-      polkit
-      parted
-      libgudev
-      lvm2
-      libatasmart
-      intltool
-      libuuid
-      libxslt
-      docbook_xsl
+    [ sg3_utils udev glib dbus dbus-glib polkit parted libgudev
+      lvm2 libatasmart intltool libuuid libxslt docbook_xsl
     ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   configureFlags = [ "--localstatedir=/var" "--enable-lvm2" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.freedesktop.org/wiki/Software/udisks";
     description = "A daemon and command-line utility for querying and manipulating storage devices";
     platforms = platforms.linux;
     license = with licenses; [ gpl2 lgpl2Plus ];
     broken = true;
-    hydraPlatforms = [ ];
+    hydraPlatforms = [];
   };
 }

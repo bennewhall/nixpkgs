@@ -1,21 +1,20 @@
 { lib, fetchFromGitHub, buildDunePackage
-, ppxlib
+, ocaml-migrate-parsetree, ppx_tools_versioned
 }:
 
 buildDunePackage rec {
   pname = "ocaml-monadic";
-  version = "0.5.0";
-
-  useDune2 = true;
+  version = "0.4.1";
 
   src = fetchFromGitHub {
     owner = "zepalmer";
     repo = pname;
     rev = version;
-    sha256 = "1ynv3yhdqmkhkgnz6c5kv6ryjcc934sdvw9rhh8rjg2dlzlffgbw";
+    sha256 = "1zcwydypk5vwfn1g7srnl5076scwwq5a5y8xwcjl70pc4cpzszll";
   };
 
-  buildInputs = [ ppxlib ];
+  buildInputs = [ ppx_tools_versioned ];
+  propagatedBuildInputs = [ ocaml-migrate-parsetree ];
 
   meta = {
     inherit (src.meta) homepage;

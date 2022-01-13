@@ -1,105 +1,65 @@
-{ lib
-, stdenv
-, fetchurl
-, pkg-config
-, cairo
-, harfbuzz
-, libintl
-, libthai
-, darwin
-, fribidi
-, gnome
-, gi-docgen
-, makeFontsConf
-, freefont_ttf
-, meson
-, ninja
-, glib
-, python3
+{ stdenv, fetchurl, fetchpatch, pkgconfig, cairo, harfbuzz
+, libintl, libthai, gobject-introspection, darwin, fribidi, gnome3
+, gtk-doc, docbook_xsl, docbook_xml_dtd_43, makeFontsConf, freefont_ttf
+, meson, ninja, glib
 , x11Support? !stdenv.isDarwin, libXft
-, withIntrospection ? (stdenv.buildPlatform == stdenv.hostPlatform)
-, gobject-introspection
-, withDocs ? (stdenv.buildPlatform == stdenv.hostPlatform)
 }:
 
-stdenv.mkDerivation rec {
-  pname = "pango";
-  version = "1.48.10";
+with stdenv.lib;
 
-  outputs = [ "bin" "out" "dev" ]
-    ++ lib.optionals withDocs [ "devdoc" ];
+let
+  pname = "pango";
+  version = "1.47.0";
+in stdenv.mkDerivation rec {
+  name = "${pname}-${version}";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "IeH1eYvN/adeq8QoBRSwiWq1b2VtTn5mAwuaJTXs3Jg=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${name}.tar.xz";
+    sha256 = "0ry3j9n0lvdfmjwi2w7wa4gkalnip56kghqq6bh8hcf45xjvh3bk";
   };
 
-  strictDeps = !withIntrospection;
-
-  depsBuildBuild = [
-    pkg-config
-  ];
+  # FIXME: docs fail on darwin
+  outputs = [ "bin" "dev" "out" ] ++ optional (!stdenv.isDarwin) "devdoc";
 
   nativeBuildInputs = [
     meson ninja
     glib # for glib-mkenum
-    pkg-config
-  ] ++ lib.optionals withIntrospection [
-    gobject-introspection
-  ] ++ lib.optionals withDocs [
-    gi-docgen
-    python3
+    pkgconfig gobject-introspection gtk-doc docbook_xsl docbook_xml_dtd_43
   ];
-
   buildInputs = [
     fribidi
     libthai
-  ] ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
+  ] ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
     ApplicationServices
     Carbon
     CoreGraphics
     CoreText
   ]);
-
-  propagatedBuildInputs = [
-    cairo
-    glib
-    libintl
-    harfbuzz
-  ] ++ lib.optionals x11Support [
-    libXft
-  ];
+  propagatedBuildInputs = [ cairo glib libintl harfbuzz ] ++
+    optional x11Support libXft;
 
   mesonFlags = [
-    "-Dgtk_doc=${lib.boolToString withDocs}"
-    "-Dintrospection=${if withIntrospection then "enabled" else "disabled"}"
-  ] ++ lib.optionals (!x11Support) [
-    "-Dxft=disabled" # only works with x11
+    "-Dgtk_doc=${if stdenv.isDarwin then "false" else "true"}"
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
+    "-Dxft=disabled"  # only works with x11
   ];
+
+  enableParallelBuilding = true;
 
   # Fontconfig error: Cannot load default config file
   FONTCONFIG_FILE = makeFontsConf {
     fontDirectories = [ freefont_ttf ];
   };
 
-  doCheck = false; # test-font: FAIL
-
-  postInstall = lib.optionalString withDocs ''
-    # So that devhelp can find this.
-    # https://gitlab.gnome.org/GNOME/pango/merge_requests/293/diffs#note_1058448
-    mkdir -p "$devdoc/share/devhelp"
-    mv "$out/share/doc/pango/reference" "$devdoc/share/devhelp/books"
-    rmdir -p --ignore-fail-on-non-empty "$out/share/doc/pango"
-  '';
+  doCheck = false; # /layout/valid-1.markup: FAIL
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for laying out and rendering of text, with an emphasis on internationalization";
 
     longDescription = ''
@@ -113,7 +73,7 @@ stdenv.mkDerivation rec {
     homepage = "https://www.pango.org/";
     license = licenses.lgpl2Plus;
 
-    maintainers = with maintainers; [ raskin ] ++ teams.gnome.members;
+    maintainers = with maintainers; [ raskin ];
     platforms = platforms.linux ++ platforms.darwin;
   };
 }

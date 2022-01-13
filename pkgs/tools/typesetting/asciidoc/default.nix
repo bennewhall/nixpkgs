@@ -1,5 +1,5 @@
-{ fetchurl, lib, stdenv, python3
-, fetchFromGitHub, autoreconfHook
+{ fetchurl, stdenv, python2
+
 , enableStandardFeatures ? false
 , sourceHighlight ? null
 , highlight ? null
@@ -40,8 +40,6 @@
 
 # java is problematic on some platforms, where it is unfree
 , enableJava ? true
-
-, buildPackages
 }:
 
 assert enableStandardFeatures ->
@@ -138,7 +136,6 @@ let
     url = "https://github.com/downloads/dagwieers/asciidoc-odf/odt-backend-0.1.zip";
     sha256 = "1zaa97h9sx6ncxcdkl1x3ggydi7f8kjgvrnpjnkjiizi45k350kw";
   };
-
   odpBackendSrc = fetchurl {
     url = "https://github.com/downloads/dagwieers/asciidoc-odf/odp-backend-0.1.zip";
     sha256 = "08ya4bskygzqkfqwjllpg31qc5k08xp2k78z9b2480g8y57bfy10";
@@ -147,24 +144,17 @@ let
 in
 
 stdenv.mkDerivation rec {
-  pname = "asciidoc";
-  version = "9.1.0";
+  name = "asciidoc-8.6.9";
 
-  # Note: a substitution to improve reproducibility should be updated once 10.0.0 is
-  # released. See the comment in `patchPhase` for more information.
-  src = fetchFromGitHub {
-    owner = "asciidoc";
-    repo = "asciidoc-py3";
-    rev = version;
-    sha256 = "1clf1axkns23wfmh48xfspzsnw04pjh4mq1pshpzvj0cwxhz0yaq";
+  src = fetchurl {
+    url = "mirror://sourceforge/asciidoc/${name}.tar.gz";
+    sha256 = "1w71nk527lq504njmaf0vzr93pgahkgzzxzglrq6bay8cw2rvnvq";
   };
 
-  strictDeps = true;
-  nativeBuildInputs = [ python3 unzip autoreconfHook ];
-  buildInputs = [ python3 ];
+  buildInputs = [ python2 unzip ];
 
   # install filters early, so their shebangs are patched too
-  postPatch = with lib; ''
+  patchPhase = with stdenv.lib; ''
     mkdir -p "$out/etc/asciidoc/filters"
     mkdir -p "$out/etc/asciidoc/backends"
   '' + optionalString _enableDitaaFilter ''
@@ -222,7 +212,7 @@ stdenv.mkDerivation rec {
     # the odp backend already has that fix. Copy it here until fixed upstream.
     sed -i "s|'/etc/asciidoc/backends/odt/asciidoc.ott'|os.path.dirname(__file__),'asciidoc.ott'|" \
         "$out/etc/asciidoc/backends/odt/a2x-backend.py"
-  '' + (if enableStandardFeatures then ''
+  '' + optionalString enableStandardFeatures ''
     sed -e "s|dot|${graphviz}/bin/dot|g" \
         -e "s|neato|${graphviz}/bin/neato|g" \
         -e "s|twopi|${graphviz}/bin/twopi|g" \
@@ -232,8 +222,7 @@ stdenv.mkDerivation rec {
 
     sed -e "s|run('latex|run('${texlive}/bin/latex|g" \
         -e "s|cmd = 'dvipng'|cmd = '${texlive}/bin/dvipng'|g" \
-        -e "s|cmd = 'dvisvgm'|cmd = '${texlive}/bin/dvisvgm'|g" \
-        -i "filters/latex/latex2img.py"
+        -i "filters/latex/latex2png.py"
 
     sed -e "s|run('abc2ly|run('${lilypond}/bin/abc2ly|g" \
         -e "s|run('lilypond|run('${lilypond}/bin/lilypond|g" \
@@ -250,7 +239,7 @@ stdenv.mkDerivation rec {
     # cannot find their neighbours (e.g. pdflatex doesn't find mktextfm).
     # We can remove PATH= when those impurities are fixed.
     # TODO: Is this still necessary when using texlive?
-    sed -e "s|^ENV =.*|ENV = dict(XML_CATALOG_FILES='${docbook_xml_dtd_45}/xml/dtd/docbook/catalog.xml ${docbook_xsl_ns}/xml/xsl/docbook/catalog.xml ${docbook_xsl}/xml/xsl/docbook/catalog.xml', PATH='${lib.makeBinPath [ texlive coreutils gnused ]}')|" \
+    sed -e "s|^ENV =.*|ENV = dict(XML_CATALOG_FILES='${docbook_xml_dtd_45}/xml/dtd/docbook/catalog.xml ${docbook_xsl_ns}/xml/xsl/docbook/catalog.xml ${docbook_xsl}/xml/xsl/docbook/catalog.xml', PATH='${stdenv.lib.makeBinPath [ texlive coreutils gnused ]}')|" \
         -e "s|^ASCIIDOC =.*|ASCIIDOC = '$out/bin/asciidoc'|" \
         -e "s|^XSLTPROC =.*|XSLTPROC = '${libxslt.bin}/bin/xsltproc'|" \
         -e "s|^DBLATEX =.*|DBLATEX = '${dblatexFull}/bin/dblatex'|" \
@@ -260,55 +249,19 @@ stdenv.mkDerivation rec {
         -e "s|^XMLLINT =.*|XMLLINT = '${libxml2.bin}/bin/xmllint'|" \
         -e "s|^EPUBCHECK =.*|EPUBCHECK = 'nixpkgs_is_missing_epubcheck'|" \
         -i a2x.py
-  '' else ''
-    sed -e "s|^ENV =.*|ENV = dict(XML_CATALOG_FILES='${docbook_xml_dtd_45}/xml/dtd/docbook/catalog.xml ${docbook_xsl_ns}/xml/xsl/docbook/catalog.xml ${docbook_xsl}/xml/xsl/docbook/catalog.xml')|" \
-        -e "s|^XSLTPROC =.*|XSLTPROC = '${libxslt.bin}/bin/xsltproc'|" \
-        -e "s|^XMLLINT =.*|XMLLINT = '${libxml2.bin}/bin/xmllint'|" \
-        -i a2x.py
-  '') + ''
-    patchShebangs --host \
-      asciidoc.py \
-      a2x.py \
-      tests/testasciidoc.py \
-      filters/code/code-filter.py \
-      filters/latex/latex2img.py \
-      filters/music/music2png.py \
-      filters/unwraplatex.py \
-      filters/graphviz/graphviz2png.py
-
-    # Hardcode the path to its own asciidoc.
-    # This helps with cross-compilation.
-    substituteInPlace a2x.py \
-      --replace "find_executable(ASCIIDOC)" "'${placeholder "out"}/bin/asciidoc'"
-
-    # Note: this substitution will not work in the planned 10.0.0 release:
-    #
-    # https://github.com/asciidoc/asciidoc-py3/commit/dfffda23381014481cd13e8e9d8f131e1f93f08a
-    #
-    # Update this substitution to:
-    #
-    # --replace "python3 -m asciidoc.a2x" "python3 -m asciidoc.a2x -a revdate=01/01/1980"
-    substituteInPlace Makefile.in \
-      --replace "python3 a2x.py" "python3 a2x.py -a revdate=01/01/1980"
-
-    # Fix tests
-    for f in $(grep -R --files-with-matches "2002-11-25") ; do
-      substituteInPlace $f --replace "2002-11-25" "1970-01-01"
-      substituteInPlace $f --replace "00:37:42" "00:00:01"
+  '' + ''
+    for n in $(find "$out" . -name \*.py); do
+      sed -i -e "s,^#![[:space:]]*.*/bin/env python,#!${python2}/bin/python,g" "$n"
+      chmod +x "$n"
     done
-  '' + lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
-    # We want to use asciidoc from the build platform to build the documentation.
-    substituteInPlace Makefile.in \
-      --replace "python3 a2x.py" "python3 ${buildPackages.asciidoc}/bin/a2x.py"
+
+    sed -i -e "s,/etc/vim,,g" Makefile.in
   '';
 
   preInstall = "mkdir -p $out/etc/vim";
-  makeFlags = lib.optional stdenv.isCygwin "DESTDIR=/.";
+  makeFlags = stdenv.lib.optional stdenv.isCygwin "DESTDIR=/.";
 
-  checkInputs = [ sourceHighlight ];
-  doCheck = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Text-based document generation system";
     longDescription = ''
       AsciiDoc is a text document format for writing notes, documentation,

@@ -2,21 +2,18 @@
 
 buildPythonPackage rec {
   pname = "img2pdf";
-  version = "0.4.3";
+  version = "0.4.0";
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-jlHFBD76lddRSBtRYHGgBvh8KkBZlhqaxD7COJFd4J8=";
+    sha256 = "eaee690ab8403dd1a9cb4db10afee41dd3e6c7ed63bdace02a0121f9feadb0c9";
   };
 
   propagatedBuildInputs = [
     pikepdf
     pillow
   ];
-
-  # no tests exectuted
-  doCheck = false;
 
   meta = with lib; {
     description = "Convert images to PDF via direct JPEG inclusion";

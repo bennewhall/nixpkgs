@@ -1,5 +1,5 @@
 {
-  mkDerivation,
+  mkDerivation, lib,
   docbook_xml_dtd_45, extra-cmake-modules, kdoctools,
   kauth, karchive, kcompletion, kconfig, kconfigwidgets, kcoreaddons, kcrash,
   kdbusaddons, kded, kdesignerplugin, kemoticons, kglobalaccel, kguiaddons,
@@ -10,6 +10,7 @@
 
 mkDerivation {
   name = "kdelibs4support";
+  meta = { maintainers = [ lib.maintainers.ttuegel ]; };
   patches = [
     ./nix-kde-include-dir.patch
   ];

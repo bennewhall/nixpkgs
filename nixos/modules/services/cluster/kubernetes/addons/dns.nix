@@ -1,9 +1,9 @@
-{ config, options, pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 with lib;
 
 let
-  version = "1.7.1";
+  version = "1.6.4";
   cfg = config.services.kubernetes.addons.dns;
   ports = {
     dns = 10053;
@@ -23,10 +23,6 @@ in {
           take 3 (splitString "." config.services.kubernetes.apiserver.serviceClusterIpRange
         ))
       ) + ".254";
-      defaultText = literalDocBook ''
-        The <literal>x.y.z.254</literal> IP of
-        <literal>config.${options.services.kubernetes.apiserver.serviceClusterIpRange}</literal>.
-      '';
       type = types.str;
     };
 
@@ -59,52 +55,10 @@ in {
       type = types.attrs;
       default = {
         imageName = "coredns/coredns";
-        imageDigest = "sha256:4a6e0769130686518325b21b0c1d0688b54e7c79244d48e1b15634e98e40c6ef";
+        imageDigest = "sha256:493ee88e1a92abebac67cbd4b5658b4730e0f33512461442d8d9214ea6734a9b";
         finalImageTag = version;
-        sha256 = "02r440xcdsgi137k5lmmvp0z5w5fmk8g9mysq5pnysq1wl8sj6mw";
+        sha256 = "0fm9zdjavpf5hni8g7fkdd3csjbhd7n7py7llxjc66sbii087028";
       };
-    };
-
-    corefile = mkOption {
-      description = ''
-        Custom coredns corefile configuration.
-
-        See: <link xlink:href="https://coredns.io/manual/toc/#configuration"/>.
-      '';
-      type = types.str;
-      default = ''
-        .:${toString ports.dns} {
-          errors
-          health :${toString ports.health}
-          kubernetes ${cfg.clusterDomain} in-addr.arpa ip6.arpa {
-            pods insecure
-            fallthrough in-addr.arpa ip6.arpa
-          }
-          prometheus :${toString ports.metrics}
-          forward . /etc/resolv.conf
-          cache 30
-          loop
-          reload
-          loadbalance
-        }'';
-      defaultText = literalExpression ''
-        '''
-          .:${toString ports.dns} {
-            errors
-            health :${toString ports.health}
-            kubernetes ''${config.services.kubernetes.addons.dns.clusterDomain} in-addr.arpa ip6.arpa {
-              pods insecure
-              fallthrough in-addr.arpa ip6.arpa
-            }
-            prometheus :${toString ports.metrics}
-            forward . /etc/resolv.conf
-            cache 30
-            loop
-            reload
-            loadbalance
-          }
-        '''
-      '';
     };
   };
 
@@ -197,7 +151,21 @@ in {
           namespace = "kube-system";
         };
         data = {
-          Corefile = cfg.corefile;
+          Corefile = ".:${toString ports.dns} {
+            errors
+            health :${toString ports.health}
+            kubernetes ${cfg.clusterDomain} in-addr.arpa ip6.arpa {
+              pods insecure
+              upstream
+              fallthrough in-addr.arpa ip6.arpa
+            }
+            prometheus :${toString ports.metrics}
+            forward . /etc/resolv.conf
+            cache 30
+            loop
+            reload
+            loadbalance
+          }";
         };
       };
 

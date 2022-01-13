@@ -11,13 +11,9 @@
 , # package-set used for non-haskell dependencies (all of nixpkgs)
   pkgs
 
-, # stdenv provides our build and host platforms
+, # stdenv to use for building haskell packages
   stdenv
 
-, # this module provides the list of known licenses and maintainers
-  lib
-
-  # needed for overrideCabal & packageSourceOverrides
 , haskellLib
 
 , # hashes for downloading Hackage packages
@@ -26,7 +22,7 @@
 , # compiler to use
   ghc
 
-, # A function that takes `{ pkgs, lib, callPackage }` as the first arg and
+, # A function that takes `{ pkgs, stdenv, callPackage }` as the first arg and
   # `self` as second, and returns a set of haskell packages
   package-set
 
@@ -41,7 +37,7 @@ self:
 let
   inherit (stdenv) buildPlatform hostPlatform;
 
-  inherit (lib) fix' extends makeOverridable;
+  inherit (stdenv.lib) fix' extends makeOverridable;
   inherit (haskellLib) overrideCabal;
 
   mkDerivationImpl = pkgs.callPackage ./generic-builder.nix {
@@ -49,23 +45,23 @@ let
     nodejs = buildPackages.nodejs-slim;
     inherit (self) buildHaskellPackages ghc ghcWithHoogle ghcWithPackages;
     inherit (self.buildHaskellPackages) jailbreak-cabal;
-    hscolour = overrideCabal (drv: {
+    hscolour = overrideCabal self.buildHaskellPackages.hscolour (drv: {
       isLibrary = false;
       doHaddock = false;
       hyperlinkSource = false;      # Avoid depending on hscolour for this build.
       postFixup = "rm -rf $out/lib $out/share $out/nix-support";
-    }) self.buildHaskellPackages.hscolour;
-    cpphs = overrideCabal (drv: {
-        isLibrary = false;
-        postFixup = "rm -rf $out/lib $out/share $out/nix-support";
-    }) (self.cpphs.overrideScope (self: super: {
+    });
+    cpphs = overrideCabal (self.cpphs.overrideScope (self: super: {
       mkDerivation = drv: super.mkDerivation (drv // {
         enableSharedExecutables = false;
         enableSharedLibraries = false;
         doHaddock = false;
         useCpphs = false;
       });
-    }));
+    })) (drv: {
+        isLibrary = false;
+        postFixup = "rm -rf $out/lib $out/share $out/nix-support";
+    });
   };
 
   mkDerivation = makeOverridable mkDerivationImpl;
@@ -84,8 +80,8 @@ let
       # lost on `.override`) but determine the auto-args based on `drv` (the problem here
       # is that nix has no way to "passthrough" args while preserving the reflection
       # info that callPackage uses to determine the arguments).
-      drv = if lib.isFunction fn then fn else import fn;
-      auto = builtins.intersectAttrs (lib.functionArgs drv) scope;
+      drv = if stdenv.lib.isFunction fn then fn else import fn;
+      auto = builtins.intersectAttrs (stdenv.lib.functionArgs drv) scope;
 
       # this wraps the `drv` function to add a `overrideScope` function to the result.
       drvScope = allArgs: drv allArgs // {
@@ -98,7 +94,7 @@ let
           # nothing.
           in callPackageWithScope newScope drv manualArgs;
       };
-    in lib.makeOverridable drvScope (auto // manualArgs);
+    in stdenv.lib.makeOverridable drvScope (auto // manualArgs);
 
   mkScope = scope: let
       ps = pkgs.__splicedPackages;
@@ -159,7 +155,7 @@ let
   # (requiring it to be frequently rebuilt), which can be an
   # annoyance.
   callPackageKeepDeriver = src: args:
-    overrideCabal (orig: {
+    overrideCabal (self.callPackage src args) (orig: {
       preConfigure = ''
         # Generated from ${src}
         ${orig.preConfigure or ""}
@@ -171,9 +167,9 @@ let
         # cabal2nixDeriver field.
         cabal2nixDeriver = src;
       };
-    }) (self.callPackage src args);
+    });
 
-in package-set { inherit pkgs lib callPackage; } self // {
+in package-set { inherit pkgs stdenv callPackage; } self // {
 
     inherit mkDerivation callPackage haskellSrc2nix hackage2nix buildHaskellPackages;
 
@@ -205,7 +201,7 @@ in package-set { inherit pkgs lib callPackage; } self // {
     callCabal2nixWithOptions = name: src: extraCabal2nixOptions: args:
       let
         filter = path: type:
-                   pkgs.lib.hasSuffix ".cabal" path ||
+                   pkgs.lib.hasSuffix "${name}.cabal" path ||
                    baseNameOf path == "package.yaml";
         expr = self.haskellSrc2nix {
           inherit name extraCabal2nixOptions;
@@ -213,9 +209,9 @@ in package-set { inherit pkgs lib callPackage; } self // {
                   then pkgs.lib.cleanSourceWith { inherit src filter; }
                 else src;
         };
-      in overrideCabal (orig: {
+      in overrideCabal (callPackageKeepDeriver expr args) (orig: {
            inherit src;
-         }) (callPackageKeepDeriver expr args);
+         });
 
     callCabal2nix = name: src: args: self.callCabal2nixWithOptions name src "" args;
 
@@ -249,7 +245,7 @@ in package-set { inherit pkgs lib callPackage; } self // {
     # a cabal flag with '--flag=myflag'.
     developPackage =
       { root
-      , name ? if builtins.typeOf root == "path" then builtins.baseNameOf root else ""
+      , name ? builtins.baseNameOf root
       , source-overrides ? {}
       , overrides ? self: super: {}
       , modifier ? drv: drv
@@ -294,7 +290,7 @@ in package-set { inherit pkgs lib callPackage; } self // {
     #
     #     # default.nix
     #     with import <nixpkgs> {};
-    #     haskellPackages.extend (haskell.lib.compose.packageSourceOverrides {
+    #     haskellPackages.extend (haskell.lib.packageSourceOverrides {
     #       frontend = ./frontend;
     #       backend = ./backend;
     #       common = ./common;
@@ -327,37 +323,6 @@ in package-set { inherit pkgs lib callPackage; } self // {
         # packages.  You should set this to true if you have benchmarks defined
         # in your local packages that you want to be able to run with cabal benchmark
         doBenchmark ? false
-        # An optional function that can modify the generic builder arguments
-        # for the fake package that shellFor uses to construct its environment.
-        #
-        # Example:
-        #   let
-        #     # elided...
-        #     haskellPkgs = pkgs.haskell.packages.ghc884.override (hpArgs: {
-        #       overrides = pkgs.lib.composeExtensions (hpArgs.overrides or (_: _: { })) (
-        #         _hfinal: hprev: {
-        #           mkDerivation = args: hprev.mkDerivation ({
-        #             doCheck = false;
-        #             doBenchmark = false;
-        #             doHoogle = true;
-        #             doHaddock = true;
-        #             enableLibraryProfiling = false;
-        #             enableExecutableProfiling = false;
-        #           } // args);
-        #         }
-        #       );
-        #     });
-        #   in
-        #   haskellPkgs.shellFor {
-        #     packages = p: [ p.foo ];
-        #     genericBuilderArgsModifier = args: args // { doCheck = true; doBenchmark = true };
-        #   }
-        #
-        # This will disable tests and benchmarks for everything in "haskellPkgs"
-        # (which will invalidate the binary cache), and then re-enable them
-        # for the "shellFor" environment (ensuring that any test/benchmark
-        # dependencies for "foo" will be available within the nix-shell).
-      , genericBuilderArgsModifier ? (args: args)
       , ...
       } @ args:
       let
@@ -474,7 +439,7 @@ in package-set { inherit pkgs lib callPackage; } self // {
         # This is a derivation created with `haskellPackages.mkDerivation`.
         #
         # pkgWithCombinedDeps :: HaskellDerivation
-        pkgWithCombinedDeps = self.mkDerivation (genericBuilderArgsModifier genericBuilderArgs);
+        pkgWithCombinedDeps = self.mkDerivation genericBuilderArgs;
 
         # The derivation returned from `envFunc` for `pkgWithCombinedDeps`.
         #
@@ -488,7 +453,7 @@ in package-set { inherit pkgs lib callPackage; } self // {
         # pkgWithCombinedDepsDevDrv :: Derivation
         pkgWithCombinedDepsDevDrv = pkgWithCombinedDeps.envFunc { inherit withHoogle; };
 
-        mkDerivationArgs = builtins.removeAttrs args [ "genericBuilderArgsModifier" "packages" "withHoogle" "doBenchmark" ];
+        mkDerivationArgs = builtins.removeAttrs args [ "packages" "withHoogle" "doBenchmark" ];
 
       in pkgWithCombinedDepsDevDrv.overrideAttrs (old: mkDerivationArgs // {
         nativeBuildInputs = old.nativeBuildInputs ++ mkDerivationArgs.nativeBuildInputs or [];

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip }:
+{ stdenv, fetchurl, unzip }:
 
 stdenv.mkDerivation rec {
   pname = "crafty";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     sha256 = "12g70mgfifwssfvndzq94pin34dizlixhsga75vgj7dakysi2p7f";
   };
 
-  nativeBuildInputs = [ unzip ];
+  buildInputs = [ unzip ];
 
   unpackPhase = ''
     mkdir "craftysrc"
@@ -66,8 +66,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.craftychess.com/";
     description = "Chess program developed by Dr. Robert M. Hyatt";
-    license = lib.licenses.unfree;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.jwiegley ];
+    license = stdenv.lib.licenses.unfree;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.jwiegley ];
   };
 }

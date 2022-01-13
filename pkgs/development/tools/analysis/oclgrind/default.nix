@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, llvmPackages, readline, python }:
+{ stdenv, fetchFromGitHub, cmake, llvmPackages, readline, python }:
 
 stdenv.mkDerivation rec {
   pname = "oclgrind";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     "-DCLANG_ROOT=${llvmPackages.clang-unwrapped}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An OpenCL device simulator and debugger";
     homepage = "https://github.com/jrprice/oclgrind";
     license = licenses.bsd3;

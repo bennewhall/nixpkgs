@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, openssl, curl }:
+{ stdenv, fetchFromGitHub, autoreconfHook, openssl, curl }:
 
 stdenv.mkDerivation rec {
   pname = "libksi";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     "--with-cafile=/etc/ssl/certs/ca-certificates.crt"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/GuardTime/libksi";
     description = "Keyless Signature Infrastructure API library";
     license = licenses.asl20;

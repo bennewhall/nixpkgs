@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, python3Packages, zlib, bash, coreutils }:
+{ stdenv, fetchurl, python3Packages, zlib, bash, coreutils }:
 
 let
   pythonPackages = python3Packages;
@@ -48,7 +48,7 @@ pythonPackages.buildPythonApplication rec {
   # Tests need to download data files, so manual run after packaging is needed
   doCheck = false;
 
-  meta = with lib ; {
+  meta = with stdenv.lib ; {
     description = "Evaluates genome assemblies by computing various metrics";
     homepage = "https://github.com/ablab/quast";
     license = licenses.gpl2;

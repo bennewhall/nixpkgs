@@ -1,12 +1,11 @@
-{ lib, stdenv, fetchurl, fetchpatch }:
+{ stdenv, fetchurl, fetchpatch }:
 
 stdenv.mkDerivation rec {
-  pname = "super";
-  version = "3.30.0";
+  name = "super-3.30.0";
 
   src = fetchurl {
-    name = "super-${version}.tar.gz";
-    url = "https://www.ucolick.org/~will/RUE/super/super-${version}-tar.gz";
+    name = "${name}.tar.gz";
+    url = "https://www.ucolick.org/~will/RUE/super/${name}-tar.gz";
     sha256 = "0k476f83w7f45y9jpyxwr00ikv1vhjiq0c26fgjch9hnv18icvwy";
   };
 
@@ -45,6 +44,6 @@ stdenv.mkDerivation rec {
         in /etc/super.tab); and 2) “setuid”, which allows root to
         execute a command under a different uid.
       '';
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

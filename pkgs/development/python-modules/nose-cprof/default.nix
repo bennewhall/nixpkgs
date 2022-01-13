@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , nose
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   buildInputs = [ nose ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A python nose plugin to profile using cProfile rather than the default Hotshot profiler";
     homepage = "https://github.com/msherry/nose-cprof";
     license = licenses.bsd0;

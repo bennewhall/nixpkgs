@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cabextract }:
+{ stdenv, fetchurl, cabextract }:
 
 let
 
@@ -25,8 +25,7 @@ let
 in
 
 stdenv.mkDerivation {
-  pname = "corefonts";
-  version = "1";
+  name = "corefonts-1";
 
   exes = map ({name, sha256}: fetchurl {
     url = "mirror://sourceforge/corefonts/${name}32.exe";
@@ -62,7 +61,7 @@ stdenv.mkDerivation {
   outputHashMode = "recursive";
   outputHash = "089d2m9bvaacj36qdq77pcazji0sbbr796shic3k52cpxkjnzbwh";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://corefonts.sourceforge.net/";
     description = "Microsoft's TrueType core fonts for the Web";
     platforms = platforms.all;

@@ -1,42 +1,23 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, fetchpatch
+{ lib, buildPythonPackage, fetchPypi
 , pythonOlder
 , Mako
 , markdown
 , setuptools-git
-, setuptools-scm
+, setuptools_scm
 }:
 
 buildPythonPackage rec {
   pname = "pdoc3";
-  version = "0.10.0";
+  version = "0.9.2";
   disabled = pythonOlder "3.7";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "5f22e7bcb969006738e1aa4219c75a32f34c2d62d46dc9d2fb2d3e0b0287e4b7";
+    sha256 = "9df5d931f25f353c69c46819a3bd03ef96dd286f2a70bb1b93a23a781f91faa1";
   };
 
-  patches = [
-    (fetchpatch {
-      # test_Class_params fails in 0.10.0
-      # https://github.com/pdoc3/pdoc/issues/355
-      url = "https://github.com/pdoc3/pdoc/commit/4aa70de2221a34a3003a7e5f52a9b91965f0e359.patch";
-      sha256 = "07sbf7bh09vgd5z1lbay604rz7rhg88414whs6iy60wwbvkz5c2v";
-    })
-  ];
-
-  nativeBuildInputs = [
-    setuptools-git
-    setuptools-scm
-  ];
-
-  propagatedBuildInputs = [
-    Mako
-    markdown
-  ];
+  nativeBuildInputs = [ setuptools-git setuptools_scm ];
+  propagatedBuildInputs = [ Mako markdown ];
 
   meta = with lib; {
     description = "Auto-generate API documentation for Python projects.";

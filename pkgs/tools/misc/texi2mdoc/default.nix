@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "texi2mdoc";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://mdocml.bsd.lv/";
     description = "converter from Texinfo into mdoc";
     license = licenses.isc;

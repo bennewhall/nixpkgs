@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
-, autoreconfHook, pkg-config
+, autoreconfHook, pkgconfig
 , zlib, libffi, elfutils, libdwarf
 }:
 
@@ -15,10 +15,10 @@ stdenv.mkDerivation rec {
     sha256 = "1wafyfhwd7nf7xdici0djpwgykizaz7jlarn0r1b4spnpjx1zbx4";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ zlib libffi elfutils libdwarf ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A foreign function interface for bash";
     homepage = "https://github.com/taviso/ctypes.sh";
     license = licenses.mit;

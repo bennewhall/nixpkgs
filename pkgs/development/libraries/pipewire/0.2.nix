@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, pkg-config, doxygen, graphviz
-, glib, dbus, gst_all_1, alsa-lib, ffmpeg_4, libjack2, udev, libva, xorg
+{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, doxygen, graphviz, valgrind
+, glib, dbus, gst_all_1, alsaLib, ffmpeg_4, libjack2, udev, libva, xorg
 , sbc, SDL2, makeFontsConf
 }:
 
@@ -21,11 +21,11 @@ in stdenv.mkDerivation rec {
   outputs = [ "out" "lib" "dev" "doc" ];
 
   nativeBuildInputs = [
-    meson ninja pkg-config doxygen graphviz
+    meson ninja pkgconfig doxygen graphviz valgrind
   ];
   buildInputs = [
     glib dbus gst_all_1.gst-plugins-base gst_all_1.gstreamer
-    alsa-lib ffmpeg_4 libjack2 udev libva xorg.libX11 sbc SDL2
+    alsaLib ffmpeg_4 libjack2 udev libva xorg.libX11 sbc SDL2
   ];
 
   mesonFlags = [
@@ -39,7 +39,7 @@ in stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Server and user space API to deal with multimedia pipelines";
     homepage = "https://pipewire.org/";
     license = licenses.lgpl21;

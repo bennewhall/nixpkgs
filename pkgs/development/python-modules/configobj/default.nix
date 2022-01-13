@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage
+{ stdenv, buildPythonPackage
 , fetchFromGitHub
 , six
 , mock, pytest
@@ -25,7 +25,7 @@ buildPythonPackage rec {
 
   checkInputs = [ mock pytest ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Config file reading, writing and validation";
     homepage = "https://pypi.python.org/pypi/configobj";
     license = licenses.bsd3;

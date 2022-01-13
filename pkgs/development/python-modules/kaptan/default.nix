@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pyyaml
@@ -22,7 +22,7 @@ buildPythonPackage rec {
 
   checkInputs = [ pytest ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Configuration manager for python applications";
     homepage = "https://kaptan.readthedocs.io/";
     license = licenses.bsd3;

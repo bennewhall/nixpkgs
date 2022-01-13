@@ -1,93 +1,81 @@
-{ lib
-, stdenv
+{ stdenv
+, lib
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
+, pythonOlder
+, pytest
 , blis
 , catalogue
 , cymem
 , cython
-, contextvars
-, dataclasses
-, Accelerate
-, CoreFoundation
-, CoreGraphics
-, CoreVideo
+, darwin
 , hypothesis
 , mock
 , murmurhash
 , numpy
+, pathlib
 , plac
-, pythonOlder
 , preshed
-, pydantic
 , srsly
 , tqdm
-, typing-extensions
 , wasabi
 }:
 
 buildPythonPackage rec {
   pname = "thinc";
-  version = "8.0.13";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
+  version = "7.4.4";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-R2YqOuM9RFp3tup7dyREgFx7uomR8SLjUNr3Le3IFxo=";
+    sha256 = "08cf5cf7d70135db931c9f9d6f3b1844c53046c88f6072675fc164884f44c9e2";
   };
 
-  buildInputs = [
-    cython
-  ] ++ lib.optionals stdenv.isDarwin [
-    Accelerate
-    CoreFoundation
-    CoreGraphics
-    CoreVideo
-  ];
+  buildInputs = lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
+    Accelerate CoreFoundation CoreGraphics CoreVideo
+  ]);
 
   propagatedBuildInputs = [
-    blis
-    catalogue
-    cymem
-    murmurhash
-    numpy
-    plac
-    preshed
-    srsly
-    tqdm
-    pydantic
-    wasabi
-  ] ++ lib.optional (pythonOlder "3.8") [
-    typing-extensions
-  ] ++ lib.optional (pythonOlder "3.7") [
-    contextvars
-    dataclasses
-  ];
+   blis
+   catalogue
+   cymem
+   cython
+   murmurhash
+   numpy
+   plac
+   preshed
+   srsly
+   tqdm
+   wasabi
+  ] ++ lib.optional (pythonOlder "3.4") pathlib;
+
 
   checkInputs = [
     hypothesis
     mock
-    pytestCheckHook
+    pytest
   ];
 
   # Cannot find cython modules.
   doCheck = false;
 
-  pytestFlagsArray = [
-    "thinc/tests"
-  ];
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace "blis>=0.4.0,<0.5.0" "blis>=0.4.0,<1.0" \
+      --replace "catalogue>=0.0.7,<1.1.0" "catalogue>=0.0.7,<3.0" \
+      --replace "plac>=0.9.6,<1.2.0" "plac>=0.9.6,<2.0" \
+      --replace "srsly>=0.0.6,<1.1.0" "srsly>=0.0.6,<3.0"
+  '';
 
-  pythonImportsCheck = [
-    "thinc"
-  ];
+  checkPhase = ''
+    pytest thinc/tests
+  '';
 
-  meta = with lib; {
+  pythonImportsCheck = [ "thinc" ];
+
+  meta = with stdenv.lib; {
     description = "Practical Machine Learning for NLP in Python";
     homepage = "https://github.com/explosion/thinc";
     license = licenses.mit;
-    maintainers = with maintainers; [ aborsu ];
-  };
+    maintainers = with maintainers; [ aborsu danieldk sdll ];
+    };
 }

@@ -1,22 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, libtool, gettext, pkg-config, wxGTK31-gtk3,
-  boost, icu, lucenepp, asciidoc, libxslt, xmlto, gtk3, gtkspell3, pugixml,
+{ stdenv, fetchurl, autoconf, automake, libtool, gettext, pkgconfig, wxGTK30,
+  boost, icu, lucenepp, asciidoc, libxslt, xmlto, gtk2, gtkspell2, pugixml,
   nlohmann_json, hicolor-icon-theme, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
   pname = "poedit";
-  version = "3.0.1";
+  version = "2.4.2";
 
-  src = fetchFromGitHub {
-    owner = "vslavik";
-    repo = "poedit";
-    rev = "v${version}-oss";
-    sha256 = "sha256-PBAOCAO3OrBE7lOho7nJNEpqwds7XiblN/f+GonrXHA=";
+  src = fetchurl {
+    url = "https://github.com/vslavik/poedit/archive/v${version}-oss.tar.gz";
+    sha256 = "1kry3xphrdccx8znfm9pw5872c5w0ri7cknlad4qcps54b25nnzk";
   };
 
   nativeBuildInputs = [ autoconf automake asciidoc wrapGAppsHook
-    libxslt xmlto boost libtool pkg-config ];
+    libxslt xmlto boost libtool pkgconfig ];
 
-  buildInputs = [ lucenepp nlohmann_json wxGTK31-gtk3 icu pugixml gtk3 gtkspell3 hicolor-icon-theme ];
+  buildInputs = [ lucenepp nlohmann_json wxGTK30 icu pugixml gtk2 gtkspell2 hicolor-icon-theme ];
 
   propagatedBuildInputs = [ gettext ];
 
@@ -30,20 +28,19 @@ stdenv.mkDerivation rec {
     "--without-cpprest"
     "--with-boost-libdir=${boost.out}/lib"
     "CPPFLAGS=-I${nlohmann_json}/include/nlohmann/"
-    "LDFLAGS=-llucene++"
   ];
 
   preFixup = ''
-    gappsWrapperArgs+=(--prefix PATH : "${lib.makeBinPath [ gettext ]}")
+    gappsWrapperArgs+=(--prefix PATH : "${stdenv.lib.makeBinPath [ gettext ]}")
   '';
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Cross-platform gettext catalogs (.po files) editor";
     homepage = "https://www.poedit.net/";
     license = licenses.mit;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ dasj19 ];
+    maintainers = with maintainers; [ domenkozar ];
   };
 }

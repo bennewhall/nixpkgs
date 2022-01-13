@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, qmake4Hook , qt4, libX11, libXext }:
+{ stdenv, fetchFromGitHub, qmake4Hook , qt4, libX11, libXext }:
 
 stdenv.mkDerivation rec {
   pname = "qtstyleplugin-kvantum-qt4";
-  version = "0.20.2";
+  version = "0.15.3";
 
   src = fetchFromGitHub {
     owner = "tsujan";
     repo = "Kvantum";
     rev = "V${version}";
-    sha256 = "sha256-aIhLrGKb8iPl8N483+EOaCrTua96Qvl2lc2UXRiqvJA=";
+    sha256 = "0jq3y63c36nr2rprg7im9ik112p5zvhj46vzgxfbnpvskmg0cchm";
   };
 
   nativeBuildInputs = [ qmake4Hook ];
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     mv $TMP/kvantum/${qt4}/lib $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "SVG-based Qt4 theme engine";
     homepage = "https://github.com/tsujan/Kvantum";
     license = licenses.gpl2;

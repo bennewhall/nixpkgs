@@ -1,25 +1,23 @@
-{ lib, stdenv, fetchurl, pkg-config, protobuf, openssl, libpcap, traceroute
+{ stdenv, fetchurl, pkgconfig, protobuf, openssl, libpcap, traceroute
 , withGUI ? false, qt5 }:
 
-let inherit (lib) optional;
+let inherit (stdenv.lib) optional;
 in
 
 stdenv.mkDerivation rec {
   pname = "spoofer";
-  version = "1.4.7";
+  version = "1.4.5";
 
   src = fetchurl {
     url = "https://www.caida.org/projects/spoofer/downloads/${pname}-${version}.tar.gz";
-    sha256 = "sha256-6ov1dZbxmBRIhfIzUaxiaHUeiU6SbNKhiQX1W4lmhD8=";
+    sha256 = "0pnim3xyfsmv6alsvhwjs4v9lp39wwiyj63rxsqyz4wx4vkmn12z";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ openssl protobuf libpcap traceroute ]
                 ++ optional withGUI qt5.qtbase ;
 
-  dontWrapQtApps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.caida.org/projects/spoofer";
     description = "Assess and report on deployment of source address validation";
     longDescription = ''
@@ -36,6 +34,6 @@ stdenv.mkDerivation rec {
     '';
     platforms = platforms.all;
     license = licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [ leenaars];
+    maintainers = with stdenv.lib.maintainers; [ leenaars];
   };
 }

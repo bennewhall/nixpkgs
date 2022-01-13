@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python3Packages, readline, ncurses, canto-daemon }:
+{ stdenv, fetchFromGitHub, python3Packages, readline, ncurses, canto-daemon }:
 
 python3Packages.buildPythonApplication rec {
   version = "0.9.9";
@@ -25,8 +25,8 @@ python3Packages.buildPythonApplication rec {
       and extensibility using the excellent Python programming language.
     '';
     homepage = "https://codezen.org/canto-ng/";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.devhell ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.devhell ];
   };
 }

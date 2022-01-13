@@ -1,9 +1,4 @@
-{ lib, stdenv, fetchurl, ocaml, findlib, ocamlbuild, ounit }:
-
-let
-  # ounit is only available for OCaml >= 4.04
-  doCheck = lib.versionAtLeast ocaml.version "4.04";
-in
+{ stdenv, fetchurl, ocaml, findlib, ocamlbuild, ounit }:
 
 stdenv.mkDerivation {
   pname = "ocamlmod";
@@ -14,15 +9,13 @@ stdenv.mkDerivation {
     sha256 = "0cgp9qqrq7ayyhddrmqmq1affvfqcn722qiakjq4dkywvp67h4aa";
   };
 
-  buildInputs = [ ocaml findlib ocamlbuild ];
+  buildInputs = [ ocaml findlib ocamlbuild ounit ];
 
-  configurePhase = "ocaml setup.ml -configure --prefix $out"
-    + lib.optionalString doCheck " --enable-tests";
+  configurePhase = "ocaml setup.ml -configure --prefix $out --enable-tests";
   buildPhase     = "ocaml setup.ml -build";
   installPhase   = "ocaml setup.ml -install";
 
-  inherit doCheck;
-  checkInputs = [ ounit ];
+  doCheck = true;
 
   checkPhase = "ocaml setup.ml -test";
 
@@ -32,7 +25,7 @@ stdenv.mkDerivation {
     homepage = "https://forge.ocamlcore.org/projects/ocamlmod/ocamlmod";
     description = "Generate OCaml modules from source files";
     platforms = ocaml.meta.platforms or [];
-    maintainers = with lib.maintainers; [
+    maintainers = with stdenv.lib.maintainers; [
       maggesi
     ];
   };

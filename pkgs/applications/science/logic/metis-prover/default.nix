@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl, mlton }:
+{ stdenv, fetchFromGitHub, perl, mlton }:
 
 stdenv.mkDerivation {
   pname = "metis-prover";
@@ -22,7 +22,7 @@ stdenv.mkDerivation {
     install -Dm0755 bin/mlton/metis $out/bin/metis
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Automatic theorem prover for first-order logic with equality";
     homepage = "http://www.gilith.com/research/metis/";
     license = licenses.mit;

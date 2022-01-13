@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, perlPackages }:
+{ stdenv, fetchurl, makeWrapper, perlPackages }:
 
 let
   perlDeps = with perlPackages; [ TimeDate ];
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
       --set PERL5LIB "${perlPackages.makePerlPath perlDeps}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "mbox to maildir tool";
     license = licenses.publicDomain;
     platforms = platforms.all;

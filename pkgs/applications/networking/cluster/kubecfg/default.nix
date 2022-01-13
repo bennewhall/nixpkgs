@@ -1,27 +1,19 @@
-{ lib, buildGoPackage, fetchFromGitHub, installShellFiles }:
+{ lib, buildGoPackage, fetchFromGitHub, ... }:
 
-buildGoPackage rec {
+let version = "0.16.0"; in
+
+buildGoPackage {
   pname = "kubecfg";
-  version = "0.22.0";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "bitnami";
     repo = "kubecfg";
     rev = "v${version}";
-    sha256 = "sha256-8U/A4F4DboS46ftpuk5fQGT2Y0V+X0y0L3/o4x8qpnY=";
+    sha256 = "1ipw7r9fyqbh1bjvk7ifmj3skh799ly90y4ph37r8mqk1wb92rz4";
   };
 
   goPackagePath = "github.com/bitnami/kubecfg";
-
-  ldflags = [ "-s" "-w" "-X main.version=v${version}" ];
-
-  nativeBuildInputs = [ installShellFiles ];
-
-  postInstall = ''
-    installShellCompletion --cmd kubecfg \
-      --bash <($out/bin/kubecfg completion --shell=bash) \
-      --zsh  <($out/bin/kubecfg completion --shell=zsh)
-  '';
 
   meta = {
     description = "A tool for managing Kubernetes resources as code";

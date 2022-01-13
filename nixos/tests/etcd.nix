@@ -3,7 +3,7 @@
 import ./make-test-python.nix ({ pkgs, ... } : {
   name = "etcd";
 
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ offline ];
   };
 

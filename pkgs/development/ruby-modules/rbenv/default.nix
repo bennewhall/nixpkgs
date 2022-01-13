@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, bash, installShellFiles }:
+{ stdenv, fetchFromGitHub, bash, installShellFiles }:
 
 stdenv.mkDerivation rec {
   pname = "rbenv";
-  version = "1.2.0";
+  version = "1.1.2";
 
   nativeBuildInputs = [ installShellFiles ];
 
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     owner = "rbenv";
     repo = "rbenv";
     rev = "v${version}";
-    sha256 = "sha256-m/Yy5EK8pLTBFcsgKCrNvQrPFFIlYklXXZbjN4Nmm9c=";
+    sha256 = "12i050vs35iiblxga43zrj7xwbaisv3mq55y9ikagkr8pj1vmq53";
   };
 
   postPatch = ''
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     installShellCompletion completions/rbenv.{bash,zsh}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Groom your app’s Ruby environment";
     longDescription = ''
       Use rbenv to pick a Ruby version for your application and guarantee that your development environment matches production.

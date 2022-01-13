@@ -1,6 +1,6 @@
-{ stdenvNoCC, lib, fetchFromGitHub, python3, openssh}:
+{ stdenv, lib, fetchFromGitHub, python3, makeWrapper, openssh }:
 
-stdenvNoCC.mkDerivation {
+stdenv.mkDerivation {
   pname = "ssh-ident";
   version = "2016-04-21";
   src = fetchFromGitHub  {
@@ -10,22 +10,19 @@ stdenvNoCC.mkDerivation {
     sha256 = "1jf19lz1gwn7cyp57j8d4zs5bq13iw3kw31m8nvr8h6sib2pf815";
   };
 
-  postPatch = ''
-    substituteInPlace ssh-ident \
-      --replace 'ssh-agent >' '${openssh}/bin/ssh-agent >'
-  '';
-  buildInputs = [ python3 ];
-
+  buildInputs = [ python3 makeWrapper ];
   installPhase = ''
     mkdir -p $out/bin
     install -m 755 ssh-ident $out/bin/ssh-ident
+    wrapProgram $out/bin/ssh-ident \
+      --prefix PATH : ${lib.makeBinPath [ openssh  ]}
   '';
 
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/ccontavalli/ssh-ident";
     description = "Start and use ssh-agent and load identities as necessary";
-    license = licenses.bsd2;
-    maintainers = with maintainers; [ telotortium ];
-    platforms = with platforms; unix;
+    license = stdenv.lib.licenses.bsd2;
+    maintainers = with stdenv.lib.maintainers; [ telotortium ];
+    platforms = with stdenv.lib.platforms; unix;
   };
 }

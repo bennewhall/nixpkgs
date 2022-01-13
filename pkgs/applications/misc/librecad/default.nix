@@ -1,27 +1,36 @@
-{ lib
-, boost
+{ boost
 , fetchFromGitHub
 , installShellFiles
-, mkDerivation
+, mkDerivationWith
 , muparser
-, pkg-config
+, pkgconfig
 , qmake
 , qtbase
 , qtsvg
 , qttools
 , runtimeShell
+, gcc8Stdenv
 }:
 
-mkDerivation rec {
+let
+  stdenv = gcc8Stdenv;
+in
+
+# Doesn't build with gcc9
+mkDerivationWith stdenv.mkDerivation rec {
   pname = "librecad";
-  version = "2.2.0-rc2";
+  version = "2.2.0-rc1";
 
   src = fetchFromGitHub {
     owner = "LibreCAD";
     repo = "LibreCAD";
     rev = version;
-    sha256 = "sha256-RNg7ioMriH4A7V65+4mh8NhsUHs/8IbTt38nVkYilCE=";
+    sha256 = "0kwj838hqzbw95gl4x6scli9gj3gs72hdmrrkzwq5rjxam18k3f3";
   };
+
+  patches = [
+    ./fix_qt_5_11_build.patch
+  ];
 
   postPatch = ''
     substituteInPlace scripts/postprocess-unix.sh \
@@ -65,16 +74,21 @@ mkDerivation rec {
 
   nativeBuildInputs = [
     installShellFiles
-    pkg-config
+    pkgconfig
     qmake
     qttools
   ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "2D CAD package based on Qt";
     homepage = "https://librecad.org";
-    license = licenses.gpl2Only;
-    maintainers = with maintainers; [ kiwi viric ];
+    license = licenses.gpl2;
+    maintainers = with maintainers; [
+      kiwi
+      viric
+    ];
     platforms = platforms.linux;
   };
 }

@@ -1,35 +1,44 @@
-{ lib, stdenv, fetchurl, makeWrapper, mono, gtk2, curl }:
+{ stdenv, fetchFromGitHub, makeWrapper, perl, mono, gtk2, curl }:
 
 stdenv.mkDerivation rec {
   pname = "ckan";
-  version = "1.30.4";
+  version = "1.16.1";
 
-  src = fetchurl {
-    url = "https://github.com/KSP-CKAN/CKAN/releases/download/v${version}/ckan.exe";
-    sha256 = "sha256-IgPqUEDpaIuGoaGoH2GCEzh3KxF3pkJC3VjTYXwSiQE=";
+  src = fetchFromGitHub {
+    owner = "KSP-CKAN";
+    repo = "CKAN";
+    rev = "v${version}";
+    sha256 = "0lfvl8w09lakz35szp5grfvhq8xx486f5igvj1m6azsql4n929lg";
   };
 
-  dontUnpack = true;
+  buildInputs = [ makeWrapper perl mono ];
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ mono ];
-
-  libraries = lib.makeLibraryPath [ gtk2 curl ];
-
-  buildPhase = "true";
-
-  installPhase = ''
-    install -m 644 -D $src $out/bin/ckan.exe
-    makeWrapper ${mono}/bin/mono $out/bin/ckan \
-      --add-flags $out/bin/ckan.exe \
-      --set LD_LIBRARY_PATH $libraries
+  postPatch = ''
+    substituteInPlace bin/build \
+      --replace /usr/bin/perl ${perl}/bin/perl
   '';
 
-  meta = with lib; {
+  # Tests don't currently work, as they try to write into /var/empty.
+  doCheck = false;
+  checkTarget = "test";
+
+  libraries = stdenv.lib.makeLibraryPath [ gtk2 curl ];
+
+  installPhase = ''
+    mkdir -p $out/bin
+    for exe in *.exe; do
+      install -m 0644 $exe $out/bin
+      makeWrapper ${mono}/bin/mono $out/bin/$(basename $exe .exe) \
+        --add-flags $out/bin/$exe \
+        --set LD_LIBRARY_PATH $libraries
+    done
+  '';
+
+  meta = {
     description = "Mod manager for Kerbal Space Program";
     homepage = "https://github.com/KSP-CKAN/CKAN";
-    license = licenses.mit;
-    maintainers = with maintainers; [ Baughn ymarkus ];
-    platforms = platforms.all;
-  };
+    license = stdenv.lib.licenses.mit;
+    maintainers = [ stdenv.lib.maintainers.Baughn ];
+    platforms = stdenv.lib.platforms.all;
+  };    
 }

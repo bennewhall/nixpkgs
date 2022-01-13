@@ -1,15 +1,10 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-}:
-
-stdenv.mkDerivation rec {
-  pname = "icingaweb2-theme-snow";
+{ stdenv, lib, fetchFromGitHub }: with lib; stdenv.mkDerivation rec {
+  name = "icingaweb2-theme-snow";
   version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "Mikesch-mp";
-    repo = pname;
+    repo = name;
     rev = "v${version}";
     sha256 = "1c974v85mbsis52y2knwzh33996q8sza7pqrcs6ydx033s0rxjrp";
   };
@@ -25,7 +20,7 @@ stdenv.mkDerivation rec {
     cp -r * "$out"
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Snow theme for Icingaweb 2";
     homepage = "https://github.com/Mikesch-mp/icingaweb2-theme-snow";
     license = licenses.publicDomain;

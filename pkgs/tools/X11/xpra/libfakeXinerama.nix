@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libX11, libXinerama }:
+{ stdenv, fetchurl, libX11, libXinerama }:
 
 stdenv.mkDerivation  rec {
   pname = "libfakeXinerama";
@@ -23,7 +23,7 @@ stdenv.mkDerivation  rec {
     ln -s libXinerama.so.1 $out/lib/libXinerama.so
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://xpra.org/";
     description = "fakeXinerama for Xpra";
     platforms = platforms.linux;

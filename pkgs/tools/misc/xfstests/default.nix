@@ -4,8 +4,7 @@
 , time, util-linux, which, writeScript, xfsprogs, runtimeShell }:
 
 stdenv.mkDerivation {
-  pname = "xfstests";
-  version = "unstable-2019-09-08";
+  name = "xfstests-2019-09-08";
 
   src = fetchgit {
     url = "git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git";
@@ -101,7 +100,7 @@ stdenv.mkDerivation {
     exec ./check "$@"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Torture test suite for filesystems";
     homepage = "https://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git/";
     license = licenses.gpl2;

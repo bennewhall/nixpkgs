@@ -1,16 +1,16 @@
-{ lib, fetchurl, tcl, tk, libX11, zlib, makeWrapper, makeDesktopItem }:
+{ stdenv, fetchurl, tcl, tk, libX11, zlib, makeWrapper, makeDesktopItem }:
 
-tcl.mkTclDerivation rec {
+stdenv.mkDerivation rec {
   pname = "scid-vs-pc";
-  version = "4.22";
+  version = "4.21";
 
   src = fetchurl {
     url = "mirror://sourceforge/scidvspc/scid_vs_pc-${version}.tgz";
-    sha256 = "sha256-PSHDPrfhJI/DyEVQLo8Ckargqf/iUG5PgvUbO/4WNJM=";
+    sha256 = "1lsm5s2hlhqbmwm6f38jlg2kc4j6lwp86lg6z3w6nc3jibzgvsay";
   };
 
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ tk libX11 zlib ];
+  buildInputs = [ tcl tk libX11 zlib ];
 
   prePatch = ''
     sed -i -e '/^ *set headerPath *{/a ${tcl}/include ${tk}/include' \
@@ -42,7 +42,6 @@ tcl.mkTclDerivation rec {
 
   dontPatchShebangs = true;
 
-  # TODO: can this use tclWrapperArgs?
   postFixup = ''
     sed -i -e '1c#!'"$out"'/bin/tcscid' "$out/bin/scidpgn"
     sed -i -e '1c#!${tk}/bin/wish' "$out/bin/sc_remote"
@@ -50,6 +49,7 @@ tcl.mkTclDerivation rec {
 
     for cmd in $out/bin/* ; do
       wrapProgram "$cmd" \
+        --set TCLLIBPATH "${tcl}/${tcl.libdir}" \
         --set TK_LIBRARY "${tk}/lib/${tk.libPrefix}"
     done
   '';
@@ -71,11 +71,12 @@ tcl.mkTclDerivation rec {
     categories = "Game;BoardGame;";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Chess database with play and training functionality";
     homepage = "http://scidvspc.sourceforge.net/";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     maintainers = [ maintainers.paraseba ];
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }
+

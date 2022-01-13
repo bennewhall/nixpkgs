@@ -1,21 +1,20 @@
-{ lib, buildGoModule, fetchFromSourcehut
-, ncurses, notmuch, scdoc
-, python3, w3m, dante
+{ stdenv, buildGoModule, fetchurl
+, go, ncurses, notmuch, scdoc
+, python3, perl, w3m, dante
+, fetchFromGitHub
 }:
 
 buildGoModule rec {
   pname = "aerc";
-  version = "0.6.0";
+  version = "0.4.0";
 
-  src = fetchFromSourcehut {
-    owner = "~rjarry";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-RaHigTp1YGkjQ46gFLhKcJuajekcCgfozu0ndCNq5Ac=";
+  src = fetchurl {
+    url = "https://git.sr.ht/~sircmpwn/aerc/archive/${version}.tar.gz";
+    sha256 = "05qy14k9wmyhsg1hiv4njfx1zn1m9lz4d1p50kc36v7pq0n4csfk";
   };
 
   runVend = true;
-  vendorSha256 = "sha256-A2MZzTYzGuZLFENn9OBIBBreJan+b3RKOEu5bQcDwS8=";
+  vendorSha256 = "13zs5113ip85yl6sw9hzclxwlnrhy18d39vh9cwbq97dgnh9rz89";
 
   doCheck = false;
 
@@ -49,12 +48,12 @@ buildGoModule rec {
 
   postFixup = ''
     wrapProgram $out/bin/aerc --prefix PATH ":" \
-      "$out/share/aerc/filters:${lib.makeBinPath [ ncurses ]}"
+      "$out/share/aerc/filters:${stdenv.lib.makeBinPath [ ncurses ]}"
     wrapProgram $out/share/aerc/filters/html --prefix PATH ":" \
-      ${lib.makeBinPath [ w3m dante ]}
+      ${stdenv.lib.makeBinPath [ w3m dante ]}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An email client for your terminal";
     homepage = "https://aerc-mail.org/";
     maintainers = with maintainers; [ tadeokondrak ];

@@ -1,12 +1,11 @@
-{ lib, stdenv, fetchurl, openssl, zlib }:
+{ stdenv, fetchurl, openssl, zlib }:
 
 stdenv.mkDerivation rec {
-  pname = "ircd-hybrid";
-  version = "8.2.39";
+  name = "ircd-hybrid-8.2.35";
 
   src = fetchurl {
-    url = "mirror://sourceforge/ircd-hybrid/ircd-hybrid-${version}.tgz";
-    sha256 = "sha256-A10nH2sN1FEVf4AUbRibwcm4TMm6G3rQb9cu5RCObk0=";
+    url = "mirror://sourceforge/ircd-hybrid/${name}.tgz";
+    sha256 = "045wd3wa4i1hl7i4faksaj8l5r70ld55bggryaf1ml28ijwjwpca";
   };
 
   buildInputs = [ openssl zlib ];
@@ -21,7 +20,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "An IPv6-capable IRC server";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
     homepage = "https://www.ircd-hybrid.org/";
   };
 }

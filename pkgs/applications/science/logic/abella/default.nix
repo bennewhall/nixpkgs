@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, rsync, ocamlPackages }:
+{ stdenv, fetchurl, rsync, ocamlPackages }:
 
 stdenv.mkDerivation rec {
   pname = "abella";
-  version = "2.0.7";
+  version = "2.0.6";
 
   src = fetchurl {
     url = "http://abella-prover.org/distributions/${pname}-${version}.tar.gz";
-    sha256 = "sha256-/eOiebMFHgrurtrSHPlgZO3xmmxBOUmyAzswXZLd3Yc=";
+    sha256 = "164q9gngckg6q69k13lwx2pq3cnc9ckw1qi8dnpxqfjgwfqr7xyi";
   };
 
   buildInputs = [ rsync ] ++ (with ocamlPackages; [ ocaml ocamlbuild findlib ]);
@@ -31,8 +31,8 @@ stdenv.mkDerivation rec {
       objects with binding.
     '';
     homepage = "http://abella-prover.org/";
-    license = lib.licenses.gpl3;
-    maintainers = with lib.maintainers; [ bcdarwin ciil ];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl3;
+    maintainers = with stdenv.lib.maintainers; [ bcdarwin ciil ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

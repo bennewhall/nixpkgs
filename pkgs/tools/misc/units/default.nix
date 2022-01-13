@@ -11,11 +11,11 @@ assert enableCurrenciesUpdater -> pythonPackages != null;
 
 stdenv.mkDerivation rec {
   pname = "units";
-  version = "2.21";
+  version = "2.19";
 
   src = fetchurl {
     url = "mirror://gnu/units/${pname}-${version}.tar.gz";
-    sha256 = "sha256-bD6AqfmAWJ/ZYqWFKiZ0ZCJX2xxf1bJ8TZ5mTzSGy68=";
+    sha256 = "0mk562g7dnidjgfgvkxxpvlba66fh1ykmfd9ylzvcln1vxmi6qj2";
   };
 
   pythonEnv = pythonPackages.python.withPackages(ps: [
@@ -37,7 +37,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Unit conversion tool";
     homepage = "https://www.gnu.org/software/units/";
     license = [ licenses.gpl3Plus ];

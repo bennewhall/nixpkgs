@@ -21,28 +21,9 @@ in
           substitutions = {
             inherit pythonInterpreter;
             yj = "${buildPackages.yj}/bin/yj";
-            pyprojectPatchScript = "${./pyproject-without-special-deps.py}";
-            fields = [ "path" ];
-            kind = "path";
+            pyprojectPatchScript = "${./pyproject-without-path.py}";
           };
-        } ./remove-special-dependencies.sh
-    )
-    { };
-
-  removeGitDependenciesHook = callPackage
-    ({}:
-      makeSetupHook
-        {
-          name = "remove-git-dependencies.sh";
-          deps = [ ];
-          substitutions = {
-            inherit pythonInterpreter;
-            yj = "${buildPackages.yj}/bin/yj";
-            pyprojectPatchScript = "${./pyproject-without-special-deps.py}";
-            fields = [ "git" "branch" "rev" "tag" ];
-            kind = "git";
-          };
-        } ./remove-special-dependencies.sh
+        } ./remove-path-dependencies.sh
     )
     { };
 

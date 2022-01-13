@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
   ];
 
   makeFlags = [
-    "CC=${stdenv.cc.targetPrefix}cc"
+    "CC=cc"
     "CFLAGS=-O2"
     "PREFIX=${placeholder "out"}"
   ];
@@ -62,15 +62,12 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     patchShebangs quotehostinfo
-    substituteInPlace Makefile --replace strip '${stdenv.cc.targetPrefix}strip'
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Compiler for Miranda -- a pure, non-strict, polymorphic, higher order functional programming language";
     homepage = "https://www.cs.kent.ac.uk/people/staff/dat/miranda/";
     license = licenses.bsd2;
     maintainers = with maintainers; [ siraben ];
-    platforms = platforms.all;
-    mainProgram = "mira";
   };
 }

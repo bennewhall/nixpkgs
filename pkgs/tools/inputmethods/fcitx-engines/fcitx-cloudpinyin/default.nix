@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, pkg-config, fcitx, gettext, curl }:
+{ stdenv, fetchurl, cmake, pkgconfig, fcitx, gettext, curl }:
 
 stdenv.mkDerivation rec {
   pname = "fcitx-cloudpinyin";
@@ -9,8 +9,8 @@ stdenv.mkDerivation rec {
     sha256 = "0ai347wv3qdjzcbh0j9hdjpzwvh2kk57324xbxq37nzagrdgg5x0";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
-  buildInputs = [ fcitx gettext curl ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ cmake fcitx gettext curl ];
 
   preInstall = ''
     substituteInPlace src/cmake_install.cmake \
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
       --replace ${fcitx} $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     isFcitxEngine = true;
     description  = "A standalone module for fcitx that uses web API to provide better pinyin result";
     homepage     = "https://github.com/fcitx/fcitx-cloudpinyin";

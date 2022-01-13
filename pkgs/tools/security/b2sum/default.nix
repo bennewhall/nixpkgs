@@ -1,16 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, openmp ? null }:
+{ stdenv, fetchzip, openmp ? null }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation {
   pname = "b2sum";
   version = "unstable-2018-06-11";
 
-  src = fetchFromGitHub {
-    owner = "BLAKE2";
-    repo = "BLAKE2";
-    rev = "320c325437539ae91091ce62efec1913cd8093c2";
-    sha256 = "E60M9oP/Sdfg/L3ZxUcDtUXhFz9oP72IybdtVUJh9Sk=";
+  src = fetchzip {
+    url = "https://github.com/BLAKE2/BLAKE2/archive/320c325437539ae91091ce62efec1913cd8093c2.tar.gz";
+    sha256 = "0agmc515avdpr64bsgv87wby2idm0d3wbndxzkhdfjgzhgv0rb8k";
   };
 
   sourceRoot = "source/b2sum";

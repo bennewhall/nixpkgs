@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, zlib }:
+{ stdenv, fetchurl, zlib }:
 
 stdenv.mkDerivation rec {
-  pname = "gzrt";
-  version = "0.8";
+  name = "gzrt-0.8";
 
   src = fetchurl {
-    url = "https://www.urbanophile.com/arenn/coding/gzrt/gzrt-${version}.tar.gz";
+    url = "https://www.urbanophile.com/arenn/coding/gzrt/${name}.tar.gz";
     sha256 = "1vhzazj47xfpbfhzkwalz27cc0n5gazddmj3kynhk0yxv99xrdxh";
   };
 
@@ -16,11 +15,10 @@ stdenv.mkDerivation rec {
     cp gzrecover $out/bin
   '';
 
-  meta = with lib; {
+  meta = {
     homepage = "https://www.urbanophile.com/arenn/hacking/gzrt/";
     description = "The gzip Recovery Toolkit";
-    maintainers = with maintainers; [ ];
-    license = licenses.gpl2Plus;
-    platforms = platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

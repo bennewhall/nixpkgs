@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, meson, pkg-config, ninja
+{ stdenv, fetchFromGitHub, meson, pkg-config, ninja
 , pixman, gnutls, libdrm, libjpeg_turbo, zlib, aml
 }:
 
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ meson pkg-config ninja ];
   buildInputs = [ pixman gnutls libdrm libjpeg_turbo zlib aml ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A VNC server library";
     longDescription = ''
       This is a liberally licensed VNC server library that's intended to be

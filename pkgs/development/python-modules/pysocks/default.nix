@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -15,7 +15,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "SOCKS module for Python";
     license     = licenses.bsd3;
     maintainers = with maintainers; [ thoughtpolice ];

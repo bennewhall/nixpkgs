@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , meson
 , python3
@@ -34,7 +34,9 @@ stdenv.mkDerivation rec {
 
   strictDeps = true;
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "High-quality data compression program";
     license = licenses.bsdOriginal;
     platforms = platforms.all;

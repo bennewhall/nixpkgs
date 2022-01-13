@@ -1,53 +1,33 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, gdk-pixbuf
-, gnome-themes-extra
-, gtk-engine-murrine
-, librsvg
-, sassc
-, which
-}:
+{ stdenv, fetchFromGitHub, gdk-pixbuf, librsvg, gtk-engine-murrine }:
 
 stdenv.mkDerivation rec {
   pname = "qogir-theme";
-  version = "2021-12-25";
+  version = "2020-11-16";
 
   src = fetchFromGitHub {
     owner = "vinceliuice";
     repo = pname;
     rev = version;
-    sha256 = "1h10yqz3i59bxhkk2r2p8as8g9ibx38bbpdxi7jgg2pxr581mn4f";
+    sha256 = "0qp65py1p93f5bxbf0jgc1d2lwrjhb7d0vzkivm73haji197l9p5";
   };
 
-  nativeBuildInputs = [
-    sassc
-    which
-  ];
+  buildInputs = [ gdk-pixbuf librsvg ];
 
-  buildInputs = [
-    gdk-pixbuf # pixbuf engine for Gtk2
-    gnome-themes-extra # adwaita engine for Gtk2
-    librsvg # pixbuf loader for svg
-  ];
-
-  propagatedUserEnvPkgs = [
-    gtk-engine-murrine # murrine engine for Gtk2
-  ];
+  propagatedUserEnvPkgs = [ gtk-engine-murrine ];
 
   installPhase = ''
     patchShebangs .
     mkdir -p $out/share/themes
-    name= ./install.sh -t all -d $out/share/themes
+    name= ./install.sh -d $out/share/themes
     mkdir -p $out/share/doc/${pname}
     cp -a src/firefox $out/share/doc/${pname}
     rm $out/share/themes/*/{AUTHORS,COPYING}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Flat Design theme for GTK based desktop environments";
     homepage = "https://vinceliuice.github.io/Qogir-theme";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     platforms = platforms.unix;
     maintainers = [ maintainers.romildo ];
   };

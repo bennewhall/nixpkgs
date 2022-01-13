@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip, blas, lapack, gfortran }:
+{ stdenv, fetchurl, unzip, blas, lapack, gfortran }:
 
 assert (!blas.isILP64) && (!lapack.isILP64);
 
@@ -18,13 +18,13 @@ stdenv.mkDerivation rec {
     "--with-lapack-lib=-llapack"
   ];
 
-  nativeBuildInputs = [ unzip gfortran ];
+  nativeBuildInputs = [ unzip ];
 
-  buildInputs = [ blas lapack ];
+  buildInputs = [ gfortran blas lapack ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A software package for large-scale nonlinear optimization";
     homepage = "https://projects.coin-or.org/Ipopt";
     license = licenses.epl10;

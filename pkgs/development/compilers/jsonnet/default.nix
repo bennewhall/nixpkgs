@@ -1,9 +1,8 @@
-{ stdenv, lib, jekyll, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "jsonnet";
   version = "0.17.0";
-  outputs = ["out" "doc"];
 
   src = fetchFromGitHub {
     rev = "v${version}";
@@ -11,8 +10,6 @@ stdenv.mkDerivation rec {
     repo = "jsonnet";
     sha256 = "1ddz14699v5lqx3dh0mb7hfffr6fk5zhmzn3z8yxkqqvriqnciim";
   };
-
-  nativeBuildInputs = [ jekyll ];
 
   enableParallelBuilding = true;
 
@@ -22,19 +19,12 @@ stdenv.mkDerivation rec {
     "libjsonnet.so"
   ];
 
-  # Upstream writes documentation in html, not in markdown/rst, so no
-  # other output formats, sorry.
-  preBuild = ''
-    jekyll build --source ./doc --destination ./html
-  '';
-
   installPhase = ''
-    mkdir -p $out/bin $out/lib $out/include $out/share/doc/jsonnet
+    mkdir -p $out/bin $out/lib $out/include
     cp jsonnet $out/bin/
     cp jsonnetfmt $out/bin/
     cp libjsonnet*.so $out/lib/
     cp -a include/*.h $out/include/
-    cp -r ./html $out/share/doc/jsonnet
   '';
 
   meta = {

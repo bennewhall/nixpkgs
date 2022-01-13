@@ -1,6 +1,4 @@
-{ lib, buildDunePackage
-, alcotest-lwt, index, irmin, irmin-layers, irmin-test, ocaml_lwt, fpath, optint
-}:
+{ lib, buildDunePackage, alcotest-lwt, index, irmin, irmin-test, ocaml_lwt }:
 
 buildDunePackage rec {
   minimumOCamlVersion = "4.02.3";
@@ -11,10 +9,9 @@ buildDunePackage rec {
 
   useDune2 = true;
 
-  buildInputs = [ fpath ];
-  propagatedBuildInputs = [ index irmin irmin-layers ocaml_lwt optint ];
+  propagatedBuildInputs = [ index irmin ocaml_lwt ];
 
-  checkInputs = [ alcotest-lwt irmin-test ];
+  checkInputs = lib.optionals doCheck [ alcotest-lwt irmin-test ];
 
   doCheck = true;
 

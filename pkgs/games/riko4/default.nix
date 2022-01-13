@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, SDL2, libGLU, luajit, curl, curlpp }:
+{ stdenv, fetchFromGitHub, cmake, SDL2, libGLU, luajit, curl, curlpp }:
 
 let
   # Newer versions of sdl-gpu don't work with Riko4 (corrupted graphics),
@@ -15,8 +15,9 @@ let
     };
     buildInputs = [ SDL2 libGLU ];
     nativeBuildInputs = [ cmake ];
+    enableParallelBuilding = true;
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       homepage = "https://github.com/grimfang4/sdl-gpu";
       description = "A library for high-performance, modern 2D graphics with SDL written in C";
       license = licenses.mit;
@@ -56,7 +57,9 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/riko4
   '';
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     homepage = "https://github.com/incinirate/Riko4";
     description = "Fantasy console for pixel art game development";
     license = licenses.mit;

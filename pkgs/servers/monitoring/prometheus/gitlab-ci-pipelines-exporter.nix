@@ -1,21 +1,23 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
-buildGoModule rec {
+buildGoPackage rec {
   pname = "gitlab-ci-pipelines-exporter";
-  version = "0.4.9";
+  version = "0.2.5";
+
+  goPackagePath = "github.com/mvisonneau/gitlab-ci-pipelines-exporter";
+
+  goDeps = ./gitlab-ci-pipelines-exporter_deps.nix;
 
   src = fetchFromGitHub {
     owner = "mvisonneau";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "13zs8140n4z56i0xkl6jvvmwy80l07dxyb23wxzd5avbdm8knypz";
+    rev = version;
+    sha256 = "0qmy6pqfhx9bphgh1zqi68kp0nscwy1x7z13lfiaaz8pgsjh95yy";
   };
-
-  vendorSha256 = "1k620r3d1swhj7cfmqjh5n08da2a6w87fwrsajl0y324iyw2chsa";
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Prometheus / OpenMetrics exporter for GitLab CI pipelines insights";
     homepage = "https://github.com/mvisonneau/gitlab-ci-pipelines-exporter";
     license = licenses.asl20;

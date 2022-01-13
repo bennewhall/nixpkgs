@@ -1,13 +1,14 @@
-{ lib, buildPythonPackage, fetchPypi, twisted, whisper, txamqp, cachetools, urllib3
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k
+, twisted, whisper, txamqp, cachetools, urllib3
 }:
 
 buildPythonPackage rec {
   pname = "carbon";
-  version = "1.1.8";
+  version = "1.1.7";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "95918c4b14e1c525d9499554d5e03b349f87e0c2bc17ec5c64d18679a30b69f1";
+    sha256 = "08ndphpcbdx2ab4f5jsn2y4l5p55h9wscbg7clhbyyh03r5hianr";
   };
 
   # Carbon-s default installation is /opt/graphite. This env variable ensures
@@ -16,7 +17,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ twisted whisper txamqp cachetools urllib3 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://graphiteapp.org/";
     description = "Backend data caching and persistence daemon for Graphite";
     maintainers = with maintainers; [ offline basvandijk ];

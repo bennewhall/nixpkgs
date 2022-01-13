@@ -1,4 +1,4 @@
-{ alsa-lib
+{ alsaLib
 , atk
 , cairo
 , cups
@@ -13,7 +13,6 @@
 , glib
 , gnome2
 , gtk3
-, gtk4
 , lib
 , libX11
 , libxcb
@@ -27,12 +26,9 @@
 , libXrandr
 , libXrender
 , libXtst
-, libdrm
 , libnotify
 , libpulseaudio
 , libuuid
-, libxshmfence
-, mesa
 , nspr
 , nss
 , pango
@@ -51,11 +47,11 @@ let
 in stdenv.mkDerivation rec {
 
   pname = "opera";
-  version = "82.0.4227.43";
+  version = "68.0.3618.63";
 
   src = fetchurl {
     url = "${mirror}/${version}/linux/${pname}-stable_${version}_amd64.deb";
-    sha256 = "sha256-DFhf62dqk7qA2k+JgVqGLxF30UPwQwhXD105Qua25X0=";
+    sha256 = "1643043ywz94x2yr7xyw7krfq53iwkr8qxlbydzq6zb2zina7jxd";
   };
 
   unpackCmd = "${dpkg}/bin/dpkg-deb -x $curSrc .";
@@ -66,7 +62,7 @@ in stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     at-spi2-atk
     at-spi2-core
     atk
@@ -92,12 +88,9 @@ in stdenv.mkDerivation rec {
     libXrandr
     libXrender
     libXtst
-    libdrm
     libnotify
     libuuid
     libxcb
-    libxshmfence
-    mesa
     nspr
     nss
     pango
@@ -112,16 +105,12 @@ in stdenv.mkDerivation rec {
     # brings up the crash report, which also crashes. `strace -f` hints at a
     # missing libudev.so.0.
     (lib.getLib systemd)
-
-    # Error at startup:
-    # "Illegal instruction (core dumped)"
-    gtk3
-    gtk4
   ];
 
   installPhase = ''
     mkdir -p $out
     cp -r . $out/
+    mv $out/lib/*/opera/*.so $out/lib/
   '';
 
   meta = with lib; {

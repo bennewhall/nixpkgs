@@ -1,57 +1,40 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, libpcap
-, meson
-, ninja
-, openssl
-, pkg-config
+{ stdenv, fetchFromGitHub, pkgconfig
+, openssl ? null, libpcap ? null
 }:
 
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "libsrtp";
-  version = "2.4.2";
+  version = "2.3.0";
 
   src = fetchFromGitHub {
     owner = "cisco";
     repo = "libsrtp";
     rev = "v${version}";
-    sha256 = "sha256-6FAkfxC7Tg7uIAmTmRt5Sn8/YofILfpe7Y4pSaq8XL8=";
+    sha256 = "1f7i3jdh1wzdv7zjlz7gs3xw5jqig9zw8z9awsqqcp54f94xdpvd";
   };
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [
-    meson
-    ninja
-    pkg-config
-  ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildInputs = [
-    libpcap
-    openssl
-  ];
+  # libsrtp.pc references -lcrypto -lpcap without -L
+  propagatedBuildInputs = [ openssl libpcap ];
 
-  # rtpw tests hang
-  preConfigure = ''
-    rm test/rtpw_test.sh \
-       test/rtpw_test_gcm.sh
+  configureFlags = [
+    "--disable-debug"
+  ] ++ optional (openssl != null) "--enable-openssl";
+
+  buildFlags = [ "shared_library" ];
+
+  postInstall = ''
+    rm -rf $out/bin
   '';
 
-  mesonFlags = [
-    "-Dcrypto-library=openssl"
-    "-Dcrypto-library-kdf=disabled"
-    "-Ddoc=disabled"
-    "-Dtests=${if doCheck then "enabled" else "disabled"}"
-  ];
-
-  doCheck = true;
-
-  meta = with lib; {
+  meta = {
     homepage = "https://github.com/cisco/libsrtp";
     description = "Secure RTP (SRTP) Reference Implementation";
     license = licenses.bsd3;
     platforms = platforms.all;
-    maintainers = with maintainers; [ r-burns ];
   };
 }

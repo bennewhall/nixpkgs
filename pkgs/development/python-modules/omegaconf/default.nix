@@ -1,30 +1,22 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pytest-mock, pytestCheckHook
-, pyyaml, pythonOlder, jre_minimal, antlr4-python3-runtime }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, pythonOlder
+, pytest, pytestrunner, pyyaml, six, pathlib2, isPy27 }:
 
 buildPythonPackage rec {
   pname = "omegaconf";
-  version = "2.1.1";
-
-  disabled = pythonOlder "3.6";
+  version = "1.4.1";
 
   src = fetchFromGitHub {
     owner = "omry";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "0hh6pk4q6nb94bz9rwa6cysf3nj50rmqkjh34pqkh28nzg44afjw";
+    rev = version;
+    sha256 = "1vpcdjlq54pm8xmkv2hqm2n1ysvz2a9iqgf55x0w6slrb4595cwb";
   };
 
-  postPatch = ''
-    substituteInPlace setup.py --replace 'setup_requires=["pytest-runner"]' 'setup_requires=[]'
-  '';
+  checkInputs = [ pytest ];
+  buildInputs = [ pytestrunner ];
+  propagatedBuildInputs = [ pyyaml six ] ++ stdenv.lib.optional isPy27 pathlib2;
 
-  checkInputs = [ pytestCheckHook pytest-mock ];
-  nativeBuildInputs = [ jre_minimal ];
-  propagatedBuildInputs = [ antlr4-python3-runtime pyyaml ];
-
-  disabledTestPaths = [ "tests/test_pydev_resolver_plugin.py" ];  # needs pydevd - not in Nixpkgs
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A framework for configuring complex applications";
     homepage = "https://github.com/omry/omegaconf";
     license = licenses.free;  # prior bsd license (1988)

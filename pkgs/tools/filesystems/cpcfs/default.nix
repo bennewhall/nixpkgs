@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, ncurses, readline, ronn }:
+{ stdenv, fetchFromGitHub, makeWrapper, ncurses, readline, ronn }:
 
 stdenv.mkDerivation rec {
 
@@ -31,11 +31,11 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Manipulating CPC dsk images and files";
     homepage = "https://github.com/derikz/cpcfs/" ;
     license = licenses.bsd2;
     maintainers = [ ];
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }

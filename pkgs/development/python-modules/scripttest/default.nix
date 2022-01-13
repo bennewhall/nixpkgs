@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pytest
@@ -18,7 +18,7 @@ buildPythonPackage rec {
   # Tests are not included. See https://github.com/pypa/scripttest/issues/11
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for testing interactive command-line applications";
     homepage = "https://pypi.python.org/pypi/ScriptTest/";
     license = licenses.mit;

@@ -2,19 +2,20 @@
 
 let
   pname = "molotov";
-  version = "4.4.0";
+  version = "4.2.2";
+  name = "${pname}-${version}";
   src = fetchurl {
     url = "http://desktop-auto-upgrade.molotov.tv/linux/${version}/molotov.AppImage";
-    sha256 = "sha256-l4Il6i8uXSeJqH3ITC8ZUpKXPQb0qcW7SpKx1R46XDc=";
+    sha256 = "00p8srf4yswbihlsi3s7kfkav02h902yvrq99wys11is63n01x8z";
   };
-  appimageContents = appimageTools.extractType2 { inherit pname version src; };
+  appimageContents = appimageTools.extractType2 { inherit name src; };
 in
 appimageTools.wrapType2 {
-  inherit pname version src;
+  inherit name src;
   extraInstallCommands = ''
-    mv $out/bin/${pname}-${version} $out/bin/${pname}
+    mv $out/bin/${name} $out/bin/${pname}
     install -m 444 -D \
-      ${appimageContents}/@molotovdesktop-wrapper.desktop \
+      ${appimageContents}/${pname}.desktop \
       $out/share/applications/${pname}.desktop
     substituteInPlace $out/share/applications/${pname}.desktop \
       --replace 'Exec=AppRun' 'Exec=${pname}'

@@ -28,7 +28,6 @@ let
         ProtectHome = "on";
         Restart = "on-failure";
         RestartSec = 2;
-        LogsDirectory = "radius";
     };
   };
 
@@ -74,7 +73,6 @@ in
       users.radius = {
         /*uid = config.ids.uids.radius;*/
         description = "Radius daemon user";
-        isSystemUser = true;
       };
     };
 

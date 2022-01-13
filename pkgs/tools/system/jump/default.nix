@@ -2,16 +2,16 @@
 
 buildGoModule rec {
   pname = "jump";
-  version = "0.40.0";
+  version = "0.30.1";
 
   src = fetchFromGitHub {
     owner = "gsamokovarov";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-8Lfta4qDXYVSHG3UI8iUA6vIjBe5OIX7n0LC4OW1qMU=";
+    sha256 = "0mph3bqfjnw3yf0a6ml3ccmkr1shviwvvq4d04ky4gppfy6z51jy";
   };
 
-  vendorSha256 = null;
+  vendorSha256 = "1500vim2lmkkls758pwhlx3piqbw6ap0nnhdwz9pcxih4s4as2nk";
 
   doCheck = false;
 

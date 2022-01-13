@@ -1,4 +1,4 @@
-{ lib, buildPythonApplication, fetchFromGitHub }:
+{ stdenv, buildPythonApplication, fetchFromGitHub }:
 
 buildPythonApplication {
   pname = "protocol-unstable";
@@ -11,7 +11,7 @@ buildPythonApplication {
     sha256 = "13l10jhf4vghanmhh3pn91b2jdciispxy0qadz4n08blp85qn9cm";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An ASCII Header Generator for Network Protocols";
     homepage = "https://github.com/luismartingarcia/protocol";
     license = licenses.gpl3;

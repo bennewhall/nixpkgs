@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, cmake
-, libGL, libGLU, libXv, libXtst, libXi, libjpeg_turbo, fltk
+{ stdenv, fetchurl, cmake
+, libGL, libGLU, libX11, libXv, libXtst, libjpeg_turbo, fltk
 , xorg
 , opencl-headers, opencl-clhpp, ocl-icd
 }:
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
 
   buildInputs = [ libjpeg_turbo libGL libGLU fltk
-    libXv libXtst libXi xorg.xcbutilkeysyms
+    libX11 libXv libXtst xorg.xcbutilkeysyms
     opencl-headers opencl-clhpp ocl-icd
   ];
 
@@ -31,7 +31,9 @@ stdenv.mkDerivation rec {
       --replace "LD_PRELOAD=libgefaker" "LD_PRELOAD=$out/lib/libgefaker"
   '';
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     homepage = "http://www.virtualgl.org/";
     description = "X11 GL rendering in a remote computer with full 3D hw acceleration";
     license = licenses.wxWindows;

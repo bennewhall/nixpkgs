@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip, file, licenseFile ? null, optgamsFile ? null}:
+{ stdenv, fetchurl, unzip, file, licenseFile ? null, optgamsFile ? null}:
 
 assert licenseFile != null;
 
@@ -10,8 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "4f95389579f33ff7c2586838a2c19021aa0746279555cbb51aa6e0efd09bd297";
   };
   unpackCmd = "unzip $src";
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [ file ];
+  buildInputs = [ unzip file ];
   dontBuild = true;
 
   installPhase = ''
@@ -19,7 +18,7 @@ stdenv.mkDerivation rec {
     cp -a * "$out/share/gams"
 
     cp ${licenseFile} $out/share/gams/gamslice.txt
-  '' + lib.optionalString (optgamsFile != null) ''
+  '' + stdenv.lib.optionalString (optgamsFile != null) ''
     cp ${optgamsFile} $out/share/gams/optgams.def
     ln -s $out/share/gams/optgams.def $out/bin/optgams.def
   '';
@@ -36,7 +35,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib;{
+  meta = with stdenv.lib;{
     description = "General Algebraic Modeling System";
     longDescription = ''
       The General Algebraic Modeling System is a high-level modeling system for mathematical optimization.

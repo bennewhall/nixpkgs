@@ -1,17 +1,15 @@
-{ lib
-, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , armadillo
+, boost
 , cmake
-, gmp
 , glog
-, gtest
+, gmock
 , openssl
 , gflags
-, gnuradio3_8
-, thrift
-, libpcap
+, gnuradio
 , orc
-, pkg-config
+, pkgconfig
+, pythonPackages
 , uhd
 , log4cpp
 , blas, lapack
@@ -20,10 +18,8 @@
 , protobuf
 }:
 
-gnuradio3_8.pkgs.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "gnss-sdr";
-  # There's an issue with cpufeatures on 0.0.15, see:
-  # https://github.com/NixOS/nixpkgs/pull/142557#issuecomment-950217925
   version = "0.0.13";
 
   src = fetchFromGitHub {
@@ -33,36 +29,31 @@ gnuradio3_8.pkgs.mkDerivation rec {
     sha256 = "0a3k47fl5dizzhbqbrbmckl636lznyjby2d2nz6fz21637hvrnby";
   };
 
-  nativeBuildInputs = [
-    cmake
-    gnuradio3_8.unwrapped.python
-    gnuradio3_8.unwrapped.python.pkgs.Mako
-    gnuradio3_8.unwrapped.python.pkgs.six
-  ];
-
   buildInputs = [
-    gmp
     armadillo
-    gnuradio3_8.unwrapped.boost
+    boost.dev
+    cmake
     glog
-    gtest
-    openssl
+    gmock
+    openssl.dev
     gflags
+    gnuradio
     orc
+    pkgconfig
+    pythonPackages.Mako
+    pythonPackages.six
+
     # UHD support is optional, but gnuradio is built with it, so there's
     # nothing to be gained by leaving it out.
-    gnuradio3_8.unwrapped.uhd
+    uhd
     log4cpp
     blas lapack
     matio
     pugixml
     protobuf
-    gnuradio3_8.pkgs.osmosdr
-    libpcap
-  ] ++ lib.optionals (gnuradio3_8.hasFeature "gr-ctrlport") [
-    thrift
-    gnuradio3_8.unwrapped.python.pkgs.thrift
   ];
+
+  enableParallelBuilding = true;
 
   cmakeFlags = [
     "-DGFlags_ROOT_DIR=${gflags}/lib"
@@ -81,7 +72,7 @@ gnuradio3_8.pkgs.mkDerivation rec {
     "-DGFORTRAN=YES"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An open source Global Navigation Satellite Systems software-defined receiver";
     homepage = "https://gnss-sdr.org/";
     license = licenses.gpl3Plus;

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k
+{ lib, pkgs, buildPythonPackage, fetchPypi, isPy3k, callPackage
 , opencv3
 , pyqt5
 , pyqtgraph
@@ -8,6 +8,7 @@
 , pandas
 , tables
 , git
+, ffmpeg_3
 , scikitimage
 , matplotlib
 , qdarkstyle
@@ -18,7 +19,7 @@
 , imageio-ffmpeg
 , av
 , nose
-, pytestCheckHook
+, pytest
 , pyserial
 , arrayqueues
 , colorspacious
@@ -36,17 +37,13 @@ buildPythonPackage rec {
     inherit pname version;
     sha256 = "aab9d07575ef599a9c0ae505656e3c03ec753462df3c15742f1f768f2b578f0a";
   };
-
-  # crashes python
-  preCheck = ''
-    rm stytra/tests/test_z_experiments.py
-  '';
-
+  doCheck = false;
   checkInputs = [
     nose
-    pytestCheckHook
+    pytest
     pyserial
   ];
+
 
   propagatedBuildInputs = [
     opencv3
@@ -58,6 +55,7 @@ buildPythonPackage rec {
     pandas
     tables
     git
+    ffmpeg_3
     scikitimage
     matplotlib
     qdarkstyle
@@ -77,7 +75,7 @@ buildPythonPackage rec {
   meta = {
     homepage = "https://github.com/portugueslab/stytra";
     description = "A modular package to control stimulation and track behaviour";
-    license = lib.licenses.gpl3Plus;
+    license = lib.licenses.gpl3;
     maintainers = with lib.maintainers; [ tbenst ];
   };
 }

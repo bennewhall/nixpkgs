@@ -1,24 +1,7 @@
-{ lib
-, stdenv
-, fetchurl
-, autoconf
-, automake
-, intltool
-, libtool
-, pkg-config
-, which
-, docbook_xml_dtd_45
-, docbook_xsl
-, gtkmm2
-, pangomm_2_42
-, libgig
-, libsndfile
-, libxslt
+{ stdenv, fetchurl, autoconf, automake, intltool, libtool, pkgconfig, which
+, docbook_xml_dtd_45, docbook_xsl, gtkmm2, libgig, libsndfile, libxslt
 }:
 
-let
-  gtkmm2_with_pango242 = gtkmm2.override { pangomm = pangomm_2_42; };
-in
 stdenv.mkDerivation rec {
   pname = "gigedit";
   version = "1.1.1";
@@ -30,13 +13,13 @@ stdenv.mkDerivation rec {
 
   preConfigure = "make -f Makefile.svn";
 
-  nativeBuildInputs = [ autoconf automake intltool libtool pkg-config which ];
+  nativeBuildInputs = [ autoconf automake intltool libtool pkgconfig which ];
 
-  buildInputs = [ docbook_xml_dtd_45 docbook_xsl gtkmm2_with_pango242 libgig libsndfile libxslt ];
+  buildInputs = [ docbook_xml_dtd_45 docbook_xsl gtkmm2 libgig libsndfile libxslt ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.linuxsampler.org";
     description = "Gigasampler file access library";
     license = licenses.gpl2;

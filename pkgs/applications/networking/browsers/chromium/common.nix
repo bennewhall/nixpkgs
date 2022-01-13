@@ -1,74 +1,55 @@
-{ stdenv, lib, fetchurl, fetchpatch
-# Channel data:
-, channel, upstream-info
-# Helper functions:
-, chromiumVersionAtLeast, versionRange
+{ stdenv, lib, llvmPackages, gnChromium, ninja, which, nodejs, fetchpatch, fetchurl
 
-# Native build inputs:
-, ninja, pkg-config
-, python3, perl
-, gnutar, which
-, llvmPackages
-# postPatch:
-, pkgsBuildHost
-# configurePhase:
-, gnChromium
-
-# Build inputs:
-, libpng
-, bzip2, flac, speex, libopus
+# default dependencies
+, gnutar, bzip2, flac, speex, libopus
 , libevent, expat, libjpeg, snappy
-, libcap
-, xdg-utils, minizip, libwebp
-, libusb1, re2
-, ffmpeg, libxslt, libxml2
-, nasm
-, nspr, nss, systemd
-, util-linux, alsa-lib
-, bison, gperf, libkrb5
-, glib, gtk3, dbus-glib
-, libXScrnSaver, libXcursor, libXtst, libxshmfence, libGLU, libGL
-, mesa
-, pciutils, protobuf, speechd, libXdamage, at-spi2-core
-, pipewire
-, libva
-, libdrm, wayland, libxkbcommon # Ozone
-, curl
-, libepoxy
-# postPatch:
-, glibc # gconv + locale
+, libpng, libcap
+, xdg_utils, yasm, nasm, minizip, libwebp
+, libusb1, pciutils, nss, re2
 
-# Package customization:
-, gnomeSupport ? false, gnome2 ? null
-, gnomeKeyringSupport ? false, libgnome-keyring3 ? null
-, cupsSupport ? true, cups ? null
-, proprietaryCodecs ? true
-, pulseSupport ? false, libpulseaudio ? null
-, ungoogled ? false, ungoogled-chromium
-# Optional dependencies:
+, python2Packages, perl, pkgconfig
+, nspr, systemd, kerberos
+, util-linux, alsaLib
+, bison, gperf
+, glib, gtk3, dbus-glib
+, glibc
+, libXScrnSaver, libXcursor, libXtst, libGLU, libGL
+, protobuf, speechd, libXdamage, cups
+, ffmpeg, libxslt, libxml2, at-spi2-core
+, jre8
+, pipewire_0_2
+, libva
+
+# optional dependencies
 , libgcrypt ? null # gnomeSupport || cupsSupport
+, libdrm ? null, wayland ? null, mesa ? null, libxkbcommon ? null # useOzone
+
+# package customization
+, useOzone ? true
+, gnomeSupport ? false, gnome ? null
+, gnomeKeyringSupport ? false, libgnome-keyring3 ? null
+, proprietaryCodecs ? true
+, cupsSupport ? true
+, pulseSupport ? false, libpulseaudio ? null
+
+, channel
+, upstream-info
 }:
 
 buildFun:
 
-with lib;
+with stdenv.lib;
 
 let
-  python3WithPackages = python3.withPackages(ps: with ps; [
-    ply jinja2 setuptools
-  ]);
-  clangFormatPython3 = fetchurl {
-    url = "https://chromium.googlesource.com/chromium/tools/build/+/e77882e0dde52c2ccf33c5570929b75b4a2a2522/recipes/recipe_modules/chromium/resources/clang-format?format=TEXT";
-    sha256 = "0ic3hn65dimgfhakli1cyf9j3cxcqsf1qib706ihfhmlzxf7256l";
-  };
+  jre = jre8; # TODO: remove override https://github.com/NixOS/nixpkgs/pull/89731
 
   # The additional attributes for creating derivations based on the chromium
   # source tree.
   extraAttrs = buildFun base;
 
-  githubPatch = { commit, sha256, revert ? false }: fetchpatch {
+  githubPatch = commit: sha256: fetchpatch {
     url = "https://github.com/chromium/chromium/commit/${commit}.patch";
-    inherit sha256 revert;
+    inherit sha256;
   };
 
   mkGnFlags =
@@ -88,20 +69,30 @@ let
 
   # https://source.chromium.org/chromium/chromium/src/+/master:build/linux/unbundle/replace_gn_files.py
   gnSystemLibraries = [
-    # TODO:
-    # "ffmpeg"
-    # "snappy"
+    "ffmpeg"
     "flac"
     "libjpeg"
     "libpng"
     "libwebp"
     "libxslt"
     "opus"
+    "snappy"
+    "zlib"
   ];
 
   opusWithCustomModes = libopus.override {
     withCustomModes = true;
   };
+
+  defaultDependencies = [
+    bzip2 flac speex opusWithCustomModes
+    libevent expat libjpeg snappy
+    libpng libcap
+    xdg_utils minizip libwebp
+    libusb1 re2
+    ffmpeg libxslt libxml2
+    nasm
+  ];
 
   # build paths and release info
   packageName = extraAttrs.packageName or extraAttrs.name;
@@ -109,14 +100,19 @@ let
   buildPath = "out/${buildType}";
   libExecPath = "$out/libexec/${packageName}";
 
-  ungoogler = ungoogled-chromium {
-    inherit (upstream-info.deps.ungoogled-patches) rev sha256;
-  };
+  versionRange = min-version: upto-version:
+    let inherit (upstream-info) version;
+        result = versionAtLeast version min-version && versionOlder version upto-version;
+        stable-version = (importJSON ./upstream-info.json).stable.version;
+    in if versionAtLeast stable-version upto-version
+       then warn "chromium: stable version ${stable-version} is newer than a patchset bounded at ${upto-version}. You can safely delete it."
+            result
+       else result;
 
   base = rec {
     name = "${packageName}-unwrapped-${version}";
     inherit (upstream-info) version;
-    inherit packageName buildType buildPath;
+    inherit channel packageName buildType buildPath;
 
     src = fetchurl {
       url = "https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${version}.tar.xz";
@@ -124,43 +120,32 @@ let
     };
 
     nativeBuildInputs = [
-      ninja pkg-config
-      python3WithPackages perl
-      gnutar which
-      llvmPackages.bintools
+      llvmPackages.lldClang.bintools
+      ninja which python2Packages.python perl pkgconfig
+      python2Packages.ply python2Packages.jinja2 nodejs
+      gnutar python2Packages.setuptools
     ];
 
-    buildInputs = [
-      (libpng.override { apngSupport = false; }) # https://bugs.chromium.org/p/chromium/issues/detail?id=752403
-      bzip2 flac speex opusWithCustomModes
-      libevent expat libjpeg snappy
-      libcap
-      xdg-utils minizip libwebp
-      libusb1 re2
-      ffmpeg libxslt libxml2
-      nasm
+    buildInputs = defaultDependencies ++ [
       nspr nss systemd
-      util-linux alsa-lib
-      bison gperf libkrb5
+      util-linux alsaLib
+      bison gperf kerberos
       glib gtk3 dbus-glib
-      libXScrnSaver libXcursor libXtst libxshmfence libGLU libGL
-      mesa # required for libgbm
+      libXScrnSaver libXcursor libXtst libGLU libGL
       pciutils protobuf speechd libXdamage at-spi2-core
-      pipewire
+      jre
+      pipewire_0_2
       libva
-      libdrm wayland mesa.drivers libxkbcommon
-      curl
-      libepoxy
-    ] ++ optionals gnomeSupport [ gnome2.GConf libgcrypt ]
-      ++ optional gnomeKeyringSupport libgnome-keyring3
+    ] ++ optional gnomeKeyringSupport libgnome-keyring3
+      ++ optionals gnomeSupport [ gnome.GConf libgcrypt ]
       ++ optionals cupsSupport [ libgcrypt cups ]
-      ++ optional pulseSupport libpulseaudio;
+      ++ optional pulseSupport libpulseaudio
+      ++ optionals useOzone [ libdrm wayland mesa.drivers libxkbcommon ];
 
     patches = [
-      # Optional patch to use SOURCE_DATE_EPOCH in compute_build_timestamp.py (should be upstreamed):
-      ./patches/no-build-timestamps.patch
-      # For bundling Widevine (DRM), might be replaceable via bundle_widevine_cdm=true in gnFlags:
-      ./patches/widevine-79.patch
+      ./patches/no-build-timestamps.patch # Optional patch to use SOURCE_DATE_EPOCH in compute_build_timestamp.py (should be upstreamed)
+      ./patches/widevine-79.patch # For bundling Widevine (DRM), might be replaceable via bundle_widevine_cdm=true in gnFlags
+      # ++ optional (versionRange "68" "72") ( githubPatch "<patch>" "0000000000000000000000000000000000000000000000000000000000000000" )
     ];
 
     postPatch = ''
@@ -182,7 +167,6 @@ let
         substituteInPlace third_party/harfbuzz-ng/src/src/update-unicode-tables.make \
           --replace "/usr/bin/env -S make -f" "/usr/bin/make -f"
       fi
-      chmod -x third_party/webgpu-cts/src/tools/run_deno
 
       # We want to be able to specify where the sandbox is via CHROME_DEVEL_SANDBOX
       substituteInPlace sandbox/linux/suid/client/setuid_sandbox_host.cc \
@@ -193,7 +177,7 @@ let
       substituteInPlace services/audio/audio_sandbox_hook_linux.cc \
         --replace \
           '/usr/share/alsa/' \
-          '${alsa-lib}/share/alsa/' \
+          '${alsaLib}/share/alsa/' \
         --replace \
           '/usr/lib/x86_64-linux-gnu/gconv/' \
           '${glibc}/lib/gconv/' \
@@ -201,7 +185,7 @@ let
           '/usr/share/locale/' \
           '${glibc}/share/locale/'
 
-      sed -i -e 's@"\(#!\)\?.*xdg-@"\1${xdg-utils}/bin/xdg-@' \
+      sed -i -e 's@"\(#!\)\?.*xdg-@"\1${xdg_utils}/bin/xdg-@' \
         chrome/browser/shell_integration_linux.cc
 
       sed -i -e '/lib_loader.*Load/s!"\(libudev\.so\)!"${lib.getLib systemd}/lib/\1!' \
@@ -213,14 +197,10 @@ let
       # Allow to put extensions into the system-path.
       sed -i -e 's,/usr,/run/current-system/sw,' chrome/common/chrome_paths.cc
 
-      # We need the fix for https://bugs.chromium.org/p/chromium/issues/detail?id=1254408:
-      base64 --decode ${clangFormatPython3} > buildtools/linux64/clang-format
-
       patchShebangs .
-      # Link to our own Node.js and Java (required during the build):
+      # use our own nodejs
       mkdir -p third_party/node/linux/node-linux-x64/bin
-      ln -s "${pkgsBuildHost.nodejs}/bin/node" third_party/node/linux/node-linux-x64/bin/node
-      ln -s "${pkgsBuildHost.jre8}/bin/java" third_party/jdk/current/bin/
+      ln -s "$(command -v node)" third_party/node/linux/node-linux-x64/bin/node
 
       # Allow building against system libraries in official builds
       sed -i 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' tools/generate_shim_headers/generate_shim_headers.py
@@ -228,57 +208,41 @@ let
     '' + optionalString stdenv.isAarch64 ''
       substituteInPlace build/toolchain/linux/BUILD.gn \
         --replace 'toolprefix = "aarch64-linux-gnu-"' 'toolprefix = ""'
-    '' + optionalString ungoogled ''
-      ${ungoogler}/utils/prune_binaries.py . ${ungoogler}/pruning.list || echo "some errors"
-      ${ungoogler}/utils/patches.py . ${ungoogler}/patches
-      ${ungoogler}/utils/domain_substitution.py apply -r ${ungoogler}/domain_regex.list -f ${ungoogler}/domain_substitution.list -c ./ungoogled-domsubcache.tar.gz .
     '';
 
     gnFlags = mkGnFlags ({
-      # Main build and toolchain settings:
-      # Create an official and optimized release build (only official builds
-      # should be distributed to users, as non-official builds are intended for
-      # development and may not be configured appropriately for production,
-      # e.g. unsafe developer builds have developer-friendly features that may
-      # weaken or disable security measures like sandboxing or ASLR):
-      is_official_build = true;
-      disable_fieldtrial_testing_config = true;
-      # Build Chromium using the system toolchain (for Linux distributions):
       custom_toolchain = "//build/toolchain/linux/unbundle:default";
       host_toolchain = "//build/toolchain/linux/unbundle:default";
-      # Don't build against a sysroot image downloaded from Cloud Storage:
+      is_official_build = true;
+
+      use_vaapi = !stdenv.isAarch64; # TODO: Remove once M88 is released
       use_sysroot = false;
-      # The default value is hardcoded instead of using pkg-config:
-      system_wayland_scanner_path = "${wayland}/bin/wayland-scanner";
-      # Because we use a different toolchain / compiler version:
-      treat_warnings_as_errors = false;
-      # We aren't compiling with Chrome's Clang (would enable Chrome-specific
-      # plugins for enforcing coding guidelines, etc.):
-      clang_use_chrome_plugins = false;
-      # Disable symbols (they would negatively affect the performance of the
-      # build since the symbols are large and dealing with them is slow):
-      symbol_level = 0;
-      blink_symbol_level = 0;
-
-      # Google API key, see: https://www.chromium.org/developers/how-tos/api-keys
-      # Note: The API key is for NixOS/nixpkgs use ONLY.
-      # For your own distribution, please get your own set of keys.
-      google_api_key = "AIzaSyDGi15Zwl11UNe6Y-5XW_upsfyw31qwZPI";
-
-      # Optional features:
-      use_gio = gnomeSupport;
       use_gnome_keyring = gnomeKeyringSupport;
-      use_cups = cupsSupport;
-
-      # Feature overrides:
-      # Native Client support was deprecated in 2020 and support will end in June 2021:
+      use_gio = gnomeSupport;
+      # ninja: error: '../../native_client/toolchain/linux_x86/pnacl_newlib/bin/x86_64-nacl-objcopy',
+      # needed by 'nacl_irt_x86_64.nexe', missing and no known rule to make it
       enable_nacl = false;
       # Enabling the Widevine component here doesn't affect whether we can
       # redistribute the chromium package; the Widevine component is either
-      # added later in the wrapped -wv build or downloaded from Google:
+      # added later in the wrapped -wv build or downloaded from Google.
       enable_widevine = true;
-      # Provides the enable-webrtc-pipewire-capturer flag to support Wayland screen capture:
+      use_cups = cupsSupport;
+      # Provides the enable-webrtc-pipewire-capturer flag to support Wayland screen capture.
       rtc_use_pipewire = true;
+
+      treat_warnings_as_errors = false;
+      clang_use_chrome_plugins = false;
+      blink_symbol_level = 0;
+      symbol_level = 0;
+      fieldtrial_testing_like_official_build = true;
+
+      # Google API keys, see:
+      #   http://www.chromium.org/developers/how-tos/api-keys
+      # Note: These are for NixOS/nixpkgs use ONLY. For your own distribution,
+      # please get your own set of keys.
+      google_api_key = "AIzaSyDGi15Zwl11UNe6Y-5XW_upsfyw31qwZPI";
+      google_default_client_id = "404761575300.apps.googleusercontent.com";
+      google_default_client_secret = "9rIFQjfnkykEmqb6FfjJQD1D";
     } // optionalAttrs proprietaryCodecs {
       # enable support for the H.264 codec
       proprietary_codecs = true;
@@ -287,24 +251,15 @@ let
     } // optionalAttrs pulseSupport {
       use_pulseaudio = true;
       link_pulseaudio = true;
-    } // optionalAttrs ungoogled {
-      chrome_pgo_phase = 0;
-      enable_hangout_services_extension = false;
-      enable_js_type_check = false;
-      enable_mdns = false;
-      enable_nacl_nonsfi = false;
-      enable_one_click_signin = false;
-      enable_reading_list = false;
-      enable_remoting = false;
-      enable_reporting = false;
-      enable_service_discovery = false;
-      exclude_unwind_tables = true;
-      google_api_key = "";
-      google_default_client_id = "";
-      google_default_client_secret = "";
-      safe_browsing_mode = 0;
-      use_official_google_api_keys = false;
-      use_unofficial_version_number = false;
+    } // optionalAttrs useOzone {
+      use_ozone = true;
+      use_xkbcommon = true;
+      use_glib = true;
+      use_gtk = true;
+      use_system_libwayland = true;
+      use_system_minigbm = true;
+      use_system_libdrm = true;
+      system_wayland_scanner_path = "${wayland}/bin/wayland-scanner";
     } // (extraAttrs.gnFlags or {}));
 
     configurePhase = ''
@@ -312,7 +267,7 @@ let
 
       # This is to ensure expansion of $out.
       libExecPath="${libExecPath}"
-      ${python3}/bin/python3 build/linux/unbundle/replace_gn_files.py --system-libraries ${toString gnSystemLibraries}
+      python build/linux/unbundle/replace_gn_files.py --system-libraries ${toString gnSystemLibraries}
       ${gnChromium}/bin/gn gen --args=${escapeShellArg gnFlags} out/Release | tee gn-gen-outputs.txt
 
       # Fail if `gn gen` contains a WARNING.

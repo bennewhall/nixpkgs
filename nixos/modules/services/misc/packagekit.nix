@@ -1,60 +1,55 @@
 { config, lib, pkgs, ... }:
 
+with lib;
+
 let
+
   cfg = config.services.packagekit;
 
-  inherit (lib)
-    mkEnableOption mkOption mkIf mkRemovedOptionModule types
-    listToAttrs recursiveUpdate;
+  packagekitConf = ''
+    [Daemon]
+    DefaultBackend=${cfg.backend}
+    KeepCache=false
+  '';
 
-  iniFmt = pkgs.formats.ini { };
-
-  confFiles = [
-    (iniFmt.generate "PackageKit.conf" (recursiveUpdate
-      {
-        Daemon = {
-          DefaultBackend = "test_nop";
-          KeepCache = false;
-        };
-      }
-      cfg.settings))
-
-    (iniFmt.generate "Vendor.conf" (recursiveUpdate
-      {
-        PackagesNotFound = rec {
-          DefaultUrl = "https://github.com/NixOS/nixpkgs";
-          CodecUrl = DefaultUrl;
-          HardwareUrl = DefaultUrl;
-          FontUrl = DefaultUrl;
-          MimeUrl = DefaultUrl;
-        };
-      }
-      cfg.vendorSettings))
-  ];
+  vendorConf = ''
+    [PackagesNotFound]
+    DefaultUrl=https://github.com/NixOS/nixpkgs
+    CodecUrl=https://github.com/NixOS/nixpkgs
+    HardwareUrl=https://github.com/NixOS/nixpkgs
+    FontUrl=https://github.com/NixOS/nixpkgs
+    MimeUrl=https://github.com/NixOS/nixpkgs
+  '';
 
 in
+
 {
-  imports = [
-    (mkRemovedOptionModule [ "services" "packagekit" "backend" ] "The only backend that doesn't blow up is `test_nop`.")
-  ];
 
-  options.services.packagekit = {
-    enable = mkEnableOption ''
-      PackageKit provides a cross-platform D-Bus abstraction layer for
-      installing software. Software utilizing PackageKit can install
-      software regardless of the package manager.
-    '';
+  options = {
 
-    settings = mkOption {
-      type = iniFmt.type;
-      default = { };
-      description = "Additional settings passed straight through to PackageKit.conf";
-    };
+    services.packagekit = {
+      enable = mkEnableOption
+        ''
+          PackageKit provides a cross-platform D-Bus abstraction layer for
+          installing software. Software utilizing PackageKit can install
+          software regardless of the package manager.
+        '';
 
-    vendorSettings = mkOption {
-      type = iniFmt.type;
-      default = { };
-      description = "Additional settings passed straight through to Vendor.conf";
+      # TODO: integrate with PolicyKit if the nix backend matures to the point
+      # where it will require elevated permissions
+      backend = mkOption {
+        type = types.enum [ "test_nop" ];
+        default = "test_nop";
+        description = ''
+          PackageKit supports multiple different backends and <literal>auto</literal> which
+          should do the right thing.
+          </para>
+          <para>
+          On NixOS however, we do not have a backend compatible with nix 2.0
+          (refer to <link xlink:href="https://github.com/NixOS/nix/issues/233">this issue</link> so we have to force
+          it to <literal>test_nop</literal> for now.
+        '';
+      };
     };
   };
 
@@ -64,9 +59,7 @@ in
 
     systemd.packages = with pkgs; [ packagekit ];
 
-    environment.etc = listToAttrs (map
-      (e:
-        lib.nameValuePair "PackageKit/${e.name}" { source = e; })
-      confFiles);
+    environment.etc."PackageKit/PackageKit.conf".text = packagekitConf;
+    environment.etc."PackageKit/Vendor.conf".text = vendorConf;
   };
 }

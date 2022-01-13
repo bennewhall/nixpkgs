@@ -41,7 +41,6 @@ in stdenv.mkDerivation {
     ./patches/cnijfilter-4.00-4-ppd.patch
     ./patches/cnijfilter-4.00-5-abi_x86_32.patch
     ./patches/cnijfilter-4.00-6-headers.patch
-    ./patches/cnijfilter-4.00-7-sysctl.patch
   ];
 
   postPatch = ''

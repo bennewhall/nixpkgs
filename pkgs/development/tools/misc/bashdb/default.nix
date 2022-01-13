@@ -1,29 +1,13 @@
-{ lib
-, stdenv
-, fetchurl
-, fetchpatch
-, makeWrapper
-, python3Packages
-}:
+{ stdenv, fetchurl, makeWrapper, python3Packages }:
 
 stdenv.mkDerivation rec {
   pname = "bashdb";
-  version = "5.0-1.1.2";
+  version = "4.4-1.0.0";
 
   src = fetchurl {
     url =  "mirror://sourceforge/bashdb/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-MBdtKtKMWwCy4tIcXqGu+PuvQKj52fcjxnxgUx87czA=";
+    sha256 = "0p7i7bpzs6q1i7swnkr89kxqgzr146xw8d2acmqwqbslzm9dqlml";
   };
-
-  patches = [
-    # Enable building with bash 5.1/5.2
-    # Remove with any upstream 5.1-x.y.z release
-    (fetchpatch {
-      url = "https://raw.githubusercontent.com/freebsd/freebsd-ports/569fbb806d9ee813afa8b27d2098a44f93433922/devel/bashdb/files/patch-configure";
-      sha256 = "19zfzcnxavndyn6kfxp775kjcd0gigsm4y3bnh6fz5ilhnnbbbgr";
-    })
-  ];
-  patchFlags = "-p0";
 
   nativeBuildInputs = [
     makeWrapper
@@ -36,7 +20,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Bash script debugger";
     homepage = "http://bashdb.sourceforge.net/";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

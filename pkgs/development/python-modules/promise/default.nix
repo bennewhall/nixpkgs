@@ -1,35 +1,41 @@
 { buildPythonPackage
-, fetchFromGitHub
+, fetchPypi
 , lib
-, six
-, pytestCheckHook
+
+, coveralls
+, gevent
 , mock
 , pytest-asyncio
+, pytest-benchmark
+, pytestcov
+, six
 }:
 
 buildPythonPackage rec {
   pname = "promise";
-  version = "2.3.0";
+  version = "2.3";
 
-  src = fetchFromGitHub {
-    owner = "syrusakbary";
-    repo = "promise";
-    rev = "v${version}";
-    sha256 = "17mq1bm78xfl0x1g50ng502m5ldq6421rzz35hlqafsj0cq8dkp6";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "1l4kknj97dj5pxfpsz3ln78x9a843561c740b1m4pfi3qlvq7lfz";
   };
 
+  patchPhase = ''
+    substituteInPlace setup.py \
+      --replace '"futures",' ""
+  '';
+
   propagatedBuildInputs = [
+    gevent
     six
   ];
 
   checkInputs = [
-    pytestCheckHook
+    coveralls
     mock
     pytest-asyncio
-  ];
-
-  disabledTestPaths = [
-    "tests/test_benchmark.py"
+    pytest-benchmark
+    pytestcov
   ];
 
   meta = with lib; {

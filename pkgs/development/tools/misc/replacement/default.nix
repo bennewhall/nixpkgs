@@ -17,7 +17,7 @@ python3Packages.buildPythonApplication rec {
   };
 
   propagatedBuildInputs = with python3Packages; [
-    ruamel-yaml
+    ruamel_yaml
   ];
 
   checkInputs = with python3Packages; [

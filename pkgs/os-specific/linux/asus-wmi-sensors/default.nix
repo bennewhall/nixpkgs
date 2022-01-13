@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, kernel }:
+{ stdenv, fetchFromGitHub, kernel }:
 
 stdenv.mkDerivation rec {
   name = "asus-wmi-sensors-${version}-${kernel.version}";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     "MODDESTDIR=${placeholder "out"}/lib/modules/${kernel.modDirVersion}/kernel/drivers/hwmon"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Linux HWMON (lmsensors) sensors driver for various ASUS Ryzen and Threadripper motherboards";
     homepage = "https://github.com/electrified/asus-wmi-sensors";
     license = licenses.gpl2;

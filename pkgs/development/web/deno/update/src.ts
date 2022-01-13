@@ -1,8 +1,8 @@
 import {
   genValueRegExp,
   logger,
+  nixPrefetch,
   read,
-  run,
   sha256RegExp,
   versionRegExp,
   write,
@@ -16,11 +16,10 @@ interface Replacer {
 const log = logger("src");
 
 const prefetchSha256 = (nixpkgs: string, version: string) =>
-  run("nix-prefetch", ["-f", nixpkgs, "deno.src", "--rev", version]);
+  nixPrefetch(["-f", nixpkgs, "deno.src", "--rev", version]);
 const prefetchCargoSha256 = (nixpkgs: string) =>
-  run(
-    "nix-prefetch",
-    [`{ sha256 }: (import ${nixpkgs} {}).deno.cargoDeps.overrideAttrs (_: { inherit sha256; })`],
+  nixPrefetch(
+    [`{ sha256 }: (import ${nixpkgs} {}).deno.cargoDeps.overrideAttrs (_: { outputHash = sha256; })`],
   );
 
 const replace = (str: string, replacers: Replacer[]) =>
@@ -54,6 +53,7 @@ export async function updateSrc(
     [
       genVerReplacer("version", trimVersion),
       genShaReplacer("sha256", sha256),
+      genShaReplacer("cargoSha256", ""), // Empty ready for prefetchCargoSha256
     ],
   );
   log("Fetching cargoSha256 for:", sha256);

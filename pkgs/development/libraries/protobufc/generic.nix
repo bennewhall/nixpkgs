@@ -1,5 +1,5 @@
-{ lib, stdenv, src, version
-, autoreconfHook, pkg-config, protobuf, zlib
+{ stdenv, src, version
+, autoreconfHook, pkgconfig, protobuf, zlib
 , ...
 }:
 
@@ -9,10 +9,10 @@ stdenv.mkDerivation {
 
   inherit src;
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ protobuf zlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/protobuf-c/protobuf-c/";
     description = "C bindings for Google's Protocol Buffers";
     license = licenses.bsd2;

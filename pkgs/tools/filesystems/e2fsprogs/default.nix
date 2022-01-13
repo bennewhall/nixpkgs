@@ -1,20 +1,18 @@
-{ lib, stdenv, buildPackages, fetchurl, fetchpatch, pkg-config, libuuid, gettext, texinfo
-, shared ? !stdenv.hostPlatform.isStatic
-}:
+{ stdenv, buildPackages, fetchurl, fetchpatch, pkgconfig, libuuid, gettext, texinfo, shared ? true }:
 
 stdenv.mkDerivation rec {
   pname = "e2fsprogs";
-  version = "1.46.4";
+  version = "1.45.5";
 
   src = fetchurl {
     url = "mirror://sourceforge/${pname}/${pname}-${version}.tar.gz";
-    sha256 = "0ra2d1wasksy1zy3rgviwdni40dnamchisjrrqqi940y545m493m";
+    sha256 = "1n8ffss5044j9382rlvmhyr1f6kmnfjfbv6q4jbbh8gfdwpjmrwi";
   };
 
   outputs = [ "bin" "dev" "out" "man" "info" ];
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [ pkg-config texinfo ];
+  nativeBuildInputs = [ pkgconfig texinfo ];
   buildInputs = [ libuuid gettext ];
 
   # Only use glibc's __GNUC_PREREQ(X,Y) (checks if compiler is gcc version >= X.Y) when using glibc
@@ -65,15 +63,10 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://e2fsprogs.sourceforge.net/";
     description = "Tools for creating and checking ext2/ext3/ext4 filesystems";
-    license = with licenses; [
-      gpl2Plus
-      lgpl2Plus # lib/ext2fs, lib/e2p
-      bsd3      # lib/uuid
-      mit       # lib/et, lib/ss
-    ];
+    license = licenses.gpl2;
     platforms = platforms.unix;
     maintainers = [ maintainers.eelco ];
   };

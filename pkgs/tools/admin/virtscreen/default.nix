@@ -1,12 +1,4 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, python3Packages
-, x11vnc
-, xrandr
-, libGL
-, qt5
-}:
+{ stdenv, fetchFromGitHub, python3Packages, x11vnc, xrandr, libGL }:
 
 python3Packages.buildPythonApplication rec {
   pname = "virtscreen";
@@ -24,8 +16,6 @@ python3Packages.buildPythonApplication rec {
     sha256 = "005qach6phz8w17k8kqmyd647c6jkfybczybxq0yxi5ik0s91a08";
   };
 
-  nativeBuildInputs = [ qt5.wrapQtAppsHook ];
-
   propagatedBuildInputs = with python3Packages; [
     netifaces
     pyqt5
@@ -34,20 +24,13 @@ python3Packages.buildPythonApplication rec {
     xrandr
   ];
 
-  dontWrapQtApps = true;
-
-  makeWrapperArgs = [
-    "\${qtWrapperArgs[@]}"
-    # import Qt.labs.platform failed without this
-    "--prefix QML2_IMPORT_PATH : ${qt5.qtquickcontrols2.bin}/${qt5.qtbase.qtQmlPrefix}"
-  ];
-
-  postPatch = ''
+  postPatch = let
+    ext = stdenv.hostPlatform.extensions.sharedLibrary; in ''
     substituteInPlace virtscreen/__main__.py \
-      --replace "'GL'" "'${libGL}/lib/libGL${stdenv.hostPlatform.extensions.sharedLibrary}'" \
+      --replace "'GL'" "'${libGL}/lib/libGL${ext}'" \
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Make your iPad/tablet/computer as a secondary monitor on Linux";
     homepage = "https://github.com/kbumsik/VirtScreen";
     license = licenses.gpl3;

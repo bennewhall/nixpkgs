@@ -1,4 +1,5 @@
-{ lib
+{ stdenv
+, lib
 , fetchPypi
 , buildPythonPackage
 , flask
@@ -41,7 +42,5 @@ buildPythonPackage rec {
     homepage = "https://github.com/kvesteri/sqlalchemy-continuum/";
     description = "Versioning and auditing extension for SQLAlchemy";
     license = licenses.bsd3;
-    # https://github.com/kvesteri/sqlalchemy-continuum/issues/255
-    broken = lib.versionAtLeast sqlalchemy.version "1.4";
   };
 }

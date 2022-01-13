@@ -3,13 +3,15 @@
 
 { name ? "debian-build"
 , diskImage
-, src, lib, stdenv, vmTools, checkinstall
+, src, stdenv, vmTools, checkinstall
 , fsTranslation ? false
 , # Features provided by this package.
   debProvides ? []
 , # Features required by this package.
   debRequires ? []
 , ... } @ args:
+
+with stdenv.lib;
 
 vmTools.runInLinuxImage (stdenv.mkDerivation (
 
@@ -21,7 +23,7 @@ vmTools.runInLinuxImage (stdenv.mkDerivation (
     prePhases = "installExtraDebsPhase sysInfoPhase";
   }
 
-  // removeAttrs args ["vmTools" "lib"] //
+  // removeAttrs args ["vmTools"] //
 
   {
     name = name + "-" + diskImage.name + (if src ? version then "-" + src.version else "");
@@ -57,8 +59,8 @@ vmTools.runInLinuxImage (stdenv.mkDerivation (
       export PAGER=cat
       ${checkinstall}/sbin/checkinstall --nodoc -y -D \
         --fstrans=${if fsTranslation then "yes" else "no"} \
-        --requires="${lib.concatStringsSep "," debRequires}" \
-        --provides="${lib.concatStringsSep "," debProvides}" \
+        --requires="${concatStringsSep "," debRequires}" \
+        --provides="${concatStringsSep "," debProvides}" \
         ${if (src ? version) then "--pkgversion=$(echo ${src.version} | tr _ -)"
                              else "--pkgversion=0.0.0"} \
         ''${debMaintainer:+--maintainer="'$debMaintainer'"} \

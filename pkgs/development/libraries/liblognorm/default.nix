@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, libestr, json_c, pcre, fastJson }:
+{ stdenv, fetchurl, pkgconfig, libestr, json_c, pcre, fastJson }:
 
 stdenv.mkDerivation rec {
   name = "liblognorm-2.0.6";
@@ -8,12 +8,12 @@ stdenv.mkDerivation rec {
     sha256 = "1wpn15c617r7lfm1z9d5aggmmi339s6yn4pdz698j0r2bkl5gw6g";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libestr json_c pcre fastJson ];
 
   configureFlags = [ "--enable-regexp" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.liblognorm.com/";
     description = "Help to make sense out of syslog data, or, actually, any event data that is present in text form";
     license = licenses.lgpl21;

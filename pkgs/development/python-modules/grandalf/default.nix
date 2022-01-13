@@ -4,7 +4,7 @@
 , pyparsing
 , future
 , pytest
-, pytest-runner
+, pytestrunner
 }:
 
 buildPythonPackage rec {
@@ -24,7 +24,7 @@ buildPythonPackage rec {
     future
   ];
 
-  checkInputs = [ pytest pytest-runner ];
+  checkInputs = [ pytest pytestrunner ];
 
   patches = [ ./no-setup-requires-pytestrunner.patch ];
 

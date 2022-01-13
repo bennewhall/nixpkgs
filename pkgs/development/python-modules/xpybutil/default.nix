@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, xcffib, pillow }:
+{ lib, buildPythonPackage, fetchFromGitHub, xcffib, pillow, nose }:
 
 buildPythonPackage rec {
   pname = "xpybutil";
@@ -13,16 +13,9 @@ buildPythonPackage rec {
   };
 
   # pillow is a dependency in image.py which is not listed in setup.py
-  propagatedBuildInputs = [ pillow xcffib ];
+  propagatedBuildInputs = [ xcffib pillow ];
 
-  propagatedNativeBuildInputs = [ xcffib ];
-
-  # no tests
-  doCheck = false;
-
-  pythonImportsCheck = [
-    "xpybutil"
-  ];
+  checkInputs = [ nose ];
 
   meta = with lib; {
     homepage = "https://github.com/BurntSushi/xpybutil";

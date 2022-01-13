@@ -3,76 +3,56 @@
 , buildPythonPackage
 , fetchFromGitHub
 , aiofiles
-, anyio
-, contextlib2
+, graphene
 , itsdangerous
 , jinja2
-, python-multipart
 , pyyaml
 , requests
-, aiosqlite
+, ujson
+, python-multipart
+, pytest
+, uvicorn
+, isPy27
+, darwin
 , databases
-, pytest-asyncio
-, pytestCheckHook
-, pythonOlder
-, trio
-, typing-extensions
-, ApplicationServices
+, aiosqlite
 }:
 
 buildPythonPackage rec {
   pname = "starlette";
-  version = "0.17.1";
-  format = "setuptools";
 
-  disabled = pythonOlder "3.6";
+  version = "0.13.8";
+  disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "encode";
     repo = pname;
     rev = version;
-    sha256 = "sha256-qT/w7r8PsrauLoBolwCGpxiwhDZo3z6hIqKVXeY5yqA=";
+    sha256 = "11i0yd8cqwscixajl734g11vf8pghki11c81chzfh8ifmj6mf9jk";
   };
-
-  postPatch = ''
-    # remove coverage arguments to pytest
-    sed -i '/--cov/d' setup.cfg
-  '';
 
   propagatedBuildInputs = [
     aiofiles
-    anyio
+    graphene
     itsdangerous
     jinja2
-    python-multipart
     pyyaml
     requests
-  ] ++ lib.optionals (pythonOlder "3.8") [
-    typing-extensions
-  ] ++ lib.optionals (pythonOlder "3.7") [
-    contextlib2
-  ] ++ lib.optional stdenv.isDarwin [
-    ApplicationServices
-  ];
+    ujson
+    uvicorn
+    python-multipart
+    databases
+  ] ++ stdenv.lib.optional stdenv.isDarwin [ darwin.apple_sdk.frameworks.ApplicationServices ];
 
   checkInputs = [
+    pytest
     aiosqlite
-    databases
-    pytest-asyncio
-    pytestCheckHook
-    trio
-    typing-extensions
   ];
 
-  disabledTests = [
-    # asserts fail due to inclusion of br in Accept-Encoding
-    "test_websocket_headers"
-    "test_request_headers"
-  ];
-
-  pythonImportsCheck = [
-    "starlette"
-  ];
+  checkPhase = ''
+    pytest --ignore=tests/test_graphql.py
+  '';
+  pythonImportsCheck = [ "starlette" ];
 
   meta = with lib; {
     homepage = "https://www.starlette.io/";

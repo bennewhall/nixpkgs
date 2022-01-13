@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, stdenv }:
 rec {
   inherit (pkgs) eggDerivation fetchegg;
 

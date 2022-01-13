@@ -1,6 +1,6 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pythonOlder
-, aria2, poetry, pytest, pytest-cov, pytest-xdist, responses
-, asciimatics, loguru, requests, setuptools, websocket-client
+{ stdenv, buildPythonPackage, fetchFromGitHub, pythonOlder
+, aria2, poetry, pytest, pytestcov, pytest_xdist, responses
+, asciimatics, loguru, requests, setuptools, websocket_client
 }:
 
 buildPythonPackage rec {
@@ -22,7 +22,7 @@ buildPythonPackage rec {
     export HOME=$TMPDIR
   '';
 
-  checkInputs = [ aria2 responses pytest pytest-cov pytest-xdist ];
+  checkInputs = [ aria2 responses pytest pytestcov pytest_xdist ];
 
   # Tests are not all stable/deterministic,
   # they rely on actually running an aria2c daemon and communicating with it,
@@ -32,9 +32,9 @@ buildPythonPackage rec {
     pytest -nauto -k "not test_api and not test_cli and not test_interface"
   '';
 
-  propagatedBuildInputs = [ asciimatics loguru requests setuptools websocket-client ];
+  propagatedBuildInputs = [ asciimatics loguru requests setuptools websocket_client ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pawamoy/aria2p";
     description = "Command-line tool and library to interact with an aria2c daemon process with JSON-RPC";
     license = licenses.isc;

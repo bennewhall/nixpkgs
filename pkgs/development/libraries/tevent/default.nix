@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , python3
 , pkg-config
@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
     "--builtin-libraries=replace"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An event system based on the talloc memory management library";
     homepage = "https://tevent.samba.org/";
     license = licenses.lgpl3Plus;

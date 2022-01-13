@@ -19,6 +19,7 @@ buildGoModule rec {
     description = "A simple text-based Minecraft modpack manager";
     license = licenses.agpl3;
     homepage = src.meta.homepage;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ foxit64 ];
   };
+
 }

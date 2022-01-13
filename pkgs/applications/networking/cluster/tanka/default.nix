@@ -2,22 +2,20 @@
 
 buildGoModule rec {
   pname = "tanka";
-  version = "0.17.3";
+  version = "0.12.0";
 
   src = fetchFromGitHub {
     owner = "grafana";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-Khu6ovtcXkqqt3W4OoJ09INgv80tw/6uDcJS+jt3y0Y=";
+    sha256 = "1f67b236njz1qdxjyf2568vkigjmpylqlra29jlgm6vhd5qky7ia";
   };
 
-  vendorSha256 = "sha256-vpm2y/CxRNWkz6+AOMmmZH5AjRQWAa6WD5Fnx5lqJYw=";
+  vendorSha256 = "1pr265g11lcviqw974lf05q52qrfpwnpn9a64q6088g0nfp4ly06";
 
   doCheck = false;
 
-  subPackages = [ "cmd/tk" ];
-
-  ldflags = [ "-s" "-w" "-extldflags '-static'" "-X github.com/grafana/tanka/pkg/tanka.CURRENT_VERSION=v${version}" ];
+  buildFlagsArray = [ "-ldflags=-s -w -X main.Version=${version}" ];
 
   nativeBuildInputs = [ installShellFiles ];
 
@@ -28,7 +26,7 @@ buildGoModule rec {
 
   meta = with lib; {
     description = "Flexible, reusable and concise configuration for Kubernetes";
-    homepage = "https://tanka.dev";
+    homepage = "https://github.com/grafana/tanka/";
     license = licenses.asl20;
     maintainers = with maintainers; [ mikefaille ];
     platforms = platforms.unix;

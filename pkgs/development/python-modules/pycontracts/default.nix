@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , nose, pyparsing, decorator, six, future }:
 
 buildPythonPackage rec {
@@ -13,7 +13,7 @@ buildPythonPackage rec {
   buildInputs = [ nose ];
   propagatedBuildInputs = [ pyparsing decorator six future ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Allows to declare constraints on function parameters and return values";
     homepage = "https://pypi.python.org/pypi/PyContracts";
     license = licenses.lgpl2;

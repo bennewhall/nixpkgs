@@ -1,13 +1,14 @@
-{ lib, stdenv, fetchFromGitLab, cmake, gfortran, perl
-, openblas, hdf5-cpp, python3, texlive
-, armadillo, mpi, globalarrays, openssh
-, makeWrapper
+{ stdenv, fetchFromGitLab, cmake, gfortran, perl
+, openblas, blas, lapack, hdf5-cpp, python3, texlive
+, armadillo, openmpi, globalarrays, openssh
+, makeWrapper, fetchpatch
 } :
 
+assert blas.implementation == "openblas" && lapack.implementation == "openblas";
+
 let
-  version = "21.10";
-  # The tag keeps moving, fix a hash instead
-  gitLabRev = "117305462bac932106e8e3a0347238b768bcb058";
+  version = "20.10";
+  gitLabRev = "v${version}";
 
   python = python3.withPackages (ps : with ps; [ six pyparsing ]);
 
@@ -19,31 +20,27 @@ in stdenv.mkDerivation {
     owner = "Molcas";
     repo = "OpenMolcas";
     rev = gitLabRev;
-    sha256 = "sha256-GMi2dsNBog+TmpmP6fhQcp6Z5Bh2LelV//MqLnvRP5c=";
+    sha256 = "0xr9plgb0cfmxxqmd3wrhvl0hv2jqqfqzxwzs1jysq2m9cxl314v";
   };
 
   patches = [
     # Required to handle openblas multiple outputs
     ./openblasPath.patch
-  ];
+];
 
-  nativeBuildInputs = [
-    perl
-    gfortran
-    cmake
-    texlive.combined.scheme-minimal
-    makeWrapper
-  ];
-
+  nativeBuildInputs = [ perl cmake texlive.combined.scheme-minimal makeWrapper ];
   buildInputs = [
+    gfortran
     openblas
     hdf5-cpp
     python
     armadillo
-    mpi
+    openmpi
     globalarrays
     openssh
   ];
+
+  enableParallelBuilding = true;
 
   cmakeFlags = [
     "-DOPENMP=ON"
@@ -56,18 +53,12 @@ in stdenv.mkDerivation {
     "-DOPENBLASROOT=${openblas.dev}"
   ];
 
-  preConfigure = ''
-    export GAROOT=${globalarrays};
-  '';
+  GAROOT=globalarrays;
 
   postConfigure = ''
     # The Makefile will install pymolcas during the build grrr.
     mkdir -p $out/bin
     export PATH=$PATH:$out/bin
-  '';
-
-  postInstall = ''
-    mv $out/pymolcas $out/bin
   '';
 
   postFixup = ''
@@ -78,12 +69,12 @@ in stdenv.mkDerivation {
     wrapProgram $out/bin/pymolcas --set MOLCAS $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Advanced quantum chemistry software package";
     homepage = "https://gitlab.com/Molcas/OpenMolcas";
     maintainers = [ maintainers.markuskowa ];
-    license = licenses.lgpl21Only;
-    platforms = [ "x86_64-linux" ];
+    license = licenses.lgpl21;
+    platforms = platforms.linux;
   };
 }
 

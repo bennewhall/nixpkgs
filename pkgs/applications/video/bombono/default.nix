@@ -1,14 +1,13 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
-, pkg-config
+, pkgconfig
 , fetchpatch
 , scons
-, boost172
+, boost
 , dvdauthor
 , dvdplusrwtools
 , enca
-, cdrkit
-, ffmpeg
+, ffmpeg_3
 , gettext
 , gtk2
 , gtkmm2
@@ -53,14 +52,14 @@ stdenv.mkDerivation rec {
     {name="fix_ffmpeg30.patch";               sha256="sha256-vKEbvbjYVRzEaVYC8XOJBPmk6FDXI/WA0X/dldRRO8c=";}
   ]);
 
-  nativeBuildInputs = [ wrapGAppsHook scons pkg-config gettext ];
+  nativeBuildInputs = [ wrapGAppsHook scons pkgconfig gettext ];
 
   buildInputs = [
-    boost172
+    boost
     dvdauthor
     dvdplusrwtools
     enca
-    ffmpeg
+    ffmpeg_3
     gtk2
     gtkmm2
     libdvdread
@@ -72,14 +71,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  postInstall = ''
-    # fix iso authoring
-    install -Dt  $out/share/bombono/resources/scons_authoring tools/scripts/SConsTwin.py
-
-    wrapProgram $out/bin/bombono-dvd --prefix PATH : ${lib.makeBinPath [ ffmpeg dvdauthor cdrkit ]}
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "a DVD authoring program for personal computers";
     homepage = "https://www.bombono.org/";
     license = licenses.gpl2Only;

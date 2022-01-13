@@ -1,38 +1,26 @@
-{ lib
-, buildPythonApplication
-, click
-, fetchFromGitHub
-, ipy
-, pyyaml
-, requests
-}:
+{ stdenv, python3Packages, fetchFromGitHub }:
+
+with python3Packages;
 
 buildPythonApplication rec {
   pname = "gandi-cli";
-  version = "1.6";
+  version = "1.5";
 
   src = fetchFromGitHub {
     owner = "Gandi";
     repo = "gandi.cli";
     rev = version;
-    sha256 = "sha256-KLeEbbzgqpmBjeTc5RYsFScym8xtMqVjU+H0lyDM0+o=";
+    sha256 = "1jcabpphlm6qajw8dz0h4gynm03g1mxi0cn900i3v7wdfww1gfab";
   };
 
-  propagatedBuildInputs = [
-    click
-    ipy
-    pyyaml
-    requests
-  ];
+  propagatedBuildInputs = [ click ipy pyyaml requests ];
 
-  # Tests try to contact the actual remote API
-  doCheck = false;
-  pythonImportsCheck = [ "gandi" ];
+  doCheck = false;    # Tests try to contact the actual remote API
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Command-line interface to the public Gandi.net API";
     homepage = "https://cli.gandi.net/";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ kampka ];
   };
 }

@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pam, gnupg }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pam, gnupg }:
 
 stdenv.mkDerivation rec {
   pname = "pam_gnupg";
-  version = "0.3";
+  version = "0.2";
 
   src = fetchFromGitHub {
     owner = "cruegge";
     repo = "pam-gnupg";
     rev = "v${version}";
-    sha256 = "sha256-NDl6MsvIDAXkaLqXt7Wa0T7aulT31P5Z/d/Vb+ILya0=";
+    sha256 = "1d8046clv7r3bl77dbpza4f1zlkjffvdczbb5bci3prz7dyfrwsz";
   };
 
   configureFlags = [
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Unlock GnuPG keys on login";
     longDescription = ''
       A PAM module that hands over your login password to gpg-agent. This can

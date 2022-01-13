@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, expat, libaio, boost }:
+{ stdenv, fetchFromGitHub, autoreconfHook, expat, libaio, boost, binutils }:
 
 stdenv.mkDerivation rec {
   pname = "thin-provisioning-tools";
@@ -13,11 +13,11 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  buildInputs = [ expat libaio boost ];
+  buildInputs = [ expat libaio boost binutils ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jthornber/thin-provisioning-tools/";
     description = "A suite of tools for manipulating the metadata of the dm-thin device-mapper target";
     license = licenses.gpl3;

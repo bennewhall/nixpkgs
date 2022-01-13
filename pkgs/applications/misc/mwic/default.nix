@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pythonPackages }:
+{ stdenv, fetchurl, pythonPackages }:
 
 stdenv.mkDerivation rec {
   version = "0.7.8";
@@ -18,10 +18,10 @@ stdenv.mkDerivation rec {
   propagatedBuildInputs = with pythonPackages; [ pyenchant regex ];
 
   postFixup = ''
-    wrapPythonPrograms
+    buildPythonPath "$out"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://jwilk.net/software/mwic";
     description = "spell-checker that groups possible misspellings and shows them in their contexts";
     license = licenses.mit;

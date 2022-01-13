@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, id3lib, groff, zlib}:
+{stdenv, fetchurl, id3lib, groff, zlib}:
 
 stdenv.mkDerivation rec {
   pname = "id3v2";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/{bin,share/man/man1}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A command line editor for id3v2 tags";
     homepage = "http://id3v2.sourceforge.net/";
     license = licenses.gpl2Plus;

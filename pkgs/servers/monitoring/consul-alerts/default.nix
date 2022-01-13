@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "consul-alerts";
@@ -16,7 +16,7 @@ buildGoPackage rec {
     sha256 = "0836zicv76sd6ljhbbii1mrzh65pch10w3gfa128iynaviksbgn5";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An extendable open source continuous integration server";
     homepage = "https://github.com/AcalephStorage/consul-alerts";
     # As per README

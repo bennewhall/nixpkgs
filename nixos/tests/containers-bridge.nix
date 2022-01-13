@@ -1,3 +1,5 @@
+# Test for NixOS' container support.
+
 let
   hostIp = "192.168.0.1";
   containerIp = "192.168.0.100/24";
@@ -5,16 +7,17 @@ let
   containerIp6 = "fc00::2/7";
 in
 
-import ./make-test-python.nix ({ pkgs, lib, ... }: {
+import ./make-test-python.nix ({ pkgs, ...} : {
   name = "containers-bridge";
-  meta = {
-    maintainers = with lib.maintainers; [ aristid aszlig eelco kampfschlaefer ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ aristid aszlig eelco kampfschlaefer ];
   };
 
   machine =
     { pkgs, ... }:
     { imports = [ ../modules/installer/cd-dvd/channel.nix ];
       virtualisation.writableStore = true;
+      virtualisation.memorySize = 768;
 
       networking.bridges = {
         br0 = {
@@ -55,7 +58,7 @@ import ./make-test-python.nix ({ pkgs, lib, ... }: {
         };
 
 
-      virtualisation.additionalPaths = [ pkgs.stdenv ];
+      virtualisation.pathsInNixDB = [ pkgs.stdenv ];
     };
 
   testScript = ''

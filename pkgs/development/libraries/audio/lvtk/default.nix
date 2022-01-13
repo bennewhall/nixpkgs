@@ -1,17 +1,15 @@
-{ lib, stdenv, fetchFromGitHub, boost, gtkmm2, lv2, pkg-config, python2, wafHook }:
+{ stdenv, fetchurl, boost, gtkmm2, lv2, pkgconfig, python, wafHook }:
 
 stdenv.mkDerivation rec {
   pname = "lvtk";
   version = "1.2.0";
 
-  src = fetchFromGitHub {
-    owner = "lvtk";
-    repo = "lvtk";
-    rev = version;
-    sha256 = "sha256-6IoyhBig3Nvc4Y8F0w8b1up6sn8O2RmoUVaBQ//+Aaw=";
+  src = fetchurl {
+    url = "https://github.com/lvtk/lvtk/archive/${version}.tar.gz";
+    sha256 = "03nbj2cqcklqwh50zj2gwm07crh5iwqbpxbpzwbg5hvgl4k4rnjd";
   };
 
-  nativeBuildInputs = [ pkg-config python2 wafHook ];
+  nativeBuildInputs = [ pkgconfig python wafHook ];
   buildInputs = [ boost gtkmm2 lv2 ];
 
   enableParallelBuilding = true;
@@ -26,11 +24,11 @@ stdenv.mkDerivation rec {
     "--boost-libs=${boost.out}/lib"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A set C++ wrappers around the LV2 C API";
     homepage = "https://lvtk.org/";
     license = licenses.gpl3;
     maintainers = [ maintainers.goibhniu ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

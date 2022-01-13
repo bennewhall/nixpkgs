@@ -1,5 +1,4 @@
-{ lib, stdenv, fetchurl, fuse, zlib
-, withFuse ? true }:
+{ stdenv, fetchurl, fuse, zlib }:
 
 stdenv.mkDerivation {
   pname = "sqlar";
@@ -10,24 +9,15 @@ stdenv.mkDerivation {
     sha256 = "09pikkbp93gqypn3da9zi0dzc47jyypkwc9vnmfzhmw7kpyv8nm9";
   };
 
-  postPatch = ''
-    substituteInPlace Makefile \
-      --replace 'gcc' '${stdenv.cc.targetPrefix}cc'
-  '';
+  buildInputs = [ fuse zlib ];
 
-  buildInputs = [ zlib ]
-    ++ lib.optional withFuse fuse;
-
-  buildFlags = [ "CFLAGS=-Wno-error" "sqlar" ]
-    ++ lib.optional withFuse "sqlarfs";
+  buildFlags = [ "sqlar" "sqlarfs" ];
 
   installPhase = ''
-    install -D -t $out/bin sqlar
-  '' + lib.optionalString withFuse ''
-    install -D -t $out/bin sqlarfs
+    install -D -t $out/bin sqlar sqlarfs
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://sqlite.org/sqlar";
     description = "SQLite Archive utilities";
     license = licenses.bsd2;

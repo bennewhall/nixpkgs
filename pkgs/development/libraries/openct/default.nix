@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, pcsclite, libusb-compat-0_1
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, pcsclite, libusb-compat-0_1
 , doxygen, libxslt
 }:
 
@@ -25,14 +25,14 @@ stdenv.mkDerivation rec {
     "--sysconfdir=/etc"
   ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ pcsclite libusb-compat-0_1 doxygen libxslt ];
 
   preInstall = ''
     mkdir -p $out/etc
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/OpenSC/openct/";
     license = licenses.lgpl21;
     description = "Drivers for several smart card readers";

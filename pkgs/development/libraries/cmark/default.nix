@@ -1,32 +1,23 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchFromGitHub, cmake }:
 
 stdenv.mkDerivation rec {
+  version = "0.29.0";
   pname = "cmark";
-  version = "0.30.2";
 
   src = fetchFromGitHub {
     owner = "jgm";
-    repo = pname;
+    repo = "cmark";
     rev = version;
-    sha256 = "sha256-IkNybUe/XYwAvPowym3aqfVyvNdw2t/brRjhOrjVRpA=";
+    sha256 = "0r7jpqhgnssq444i8pwji2g36058vfzwkl70wbiwj13h4w5rfc8f";
   };
 
   nativeBuildInputs = [ cmake ];
-
-  cmakeFlags = [
-    # Link the executable with the shared library
-    "-DCMARK_STATIC=OFF"
-  ];
-
-  doCheck = true;
-
-  preCheck = let
-    lib_path = if stdenv.isDarwin then "DYLD_FALLBACK_LIBRARY_PATH" else "LD_LIBRARY_PATH";
-  in ''
-    export ${lib_path}=$(readlink -f ./src)
+  doCheck = !stdenv.isDarwin;
+  preCheck = ''
+    export LD_LIBRARY_PATH=$(readlink -f ./src)
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "CommonMark parsing and rendering library and program in C";
     homepage = "https://github.com/jgm/cmark";
     maintainers = [ maintainers.michelk ];

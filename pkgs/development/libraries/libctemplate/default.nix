@@ -1,24 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, python3, autoconf, automake, libtool }:
+{ stdenv, fetchurl, python2 }:
 
 stdenv.mkDerivation rec {
   pname = "ctemplate";
-  version = "2.4";
 
-  src = fetchFromGitHub {
-    owner = "OlafvdSpek";
-    repo = "ctemplate";
-    rev = "ctemplate-${version}";
-    sha256 = "1x0p5yym6vvcx70pm8ihnbxxrl2wnblfp72ih5vjyg8mzkc8cxrr";
+  version = "2.3";
+
+  src = fetchurl {
+    url = "https://github.com/OlafvdSpek/ctemplate/archive/ctemplate-${version}.tar.gz";
+    sha256 = "0mi5g2xlws10z1g4x0cj6kd1r673kkav35pgzyqxa1w47xnwprcr";
   };
 
-  nativeBuildInputs = [ python3 autoconf automake libtool ];
+  buildInputs = [ python2 ];
 
   postPatch = ''
     patchShebangs .
-  '';
-
-  preConfigure = ''
-    ./autogen.sh
   '';
 
   meta = {
@@ -29,6 +24,6 @@ stdenv.mkDerivation rec {
       embed application logic in this template language.
     '';
     homepage = "https://github.com/OlafvdSpek/ctemplate";
-    license = lib.licenses.bsd3;
+    license = stdenv.lib.licenses.bsd3;
   };
 }

@@ -1,8 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , ninja
 , vala
@@ -11,31 +11,32 @@
 , gtk3
 , granite
 , libgee
-, libhandy
 , elementary-icon-theme
 , appstream
 , libpeas
 , editorconfig-core-c
-, gtksourceview4
+, gtksourceview3
 , gtkspell3
 , libsoup
 , vte
 , webkitgtk
+, zeitgeist
 , ctags
 , libgit2-glib
 , wrapGAppsHook
-, polkit
 }:
 
 stdenv.mkDerivation rec {
   pname = "elementary-code";
-  version = "6.1.0";
+  version = "3.4.1";
+
+  repoName = "code";
 
   src = fetchFromGitHub {
     owner = "elementary";
-    repo = "code";
+    repo = repoName;
     rev = version;
-    sha256 = "sha256-AXmMcPj2hf33G5v3TUg+eZwaKOdVlRvoVXglMJFHRjw=";
+    sha256 = "sha256-4AEayj+K/lOW6jEYmvmdan1kTqqqLL1YzwcU7/3PH5U=";
   };
 
   passthru = {
@@ -49,8 +50,7 @@ stdenv.mkDerivation rec {
     desktop-file-utils
     meson
     ninja
-    pkg-config
-    polkit # needed for ITS rules
+    pkgconfig
     python3
     vala
     wrapGAppsHook
@@ -62,21 +62,24 @@ stdenv.mkDerivation rec {
     elementary-icon-theme
     granite
     gtk3
-    gtksourceview4
+    gtksourceview3
     gtkspell3
     libgee
     libgit2-glib
-    libhandy
     libpeas
     libsoup
     vte
     webkitgtk
+    zeitgeist
   ];
+
+  # install script fails with UnicodeDecodeError because of printing a fancy elipsis character
+  LC_ALL = "C.UTF-8";
 
   # ctags needed in path by outline plugin
   preFixup = ''
     gappsWrapperArgs+=(
-      --prefix PATH : "${lib.makeBinPath [ ctags ]}"
+      --prefix PATH : "${stdenv.lib.makeBinPath [ ctags ]}"
     )
   '';
 
@@ -85,12 +88,11 @@ stdenv.mkDerivation rec {
     patchShebangs meson/post_install.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Code editor designed for elementary OS";
     homepage = "https://github.com/elementary/code";
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
-    mainProgram = "io.elementary.code";
+    maintainers = pantheon.maintainers;
   };
 }

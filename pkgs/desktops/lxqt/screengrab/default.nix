@@ -2,14 +2,13 @@
 , mkDerivation
 , fetchFromGitHub
 , cmake
-, pkg-config
+, pkgconfig
 , qtbase
 , qttools
 , qtx11extras
 , qtsvg
 , kwindowsystem
 , libqtxdg
-, perl
 , xorg
 , autoPatchelfHook
 , lxqtUpdateScript
@@ -17,19 +16,18 @@
 
 mkDerivation rec {
   pname = "screengrab";
-  version = "2.3.0";
+  version = "2.0.1";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "1ca5yyvcahabyrdjcsznz9j66yrdlvnfa3650iwlz6922c3dkn2k";
+    sha256 = "07wm9q0nkrvmyb12kvh0709qrwizlxgy6i5j2czhb4giljrpr4x6";
   };
 
   nativeBuildInputs = [
     cmake
-    pkg-config
-    perl # needed by LXQtTranslateDesktop.cmake
+    pkgconfig
     autoPatchelfHook # fix libuploader.so and libextedit.so not found
   ];
 
@@ -47,9 +45,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/screengrab";
     description = "Crossplatform tool for fast making screenshots";
-    license = licenses.gpl2Plus;
+    homepage = "https://github.com/lxqt/screengrab";
+    license = licenses.gpl2;
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];
   };

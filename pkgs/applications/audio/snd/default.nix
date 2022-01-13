@@ -1,33 +1,30 @@
-{ lib, stdenv, fetchurl, pkg-config
-, alsa-lib, fftw, gsl, motif, xorg
-, CoreServices, CoreMIDI
+{ stdenv, fetchurl, pkgconfig
+, gtk2, alsaLib
+, fftw, gsl
 }:
 
 stdenv.mkDerivation rec {
-  pname = "snd";
-  version = "21.8";
+  name = "snd-20.3";
 
   src = fetchurl {
-    url = "mirror://sourceforge/snd/snd-${version}.tar.gz";
-    sha256 = "sha256-sI2xa37eSBDr/ucQ7RF3YfsszKfWcmOCoAJENALSlTo=";
+    url = "mirror://sourceforge/snd/${name}.tar.gz";
+    sha256 = "016slh34gb6qqb38m8k9yg48rbhc5p12084szcwvanhh5v7fc7mk";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildInputs = [ fftw gsl motif ]
-    ++ lib.optionals stdenv.isLinux [ alsa-lib ]
-    ++ lib.optionals stdenv.isDarwin [ CoreServices CoreMIDI ]
-    ++ (with xorg; [ libXext libXft libXpm libXt ]);
+  buildInputs = [
+    gtk2 alsaLib
+    fftw gsl
+  ];
 
-  configureFlags = [ "--with-motif" ];
-
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = {
     description = "Sound editor";
-    homepage = "https://ccrma.stanford.edu/software/snd/";
-    platforms = platforms.unix;
-    license = licenses.free;
-    maintainers = with maintainers; [ ];
+    homepage = "http://ccrma.stanford.edu/software/snd";
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.free;
+    maintainers = with stdenv.lib.maintainers; [ ];
   };
+
+
 }

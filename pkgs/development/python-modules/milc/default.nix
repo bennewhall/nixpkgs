@@ -1,40 +1,35 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , appdirs
 , argcomplete
 , colorama
-, halo
-, nose2
-, semver
+, gnugrep
 }:
 
 buildPythonPackage rec {
   pname = "milc";
-  version = "1.4.2";
+  version = "1.0.10";
 
   src = fetchFromGitHub {
     owner = "clueboard";
     repo = "milc";
     rev = version;
-    sha256 = "sha256-aX6cTpIN9+9xuEGYHVlM5SjTPLcudJFEuOI4CiN3byE=";
+    sha256 = "04mk057b6jh0k4maqkg80kpilxak9r7vlr9xqwzczh2gs3g2x573";
   };
 
-  propagatedBuildInputs = [
-    appdirs
-    argcomplete
-    colorama
-    halo
-  ];
+  checkInputs = [ gnugrep ];
+  propagatedBuildInputs = [ appdirs argcomplete colorama ];
 
-  checkInputs = [
-    nose2
-    semver
-  ];
+  # Upstream has a nose2 test suite that runs this hello script in a handful of
+  # ways, but it's not in setup.py and makes assumptions about relative paths in
+  # the src repo, so just sanity-check basic functionality.
+  checkPhase = ''
+    patchShebangs ./hello
+    ./hello | grep "Hello, World"
+  '';
 
-  pythonImportsCheck = [ "milc" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An Opinionated Batteries-Included Python 3 CLI Framework";
     homepage = "https://milc.clueboard.co";
     license = licenses.mit;

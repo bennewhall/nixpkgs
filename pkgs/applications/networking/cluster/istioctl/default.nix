@@ -1,30 +1,36 @@
-{ lib, buildGoModule, fetchFromGitHub, installShellFiles }:
+{ lib, buildGoModule, fetchFromGitHub, go-bindata, installShellFiles }:
 
 buildGoModule rec {
   pname = "istioctl";
-  version = "1.12.1";
+  version = "1.8.0";
 
   src = fetchFromGitHub {
     owner = "istio";
     repo = "istio";
     rev = version;
-    sha256 = "sha256-oMf60mxreBSlgxVInTFM8kozYVZz5RdgzV3rYUnadnA=";
+    sha256 = "0fwc56797gmcg9pcy0jpv5lb0b6wwiqh242xn1chd4a4hp8in7h9";
   };
-  vendorSha256 = "sha256-e8qh8J745TXUo6c1uMS8GyawEG9YFlMYl/nHpWIFK1Q=";
+  vendorSha256 = "0ing5pih2rz974dcianlb05fpgrj3y7h32awf3cp41gh448gxd24";
 
   doCheck = false;
 
-  nativeBuildInputs = [ installShellFiles ];
+  nativeBuildInputs = [ go-bindata installShellFiles ];
+
+  # Bundle charts
+  preBuild = ''
+    patchShebangs operator/scripts
+    operator/scripts/create_assets_gen.sh
+  '';
 
   # Bundle release metadata
-  ldflags = let
+  buildFlagsArray = let
     attrs = [
       "istio.io/pkg/version.buildVersion=${version}"
       "istio.io/pkg/version.buildStatus=Nix"
       "istio.io/pkg/version.buildTag=${version}"
       "istio.io/pkg/version.buildHub=docker.io/istio"
     ];
-  in ["-s" "-w" "${lib.concatMapStringsSep " " (attr: "-X ${attr}") attrs}"];
+  in ["-ldflags=-s -w ${lib.concatMapStringsSep " " (attr: "-X ${attr}") attrs}"];
 
   subPackages = [ "istioctl/cmd/istioctl" ];
 

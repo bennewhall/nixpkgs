@@ -1,15 +1,6 @@
-{ stdenv
-, fetchzip
-, lib
-, makeWrapper
-, autoPatchelfHook
-, openjdk11
-, pam
-, makeDesktopItem
-, icoutils
-}:
-
-let
+{ stdenv, fetchzip, lib, makeWrapper, autoPatchelfHook
+, openjdk11, pam, makeDesktopItem, icoutils
+}: let
 
   pkg_path = "$out/lib/ghidra";
 
@@ -22,21 +13,23 @@ let
     categories = "Development;";
   };
 
+
 in stdenv.mkDerivation rec {
+
   pname = "ghidra";
-  version = "10.1.1";
-  versiondate = "20211221";
+  version = "9.2";
+  versiondate = "20201113";
 
   src = fetchzip {
-    url = "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_${version}_build/ghidra_${version}_PUBLIC_${versiondate}.zip";
-    sha256 = "1aib24hjfavy31vq0pasbzix9lpqrb90m3hp4n0iakg6ck8jcl5r";
+    url = "https://www.ghidra-sre.org/ghidra_${version}_PUBLIC_${versiondate}.zip";
+    sha256 = "0lcvmbq04qkdsf0bz509frgw79bhyxyixkqg1k712p3576ng3nby";
   };
 
   nativeBuildInputs = [
     makeWrapper
+    autoPatchelfHook
     icoutils
-  ]
-  ++ lib.optionals stdenv.isLinux [ autoPatchelfHook ];
+  ];
 
   buildInputs = [
     stdenv.cc.cc.lib
@@ -62,18 +55,16 @@ in stdenv.mkDerivation rec {
 
   postFixup = ''
     mkdir -p "$out/bin"
-    ln -s "${pkg_path}/ghidraRun" "$out/bin/ghidra"
-
-    wrapProgram "${pkg_path}/support/launch.sh" \
+    makeWrapper "${pkg_path}/ghidraRun" "$out/bin/ghidra" \
       --prefix PATH : ${lib.makeBinPath [ openjdk11 ]}
   '';
 
   meta = with lib; {
     description = "A software reverse engineering (SRE) suite of tools developed by NSA's Research Directorate in support of the Cybersecurity mission";
-    homepage = "https://github.com/NationalSecurityAgency/ghidra";
-    platforms = [ "x86_64-linux" "x86_64-darwin" ];
+    homepage = "https://ghidra-sre.org/";
+    platforms = [ "x86_64-linux" ];
     license = licenses.asl20;
-    maintainers = with maintainers; [ ck3d govanify mic92 ];
+    maintainers = with maintainers; [ ck3d govanify ];
   };
 
 }

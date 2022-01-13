@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, runtimeShell }:
+{ stdenv, fetchurl, runtimeShell }:
 
-stdenv.mkDerivation rec {
-  pname = "thinkingrock-binary";
-  version = "2.2.1";
+stdenv.mkDerivation {
+  name = "thinkingrock-binary-2.2.1";
 
   src = fetchurl {
-    url = "mirror://sourceforge/thinkingrock/ThinkingRock/TR%20${version}/tr-${version}.tar.gz";
+    url = "mirror://sourceforge/thinkingrock/ThinkingRock/TR%202.2.1/tr-2.2.1.tar.gz";
     sha256 = "0hnwvvyc8miiz8w2g4iy7s4rgfy0kfbncgbgfzpsq6nrzq334kgm";
   };
 
@@ -31,9 +30,9 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/thinkingrock
   '';
 
-  dontInstall = true;
+  installPhase = ":";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Task management system";
     homepage = "http://www.thinkingrock.com.au/";
     license = licenses.cddl;

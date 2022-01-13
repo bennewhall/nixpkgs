@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchurl, plib, freeglut, xorgproto, libX11, libXext, libXi
+{ stdenv, fetchurl, plib, freeglut, xorgproto, libX11, libXext, libXi
 , libICE, libSM, libXt, libXmu, libGLU, libGL, boost, zlib, libjpeg, freealut
-, openscenegraph, openal, expat, cmake, apr, xz
+, openscenegraph, openal, expat, cmake, apr
 , curl
 }:
 let
-  version = "2020.3.11";
+  version = "2020.1.3";
   shortVersion = builtins.substring 0 6 version;
 in
 stdenv.mkDerivation rec {
@@ -13,17 +13,19 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "mirror://sourceforge/flightgear/release-${shortVersion}/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-u438vCo7AUPR/88B0alh5WbvId0z2cx2jW2apYcdTzw=";
+    sha256 = "1l8kiicm0klbx0b05994vqd8a8wj7k0djbbg41a6i3q5d17jrnk6";
   };
 
   nativeBuildInputs = [ cmake ];
   buildInputs = [ plib freeglut xorgproto libX11 libXext libXi
                   libICE libSM libXt libXmu libGLU libGL boost zlib libjpeg freealut
-                  openscenegraph openal expat apr curl xz ];
+                  openscenegraph openal expat apr curl ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "Simulation construction toolkit";
-    homepage = "https://wiki.flightgear.org/SimGear";
+    homepage = "https://gitorious.org/fg/simgear";
     maintainers = with maintainers; [ raskin ];
     platforms = platforms.linux;
     license = licenses.lgpl2;

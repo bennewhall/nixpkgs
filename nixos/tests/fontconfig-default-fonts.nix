@@ -4,6 +4,7 @@ import ./make-test-python.nix ({ lib, ... }:
 
   meta.maintainers = with lib.maintainers; [
     jtojnar
+    worldofpeace
   ];
 
   machine = { config, pkgs, ... }: {

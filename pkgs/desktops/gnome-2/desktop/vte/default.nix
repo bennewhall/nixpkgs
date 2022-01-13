@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, intltool, pkg-config, glib, gtk2, ncurses
+{ stdenv, fetchurl, fetchpatch, intltool, pkgconfig, glib, gtk2, ncurses
 , pythonSupport ? false, python27Packages}:
 
 let
@@ -28,15 +28,15 @@ in stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ intltool glib gtk2 ncurses ] ++
-                lib.optionals pythonSupport [python pygtk];
+                stdenv.lib.optionals pythonSupport [python pygtk];
 
   configureFlags = [
-    (lib.enableFeature pythonSupport "python")
+    (stdenv.lib.enableFeature pythonSupport "python")
   ];
 
-  postInstall = lib.optionalString pythonSupport ''
+  postInstall = stdenv.lib.optionalString pythonSupport ''
     cd $(toPythonPath $out)/gtk-2.0
     for n in *; do
       ln -s "gtk-2.0/$n" "../$n"
@@ -54,8 +54,8 @@ in stdenv.mkDerivation rec {
       character set conversion, as well as emulating any terminal known to
       the system's terminfo database.
     '';
-    license = lib.licenses.lgpl2;
-    maintainers = with lib.maintainers; [ astsmtl ];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.lgpl2;
+    maintainers = with stdenv.lib.maintainers; [ astsmtl ];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

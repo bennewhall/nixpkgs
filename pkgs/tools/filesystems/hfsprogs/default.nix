@@ -1,11 +1,12 @@
-{ lib, stdenv, fetchurl, openssl, libbsd }:
+{ stdenv, fetchurl, openssl, libbsd }:
 
-stdenv.mkDerivation rec {
-  version = "332.25";
-  pname = "hfsprogs";
+let version = "332.25";
+    package_name = "hfsprogs"; in
+stdenv.mkDerivation {
+  name = "${package_name}-${version}";
   srcs = [
     (fetchurl {
-      url = "http://ftp.de.debian.org/debian/pool/main/h/hfsprogs/hfsprogs_${version}-11.debian.tar.gz";
+      url = "http://ftp.de.debian.org/debian/pool/main/h/hfsprogs/${package_name}_${version}-11.debian.tar.gz";
       sha256 = "62d9b8599c66ebffbc57ce5d776e20b41341130d9b27341d63bda08460ebde7c";
     })
     (fetchurl {
@@ -28,13 +29,13 @@ stdenv.mkDerivation rec {
   installPhase = ''
     # Create required package directories
     install -m 755 -d "$out/bin"
-    install -m 755 -d "$out/share/hfsprogs"
+    install -m 755 -d "$out/share/${package_name}"
     install -m 755 -d "$out/share/man/man8/"
     # Copy executables
     install -m 755 "newfs_hfs.tproj/newfs_hfs" "$out/bin/mkfs.hfsplus"
     install -m 755 "fsck_hfs.tproj/fsck_hfs" "$out/bin/fsck.hfsplus"
     # Copy shared data
-    install -m 644 "newfs_hfs.tproj/hfsbootdata.img" "$out/share/hfsprogs/hfsbootdata"
+    install -m 644 "newfs_hfs.tproj/hfsbootdata.img" "$out/share/${package_name}/hfsbootdata"
     # Copy man pages
     install -m 644 "newfs_hfs.tproj/newfs_hfs.8" "$out/share/man/man8/mkfs.hfsplus.8"
     install -m 644 "fsck_hfs.tproj/fsck_hfs.8" "$out/share/man/man8/fsck.hfsplus.8"
@@ -42,7 +43,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "HFS/HFS+ user space utils";
-    license = lib.licenses.apsl20;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.apsl20;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

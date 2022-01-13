@@ -2,8 +2,7 @@
 
 stdenv.mkDerivation {
 
-  pname = "pg_similarity";
-  version = "1.0";
+  name = "pg_similarity-1.0";
   src = fetchFromGitHub {
     owner = "eulerto";
     repo = "pg_similarity";
@@ -26,7 +25,7 @@ stdenv.mkDerivation {
        operators (= and <>) you can use ~~~ and ~!~ (any of these operators represents a similarity function).
     '';
     platforms = postgresql.meta.platforms;
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     maintainers = with lib.maintainers; [ danbst ];
   };
 }

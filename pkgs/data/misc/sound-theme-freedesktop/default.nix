@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, intltool }:
+{ stdenv, fetchurl, intltool }:
 
 stdenv.mkDerivation rec {
   pname = "sound-theme-freedesktop";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ intltool ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Freedesktop reference sound theme";
     homepage = "http://freedesktop.org/wiki/Specifications/sound-theme-spec";
     # See http://cgit.freedesktop.org/sound-theme-freedesktop/tree/CREDITS:

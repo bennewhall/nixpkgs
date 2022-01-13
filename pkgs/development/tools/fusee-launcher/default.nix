@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , python3Packages
 , python3
 , fetchFromGitHub
@@ -32,7 +32,7 @@ stdenv.mkDerivation {
   buildInputs = [ python3 python3Packages.pyusb ];
   pythonPath = with python3Packages; [ pyusb ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Cease-and-DeSwitch/fusee-launcher";
     description = "Work-in-progress launcher for one of the Tegra X1 bootROM exploits";
     license = licenses.gpl2;

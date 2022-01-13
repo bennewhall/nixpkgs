@@ -39,11 +39,11 @@ stdenv.mkDerivation rec {
     mv $NIX_BUILD_TOP/rund $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A compiler-wrapper that runs and caches D programs";
     homepage = "https://github.com/dragon-lang/rund";
     license = lib.licenses.boost;
     maintainers = with maintainers; [ jonathanmarler ];
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

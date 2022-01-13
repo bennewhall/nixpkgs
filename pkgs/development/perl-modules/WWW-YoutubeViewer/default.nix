@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, buildPerlPackage, shortenPerlShebang, LWP, LWPProtocolHttps, DataDump, JSON }:
+{ stdenv, fetchFromGitHub, buildPerlPackage, shortenPerlShebang, LWP, LWPProtocolHttps, DataDump, JSON }:
 
 buildPerlPackage rec {
   pname = "WWW-YoutubeViewer";
@@ -11,21 +11,21 @@ buildPerlPackage rec {
     sha256 = "16p0sa91h0zpqdpqmy348g6b9qj5f6qrbzrljn157vk00cg6mx18";
   };
 
-  nativeBuildInputs = lib.optional stdenv.isDarwin shortenPerlShebang;
+  nativeBuildInputs = stdenv.lib.optional stdenv.isDarwin shortenPerlShebang;
   propagatedBuildInputs = [
     LWP
     LWPProtocolHttps
     DataDump
     JSON
   ];
-  postInstall = lib.optionalString stdenv.isDarwin ''
+  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
     shortenPerlShebang $out/bin/youtube-viewer
   '';
 
-  meta = with lib; {
+  meta = {
     description = "A lightweight application for searching and streaming videos from YouTube";
     homepage = "https://github.com/trizen/youtube-viewer";
-    maintainers = with maintainers; [ woffs ];
-    license = with licenses; [ artistic2 ];
+    maintainers = with stdenv.lib.maintainers; [ woffs ];
+    license = with stdenv.lib.licenses; [ artistic2 ];
   };
 }

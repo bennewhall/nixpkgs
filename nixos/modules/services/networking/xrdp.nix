@@ -47,7 +47,7 @@ in
       package = mkOption {
         type = types.package;
         default = pkgs.xrdp;
-        defaultText = literalExpression "pkgs.xrdp";
+        defaultText = "pkgs.xrdp";
         description = ''
           The package to use for the xrdp daemon's binary.
         '';
@@ -59,12 +59,6 @@ in
         description = ''
           Specifies on which port the xrdp daemon listens.
         '';
-      };
-
-      openFirewall = mkOption {
-        default = false;
-        type = types.bool;
-        description = "Whether to open the firewall for the specified RDP port.";
       };
 
       sslKey = mkOption {
@@ -97,11 +91,6 @@ in
         '';
       };
 
-      confDir = mkOption {
-        type = types.path;
-        default = confDir;
-        description = "The location of the config files for xrdp.";
-      };
     };
   };
 
@@ -109,8 +98,6 @@ in
   ###### implementation
 
   config = mkIf cfg.enable {
-
-    networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [ cfg.port ];
 
     # xrdp can run X11 program even if "services.xserver.enable = false"
     xdg = {
@@ -154,7 +141,7 @@ in
           User = "xrdp";
           Group = "xrdp";
           PermissionsStartOnly = true;
-          ExecStart = "${cfg.package}/bin/xrdp --nodaemon --port ${toString cfg.port} --config ${cfg.confDir}/xrdp.ini";
+          ExecStart = "${cfg.package}/bin/xrdp --nodaemon --port ${toString cfg.port} --config ${confDir}/xrdp.ini";
         };
       };
 
@@ -164,7 +151,7 @@ in
         description = "xrdp session manager";
         restartIfChanged = false; # do not restart on "nixos-rebuild switch". like "display-manager", it can have many interactive programs as children
         serviceConfig = {
-          ExecStart = "${cfg.package}/bin/xrdp-sesman --nodaemon --config ${cfg.confDir}/sesman.ini";
+          ExecStart = "${cfg.package}/bin/xrdp-sesman --nodaemon --config ${confDir}/sesman.ini";
           ExecStop  = "${pkgs.coreutils}/bin/kill -INT $MAINPID";
         };
       };

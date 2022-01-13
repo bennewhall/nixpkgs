@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, unzip, which, python3, perl}:
+{stdenv, fetchFromGitHub, unzip, which, python3, perl}:
 
 stdenv.mkDerivation rec {
   pname = "hisat2";
@@ -35,7 +35,7 @@ stdenv.mkDerivation rec {
        $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graph based aligner";
     license = licenses.gpl3;
     homepage = "https://ccb.jhu.edu/software/hisat2/index.shtml";

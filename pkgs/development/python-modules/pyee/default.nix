@@ -1,24 +1,12 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, vcversioner
-, mock
-, pytestCheckHook
-, pytest-asyncio
-, pytest-trio
-, twisted
-, pythonOlder
-}:
+{ buildPythonPackage, fetchPypi, lib, vcversioner, pytestrunner, mock, pytest, pytest-asyncio, pytest-trio, twisted, zipp, pyparsing, pyhamcrest, futures, attrs, stdenv, isPy27 }:
 
 buildPythonPackage rec {
   pname = "pyee";
-  version = "8.2.2";
-
-  disabled = pythonOlder "3.6";
+  version = "8.1.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-XH5g+N+VcQ2+F1UOFs4BU/g5kMAO90SEG0Pzce1T6+o=";
+    sha256 = "92dacc5bd2bdb8f95aa8dd2585d47ca1c4840e2adb95ccf90034d64f725bfd31";
   };
 
   buildInputs = [
@@ -27,18 +15,23 @@ buildPythonPackage rec {
 
   checkInputs = [
     mock
+    pyhamcrest
+    pytest
     pytest-asyncio
     pytest-trio
-    pytestCheckHook
+    pytestrunner
     twisted
+  ] ++ stdenv.lib.optional isPy27 [
+    attrs
+    futures
+    pyparsing
+    zipp
   ];
 
-  pythonImportsCheck = [ "pyee" ];
-
-  meta = with lib; {
-    description = "A port of Node.js's EventEmitter to Python";
+  meta = {
+    description = "A port of Node.js's EventEmitter to python";
     homepage = "https://github.com/jfhbrook/pyee";
-    license = licenses.mit;
-    maintainers = with maintainers; [ kmein ];
+    license = lib.licenses.mit;
+    maintainers = with lib.maintainers; [ kmein ];
   };
 }

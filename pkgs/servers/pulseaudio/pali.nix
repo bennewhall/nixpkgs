@@ -4,14 +4,14 @@
 , fetchFromGitLab
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , libsndfile
 , libtool
 , makeWrapper
 , perlPackages
 , xorg
 , libcap
-, alsa-lib
+, alsaLib
 , glib
 , dconf
 , avahi
@@ -90,7 +90,7 @@ stdenv.mkDerivation rec {
     makeWrapper
     meson
     ninja
-    pkg-config
+    pkgconfig
     perlPackages.perl
     perlPackages.XMLParser
   ];
@@ -129,7 +129,7 @@ stdenv.mkDerivation rec {
       xorg.libXtst
       xorg.xlibsWrapper
     ] ++ lib.optionals stdenv.isLinux [
-      alsa-lib
+      alsaLib
       systemd
       udev
     ] ++ lib.optional airtunesSupport openssl

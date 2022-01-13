@@ -12,7 +12,6 @@
 #include <skalibs/djbunix.h>
 #include <skalibs/strerr2.h>
 #include <skalibs/env.h>
-#include <skalibs/exec.h>
 
 #define dienomem() strerr_diefu1sys(111, "stralloc_catb")
 
@@ -42,10 +41,10 @@ int main(int argc, char const* argv[], char const *const *envp)
   }
 
   // exec into execlineb and append path_modif to the environment
-  xmexec_aem(
+  xpathexec_r_name(
     EXECLINEB_PATH(),
     argv,
-    envp,
+    envp, env_len(envp),
     path_modif.s, path_modif.len
   );
 }

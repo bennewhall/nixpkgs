@@ -20,7 +20,7 @@ let
     '';
 in {
   name = "minio";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ bachp ];
   };
 
@@ -28,10 +28,7 @@ in {
     machine = { pkgs, ... }: {
       services.minio = {
         enable = true;
-        rootCredentialsFile = pkgs.writeText "minio-credentials" ''
-          MINIO_ROOT_USER=${accessKey}
-          MINIO_ROOT_PASSWORD=${secretKey}
-        '';
+        inherit accessKey secretKey;
       };
       environment.systemPackages = [ pkgs.minio-client ];
 

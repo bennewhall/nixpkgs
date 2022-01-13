@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.exhibitor;
-  opt = options.services.exhibitor;
   exhibitorConfig = ''
     zookeeper-install-directory=${cfg.baseDir}/zookeeper
     zookeeper-data-directory=${cfg.zkDataDir}
@@ -166,7 +165,6 @@ in
       zkDataDir = mkOption {
         type = types.str;
         default = "${cfg.baseDir}/zkData";
-        defaultText = literalExpression ''"''${config.${opt.baseDir}}/zkData"'';
         description = ''
           The Zookeeper data directory
         '';
@@ -174,7 +172,6 @@ in
       zkLogDir = mkOption {
         type = types.path;
         default = "${cfg.baseDir}/zkLogs";
-        defaultText = literalExpression ''"''${config.${opt.baseDir}}/zkLogs"'';
         description = ''
           The Zookeeper logs directory
         '';
@@ -188,7 +185,7 @@ in
       };
       zkExtraCfg = mkOption {
         type = types.str;
-        default = "initLimit=5&syncLimit=2&tickTime=2000";
+        default = ''initLimit=5&syncLimit=2&tickTime=2000'';
         description = ''
           Extra options to pass into Zookeeper
         '';

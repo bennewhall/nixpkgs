@@ -1,4 +1,4 @@
-{ lib, stdenv, mkDerivation, cmake, fetchFromBitbucket, pkg-config, qtbase, qttools, qtmultimedia, zlib, bzip2, xxd }:
+{ stdenv, mkDerivation, cmake, fetchFromBitbucket, pkgconfig, qtbase, qttools, qtmultimedia, zlib, bzip2, xxd }:
 
 mkDerivation {
   pname = "doomseeker";
@@ -13,12 +13,12 @@ mkDerivation {
 
   patches = [ ./fix_paths.patch ./qt_build_fix.patch ];
 
-  nativeBuildInputs = [ cmake qttools pkg-config xxd ];
+  nativeBuildInputs = [ cmake qttools pkgconfig xxd ];
   buildInputs = [ qtbase qtmultimedia zlib bzip2 ];
 
-  hardeningDisable = lib.optional stdenv.isDarwin "format";
+  hardeningDisable = stdenv.lib.optional stdenv.isDarwin "format";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://doomseeker.drdteam.org/";
     description = "Multiplayer server browser for many Doom source ports";
     license = licenses.gpl2;

@@ -1,5 +1,5 @@
 { buildPythonPackage, fetchPypi
-, pytest, pytest-cov
+, pytest, pytestcov
 }:
 
 buildPythonPackage rec {
@@ -15,5 +15,5 @@ buildPythonPackage rec {
     py.test
   '';
 
-  checkInputs = [ pytest pytest-cov ];
+  checkInputs = [ pytest pytestcov ];
 }

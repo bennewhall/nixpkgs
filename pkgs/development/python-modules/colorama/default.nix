@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage }:
+{ stdenv, fetchPypi, buildPythonPackage }:
 
 buildPythonPackage rec {
   pname = "colorama";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # No tests in archive
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/tartley/colorama";
     license = licenses.bsd3;
     description = "Cross-platform colored terminal text";

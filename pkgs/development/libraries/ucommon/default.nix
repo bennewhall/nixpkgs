@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config
+{ stdenv, fetchurl, pkgconfig
 , openssl ? null, zlib ? null, gnutls ? null
 }:
 
@@ -10,15 +10,14 @@ assert xor (openssl != null) (gnutls != null);
 assert !(xor (openssl != null) (zlib != null));
 
 stdenv.mkDerivation rec {
-  pname = "ucommon";
-  version = "7.0.0";
+  name = "ucommon-7.0.0";
 
   src = fetchurl {
-    url = "mirror://gnu/commoncpp/${pname}-${version}.tar.gz";
+    url = "mirror://gnu/commoncpp/${name}.tar.gz";
     sha256 = "6ac9f76c2af010f97e916e4bae1cece341dc64ca28e3881ff4ddc3bc334060d7";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   # disable flaky networking test
   postPatch = ''
@@ -34,9 +33,9 @@ stdenv.mkDerivation rec {
   meta = {
     description = "C++ library to facilitate using C++ design patterns";
     homepage = "https://www.gnu.org/software/commoncpp/";
-    license = lib.licenses.lgpl3Plus;
+    license = stdenv.lib.licenses.lgpl3Plus;
 
-    maintainers = with lib.maintainers; [ ];
-    platforms = lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

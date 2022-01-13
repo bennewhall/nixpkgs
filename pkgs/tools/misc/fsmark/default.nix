@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "fsmark";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     cp fs_mark $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Synchronous write workload file system benchmark";
     homepage = "https://sourceforge.net/projects/fsmark/";
     license = licenses.gpl2;

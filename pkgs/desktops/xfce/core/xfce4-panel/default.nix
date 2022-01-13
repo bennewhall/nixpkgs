@@ -1,59 +1,29 @@
-{ lib
-, mkXfceDerivation
-, exo
-, garcon
-, glib
-, gobject-introspection
-, gtk3
-, libdbusmenu-gtk3
-, libwnck
-, libxfce4ui
-, libxfce4util
-, tzdata
-, vala
-, xfconf
-}:
+{ mkXfceDerivation, tzdata, exo, garcon, gtk2, gtk3, glib, gettext, glib-networking, libxfce4ui, libxfce4util, libwnck3, xfconf, gobject-introspection }:
 
 mkXfceDerivation {
   category = "xfce";
   pname = "xfce4-panel";
-  version = "4.16.3";
+  version = "4.14.4";
 
-  sha256 = "sha256-PdE64WKdluKfof/l1wTPi7JdpJMYWIvi0yIdpyntsCA=";
+  sha256 = "1srzgb9vsvfrbhym74zkz9hdhxcrvbffxpfgv5vprhlwxw3vk3fq";
 
-  nativeBuildInputs = [
-    gobject-introspection
-    vala
-  ];
-
-  buildInputs = [
-    exo
-    garcon
-    libdbusmenu-gtk3
-    libxfce4ui
-    libwnck
-    xfconf
-    tzdata
-  ];
-
-  propagatedBuildInputs = [
-    glib
-    gtk3
-    libxfce4util
-  ];
+  nativeBuildInputs = [ gobject-introspection ];
+  buildInputs = [ exo garcon gtk2 gtk3 glib glib-networking libxfce4ui libxfce4util libwnck3 xfconf ];
 
   patches = [ ./xfce4-panel-datadir.patch ];
+  patchFlags = [ "-p1" ];
 
   postPatch = ''
+    for f in $(find . -name \*.sh); do
+      substituteInPlace $f --replace gettext ${gettext}/bin/gettext
+    done
     substituteInPlace plugins/clock/clock.c \
        --replace "/usr/share/zoneinfo" "${tzdata}/share/zoneinfo"
   '';
 
-  # Workaround https://bugzilla.xfce.org/show_bug.cgi?id=15825
-  NIX_CFLAGS_COMPILE = "-I${glib.dev}/include/gio-unix-2.0";
+  configureFlags = [ "--enable-gtk3" ];
 
-  meta = with lib; {
-    description = "Panel for the Xfce desktop environment";
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
+  meta =  {
+    description = "Xfce's panel";
   };
 }

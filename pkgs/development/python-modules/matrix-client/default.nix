@@ -1,40 +1,25 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
 , requests
-, responses
-, urllib3
+, pytest, pytestrunner, responses
 }:
 
 buildPythonPackage rec {
   pname = "matrix_client";
-  version = "0.4.0";
+  version = "0.3.2";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0mii7ib3bah5ppqs7i8sjv5l0zbl57011908m4l0jbyby90ayy06";
+    sha256 = "1mgjd0ymf9mvqjkvgx3xjhxap7rzdmpa21wfy0cxbw2xcswcrqyw";
   };
 
-  propagatedBuildInputs = [
-    requests
-    urllib3
-  ];
+  checkInputs = [ pytest pytestrunner responses ];
 
-  checkInputs = [
-    pytestCheckHook
-    responses
-  ];
+  propagatedBuildInputs = [ requests ];
 
-  postPatch = ''
-    substituteInPlace setup.py --replace \
-      "pytest-runner~=5.1" ""
-  '';
-
-  pythonImportsCheck = [ "matrix_client" ];
-
-  meta = with lib; {
-    description = "Python Matrix Client-Server SDK";
+  meta = with stdenv.lib; {
+    description = "Matrix Client-Server SDK";
     homepage = "https://github.com/matrix-org/matrix-python-sdk";
     license = licenses.asl20;
     maintainers = with maintainers; [ olejorgenb ];

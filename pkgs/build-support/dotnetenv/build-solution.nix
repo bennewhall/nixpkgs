@@ -1,4 +1,4 @@
-{ lib, stdenv, dotnetfx }:
+{stdenv, dotnetfx}:
 { name
 , src
 , baseDir ? "."
@@ -24,7 +24,7 @@ stdenv.mkDerivation {
   '';
 
   preBuild = ''
-    ${lib.optionalString modifyPublicMain ''
+    ${stdenv.lib.optionalString modifyPublicMain ''
       sed -i -e "s|static void Main|public static void Main|" ${mainClassFile}
     ''}
     ${preBuild}

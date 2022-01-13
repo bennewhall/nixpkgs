@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch,
+{ stdenv, fetchFromGitHub, fetchpatch,
   openssl, zlib, libjpeg, xorg, coreutils, libvncserver,
-  autoreconfHook, pkg-config }:
+  autoreconfHook, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "x11vnc";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs =
     [ xorg.libXfixes xorg.xorgproto openssl xorg.libXdamage
@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
     configureFlags="--mandir=$out/share/man"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A VNC server connected to a real X11 screen";
     homepage = "https://github.com/LibVNC/x11vnc/";
     platforms = platforms.linux;

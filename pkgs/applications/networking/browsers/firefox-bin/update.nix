@@ -1,4 +1,4 @@
-{ pname
+{ name
 , channel
 , writeScript
 , xidel
@@ -17,7 +17,7 @@ let
   isBeta =
     channel != "release";
 
-in writeScript "update-${pname}" ''
+in writeScript "update-${name}" ''
   #!${runtimeShell}
   PATH=${coreutils}/bin:${gnused}/bin:${gnugrep}/bin:${xidel}/bin:${curl}/bin:${gnupg}/bin
   set -eux
@@ -26,7 +26,7 @@ in writeScript "update-${pname}" ''
   HOME=`mktemp -d`
   export GNUPGHOME=`mktemp -d`
 
-  gpg --receive-keys 14F26682D0916CDD81E37B6D61B7B526D98F0353
+  gpg --import ${./mozilla.asc}
 
   tmpfile=`mktemp`
   url=${baseUrl}

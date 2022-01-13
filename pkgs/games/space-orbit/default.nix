@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , libGLU, libGL, libXi, libXt, libXext, libX11, libXmu, freeglut
 }:
 
@@ -37,7 +37,7 @@ EOF
     chmod a+x $out/bin/space-orbit
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A space combat simulator";
     license = licenses.gpl2;
     platforms = platforms.all;

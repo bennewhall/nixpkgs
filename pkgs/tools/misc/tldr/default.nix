@@ -1,24 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, curl, libzip, pkg-config }:
+{ stdenv, fetchFromGitHub, curl, libzip, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "tldr";
-  version = "1.4.2";
+  version = "1.3.0";
 
   src = fetchFromGitHub {
     owner = "tldr-pages";
     repo = "tldr-cpp-client";
     rev = "v${version}";
-    sha256 = "sha256-dsEqnHIs6vamdfLrkstRcV90tt7QcKIJwrPr+ksTVlQ=";
+    sha256 = "10ylpiqc06p0qpma72vwksd7hd107s0vlx9c6s9rz4vc3i274lb6";
   };
 
   buildInputs = [ curl libzip ];
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  makeFlags = ["CC=${stdenv.cc.targetPrefix}cc" "LD=${stdenv.cc.targetPrefix}cc" "CFLAGS="];
+  makeFlags = ["CC=cc" "LD=cc" "CFLAGS="];
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simplified and community-driven man pages";
     longDescription = ''
       tldr pages gives common use cases for commands, so you don't need to hunt

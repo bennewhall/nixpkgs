@@ -1,4 +1,4 @@
-{ lib, stdenv, jdk, jre, coursier, makeWrapper }:
+{ stdenv, jdk, jre, coursier, makeWrapper }:
 
 let
   baseName = "scalafix";
@@ -7,7 +7,7 @@ let
     name = "${baseName}-deps-${version}";
     buildCommand = ''
       export COURSIER_CACHE=$(pwd)
-      ${coursier}/bin/cs fetch ch.epfl.scala:scalafix-cli_2.12.7:${version} > deps
+      ${coursier}/bin/coursier fetch ch.epfl.scala:scalafix-cli_2.12.7:${version} > deps
       mkdir -p $out/share/java
       cp $(< deps) $out/share/java/
     '';
@@ -17,24 +17,24 @@ let
   };
 in
 stdenv.mkDerivation {
-  pname = baseName;
-  inherit version;
+  name = "${baseName}-${version}";
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jdk deps ];
+  buildInputs = [ jdk makeWrapper deps ];
 
-  dontUnpack = true;
+  doCheck = true;
+
+  phases = [ "installPhase" "checkPhase" ];
 
   installPhase = ''
     makeWrapper ${jre}/bin/java $out/bin/${baseName} \
       --add-flags "-cp $CLASSPATH scalafix.cli.Cli"
   '';
 
-  installCheckPhase = ''
+  checkPhase = ''
     $out/bin/${baseName} --version | grep -q "${version}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Refactoring and linting tool for Scala";
     homepage = "https://scalacenter.github.io/scalafix/";
     license = licenses.bsd3;

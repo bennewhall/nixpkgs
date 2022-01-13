@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, pkg-config, gtk2, gettext, libxml2, intltool, libart_lgpl
+{ stdenv, fetchurl, fetchpatch, pkgconfig, gtk2, gettext, libxml2, intltool, libart_lgpl
 , libgnomecups, bison, flex }:
 
 stdenv.mkDerivation rec {
@@ -18,12 +18,12 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ gtk2 gettext intltool libart_lgpl libgnomecups bison flex ];
 
   propagatedBuildInputs = [ libxml2 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     platforms = platforms.linux;
   };
 }

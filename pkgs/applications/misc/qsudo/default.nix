@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , mkDerivation
 , fetchFromGitHub
 , qmake
@@ -32,7 +32,7 @@ mkDerivation rec {
     substituteInPlace qsudo.pro --replace /usr/bin $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graphical sudo utility from Project Trident";
     homepage = "https://github.com/project-trident/qsudo";
     license = licenses.bsd2;

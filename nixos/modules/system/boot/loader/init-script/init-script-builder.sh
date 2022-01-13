@@ -49,6 +49,7 @@ addEntry() {
       echo "#!/bin/sh"
       echo "# $name"
       echo "# created by init-script-builder.sh"
+      echo "export systemConfig=$(readlink -f $path)"
       echo "exec $stage2"
     )"
 

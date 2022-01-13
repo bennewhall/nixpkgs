@@ -1,4 +1,4 @@
-{ lib, python3 }:
+{ stdenv, python3 }:
 
 with python3.pkgs;
 
@@ -20,7 +20,7 @@ buildPythonApplication rec {
 
   pythonImportsCheck = [ "pew" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/berdario/pew";
     description = "Tools to manage multiple virtualenvs written in pure python";
     license = licenses.mit;

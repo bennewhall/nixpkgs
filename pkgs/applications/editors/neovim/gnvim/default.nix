@@ -1,4 +1,4 @@
-{ lib, rustPlatform, fetchFromGitHub, gtk, webkitgtk }:
+{ stdenv, rustPlatform, fetchFromGitHub, gtk, webkitgtk }:
 
 rustPlatform.buildRustPackage rec {
   pname = "gnvim-unwrapped";
@@ -11,13 +11,13 @@ rustPlatform.buildRustPackage rec {
     sha256 = "1cc3yk04v9icdjr5cn58mqc3ba1wqmlzhf9ly7biy9m8yk30w9y0";
   };
 
-  cargoSha256 = "0z6hhahxdc6d7nzqvc8jlxn1frsc39va8z5pmwfmmq5z61ahk90z";
+  cargoSha256 = "1fyn8nsabzrfl9ykf2gk2p8if0yjp6k0ybrmp0pw67pbwaxpb9ym";
 
   buildInputs = [ gtk webkitgtk ];
 
   # The default build script tries to get the version through Git, so we
   # replace it
-  postPatch = ''
+  prePatch = ''
     cat << EOF > build.rs
     use std::env;
     use std::fs::File;
@@ -31,17 +31,17 @@ rustPlatform.buildRustPackage rec {
         f.write_all(b"const VERSION: &str = \"${version}\";").unwrap();
     }
     EOF
-
-    # Install the binary ourselves, since the Makefile doesn't have the path
-    # containing the target architecture
-    sed -e "/target\/release/d" -i Makefile
   '';
 
-  postInstall = ''
+  buildPhase = ''
+    make build
+  '';
+
+  installPhase = ''
     make install PREFIX="${placeholder "out"}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GUI for neovim, without any web bloat";
     homepage = "https://github.com/vhakulinen/gnvim";
     license = licenses.mit;

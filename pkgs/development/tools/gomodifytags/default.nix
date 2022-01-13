@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "gomodifytags";
@@ -18,7 +18,7 @@ buildGoModule rec {
   meta = {
     description = "Go tool to modify struct field tags";
     homepage = "https://github.com/fatih/gomodifytags";
-    maintainers = with lib.maintainers; [ vdemeester ];
-    license = lib.licenses.bsd3;
+    maintainers = with stdenv.lib.maintainers; [ vdemeester ];
+    license = stdenv.lib.licenses.bsd3;
   };
 }

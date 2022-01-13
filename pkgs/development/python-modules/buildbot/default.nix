@@ -1,21 +1,15 @@
-{ stdenv, lib, buildPythonPackage, fetchPypi, makeWrapper, isPy3k
-, python, twisted, jinja2, zope_interface, sqlalchemy, alembic, python-dateutil
-, txaio, autobahn, pyjwt, pyyaml, unidiff, treq, txrequests, pypugjs, boto3
-, moto, mock, lz4, setuptoolsTrial, isort, pylint, flake8, buildbot-worker
-, buildbot-pkg, buildbot-plugins, parameterized, git, openssh, glibcLocales
-, nixosTests
-}:
+{ stdenv, lib, buildPythonPackage, fetchPypi, makeWrapper, isPy3k,
+  python, twisted, jinja2, zope_interface, future, sqlalchemy,
+  sqlalchemy_migrate, dateutil, txaio, autobahn, pyjwt, pyyaml, treq,
+  txrequests, pypugjs, boto3, moto, mock, python-lz4, setuptoolsTrial,
+  isort, pylint, flake8, buildbot-worker, buildbot-pkg, buildbot-plugins,
+  parameterized, git, openssh, glibcLocales, nixosTests }:
 
 let
   withPlugins = plugins: buildPythonPackage {
-    pname = "${package.pname}-with-plugins";
-    inherit (package) version;
-
-    dontUnpack = true;
-    dontBuild = true;
-    doCheck = false;
-
-    nativeBuildInputs = [ makeWrapper ];
+    name = "${package.name}-with-plugins";
+    phases = [ "installPhase" "fixupPhase" ];
+    buildInputs = [ makeWrapper ];
     propagatedBuildInputs = plugins ++ package.propagatedBuildInputs;
 
     installPhase = ''
@@ -31,11 +25,11 @@ let
 
   package = buildPythonPackage rec {
     pname = "buildbot";
-    version = "3.4.0";
+    version = "2.9.2";
 
     src = fetchPypi {
       inherit pname version;
-      sha256 = "sha256-14w1sF1aOpfUW76uhAIUpdrjAEhQkEWcRGg9Osc+qFk=";
+      sha256 = "019xfxjnyfi69d5sm3alvib24g8giqlvc102p8hqg8mfm7hc9z2v";
     };
 
     propagatedBuildInputs = [
@@ -44,13 +38,12 @@ let
       jinja2
       zope_interface
       sqlalchemy
-      alembic
-      python-dateutil
+      sqlalchemy_migrate
+      dateutil
       txaio
       autobahn
       pyjwt
       pyyaml
-      unidiff
     ]
       # tls
       ++ twisted.extras.tls;
@@ -62,7 +55,7 @@ let
       boto3
       moto
       mock
-      lz4
+      python-lz4
       setuptoolsTrial
       isort
       pylint
@@ -99,13 +92,12 @@ let
     passthru = {
       inherit withPlugins;
       tests.buildbot = nixosTests.buildbot;
-      updateScript = ./update.sh;
     };
 
     meta = with lib; {
       homepage = "https://buildbot.net/";
       description = "An open-source continuous integration framework for automating software build, test, and release processes";
-      maintainers = with maintainers; [ ryansydnor lopsided98 ];
+      maintainers = with maintainers; [ nand0p ryansydnor lopsided98 ];
       license = licenses.gpl2;
     };
   };

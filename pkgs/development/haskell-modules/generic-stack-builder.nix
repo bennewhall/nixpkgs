@@ -1,4 +1,4 @@
-{ stdenv, ghc, pkg-config, glibcLocales
+{ stdenv, ghc, pkgconfig, glibcLocales
 , cacert, stack, makeSetupHook, lib }@depArgs:
 
 { buildInputs ? []
@@ -28,7 +28,7 @@ in stdenv.mkDerivation (args // {
     ++ lib.optional (stdenv.hostPlatform.libc == "glibc") glibcLocales;
 
   nativeBuildInputs = nativeBuildInputs
-    ++ [ ghc pkg-config stack stackHook ];
+    ++ [ ghc pkgconfig stack stackHook ];
 
   STACK_PLATFORM_VARIANT = "nix";
   STACK_IN_NIX_SHELL = 1;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, pidgin, json-glib }:
+{ stdenv, fetchFromGitHub, pkgconfig, pidgin, json-glib }:
 
 stdenv.mkDerivation rec {
   pname = "pidgin-skypeweb";
@@ -15,13 +15,13 @@ stdenv.mkDerivation rec {
     sourceRoot=$(echo */skypeweb)
   '';
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ pidgin json-glib ];
 
   PKG_CONFIG_PURPLE_PLUGINDIR = "${placeholder "out"}/lib/purple-2";
   PKG_CONFIG_PURPLE_DATADIR = "${placeholder "out"}/share";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/EionRobb/skype4pidgin";
     description = "SkypeWeb plugin for Pidgin";
     license = licenses.gpl3;

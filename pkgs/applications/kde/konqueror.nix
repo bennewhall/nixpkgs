@@ -1,16 +1,16 @@
 { lib
 , mkDerivation
 , extra-cmake-modules, kdoctools
-, kinit, kcmutils, khtml, kdesu
-, qtbase, qtwebengine, qtx11extras, qtscript, qtwayland
+, kdelibs4support, kcmutils, khtml, kdesu
+, qtwebkit, qtwebengine, qtx11extras, qtscript, qtwayland
 }:
 
 mkDerivation {
-  pname = "konqueror";
+  name = "konqueror";
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
   buildInputs = [
-    kcmutils khtml kinit kdesu
-    qtwebengine qtx11extras qtscript qtwayland
+    kdelibs4support kcmutils khtml kdesu
+    qtwebkit qtwebengine qtx11extras qtscript qtwayland
   ];
 
   # InitialPreference values are too high and any text/html ends up
@@ -22,10 +22,7 @@ mkDerivation {
   '';
 
   meta = {
-    homepage = "https://apps.kde.org/konqueror/";
-    description = "Web browser, file manager and viewer";
     license = with lib.licenses; [ gpl2 ];
     maintainers = with lib.maintainers; [ ];
-    broken = lib.versionOlder qtbase.version "5.13";
   };
 }

@@ -28,7 +28,7 @@ let
     inherit (data) id version description sha256;
     inherit title;
 
-    pname = "yquake2-${title}";
+    name = "yquake2-${title}-${version}";
 
     src = fetchFromGitHub {
       inherit sha256;
@@ -37,6 +37,8 @@ let
       rev = "${lib.toUpper id}_${builtins.replaceStrings ["."] ["_"] version}";
     };
 
+    enableParallelBuilding = true;
+
     nativeBuildInputs = [ cmake ];
 
     installPhase = ''
@@ -44,7 +46,7 @@ let
       cp Release/* $out/lib/yquake2/${id}
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       inherit (data) description;
       homepage = "https://www.yamagi.org/quake2/";
       license = licenses.unfree;

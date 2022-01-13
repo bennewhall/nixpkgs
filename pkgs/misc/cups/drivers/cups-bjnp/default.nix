@@ -1,11 +1,10 @@
-{lib, stdenv, fetchurl, cups}:
+{stdenv, fetchurl, cups}:
 
 stdenv.mkDerivation rec {
-  pname = "cups-bjnp";
-  version = "1.2.2";
+  name = "cups-bjnp-1.2.2";
 
   src = fetchurl {
-    url = "mirror://sourceforge/cups-bjnp/cups-bjnp-${version}.tar.gz";
+    url = "mirror://sourceforge/cups-bjnp/${name}.tar.gz";
     sha256 = "0sb0vm1sf8ismzd9ba33qswxmsirj2z1b7lnyrc9v5ixm7q0bnrm";
   };
 
@@ -26,6 +25,6 @@ stdenv.mkDerivation rec {
       Canon printer. The design is based on reverse engineering of the protocol.
     '';
     homepage = "http://cups-bjnp.sourceforge.net";
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

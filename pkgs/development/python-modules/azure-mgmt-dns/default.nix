@@ -1,27 +1,29 @@
 { lib
 , buildPythonPackage
 , fetchPypi
+, python
+, isPy3k
 , msrest
 , msrestazure
 , azure-common
-, azure-mgmt-core
+, azure-mgmt-nspkg
 }:
 
 buildPythonPackage rec {
   pname = "azure-mgmt-dns";
-  version = "8.0.0";
+  version = "3.0.0";
 
   src = fetchPypi {
     inherit pname version;
     extension = "zip";
-    sha256 = "407c2dacb33513ffbe9ca4be5addb5e9d4bae0cb7efa613c3f7d531ef7bf8de8";
+    sha256 = "0zxkcczf01b64qfwj98jqdvnwqahygcyccf37rcxpdcfgpkg9kbf";
   };
 
   propagatedBuildInputs = [
     msrest
     msrestazure
     azure-common
-    azure-mgmt-core
+    azure-mgmt-nspkg
   ];
 
   # this is still needed for when the version is overrided

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "dsvpn";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Dead Simple VPN";
     homepage = "https://github.com/jedisct1/dsvpn";
     license = licenses.mit;

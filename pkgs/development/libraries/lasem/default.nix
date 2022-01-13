@@ -1,5 +1,5 @@
-{ fetchurl, lib, stdenv, pkg-config, intltool, gobject-introspection, glib, gdk-pixbuf
-, libxml2, cairo, pango, gnome }:
+{ fetchurl, stdenv, pkgconfig, intltool, gobject-introspection, glib, gdk-pixbuf
+, libxml2, cairo, pango, gnome3 }:
 
 stdenv.mkDerivation rec {
   pname = "lasem";
@@ -8,11 +8,11 @@ stdenv.mkDerivation rec {
   outputs = [ "bin" "out" "dev" "man" "doc" "devdoc" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "0fds3fsx84ylsfvf55zp65y8xqjj5n8gbhcsk02vqglivk7izw4v";
   };
 
-  nativeBuildInputs = [ pkg-config intltool gobject-introspection ];
+  nativeBuildInputs = [ pkgconfig intltool gobject-introspection ];
 
   propagatedBuildInputs = [
     glib gdk-pixbuf libxml2 cairo pango
@@ -22,9 +22,8 @@ stdenv.mkDerivation rec {
   doCheck = true;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
@@ -32,8 +31,8 @@ stdenv.mkDerivation rec {
     description = "SVG and MathML rendering library";
 
     homepage = "https://wiki.gnome.org/Projects/Lasem";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

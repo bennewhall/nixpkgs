@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , python3
 , fetchFromGitHub
 , makeWrapper
@@ -14,7 +13,7 @@ let
     pycparser
     pyelftools
     python-ptrace
-    ropgadget
+    ROPGadget
     six
     unicorn
     pygments
@@ -22,14 +21,14 @@ let
 
 in stdenv.mkDerivation rec {
   pname = "pwndbg";
-  version = "2021.06.22";
+  version = "2020.07.23";
   format = "other";
 
   src = fetchFromGitHub {
     owner = "pwndbg";
     repo = "pwndbg";
     rev = version;
-    sha256 = "sha256-8jaWhpn7Q3X7FBHURX6nyOAhu+C113DnC4KBSE3FBuE=";
+    sha256 = "0w1dmjy8ii12367wza8c35a9q9x204fppf6x328q75bhb3gd845c";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -43,11 +42,11 @@ in stdenv.mkDerivation rec {
       --set NIX_PYTHONPATH ${pythonPath}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Exploit Development and Reverse Engineering with GDB Made Easy";
     homepage = "https://github.com/pwndbg/pwndbg";
     license = licenses.mit;
-    platforms = platforms.all;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ mic92 ];
   };
 }

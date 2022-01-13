@@ -1,27 +1,22 @@
-{ lib, buildGoModule, fetchFromGitHub, fetchpatch }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
-buildGoModule rec {
+buildGoPackage rec {
   pname = "gron";
-  version = "0.6.1";
+  version = "0.6.0";
+
+  owner = "tomnomnom";
+  repo = "gron";
+  goPackagePath = "github.com/${owner}/${repo}";
 
   src = fetchFromGitHub {
-    owner = "tomnomnom";
-    repo = "gron";
+    inherit owner repo;
     rev = "v${version}";
-    sha256 = "0qmzawkhg0qn9kxxrssbdjni2khvamhrcklv3yxc0ljmh77mh61m";
+    sha256 = "05f3w4zr15wd7xk75l12y5kip4gnv719a2x9w2hy23q3pnss9wk0";
   };
 
-  patches = [
-    (fetchpatch {
-      name = "fix-inconsistent-vendoring.patch";
-      url = "https://github.com/tomnomnom/gron/pull/85/commits/d549a6cb68ed0e0ec7cc81d8275353acfe218725.patch";
-      sha256 = "1461v4f7w6q75l3988br0g1ynfhzsh34z38pd2w8fp57vrgkcfi5";
-    })
-  ];
+  goDeps = ./deps.nix;
 
-  vendorSha256 = "0va88c3rjlc2nbpqx4ila36rwrx57wcdhig4jp9q58vv4zqc2yxy";
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Make JSON greppable!";
     longDescription = ''
       gron transforms JSON into discrete assignments to make it easier to grep
@@ -31,7 +26,7 @@ buildGoModule rec {
     '';
     homepage = "https://github.com/tomnomnom/gron";
     license = licenses.mit;
-    maintainers = with maintainers; [ fgaz SuperSandro2000 ];
-    platforms = platforms.unix;
+    maintainers = [ maintainers.fgaz ];
+    platforms = with platforms; linux ++ darwin;
   };
 }

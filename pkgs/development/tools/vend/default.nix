@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "vend";
@@ -28,7 +28,7 @@ buildGoModule rec {
 
   vendorSha256 = null;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/nomad-software/vend";
     description = "A utility which vendors go code including c dependencies";
     maintainers = with maintainers; [ c00w mic92 zowoq ];

@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchurl, fetchpatch, autoreconfHook, dejagnu, gettext, pkg-config
+{ stdenv, fetchurl, fetchpatch, autoreconfHook, dejagnu, gettext, pkgconfig
 , gdbm, pam, readline, ncurses, gnutls, guile, texinfo, gnum4, sasl, fribidi, nettools
 , python3, gss, libmysqlclient, system-sendmail }:
 
 stdenv.mkDerivation rec {
   pname = "mailutils";
-  version = "3.12";
+  version = "3.10";
 
   src = fetchurl {
     url = "mirror://gnu/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "0n51ng1f8yf5zfsnh8s0pj9bnw6icb2r0y78gl2kzijaghhzlhvd";
+    sha256 = "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9";
   };
 
   postPatch = ''
@@ -20,17 +20,23 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
-    autoreconfHook gettext pkg-config
+    autoreconfHook gettext pkgconfig
   ];
 
   buildInputs = [
-    gdbm pam readline ncurses gnutls guile texinfo gnum4 sasl fribidi
+    gdbm pam readline ncurses gnutls guile texinfo gnum4 sasl fribidi nettools
     gss libmysqlclient python3
-  ] ++ lib.optionals stdenv.isLinux [ nettools ];
+  ];
 
   patches = [
     ./fix-build-mb-len-max.patch
     ./path-to-cat.patch
+    # mailquota.c:277: undefined reference to `get_size'
+    # https://lists.gnu.org/archive/html/bug-mailutils/2020-08/msg00002.html
+    (fetchpatch {
+      url = "http://git.savannah.gnu.org/cgit/mailutils.git/patch/?id=37713b42a501892469234b90454731d8d8b7a3e6";
+      sha256 = "1mwj77nxvf4xvqf26yjs59jyksnizj0lmbymbzg4kmqynzq3zjny";
+    })
     # Fix cross-compilation
     # https://lists.gnu.org/archive/html/bug-mailutils/2020-11/msg00038.html
     (fetchpatch {
@@ -58,6 +64,8 @@ stdenv.mkDerivation rec {
     (fetchurl { url = "${p}/weed.at"; sha256 = "1101xakhc99f5gb9cs3mmydn43ayli7b270pzbvh7f9rbvh0d0nh"; })
   ];
 
+  NIX_CFLAGS_COMPILE = "-L${libmysqlclient}/lib/mysql -I${libmysqlclient}/include/mysql";
+
   checkInputs = [ dejagnu ];
   doCheck = false; # fails 1 out of a bunch of tests, looks like a bug
   doInstallCheck = false; # fails
@@ -82,7 +90,7 @@ stdenv.mkDerivation rec {
     unset LD_LIBRARY_PATH
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Rich and powerful protocol-independent mail framework";
 
     longDescription = ''

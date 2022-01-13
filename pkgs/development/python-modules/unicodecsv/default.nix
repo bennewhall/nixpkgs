@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # ImportError: No module named runtests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Drop-in replacement for Python2's stdlib csv module, with unicode support";
     homepage = "https://github.com/jdunck/python-unicodecsv";
     maintainers = with maintainers; [ koral ];

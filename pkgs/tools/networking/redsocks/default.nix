@@ -1,12 +1,15 @@
-{ lib, stdenv, fetchFromGitHub, libevent }:
+{ stdenv, fetchFromGitHub, libevent }:
 
-stdenv.mkDerivation rec {
-  pname = "redsocks";
+let
+  pkg = "redsocks";
   version = "0.5";
+in
+stdenv.mkDerivation {
+  name = "${pkg}-${version}";
 
   src = fetchFromGitHub {
     owner = "darkk";
-    repo = "redsocks";
+    repo = pkg;
     rev = "release-${version}";
     sha256 = "170cpvvivb6y2kwsqj9ppx5brgds9gkn8mixrnvj8z9c15xhvplm";
   };
@@ -23,8 +26,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Transparent redirector of any TCP connection to proxy";
     homepage = "http://darkk.net.ru/redsocks/";
-    license = lib.licenses.asl20;
-    maintainers = [ lib.maintainers.ekleog ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.asl20;
+    maintainers = [ stdenv.lib.maintainers.ekleog ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

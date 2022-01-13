@@ -1,6 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ... }:
-
-stdenv.mkDerivation rec {
+{ stdenv, fetchFromGitHub, ... }: stdenv.mkDerivation rec {
   pname = "smarty-i18n";
   version = "1.0";
 
@@ -16,7 +14,7 @@ stdenv.mkDerivation rec {
     cp block.t.php $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "gettext for the smarty3 framework";
     license = licenses.lgpl21;
     homepage = "https://github.com/kikimosha/smarty3-i18n";

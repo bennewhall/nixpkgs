@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl }:
+{ stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation {
   pname = "cups-toshiba-estudio";
@@ -10,6 +10,10 @@ stdenv.mkDerivation {
   };
 
   buildInputs = [ perl ];
+
+  phases = [ "unpackPhase"
+             "patchPhase"
+             "installPhase" ];
 
   patchPhase = ''
     patchShebangs lib/
@@ -27,7 +31,7 @@ stdenv.mkDerivation {
     chmod 755 $out/share/cups/model/Toshiba/TOSHIBA_ColorMFP_CUPS.gz
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Printer only driver for the Toshiba e-STUDIO class of printers";
     longDescription = ''
       This driver supports the following printers: TOSHIBA e-STUDIO2000AC,
@@ -43,7 +47,7 @@ stdenv.mkDerivation {
       TOSHIBA e-STUDIO6540C, TOSHIBA e-STUDIO6550C, TOSHIBA e-STUDIO6560C,
       TOSHIBA e-STUDIO6570C and TOSHIBA e-STUDIO7506AC.
     '';
-    homepage = "https://business.toshiba.com/support/downloads/index.html";
+    homepage = "http://business.toshiba.com/support/downloads/index.html";
     license = licenses.unfree;
     maintainers = [ maintainers.jpotier ];
   };

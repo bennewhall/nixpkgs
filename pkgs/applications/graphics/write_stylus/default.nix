@@ -51,11 +51,11 @@ mkDerivation rec {
       $out/Write/Write
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.styluslabs.com/";
     description = "Write is a word processor for handwriting";
     platforms = platforms.linux;
-    license = lib.licenses.unfree;
+    license = stdenv.lib.licenses.unfree;
     maintainers = with maintainers; [ oyren ];
   };
 }

@@ -1,32 +1,14 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, pythonOlder
-, pytestCheckHook
-}:
+{ buildPythonPackage, fetchPypi, pythonOlder }:
 
 buildPythonPackage rec {
   pname = "dugong";
-  version = "3.8.1";
-  disabled = pythonOlder "3.3";
+  version = "3.7.5";
 
-  src = fetchFromGitHub {
-    owner = "python-dugong";
-    repo = "python-dugong";
-    rev = "release-${version}";
-    sha256 = "1063c1779idc5nrjzfv5w1xqvyy3crapb2a2xll9y6xphxclnkjc";
-  };
+  disabled = pythonOlder "3.3"; # Library does not support versions older than 3.3
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  pythonImportsCheck = [ "dugong" ];
-
-  meta = with lib; {
-    description = "HTTP 1.1 client designed for REST-ful APIs";
-    homepage = "https://github.com/python-dugong/python-dugong/";
-    license = with licenses; [ psfl asl20 ];
-    maintainers = with maintainers; [ ];
+  src = fetchPypi {
+    inherit pname version;
+    extension = "tar.bz2";
+    sha256 = "10vjdp21m0gzm096lgl84z184s5l9iz69ppj6acgsc125037dl6h";
   };
 }

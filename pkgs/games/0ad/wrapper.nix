@@ -4,8 +4,9 @@ assert zeroad-unwrapped.version == zeroad-data.version;
 
 buildEnv {
   name = "zeroad-${zeroad-unwrapped.version}";
+  inherit (zeroad-unwrapped) meta;
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   paths = [ zeroad-unwrapped zeroad-data ];
 
@@ -17,8 +18,4 @@ buildEnv {
         --set ZEROAD_ROOTDIR "$out/share/0ad"
     done
   '';
-
-  meta = zeroad-unwrapped.meta // {
-    hydraPlatforms = [];
-  };
 }

@@ -1,43 +1,42 @@
-{ lib, stdenv, go, fetchurl, redo-apenwarr, curl, perl, genericUpdater
-, writeShellScript, nixosTests, cfgPath ? "/etc/nncp.hjson" }:
+{ stdenv
+, go
+, fetchurl
+, curl
+, perl
+, genericUpdater
+, writeShellScript
+}:
 
 stdenv.mkDerivation rec {
   pname = "nncp";
-  version = "8.0.2";
-  outputs = [ "out" "doc" "info" ];
+  version = "5.3.3";
 
   src = fetchurl {
     url = "http://www.nncpgo.org/download/${pname}-${version}.tar.xz";
-    sha256 = "sha256-hMb7bAdk3xFcUe5CTu9LnIR3VSJDUKbMSE86s8d5udM=";
+    sha256 = "1l35ndzrvpfim29jn1p0bwmc8w892z44nsrdnay28k229r9dhz3h";
   };
 
-  nativeBuildInputs = [ go redo-apenwarr ];
+  nativeBuildInputs = [ go ];
 
-  # Build parameters
-  CFGPATH = cfgPath;
-  SENDMAIL = "sendmail";
-
-  preConfigure = "export GOCACHE=$NIX_BUILD_TOP/gocache";
-
-  installPhase = ''
-    runHook preInstall
-    export PREFIX=$out
-    rm -f INSTALL # work around case insensitivity
-    redo install
-    runHook postInstall
+  preConfigure = ''
+    export GOCACHE=$PWD/.cache
   '';
 
-  enableParallelBuilding = true;
+  makeFlags = [
+    "PREFIX=${placeholder "out"}"
+    "CFGPATH=/etc/nncp.hjson"
+    "SENDMAIL=/run/wrappers/bin/sendmail"
+  ];
 
   passthru.updateScript = genericUpdater {
     inherit pname version;
     versionLister = writeShellScript "nncp-versionLister" ''
       echo "# Versions for $1:" >> "$2"
-      ${curl}/bin/curl -s ${meta.downloadPage} | ${perl}/bin/perl -lne 'print $1 if /Release.*>([0-9.]+)</'
+      ${curl}/bin/curl -s http://www.nncpgo.org/Tarballs.html | ${perl}/bin/perl -lne 'print $1 if /Release.*>([0-9.]+)</'
     '';
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Secure UUCP-like store-and-forward exchanging";
     longDescription = ''
       This utilities are intended to help build up small size (dozens of
@@ -55,9 +54,8 @@ stdenv.mkDerivation rec {
       transmission exists.
     '';
     homepage = "http://www.nncpgo.org/";
-    downloadPage = "http://www.nncpgo.org/Tarballs.html";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     platforms = platforms.all;
-    maintainers = with maintainers; [ ehmry woffs ];
+    maintainers = [ maintainers.woffs ];
   };
 }

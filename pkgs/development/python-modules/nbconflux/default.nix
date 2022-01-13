@@ -1,12 +1,4 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, isPy27
-, nbconvert
-, pytestCheckHook
-, requests
-, responses
-}:
+{ lib, buildPythonPackage, fetchFromGitHub, isPy27, nbconvert, pytest, requests, responses }:
 
 buildPythonPackage rec {
   pname = "nbconflux";
@@ -22,13 +14,11 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ nbconvert requests ];
 
-  checkInputs = [ pytestCheckHook responses ];
+  checkInputs = [ pytest responses ];
 
-  JUPYTER_PATH="${nbconvert}/share/jupyter";
-  disabledTests = [
-    "test_post_to_confluence"
-    "test_optional_components"
-  ];
+  checkPhase = ''
+    pytest tests
+  '';
 
   meta = with lib; {
     description = "Converts Jupyter Notebooks to Atlassian Confluence (R) pages using nbconvert";

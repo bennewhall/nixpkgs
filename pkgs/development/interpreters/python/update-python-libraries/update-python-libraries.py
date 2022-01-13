@@ -217,15 +217,8 @@ def _get_latest_version_github(package, extension, current_version, target):
 
     release = next(filter(lambda x: strip_prefix(x['tag_name']) == version, releases))
     prefix = get_prefix(release['tag_name'])
-    try:
-        sha256 = subprocess.check_output(["nix-prefetch-url", "--type", "sha256", "--unpack", f"{release['tarball_url']}"], stderr=subprocess.DEVNULL)\
-            .decode('utf-8').strip()
-    except:
-        # this may fail if they have both a branch and a tag of the same name, attempt tag name
-        tag_url = str(release['tarball_url']).replace("tarball","tarball/refs/tags")
-        sha256 = subprocess.check_output(["nix-prefetch-url", "--type", "sha256", "--unpack", tag_url], stderr=subprocess.DEVNULL)\
-            .decode('utf-8').strip()
-
+    sha256 = subprocess.check_output(["nix-prefetch-url", "--type", "sha256", "--unpack", f"{release['tarball_url']}"], stderr=subprocess.DEVNULL)\
+        .decode('utf-8').strip()
 
     return version, sha256, prefix
 
@@ -309,8 +302,8 @@ def _update_package(path, target):
     with open(path, 'r') as f:
         text = f.read()
 
-    # Determine pname. Many files have more than one pname
-    pnames = _get_values('pname', text)
+    # Determine pname.
+    pname = _get_unique_value('pname', text)
 
     # Determine version.
     version = _get_unique_value('version', text)
@@ -320,18 +313,7 @@ def _update_package(path, target):
 
     extension = _determine_extension(text, fetcher)
 
-    # Attempt a fetch using each pname, e.g. backports-zoneinfo vs backports.zoneinfo
-    successful_fetch = False
-    for pname in pnames:
-        try:
-            new_version, new_sha256, prefix = FETCHERS[fetcher](pname, extension, version, target)
-            successful_fetch = True
-            break
-        except ValueError:
-            continue
-
-    if not successful_fetch:
-        raise ValueError(f"Unable to find correct package using these pnames: {pnames}")
+    new_version, new_sha256, prefix = FETCHERS[fetcher](pname, extension, version, target)
 
     if new_version == version:
         logging.info("Path {}: no update available for {}.".format(path, pname))
@@ -342,15 +324,7 @@ def _update_package(path, target):
         raise ValueError("no file available for {}.".format(pname))
 
     text = _replace_value('version', new_version, text)
-
-    # fetchers can specify a sha256, or a sri hash
-    try:
-        text = _replace_value('sha256', new_sha256, text)
-    except ValueError:
-        # hashes from pypi are 16-bit encoded sha256's, need translate to an sri hash if used with "hash"
-        sri_hash = subprocess.check_output(["nix", "hash", "to-sri", "--type", "sha256", new_sha256]).decode('utf-8').strip()
-        text = _replace_value('hash', sri_hash, text)
-
+    text = _replace_value('sha256', new_sha256, text)
     if fetcher == 'fetchFromGitHub':
         text = _replace_value('rev', f"{prefix}${{version}}", text)
         # incase there's no prefix, just rewrite without interpolation

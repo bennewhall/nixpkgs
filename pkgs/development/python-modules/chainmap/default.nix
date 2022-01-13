@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "chainmap";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # Requires tox
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Backport/clone of ChainMap";
     homepage = "https://bitbucket.org/jeunice/chainmap";
     license = licenses.psfl;

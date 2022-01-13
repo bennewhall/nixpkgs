@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy27
@@ -19,7 +19,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ six ];
   checkInputs = [ zope_testing ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A documentation builder";
     homepage = "https://pypi.python.org/pypi/manuel";
     license = licenses.zpl20;

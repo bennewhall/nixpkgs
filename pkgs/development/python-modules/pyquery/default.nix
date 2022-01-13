@@ -1,15 +1,14 @@
-{ lib
+{ stdenv
 , buildPythonPackage
-, cssselect
 , fetchPypi
+, cssselect
 , lxml
-, pythonOlder
+, webob
 }:
 
 buildPythonPackage rec {
   pname = "pyquery";
-  version = "1.4.3";
-  disabled = pythonOlder "3.5";
+  version = "1.2.9";
 
   src = fetchPypi {
     inherit pname version;
@@ -17,19 +16,15 @@ buildPythonPackage rec {
     sha256 = "00p6f1dfma65192hc72dxd506491lsq3g5wgxqafi1xpg2w1xia6";
   };
 
-  propagatedBuildInputs = [
-    cssselect
-    lxml
-  ];
+  propagatedBuildInputs = [ cssselect lxml webob ];
 
   # circular dependency on webtest
   doCheck = false;
-  pythonImportsCheck = [ "pyquery" ];
 
-  meta = with lib; {
-    description = "A jquery-like library for Python";
+  meta = with stdenv.lib; {
     homepage = "https://github.com/gawel/pyquery";
-    changelog = "https://github.com/gawel/pyquery/blob/${version}/CHANGES.rst";
+    description = "A jquery-like library for python";
     license = licenses.bsd0;
   };
+
 }

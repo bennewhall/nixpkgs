@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, intltool }:
+{ stdenv, fetchurl, intltool }:
 
 stdenv.mkDerivation rec {
   pname = "pxlib";
@@ -10,11 +10,11 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ intltool ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library to read and write Paradox files";
     homepage = "http://pxlib.sourceforge.net/";
     license = licenses.gpl2;
-    platforms = platforms.all;
+    platforms = platforms.linux;
     maintainers = [ maintainers.winpat ];
   };
 }

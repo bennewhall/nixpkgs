@@ -1,59 +1,24 @@
 { lib
-, fetchFromGitHub
+, fetchPypi
 , buildPythonPackage
-, poetry-core
-, docopt-ng
+, docopt
 , easywatch
 , jinja2
-, pytestCheckHook
-, pytest-check
-, pythonOlder
-, markdown
-, testVersion
-, tomlkit
-, staticjinja
 }:
 
 buildPythonPackage rec {
   pname = "staticjinja";
-  version = "4.1.1";
-  format = "pyproject";
+  version = "0.4.0";
 
-  disabled = pythonOlder "3.6";
-
-  # No tests in pypi
-  src = fetchFromGitHub {
-    owner = "staticjinja";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-Bpgff3VaTylnYpkWoaWEiRWu4sYSP6dLbHDOjAhj7BM=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "597837899008409359680ee9cd04779639b9c0eb3380b6545025d26a702ba36c";
   };
 
-  nativeBuildInputs = [
-    poetry-core
-  ];
+  propagatedBuildInputs = [ jinja2 docopt easywatch ];
 
-  propagatedBuildInputs = [
-    jinja2
-    docopt-ng
-    easywatch
-  ];
-
-  checkInputs = [
-    pytestCheckHook
-    pytest-check
-    markdown
-    tomlkit
-  ];
-
-  # The tests need to find and call the installed staticjinja executable
-  preCheck = ''
-    export PATH="$PATH:$out/bin";
-  '';
-
-  passthru.tests.version = testVersion {
-    package = staticjinja;
-  };
+  # There are no tests on pypi
+  doCheck = false;
 
   meta = with lib; {
     description = "A library and cli tool that makes it easy to build static sites using Jinja2";
@@ -62,3 +27,4 @@ buildPythonPackage rec {
     maintainers = with maintainers; [ fgaz ];
   };
 }
+

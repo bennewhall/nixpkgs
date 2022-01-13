@@ -1,11 +1,11 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , autoreconfHook
-, pkg-config
+, pkgconfig
 , openssl
 }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "btcdeb-unstable";
   version = "200806";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     sha256 = "0qkmf89z2n7s95vhw3n9vh9dbi14zy4vqw3ffdh1w911jwm5ry3z";
   };
 
-  nativeBuildInputs = [ pkg-config autoreconfHook ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook ];
   buildInputs = [ openssl ];
 
   meta = {

@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , gtk3
 , breeze-icons
@@ -9,13 +8,13 @@
 
 stdenv.mkDerivation rec {
   pname = "luna-icons";
-  version = "1.8";
+  version = "0.6";
 
   src = fetchFromGitHub {
     owner = "darkomarko42";
     repo = pname;
     rev = version;
-    sha256 = "1c317ac43ff70sxn1syx20qhs4nkccv6hbf69fmi3acswqsll1z4";
+    sha256 = "1lm7ws7in8cjjl38c7xw67jr42d717kk5kkfac7rprk0z7pb104l";
   };
 
   nativeBuildInputs = [
@@ -43,7 +42,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Icon pack based on marwaita and papirus icons";
     homepage = "https://github.com/darkomarko42/Luna-Icons";
     license = [ licenses.gpl3Only ];

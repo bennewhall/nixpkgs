@@ -1,43 +1,20 @@
-{ lib
-, buildPythonPackage
-, isPy27
-, fetchPypi
-, agate
-, sqlalchemy
-, crate
-, nose
-, geojson
-}:
+{ stdenv, fetchPypi, buildPythonPackage, agate, sqlalchemy, crate }:
 
 buildPythonPackage rec {
-  pname = "agate-sql";
-  version = "0.5.8";
+    pname = "agate-sql";
+    version = "0.5.5";
 
-  disabled = isPy27;
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "50a39754babef6cd0d1b1e75763324a49593394fe46ab1ea9546791b5e6b69a7";
+    };
 
-  src = fetchPypi {
-    inherit pname version;
-    sha256 = "581e062ae878cc087d3d0948670d46b16589df0790bf814524b0587a359f2ada";
-  };
+    propagatedBuildInputs = [ agate sqlalchemy crate ];
 
-  propagatedBuildInputs = [ agate sqlalchemy ];
-
-  # crate is broken in nixpkgs, with SQLAlchemy > 1.3
-  # Skip tests for now as they rely on it.
-  doCheck = false;
-
-  checkInputs = [ crate nose geojson ];
-
-  checkPhase = ''
-    nosetests
-  '';
-
-  pythonImportsCheck = [ "agatesql" ];
-
-  meta = with lib; {
-    description = "Adds SQL read/write support to agate.";
-    homepage = "https://github.com/wireservice/agate-sql";
-    license = with licenses; [ mit ];
-    maintainers = with maintainers; [ vrthra ];
-  };
+    meta = with stdenv.lib; {
+      description = "Adds SQL read/write support to agate.";
+      homepage    = "https://github.com/wireservice/agate-sql";
+      license     = with licenses; [ mit ];
+      maintainers = with maintainers; [ vrthra ];
+    };
 }

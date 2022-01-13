@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, gtk2, pcre }:
+{ stdenv, fetchurl, pkg-config, gtk2, pcre }:
 
 stdenv.mkDerivation rec {
   pname = "qxw";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
             s,/usr/games,/bin,' Makefile
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A program to help create and publish crosswords";
     homepage = "https://www.quinapalus.com/qxw.html";
     license = licenses.gpl2;

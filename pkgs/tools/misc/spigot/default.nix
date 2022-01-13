@@ -29,8 +29,8 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "A command-line exact real calculator";
     homepage = "https://www.chiark.greenend.org.uk/~sgtatham/spigot/";
-    license = lib.licenses.mit;
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.mit;
+    platforms = stdenv.lib.platforms.all;
     maintainers = with maintainers; [ mcbeth ];
   };
 }

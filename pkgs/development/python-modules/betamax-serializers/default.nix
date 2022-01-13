@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , betamax, pyyaml }:
 
 buildPythonPackage rec {
@@ -12,7 +12,7 @@ buildPythonPackage rec {
 
   buildInputs = [ betamax pyyaml ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gitlab.com/betamax/serializers";
     description = "A set of third-party serializers for Betamax";
     license = licenses.asl20;

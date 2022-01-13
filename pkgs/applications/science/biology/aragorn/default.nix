@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   version = "1.2.38";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/man/1 && cp aragorn.1 $out/man/1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Detects tRNA, mtRNA, and tmRNA genes in nucleotide sequences";
     homepage = "http://mbio-serv2.mbioekol.lu.se/ARAGORN/";
     license = licenses.gpl2;

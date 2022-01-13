@@ -1,20 +1,4 @@
-MD_TARGETS=$(addsuffix .xml, $(basename $(shell find . -type f -regex '.*\.md$$' -not -name README.md)))
-
-PANDOC ?= pandoc
-
-pandoc_media_dir = media
-# NOTE: Keep in sync with NixOS manual (/nixos/doc/manual/md-to-db.sh) and conversion script (/maintainers/scripts/db-to-md.sh).
-# TODO: Remove raw-attribute when we can get rid of DocBook altogether.
-pandoc_commonmark_enabled_extensions = +attributes+fenced_divs+footnotes+bracketed_spans+definition_lists+pipe_tables+raw_attribute
-# Not needed:
-# - docbook-reader/citerefentry-to-rst-role.lua (only relevant for DocBook → MarkDown/rST/MyST)
-pandoc_flags = --extract-media=$(pandoc_media_dir) \
-	--lua-filter=$(PANDOC_LUA_FILTERS_DIR)/diagram-generator.lua \
-	--lua-filter=build-aux/pandoc-filters/myst-reader/roles.lua \
-	--lua-filter=build-aux/pandoc-filters/link-unix-man-references.lua \
-	--lua-filter=build-aux/pandoc-filters/docbook-writer/rst-roles.lua \
-	--lua-filter=build-aux/pandoc-filters/docbook-writer/labelless-link-is-xref.lua \
-	-f commonmark$(pandoc_commonmark_enabled_extensions)+smart
+MD_TARGETS=$(addsuffix .xml, $(basename $(shell find . -type f -regex '.*\.md$$')))
 
 .PHONY: all
 all: validate format out/html/index.html out/epub/manual.epub
@@ -38,7 +22,7 @@ fix-misc-xml:
 .PHONY: clean
 clean:
 	rm -f ${MD_TARGETS} doc-support/result .version manual-full.xml functions/library/locations.xml functions/library/generated
-	rm -rf ./out/ ./highlightjs ./media
+	rm -rf ./out/ ./highlightjs
 
 .PHONY: validate
 validate: manual-full.xml doc-support/result
@@ -55,7 +39,7 @@ out/html/index.html: doc-support/result manual-full.xml style.css highlightjs
 	mkdir -p out/html/highlightjs/
 	cp -r highlightjs out/html/
 
-	cp -r $(pandoc_media_dir) out/html/
+	cp -r media out/html/
 	cp ./overrides.css out/html/
 	cp ./style.css out/html/style.css
 
@@ -70,7 +54,7 @@ out/epub/manual.epub: manual-full.xml
 		doc-support/result/epub.xsl \
 		./manual-full.xml
 
-	cp -r $(pandoc_media_dir) out/epub/scratch/OEBPS
+	cp -r media out/epub/scratch/OEBPS
 	cp ./overrides.css out/epub/scratch/OEBPS
 	cp ./style.css out/epub/scratch/OEBPS
 	mkdir -p out/epub/scratch/OEBPS/images/callouts/
@@ -105,12 +89,16 @@ functions/library/generated: doc-support/result
 	ln -rfs ./doc-support/result/function-docs functions/library/generated
 
 %.section.xml: %.section.md
-	$(PANDOC) $^ -t docbook \
-		$(pandoc_flags) \
-		-o $@
+	pandoc $^ -t docbook \
+		--extract-media=media \
+		--lua-filter=$(PANDOC_LUA_FILTERS_DIR)/diagram-generator.lua \
+		-f markdown+smart \
+	| cat  > $@
 
 %.chapter.xml: %.chapter.md
-	$(PANDOC) $^ -t docbook \
+	pandoc $^ -t docbook \
 		--top-level-division=chapter \
-		$(pandoc_flags) \
-		-o $@
+		--extract-media=media \
+		--lua-filter=$(PANDOC_LUA_FILTERS_DIR)/diagram-generator.lua \
+		-f markdown+smart \
+	| cat  > $@

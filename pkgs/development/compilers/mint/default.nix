@@ -1,14 +1,15 @@
-{ lib, fetchFromGitHub, crystal, openssl }:
+{ lib, fetchFromGitHub, crystal_0_33, openssl }:
 
-crystal.buildCrystalPackage rec {
-  version = "0.15.1";
+let crystal = crystal_0_33;
+in crystal.buildCrystalPackage rec {
+  version = "0.9.0";
   pname = "mint";
 
   src = fetchFromGitHub {
     owner = "mint-lang";
     repo = "mint";
     rev = version;
-    sha256 = "sha256-naiZ51B5TBc88wH4Y7WcrkdFnZosEVCS5MlLAGVe8/E=";
+    sha256 = "0y1qr616x7s0pjgih6s1n4wiwb8kn8l1knnzmib6j4jmqax0jhz0";
   };
 
   postPatch = ''
@@ -30,6 +31,6 @@ crystal.buildCrystalPackage rec {
     license = licenses.bsd3;
     maintainers = with maintainers; [ manveru ];
     platforms = [ "x86_64-linux" "i686-linux" "x86_64-darwin" ];
-    broken = lib.versionOlder crystal.version "1.0";
+    broken = lib.versionOlder crystal.version "0.33";
   };
 }

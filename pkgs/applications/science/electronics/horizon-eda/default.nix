@@ -3,17 +3,17 @@
 , coreutils
 , cppzmq
 , curl
-, libepoxy
+, epoxy
 , fetchFromGitHub
 , glm
-, gtkmm3
+, gnome3
 , lib
 , libgit2
 , librsvg
 , libuuid
 , libzip
 , opencascade
-, pkg-config
+, pkgconfig
 , podofo
 , python3
 , sqlite
@@ -23,21 +23,21 @@
 
 stdenv.mkDerivation rec {
   pname = "horizon-eda";
-  version = "2.1.0";
+  version = "1.3.0";
 
   src = fetchFromGitHub {
     owner = "horizon-eda";
     repo = "horizon";
     rev = "v${version}";
-    sha256 = "sha256-3JNkwKkr/fdz/2UFAHwhn03PHqX9YFOMf3Q7kkbTZYk=";
+    sha256 = "13c4p60vrmwmnrv2jcr2gc1cxnimy7j8yp1p6434pbbk2py9k8mx";
   };
 
   buildInputs = [
     cppzmq
     curl
-    libepoxy
+    epoxy
     glm
-    gtkmm3
+    gnome3.gtkmm
     libgit2
     librsvg
     libuuid
@@ -51,7 +51,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     boost.dev
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 

@@ -1,16 +1,12 @@
-{ lib, stdenv, fetchurl, m4
-, cxx ? true
-, withStatic ? stdenv.hostPlatform.isStatic
-}:
+{ stdenv, fetchurl, m4, cxx ? true, withStatic ? true }:
 
-let inherit (lib) optional; in
+let inherit (stdenv.lib) optional; in
 
 let self = stdenv.mkDerivation rec {
-  pname = "gmp";
-  version = "5.1.3";
+  name = "gmp-5.1.3";
 
   src = fetchurl { # we need to use bz2, others aren't in bootstrapping stdenv
-    urls = [ "mirror://gnu/gmp/gmp-${version}.tar.bz2" "ftp://ftp.gmplib.org/pub/gmp-${version}/gmp-${version}.tar.bz2" ];
+    urls = [ "mirror://gnu/gmp/${name}.tar.bz2" "ftp://ftp.gmplib.org/pub/${name}/${name}.tar.bz2" ];
     sha256 = "0q5i39pxrasgn9qdxzpfbwhh11ph80p57x6hf48m74261d97j83m";
   };
 
@@ -26,13 +22,13 @@ let self = stdenv.mkDerivation rec {
 
   configureFlags = [
     "--with-pic"
-    (lib.enableFeature cxx "cxx")
+    (stdenv.lib.enableFeature cxx "cxx")
     # Build a "fat binary", with routines for several sub-architectures
     # (x86), except on Solaris where some tests crash with "Memory fault".
     # See <https://hydra.nixos.org/build/2760931>, for instance.
     #
     # no darwin because gmp uses ASM that clang doesn't like
-    (lib.enableFeature (!stdenv.isSunOS && stdenv.hostPlatform.isx86) "fat")
+    (stdenv.lib.enableFeature (!stdenv.isSunOS && stdenv.hostPlatform.isx86) "fat")
     # The config.guess in GMP tries to runtime-detect various
     # ARM optimization flags via /proc/cpuinfo (and is also
     # broken on multicore CPUs). Avoid this impurity.
@@ -47,7 +43,7 @@ let self = stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gmplib.org/";
     description = "GNU multiple precision arithmetic library";
     license = licenses.gpl3Plus;
@@ -76,6 +72,7 @@ let self = stdenv.mkDerivation rec {
 
     platforms = platforms.all;
     badPlatforms = [ "x86_64-darwin" ];
+    maintainers = [ maintainers.peti ];
   };
 };
   in self

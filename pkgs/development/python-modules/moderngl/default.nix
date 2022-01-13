@@ -4,21 +4,20 @@
 , isPy3k
 , libGL
 , libX11
-, glcontext
 }:
 
 buildPythonPackage rec {
   pname = "moderngl";
-  version = "5.6.4";
+  version = "5.5.4";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "8c6d04559f5e3bf75a18525cd46d213c0f3a8409363718978e6de691bdb551fb";
+    sha256 = "08badabb6a1bbc9aa9e65fae8ecd3275d8342cb45d9c457b19e32b3312a8b663";
   };
 
   disabled = !isPy3k;
 
-  buildInputs = [ libGL libX11 glcontext ];
+  buildInputs = [ libGL libX11 ];
 
   # Tests need a display to run.
   doCheck = false;

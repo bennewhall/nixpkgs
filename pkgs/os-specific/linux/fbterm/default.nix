@@ -1,23 +1,24 @@
-{ stdenv, lib, fetchurl, gpm, freetype, fontconfig, pkg-config, ncurses, libx86 }:
+{stdenv, lib, fetchurl, gpm, freetype, fontconfig, pkgconfig, ncurses, libx86}:
 let
   s = # Generated upstream information
-    {
-      version = "1.7.0";
-      pname = "fbterm";
-      hash = "0pciv5by989vzvjxsv1jsv4bdp4m8j0nfbl29jm5fwi12w4603vj";
-      url = "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/fbterm/fbterm-1.7.0.tar.gz";
-      sha256 = "0pciv5by989vzvjxsv1jsv4bdp4m8j0nfbl29jm5fwi12w4603vj";
-    };
-  buildInputs = [ gpm freetype fontconfig ncurses ]
-    ++ lib.optional stdenv.hostPlatform.isx86 libx86;
+  {
+    baseName="fbterm";
+    version="1.7.0";
+    name="fbterm-1.7.0";
+    hash="0pciv5by989vzvjxsv1jsv4bdp4m8j0nfbl29jm5fwi12w4603vj";
+    url = "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/fbterm/fbterm-1.7.0.tar.gz";
+    sha256="0pciv5by989vzvjxsv1jsv4bdp4m8j0nfbl29jm5fwi12w4603vj";
+  };
+  buildInputs = [gpm freetype fontconfig ncurses]
+    ++ lib.optional (stdenv.isi686 || stdenv.isx86_64) libx86;
 in
 stdenv.mkDerivation {
-  inherit (s) pname version;
+  inherit (s) name version;
   src = fetchurl {
     inherit (s) url sha256;
   };
 
-  nativeBuildInputs = [ pkg-config ncurses ];
+  nativeBuildInputs = [ pkgconfig ncurses ];
   inherit buildInputs;
 
   preConfigure = ''
@@ -50,7 +51,7 @@ stdenv.mkDerivation {
     ./select.patch
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (s) version;
     description = "Framebuffer terminal emulator";
     homepage = "https://code.google.com/archive/p/fbterm/";

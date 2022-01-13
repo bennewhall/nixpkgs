@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl }:
+{ stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation rec {
   pname = "bibtool";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   doCheck = true;
   checkTarget = "test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for manipulating BibTeX bibliographies";
     homepage = "http://www.gerd-neugebauer.de/software/TeX/BibTool/index.en.html";
     license = licenses.gpl2;

@@ -1,16 +1,14 @@
-{ fetchurl, lib, stdenv, makeWrapper, perl, openssh, rsync }:
+{ fetchurl, stdenv, makeWrapper, perl, openssh, rsync }:
 
 stdenv.mkDerivation rec {
-  pname = "autobuild";
-  version = "5.3";
+  name = "autobuild-5.3";
 
   src = fetchurl {
-    url = "mirror://savannah/${pname}/${pname}-${version}.tar.gz";
+    url = "http://savannah.spinellicreations.com/autobuild/${name}.tar.gz";
     sha256 = "0gv7g61ja9q9zg1m30k4snqwwy1kq7b4df6sb7d2qra7kbdq8af1";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ perl openssh rsync ];
+  buildInputs = [ makeWrapper perl openssh rsync ];
 
   doCheck = true;
 
@@ -31,6 +29,6 @@ stdenv.mkDerivation rec {
     '';
 
     homepage = "https://josefsson.org/autobuild/";
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , pyusb
@@ -28,7 +28,7 @@ buildPythonPackage {
 
   propagatedBuildInputs = [ pyusb ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Tigge/openant";
     description = "ANT and ANT-FS Python Library";
     license = licenses.mit;

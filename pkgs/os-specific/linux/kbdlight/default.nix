@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "kbdlight";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
       --replace 4755 0755
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/hobarrera/kbdlight";
     description = "A very simple application that changes MacBooks' keyboard backlight level";
     license = licenses.isc;

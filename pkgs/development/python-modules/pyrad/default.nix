@@ -2,13 +2,13 @@
 
 buildPythonPackage rec {
   pname = "pyrad";
-  version = "2.4";
+  version = "2.3";
 
   src = fetchFromGitHub {
     owner = "pyradius";
     repo = pname;
     rev = version;
-    sha256 = "sha256-oqgkE0xG/8cmLeRZdGoHkaHbjtByeJwzBJwEdxH8oNY=";
+    sha256 = "0hy7999av47s8100afbhxfjb8phbmrqcv530xlvskndby4a8w94k";
   };
 
   propagatedBuildInputs = [ netaddr six ];
@@ -18,12 +18,10 @@ buildPythonPackage rec {
     nosetests -e testBind
   '';
 
-  pythonImportsCheck = [ "pyrad" ];
-
   meta = with lib; {
     description = "Python RADIUS Implementation";
     homepage = "https://bitbucket.org/zzzeek/sqlsoup";
-    license = licenses.bsd3;
+    license = licenses.mit;
     maintainers = [ maintainers.globin ];
   };
 }

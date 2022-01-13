@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , pytest, execnet }:
 
 buildPythonPackage rec {
@@ -20,7 +20,7 @@ buildPythonPackage rec {
   # Too many failing tests. Are they maintained?
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.mit;
     homepage = "https://pypi.python.org/pypi/pytest-cache/";
     description = "pytest plugin with mechanisms for caching across test runs";

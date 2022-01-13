@@ -1,19 +1,19 @@
-{ lib, fetchurl, pkg-config, libjack2, alsa-lib, libsndfile, liblo, lv2, qt5, fftwFloat, mkDerivation }:
+{ stdenv, fetchurl, pkgconfig, libjack2, alsaLib, libsndfile, liblo, lv2, qt5, fftwFloat, mkDerivation }:
 
 mkDerivation rec {
   pname = "padthv1";
-  version = "0.9.23";
+  version = "0.9.18";
 
   src = fetchurl {
     url = "mirror://sourceforge/padthv1/${pname}-${version}.tar.gz";
-    sha256 = "sha256-9yFfvlskOYnGraou2S3Qffl8RoYJqE0wnDlOP8mxQgg=";
+    sha256 = "1karrprb3ijrbiwpr43rl3nxnzc33lnmwrd1832psgr3flnr9fp5";
   };
 
-  buildInputs = [ libjack2 alsa-lib libsndfile liblo lv2 qt5.qtbase qt5.qttools fftwFloat ];
+  buildInputs = [ libjack2 alsaLib libsndfile liblo lv2 qt5.qtbase qt5.qttools fftwFloat ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "polyphonic additive synthesizer";
     homepage = "http://padthv1.sourceforge.net/";
     license = licenses.gpl2Plus;

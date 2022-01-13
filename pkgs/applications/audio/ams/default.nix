@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchgit
 , automake
-, alsa-lib
+, alsaLib
 , ladspaH
 , libjack2
 , fftw
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     ladspaH
     libjack2
     fftw
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     qttools
   ]);
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Realtime modular synthesizer for ALSA";
     homepage = "http://alsamodular.sourceforge.net";
     license = licenses.gpl2;

@@ -1,14 +1,8 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, bzip2
-, nix
-, perl
-, makeWrapper
-, nixosTests
+{ stdenv, fetchFromGitHub,
+  bzip2, nix, perl, perlPackages,
 }:
 
-with lib;
+with stdenv.lib;
 
 let
   rev = "e4675e38ab54942e351c7686e40fabec822120b9";
@@ -16,8 +10,7 @@ let
 in
 
 stdenv.mkDerivation {
-  pname = "nix-serve";
-  version = "0.2-${substring 0 7 rev}";
+  name = "nix-serve-0.2-${substring 0 7 rev}";
 
   src = fetchFromGitHub {
     owner = "edolstra";
@@ -25,22 +18,22 @@ stdenv.mkDerivation {
     inherit rev sha256;
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ bzip2 perl nix nix.perl-bindings ]
+    ++ (with perlPackages; [ DBI DBDSQLite Plack Starman ]);
 
   dontBuild = true;
 
   installPhase = ''
-    install -Dm0755 nix-serve.psgi $out/libexec/nix-serve/nix-serve.psgi
+    mkdir -p $out/libexec/nix-serve
+    cp nix-serve.psgi $out/libexec/nix-serve/nix-serve.psgi
 
-    makeWrapper ${perl.withPackages(p: [ p.DBDSQLite p.Plack p.Starman nix.perl-bindings ])}/bin/starman $out/bin/nix-serve \
-                --prefix PATH : "${makeBinPath [ bzip2 nix ]}" \
-                --add-flags $out/libexec/nix-serve/nix-serve.psgi
+    mkdir -p $out/bin
+    cat > $out/bin/nix-serve <<EOF
+    #! ${stdenv.shell}
+    PATH=${makeBinPath [ bzip2 nix ]}:\$PATH PERL5LIB=$PERL5LIB exec ${perlPackages.Starman}/bin/starman $out/libexec/nix-serve/nix-serve.psgi "\$@"
+    EOF
+    chmod +x $out/bin/nix-serve
   '';
-
-  passthru.tests = {
-    nix-serve = nixosTests.nix-serve;
-    nix-serve-ssh = nixosTests.nix-serve-ssh;
-  };
 
   meta = {
     homepage = "https://github.com/edolstra/nix-serve";

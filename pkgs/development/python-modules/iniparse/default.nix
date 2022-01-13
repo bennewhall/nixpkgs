@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , python
@@ -23,7 +23,7 @@ buildPythonPackage rec {
   # Does not install tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Accessing and Modifying INI files";
     homepage = "https://github.com/candlepin/python-iniparse";
     license = licenses.mit;

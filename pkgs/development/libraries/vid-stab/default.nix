@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, openmp }:
+{ stdenv, fetchFromGitHub, cmake, openmp }:
 
 stdenv.mkDerivation rec {
   pname = "vid.stab";
@@ -13,9 +13,9 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  buildInputs = lib.optionals stdenv.cc.isClang [ openmp ];
+  buildInputs = stdenv.lib.optionals stdenv.cc.isClang [ openmp ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Video stabilization library";
     homepage = "http://public.hronopik.de/vid.stab/";
     license = licenses.gpl2Plus;

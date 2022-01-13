@@ -1,12 +1,9 @@
-{ lib, fetchFromGitHub, buildDunePackage, dune-configurator, czmq, stdint }:
+{ lib, fetchFromGitHub, buildDunePackage, czmq, stdint }:
 
 buildDunePackage rec {
   minimumOCamlVersion = "4.03";
   pname = "zmq";
   version = "20180726";
-
-  useDune2 = true;
-
   src = fetchFromGitHub {
     owner = "issuu";
     repo = "ocaml-zmq";
@@ -14,7 +11,7 @@ buildDunePackage rec {
     sha256 = "1f5l4bw78y4drabhyvmpj3z8k30bill33ca7bzhr02m55yf6gqpf";
   };
 
-  buildInputs = [ czmq dune-configurator ];
+  buildInputs = [ czmq ];
 
   propagatedBuildInputs = [ stdint ];
 

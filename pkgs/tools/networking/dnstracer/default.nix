@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libresolv, perl }:
+{ stdenv, fetchurl, libresolv, perl }:
 
 stdenv.mkDerivation rec {
   version = "1.10";
@@ -20,11 +20,11 @@ stdenv.mkDerivation rec {
     install -Dm755 -t $man/share/man/man8 dnstracer.8
   '';
 
-  buildInputs = [] ++ lib.optionals stdenv.isDarwin [ libresolv ];
+  buildInputs = [] ++ stdenv.lib.optionals stdenv.isDarwin [ libresolv ];
 
-  NIX_LDFLAGS = lib.optionalString stdenv.isDarwin "-lresolv";
+  NIX_LDFLAGS = stdenv.lib.optionalString stdenv.isDarwin "-lresolv";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Determines where a given Domain Name Server (DNS) gets its information from, and follows the chain of DNS servers back to the servers which know the data";
     homepage = "http://www.mavetju.org/unix/general.php";
     license = licenses.bsd2;

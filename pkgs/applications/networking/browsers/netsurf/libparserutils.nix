@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl
+{ stdenv, fetchurl, perl
 , buildsystem
 }:
 
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     "NSSHARED=${buildsystem}/share/netsurf-buildsystem"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/projects/${libname}/";
     description = "Parser building library for netsurf browser";
     license = licenses.mit;

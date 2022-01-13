@@ -1,8 +1,11 @@
-{ lib, vscode-utils
-, fetchurl, mono, writeScript, runtimeShell
+{ stdenv, vscode-utils
+, fetchurl, unzip
+, mono, writeScript, runtimeShell
 , jq, clang-tools
 , gdbUseFixed ? true, gdb # The gdb default setting will be fixed to specified. Use version from `PATH` otherwise.
 }:
+
+assert gdbUseFixed -> null != gdb;
 
 /*
   Note that this version of the extension still has some nix specific issues
@@ -47,13 +50,13 @@ vscode-utils.buildVscodeMarketplaceExtension rec {
   mktplcRef = {
     name = "cpptools";
     publisher = "ms-vscode";
-    version = "1.7.1";
+    version = "1.0.1";
   };
 
   vsix = fetchurl {
     name = "${mktplcRef.publisher}-${mktplcRef.name}.zip";
     url = "https://github.com/microsoft/vscode-cpptools/releases/download/${mktplcRef.version}/cpptools-linux.vsix";
-    sha256 = "sha256-LqndG/vv8LgVPEX6dGkikDB6M6ISneo2UJ78izXVFbk=";
+    sha256 = "1lb5pza2ny1ydan19596amabs1np10nq08yqsfbvvfw7zbg4gnyc";
   };
 
   buildInputs = [
@@ -74,8 +77,8 @@ vscode-utils.buildVscodeMarketplaceExtension rec {
     touch "./install.lock"
 
     # Mono runtimes from nix package (used by generated `OpenDebugAD7`).
-    mv ./debugAdapters/bin/OpenDebugAD7 ./debugAdapters/bin/OpenDebugAD7_orig
-    cp -p "${openDebugAD7Script}" "./debugAdapters/bin/OpenDebugAD7"
+    mv ./debugAdapters/OpenDebugAD7 ./debugAdapters/OpenDebugAD7_orig
+    cp -p "${openDebugAD7Script}" "./debugAdapters/OpenDebugAD7"
 
     # Clang-format from nix package.
     mv  ./LLVM/ ./LLVM_orig
@@ -89,7 +92,7 @@ vscode-utils.buildVscodeMarketplaceExtension rec {
     chmod a+x ./bin/cpptools{-srv,}
   '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       license = licenses.unfree;
       maintainers = [ maintainers.jraygauthier ];
       # A 32 bit linux would also be possible with some effort (specific download of binaries +

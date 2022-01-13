@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, cython, alsa-lib }:
+{ lib, buildPythonPackage, fetchPypi, cython, alsaLib }:
 
 buildPythonPackage rec {
   pname = "rtmidi-python";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
   '';
 
   nativeBuildInputs = [ cython ];
-  buildInputs = [ alsa-lib ];
+  buildInputs = [ alsaLib ];
 
   setupPyBuildFlags = [ "--from-cython" ];
 
@@ -29,6 +29,6 @@ buildPythonPackage rec {
     description = "Python wrapper for RtMidi";
     homepage = "https://github.com/superquadratic/rtmidi-python";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ hexa ];
   };
 }

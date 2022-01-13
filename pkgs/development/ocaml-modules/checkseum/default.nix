@@ -1,42 +1,23 @@
-{ lib, fetchurl, buildDunePackage, dune-configurator, pkg-config
+{ lib, fetchurl, buildDunePackage, dune-configurator
 , bigarray-compat, optint
-, fmt, rresult, bos, fpath, astring, alcotest
-, withFreestanding ? false
-, ocaml-freestanding
+, fmt, rresult
+, alcotest
 }:
 
 buildDunePackage rec {
-  version = "0.3.2";
+  version = "0.2.1";
   pname = "checkseum";
 
   useDune2 = true;
 
-  minimumOCamlVersion = "4.07";
-
   src = fetchurl {
     url = "https://github.com/mirage/checkseum/releases/download/v${version}/checkseum-v${version}.tbz";
-    sha256 = "9cdd282ea1cfc424095d7284e39e4d0ad091de3c3f2580539d03f6966d45ccd5";
+    sha256 = "1swb44c64pcs4dh9ka9lig6d398qwwkd3kkiajicww6qk7jbh3n5";
   };
 
-  nativeBuildInputs = [
-    dune-configurator
-    pkg-config
-  ];
-  propagatedBuildInputs = [
-    bigarray-compat
-    optint
-  ] ++ lib.optionals withFreestanding [
-    ocaml-freestanding
-  ];
-
-  checkInputs = [
-    alcotest
-    bos
-    astring
-    fmt
-    fpath
-    rresult
-  ];
+  buildInputs = [ dune-configurator fmt rresult ];
+  propagatedBuildInputs = [ bigarray-compat optint ];
+  checkInputs = lib.optionals doCheck [ alcotest ];
 
   doCheck = true;
 

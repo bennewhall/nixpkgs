@@ -22,8 +22,8 @@ in {
     package = mkOption {
       type = types.path;
       description = "The SSM agent package to use";
-      default = pkgs.ssm-agent.override { overrideEtc = false; };
-      defaultText = literalExpression "pkgs.ssm-agent.override { overrideEtc = false; }";
+      default = pkgs.ssm-agent;
+      defaultText = "pkgs.ssm-agent";
     };
   };
 
@@ -37,10 +37,8 @@ in {
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/amazon-ssm-agent";
         KillMode = "process";
-        # We want this restating pretty frequently. It could be our only means
-        # of accessing the instance.
-        Restart = "always";
-        RestartSec = "1min";
+        Restart = "on-failure";
+        RestartSec = "15min";
       };
     };
 
@@ -64,10 +62,5 @@ in {
       isNormalUser = true;
       group = "ssm-user";
     };
-
-    environment.etc."amazon/ssm/seelog.xml".source = "${cfg.package}/seelog.xml.template";
-
-    environment.etc."amazon/ssm/amazon-ssm-agent.json".source =  "${cfg.package}/etc/amazon/ssm/amazon-ssm-agent.json.template";
-
   };
 }

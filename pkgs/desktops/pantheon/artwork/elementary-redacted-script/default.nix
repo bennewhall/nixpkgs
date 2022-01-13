@@ -1,38 +1,31 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
-, nix-update-script
+, pantheon
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "elementary-redacted-script";
-  version = "5.1.0";
+  version = "unstable-2016-06-03";
 
   src = fetchFromGitHub {
-    owner = "elementary";
-    repo = "fonts";
-    rev = version;
-    sha256 = "sha256-YiE7yaH0ZrF1/Cp+3bcJYm2cExQjFcat6JLMJPjhops=";
+    owner = "png2378";
+    repo = "redacted-elementary";
+    rev = "346440ff9ce19465e6d5c3d6d67a8573f992c746";
+    sha256 = "1jpd13sxkarclr0mlm66wzgpjh52ghzjzn4mywhyshyyskwn7jg1";
   };
 
   dontBuild = true;
 
   installPhase = ''
     mkdir -p $out/share/fonts/truetype/redacted-elementary
-    cp -a redacted/*.ttf $out/share/fonts/truetype/redacted-elementary
+    cp -a truetype/*.ttf $out/share/fonts/truetype/redacted-elementary
   '';
 
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = "pantheon.${pname}";
-    };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Font for concealing text";
-    homepage = "https://github.com/elementary/fonts";
+    homepage = "https://github.com/png2378/redacted-elementary";
     license = licenses.ofl;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
     platforms = platforms.linux;
   };
 }

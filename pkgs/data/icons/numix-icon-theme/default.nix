@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, gtk3, gnome-icon-theme, hicolor-icon-theme }:
+{ stdenv, fetchFromGitHub, gtk3, gnome-icon-theme, hicolor-icon-theme }:
 
 stdenv.mkDerivation rec {
   pname = "numix-icon-theme";
-  version = "21.10.31";
+  version = "20.06.07";
 
   src = fetchFromGitHub {
     owner = "numixproject";
     repo = pname;
     rev = version;
-    sha256 = "sha256-wyVvXifdbKR2aiBMrki8y/H0khH4eFD1RHVSC+jAT28=";
+    sha256 = "1yp9parc8ihmai8pswf4qzrqd88qpls87ipq8ylx38yqns7wsn4h";
   };
 
   nativeBuildInputs = [ gtk3 ];
@@ -18,22 +18,18 @@ stdenv.mkDerivation rec {
   dontDropIconThemeCache = true;
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out/share/icons
     cp -a Numix{,-Light} $out/share/icons/
 
     for theme in $out/share/icons/*; do
       gtk-update-icon-cache $theme
     done
-
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Numix icon theme";
     homepage = "https://numixproject.github.io";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     # darwin cannot deal with file names differing only in case
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];

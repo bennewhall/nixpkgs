@@ -1,69 +1,46 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, alsa-lib
-, cmake
-, cppzmq
-, doxygen
-, ffmpeg
-, imagemagick
-, jsoncpp
-, libopenshot-audio
+{ stdenv, fetchFromGitHub
+, pkgconfig, cmake, doxygen
+, libopenshot-audio, imagemagick, ffmpeg_3
+, swig, python3
+, unittest-cpp, cppzmq, zeromq
+, qtbase, qtmultimedia
 , llvmPackages
-, pkg-config
-, python3
-, qtbase
-, qtmultimedia
-, swig
-, zeromq
 }:
 
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "libopenshot";
-  version = "0.2.7";
+  version = "0.2.5";
 
   src = fetchFromGitHub {
     owner = "OpenShot";
     repo = "libopenshot";
     rev = "v${version}";
-    sha256 = "sha256-aF8wrPxFIjCy5gw72e/WyL/Wcx9tUGDkrqHS+ZDVK0U=";
+    sha256 = "1mxjkgjmjzgf628y3rscc6rqf55hxgjpmvwxlncfk1216i5xskwp";
   };
 
-  postPatch = ''
+  patchPhase = ''
     sed -i 's/{UNITTEST++_INCLUDE_DIR}/ENV{UNITTEST++_INCLUDE_DIR}/g' tests/CMakeLists.txt
-    sed -i 's/{_REL_PYTHON_MODULE_PATH}/ENV{_REL_PYTHON_MODULE_PATH}/g' bindings/python/CMakeLists.txt
+    sed -i 's/{_REL_PYTHON_MODULE_PATH}/ENV{_REL_PYTHON_MODULE_PATH}/g' src/bindings/python/CMakeLists.txt
     export _REL_PYTHON_MODULE_PATH=$(toPythonPath $out)
   '';
 
-  nativeBuildInputs = [
-    alsa-lib
-    cmake
-    doxygen
-    pkg-config
-    swig
-  ];
+  nativeBuildInputs = [ pkgconfig cmake doxygen ];
 
-  buildInputs = [
-    cppzmq
-    ffmpeg
-    imagemagick
-    jsoncpp
-    libopenshot-audio
-    python3
-    qtbase
-    qtmultimedia
-    zeromq
-  ] ++ lib.optionals stdenv.isDarwin [
-    llvmPackages.openmp
-  ];
+  buildInputs =
+  [ imagemagick ffmpeg_3 swig python3 unittest-cpp
+    cppzmq zeromq qtbase qtmultimedia ]
+    ++ optional stdenv.isDarwin llvmPackages.openmp
+  ;
 
-  dontWrapQtApps = true;
+  LIBOPENSHOT_AUDIO_DIR = libopenshot-audio;
+  "UNITTEST++_INCLUDE_DIR" = "${unittest-cpp}/include/UnitTest++";
 
   doCheck = false;
 
   cmakeFlags = [ "-DENABLE_RUBY=OFF" ];
 
-  meta = with lib; {
+  meta = {
     homepage = "http://openshot.org/";
     description = "Free, open-source video editor library";
     longDescription = ''
@@ -71,12 +48,8 @@ stdenv.mkDerivation rec {
       delivering high quality video editing, animation, and playback solutions
       to the world. API currently supports C++, Python, and Ruby.
     '';
-    license = licenses.gpl3Plus;
+    license = with licenses; gpl3Plus;
     maintainers = with maintainers; [ AndersonTorres ];
-    platforms = platforms.unix;
-  };
-
-  passthru = {
-    inherit libopenshot-audio;
+    platforms = with platforms; unix;
   };
 }

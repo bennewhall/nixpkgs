@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchhg, cmake, glib, gst_all_1, makeWrapper, pkg-config
+{ stdenv, fetchhg, cmake, glib, gst_all_1, makeWrapper, pkgconfig
 , python, SDL2, SDL2_image, SDL2_mixer, SDL2_ttf, sqlite, zlib, runtimeShell
 }:
 
@@ -12,7 +12,7 @@ stdenv.mkDerivation {
     sha256 = "0cvsg07ff0fdqh5zgiv2fs7s6c98hn150kpxmpw5fn6jilaszwkm";
   };
 
-  nativeBuildInputs = [ cmake makeWrapper pkg-config python ];
+  nativeBuildInputs = [ cmake makeWrapper pkgconfig python ];
 
   buildInputs = [
     glib gst_all_1.gstreamer SDL2 SDL2_image SDL2_mixer SDL2_ttf sqlite zlib
@@ -68,7 +68,7 @@ stdenv.mkDerivation {
       --run 'export RETROFE_PATH=''${RETROFE_PATH:-$PWD}'
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A frontend for arcade cabinets and media PCs";
     homepage = "http://retrofe.com";
     license = licenses.gpl3Plus;

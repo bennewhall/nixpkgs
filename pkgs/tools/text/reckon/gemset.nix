@@ -1,7 +1,5 @@
 {
   chronic = {
-    groups = ["default"];
-    platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
       sha256 = "1hrdkn4g8x7dlzxwb1rfgr8kw3bp4ywg5l4y4i9c2g5cwv62yvvn";
@@ -9,35 +7,36 @@
     };
     version = "0.10.2";
   };
-  highline = {
-    groups = ["default"];
-    platforms = [];
+  fastercsv = {
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0yclf57n2j3cw8144ania99h1zinf8q3f5zrhqa754j6gl95rp9d";
+      sha256 = "1df3vfgw5wg0s405z0pj0rfcvnl9q6wak7ka8gn0xqg4cag1k66h";
       type = "gem";
     };
-    version = "2.0.3";
+    version = "1.5.5";
   };
-  rchardet = {
-    groups = ["default"];
-    platforms = [];
+  highline = {
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1isj1b3ywgg2m1vdlnr41lpvpm3dbyarf1lla4dfibfmad9csfk9";
+      sha256 = "1nf5lgdn6ni2lpfdn4gk3gi47fmnca2bdirabbjbz1fk9w4p8lkr";
       type = "gem";
     };
-    version = "1.8.0";
+    version = "1.7.8";
   };
   reckon = {
-    dependencies = ["chronic" "highline" "rchardet"];
-    groups = ["default"];
-    platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0qnghypb9pj7888096xwyrx7myhzk85x69ympxkxki3kxcgcrdfn";
+      sha256 = "1p6w8w7vpl8fq4yfggrxbv6ph76psg7l5b4q29a8zvfbzzx6a0xw";
       type = "gem";
     };
-    version = "0.8.0";
+    version = "0.4.4";
+  };
+  terminal-table = {
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0hbmzfr17ji5ws5x5z3kypmb5irwwss7q7kkad0gs005ibqrxv0a";
+      type = "gem";
+    };
+    version = "1.6.0";
   };
 }

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , h5py
@@ -20,7 +20,7 @@ buildPythonPackage rec {
     nose
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Approximate Nearest Neighbors in C++/Python optimized for memory usage and loading/saving to disk";
     homepage = "https://github.com/spotify/annoy";
     license = licenses.asl20;

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k,
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k,
   click, jinja2, shellingham, six
 }:
 
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ click jinja2 shellingham six ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Add or enhance bash, fish, zsh and powershell completion in Click";
     homepage = "https://github.com/click-contrib/click-completion";
     license = licenses.mit;

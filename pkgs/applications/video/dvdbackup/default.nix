@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, libdvdread, libdvdcss, dvdauthor }:
+{ stdenv, fetchurl, fetchpatch, libdvdread, libdvdcss, dvdauthor }:
 
 stdenv.mkDerivation rec {
   version = "0.4.2";
@@ -21,8 +21,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A tool to rip video DVDs from the command line";
     homepage = "http://dvdbackup.sourceforge.net/";
-    license = lib.licenses.gpl3Plus;
-    maintainers = [ lib.maintainers.bradediger ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3Plus;
+    maintainers = [ stdenv.lib.maintainers.bradediger ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

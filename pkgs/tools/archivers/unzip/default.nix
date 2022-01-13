@@ -1,14 +1,13 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , bzip2
 , enableNLS ? false, libnatspec
 }:
 
-stdenv.mkDerivation rec {
-  pname = "unzip";
-  version = "6.0";
+stdenv.mkDerivation {
+  name = "unzip-6.0";
 
   src = fetchurl {
-    url = "mirror://sourceforge/infozip/unzip${lib.replaceStrings ["."] [""] version}.tar.gz";
+    url = "mirror://sourceforge/infozip/unzip60.tar.gz";
     sha256 = "0dxx11knh3nk95p2gg2ak777dd11pr7jx5das2g49l262scrcv83";
   };
 
@@ -42,7 +41,7 @@ stdenv.mkDerivation rec {
       name = "CVE-2019-13232-3.patch";
       sha256 = "1jvs7dkdqs97qnsqc6hk088alhv8j4c638k65dbib9chh40jd7pf";
     })
-  ] ++ lib.optional enableNLS
+  ] ++ stdenv.lib.optional enableNLS
     (fetchurl {
       url = "http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-arch/unzip/files/unzip-6.0-natspec.patch?revision=1.1";
       name = "unzip-6.0-natspec.patch";
@@ -50,11 +49,11 @@ stdenv.mkDerivation rec {
     });
 
   nativeBuildInputs = [ bzip2 ];
-  buildInputs = [ bzip2 ] ++ lib.optional enableNLS libnatspec;
+  buildInputs = [ bzip2 ] ++ stdenv.lib.optional enableNLS libnatspec;
 
   makefile = "unix/Makefile";
 
-  NIX_LDFLAGS = "-lbz2" + lib.optionalString enableNLS " -lnatspec";
+  NIX_LDFLAGS = "-lbz2" + stdenv.lib.optionalString enableNLS " -lnatspec";
 
   buildFlags = [
     "generic"
@@ -67,7 +66,7 @@ stdenv.mkDerivation rec {
   '';
 
   installFlags = [
-    "prefix=${placeholder "out"}"
+    "prefix=${placeholder ''out''}"
   ];
 
   setupHook = ./setup-hook.sh;
@@ -75,7 +74,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.info-zip.org";
     description = "An extraction utility for archives compressed in .zip format";
-    license = lib.licenses.free; # http://www.info-zip.org/license.html
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.free; # http://www.info-zip.org/license.html
+    platforms = stdenv.lib.platforms.all;
   };
 }

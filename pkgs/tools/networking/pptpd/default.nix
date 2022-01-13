@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ppp }:
+{ stdenv, fetchurl, ppp }:
 
 stdenv.mkDerivation rec {
   pname   = "pptpd";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     substituteInPlace plugins/Makefile --replace "install -o root" "install"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "http://poptop.sourceforge.net/dox/";
     description = "The PPTP Server for Linux";
     platforms   = platforms.linux;

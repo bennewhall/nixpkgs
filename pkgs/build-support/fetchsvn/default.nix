@@ -1,4 +1,4 @@
-{ lib, stdenvNoCC, buildPackages
+{ stdenvNoCC, buildPackages
 , subversion, glibcLocales, sshSupport ? true, openssh ? null
 }:
 
@@ -10,7 +10,7 @@
 assert sshSupport -> openssh != null;
 
 let
-  repoName = with lib;
+  repoName = with stdenvNoCC.lib;
     let
       fst = head;
       snd = l: head (tail l);
@@ -39,7 +39,7 @@ stdenvNoCC.mkDerivation {
   name = name_;
   builder = ./builder.sh;
   nativeBuildInputs = [ subversion glibcLocales ]
-    ++ lib.optional sshSupport openssh;
+    ++ stdenvNoCC.lib.optional sshSupport openssh;
 
   SVN_SSH = if sshSupport then "${buildPackages.openssh}/bin/ssh" else null;
 
@@ -49,6 +49,6 @@ stdenvNoCC.mkDerivation {
 
   inherit url rev ignoreExternals ignoreKeywords;
 
-  impureEnvVars = lib.fetchers.proxyImpureEnvVars;
+  impureEnvVars = stdenvNoCC.lib.fetchers.proxyImpureEnvVars;
   inherit preferLocalBuild;
 }

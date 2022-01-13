@@ -1,12 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , pkg-config
 , autoreconfHook
-, installShellFiles
 , pixman
 , xcbutil
 , xcbutilimage
-, libseccomp
 , libjpeg
 , libpng
 , libXpm
@@ -14,23 +12,21 @@
 
 stdenv.mkDerivation rec {
   pname = "xwallpaper";
-  version = "0.7.3";
+  version = "0.6.5";
 
   src = fetchFromGitHub {
     owner = "stoeckmann";
     repo = "xwallpaper";
     rev = "v${version}";
-    sha256 = "sha256-O4VynpP3VJY/p6+NLUuKetwoMfbp93aXTiRoQJkgW+c=";
+    sha256 = "121ai4dc0v65qk12gn9w62ixly8hc8a5qrygkbb82vy8ck4jqxj7";
   };
 
-  nativeBuildInputs = [ pkg-config autoreconfHook installShellFiles ];
-  buildInputs = [ pixman xcbutilimage xcbutil libseccomp libjpeg libpng libXpm ];
+  preConfigure = "./autogen.sh";
 
-  postInstall = ''
-    installShellCompletion --zsh _xwallpaper
-  '';
+  nativeBuildInputs = [ pkg-config autoreconfHook ];
+  buildInputs = [ pixman xcbutilimage xcbutil libjpeg libpng libXpm ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/stoeckmann/xwallpaper";
     description = "Utility for setting wallpapers in X";
     license = licenses.isc;

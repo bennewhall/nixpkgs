@@ -1,4 +1,4 @@
-{ lib, stdenv, zlib, glucose }:
+{ stdenv, zlib, glucose }:
 stdenv.mkDerivation rec {
   pname = "glucose-syrup";
   version = glucose.version;
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     install -Dm0755 ../{LICEN?E,README*,Changelog*} "$out/share/doc/${pname}-${version}/"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Modern, parallel SAT solver (parallel version)";
     license = licenses.unfreeRedistributable;
     platforms = platforms.unix;

@@ -1,5 +1,5 @@
 {
-  lib, stdenv, fetchFromGitHub, docbook_xsl,
+  stdenv, fetchFromGitHub, docbook_xsl,
   docbook_xml_dtd_45, python, pygments,
   libxslt
 }:
@@ -37,8 +37,8 @@ stdenv.mkDerivation {
   meta = {
     description = "The Csound Canonical Reference Manual";
     homepage = "https://github.com/csound/manual";
-    license = lib.licenses.fdl12Plus;
-    maintainers = [ lib.maintainers.hlolli ];
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.fdl12Plus;
+    maintainers = [ stdenv.lib.maintainers.hlolli ];
+    platforms = stdenv.lib.platforms.all;
   };
 }

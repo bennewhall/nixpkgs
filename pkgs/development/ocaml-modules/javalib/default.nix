@@ -1,26 +1,18 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, which
-, ocaml
-, findlib
-, camlzip
-, extlib
+{ stdenv, fetchzip, which, ocaml, findlib
+, camlzip, extlib
 }:
 
-if !lib.versionAtLeast ocaml.version "4.04"
+if !stdenv.lib.versionAtLeast ocaml.version "4.04"
 then throw "javalib is not available for OCaml ${ocaml.version}"
 else
 
 stdenv.mkDerivation rec {
-  pname = "ocaml${ocaml.version}-javalib";
+  name = "ocaml${ocaml.version}-javalib-${version}";
   version = "3.2.1";
 
-  src = fetchFromGitHub {
-    owner = "javalib-team";
-    repo = "javalib";
-    rev = "v${version}";
-    sha256 = "sha256-du1h+S+A7CetMXofsYxdGeSsobCgspDB9oUE9WNUbbo=";
+  src = fetchzip {
+    url = "https://github.com/javalib-team/javalib/archive/v${version}.tar.gz";
+    sha256 = "1fkdaiiza145yv0r1cm0n2hsrr0rbn6b27vs66njgv405zwn3vbn";
   };
 
   buildInputs = [ which ocaml findlib ];
@@ -33,12 +25,10 @@ stdenv.mkDerivation rec {
 
   configureScript = "./configure.sh";
   dontAddPrefix = "true";
-  dontAddStaticConfigureFlags = true;
-  configurePlatforms = [ ];
 
   propagatedBuildInputs = [ camlzip extlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library that parses Java .class files into OCaml data structures";
     homepage = "https://javalib-team.github.io/javalib/";
     license = licenses.lgpl3;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "crumbs";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     cp crumbs-completion.fish $out/share/fish/vendor_completions.d/crumbs.fish
   '';
 
-  meta = with lib;
+  meta = with stdenv.lib;
     { description = "Bookmarks for the command line";
       homepage    = "https://github.com/fasseg/crumbs";
       license     = licenses.wtfpl;

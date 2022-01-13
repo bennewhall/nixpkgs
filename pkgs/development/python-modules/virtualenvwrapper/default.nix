@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pbr
@@ -66,7 +66,7 @@ EOF
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Enhancements to virtualenv";
     homepage = "https://pypi.python.org/pypi/virtualenvwrapper";
     license = licenses.mit;

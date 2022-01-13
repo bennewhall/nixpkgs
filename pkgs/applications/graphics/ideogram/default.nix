@@ -1,9 +1,9 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , fetchpatch
 , vala
-, pkg-config
+, pkgconfig
 , python3
 , glib
 , gtk3
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     meson
     ninja
     vala
-    pkg-config
+    pkgconfig
     python3
     wrapGAppsHook
   ];
@@ -57,13 +57,12 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Insert emoji anywhere, even in non-native apps - designed for elementary OS";
     homepage = "https://github.com/cassidyjames/ideogram";
     license = licenses.gpl2Plus;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
     platforms = platforms.linux;
-    mainProgram = "com.github.cassidyjames.ideogram";
   };
 
 }

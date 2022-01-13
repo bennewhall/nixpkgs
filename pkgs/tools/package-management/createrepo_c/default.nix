@@ -1,22 +1,18 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, bzip2, expat, glib, curl, libxml2, python3, rpm
-, openssl, sqlite, file, xz, pcre, bash-completion, zstd, zchunk, libmodulemd
-}:
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, bzip2, expat, glib, curl, libxml2, python3, rpm, openssl, sqlite, file, xz, pcre, bash-completion }:
 
 stdenv.mkDerivation rec {
   pname = "createrepo_c";
-  version = "0.17.2";
+  version = "0.11.1";
 
   src = fetchFromGitHub {
     owner  = "rpm-software-management";
     repo   = "createrepo_c";
     rev    = version;
-    sha256 = "sha256-rcrJjcWj+cTAE3k11Ynr7CQCOWD+rb60lcar0G2w06A=";
+    sha256 = "0cmysc7gdd2czagl4drfh9gin6aa2847vgi30a3p0cfqvczf9cm6";
   };
 
   patches = [
-    # Use the output directory to install the bash completions.
     ./fix-bash-completion-path.patch
-    # Use the output directory to install the python modules.
     ./fix-python-install-path.patch
   ];
 
@@ -27,15 +23,15 @@ stdenv.mkDerivation rec {
       --replace "@PYTHON_INSTALL_DIR@" "$out/${python3.sitePackages}"
   '';
 
-  nativeBuildInputs = [ cmake pkg-config rpm ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
-  buildInputs = [ bzip2 expat glib curl libxml2 python3 openssl sqlite file xz pcre bash-completion zstd zchunk libmodulemd ];
+  buildInputs = [ bzip2 expat glib curl libxml2 python3 rpm openssl sqlite file xz pcre bash-completion ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C implementation of createrepo";
-    homepage    = "https://rpm-software-management.github.io/createrepo_c/";
-    license     = licenses.gpl2Plus;
-    platforms   = platforms.unix;
+    homepage    = "http://rpm-software-management.github.io/createrepo_c/";
+    license     = licenses.gpl2;
+    platforms   = platforms.linux;
     maintainers = with maintainers; [ copumpkin ];
   };
 }

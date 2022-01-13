@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "libnet";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   patches = [ ./fix-includes.patch ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/sam-github/libnet";
     description = "Portable framework for low-level network packet construction";
     license = licenses.bsd3;

@@ -2,23 +2,23 @@
 , buildPythonPackage
 , fetchPypi
 , pythonOlder
+, isPy27
 , appdirs
 , importlib-metadata
 , requests
-, rich
-, setuptools
+, pytest
 , wheel
 }:
 
 buildPythonPackage rec {
   pname = "pipdate";
-  version = "0.5.5";
+  version = "0.5.2";
   format = "pyproject";
-  disabled = pythonOlder "3.6";
+  disabled = isPy27; # abandoned
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "03hr9i691cpg9q2xc1xr4lpd90xs8rba0xjh6qmc1vg7lgcdgbaa";
+    sha256 = "507065231f2d50b6319d483432cba82aadad78be21b7a2969b5881ed8dee9ab4";
   };
 
   nativeBuildInputs = [ wheel ];
@@ -26,19 +26,25 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     appdirs
     requests
-    rich
-    setuptools
   ] ++ lib.optionals (pythonOlder "3.8") [
     importlib-metadata
   ];
 
-  # Tests require network access and pythonImportsCheck requires configuration file
+  checkInputs = [
+    pytest
+  ];
+
+  checkPhase = ''
+    HOME=$(mktemp -d) pytest test/test_pipdate.py
+  '';
+
+  # tests require network access
   doCheck = false;
 
   meta = with lib; {
     description = "pip update helpers";
     homepage = "https://github.com/nschloe/pipdate";
-    license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ costrouc ];
+    license = licenses.mit;
+    maintainers = [ maintainers.costrouc ];
   };
 }

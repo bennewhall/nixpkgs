@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitLab, autoreconfHook, pkg-config, parallel
-, sassc, inkscape, libxml2, glib, gtk_engines, gtk-engine-murrine
+{ stdenv, fetchFromGitLab, autoreconfHook, pkgconfig, parallel
+, sassc, inkscape, libxml2, glib, gdk-pixbuf, librsvg, gtk-engine-murrine
 , cinnamonSupport ? true
 , gnomeFlashbackSupport ? true
 , gnomeShellSupport ? true
@@ -19,38 +19,41 @@
 
 stdenv.mkDerivation rec {
   pname = "plata-theme";
-  version = "0.9.9";
+  version = "0.9.8";
 
   src = fetchFromGitLab {
     owner = "tista500";
     repo = "plata-theme";
     rev = version;
-    sha256 = "1iwvlv9qcrjyfbzab00vjqafmp3vdybz1hi02r6lwbgvwyfyrifk";
+    sha256 = "1sqmydvx36f6r4snw22s2q4dvcyg30jd7kg7dibpzqn3njfkkfag";
   };
+
+  preferLocalBuild = true;
 
   nativeBuildInputs = [
     autoreconfHook
-    pkg-config
+    pkgconfig
     parallel
     sassc
     inkscape
     libxml2
-    glib
+    glib.dev
   ]
-  ++ lib.optionals mateSupport [ gtk3 marco ]
-  ++ lib.optional telegramSupport zip;
+  ++ stdenv.lib.optionals mateSupport [ gtk3 marco ]
+  ++ stdenv.lib.optional telegramSupport zip;
 
-  buildInputs = [ gtk_engines ];
-
-  propagatedUserEnvPkgs = [
-    gtk-engine-murrine
+  buildInputs = [
+    gdk-pixbuf
+    librsvg
   ];
+
+  propagatedUserEnvPkgs = [ gtk-engine-murrine ];
 
   postPatch = "patchShebangs .";
 
   configureFlags =
     let
-      inherit (lib) enableFeature optional;
+      inherit (stdenv.lib) enableFeature optional;
       withOptional = value: feat: optional (value != null) "--with-${feat}=${value}";
     in [
       "--enable-parallel"
@@ -78,7 +81,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A GTK theme based on Material Design Refresh";
     homepage = "https://gitlab.com/tista500/plata-theme";
     license = with licenses; [ gpl2 cc-by-sa-40 ];

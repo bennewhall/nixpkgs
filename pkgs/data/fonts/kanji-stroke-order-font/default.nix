@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 let
   version = "4.003";
@@ -17,7 +17,7 @@ in stdenv.mkDerivation {
     cp *.txt $out/share/doc/kanji-stroke-order
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Font containing stroke order diagrams for over 6500 kanji, 180 kana and other characters";
     homepage = "https://sites.google.com/site/nihilistorguk/";
 

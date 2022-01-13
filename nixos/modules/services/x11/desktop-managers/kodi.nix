@@ -14,16 +14,6 @@ in
         default = false;
         description = "Enable the kodi multimedia center.";
       };
-
-      package = mkOption {
-        type = types.package;
-        default = pkgs.kodi;
-        defaultText = literalExpression "pkgs.kodi";
-        example = literalExpression "pkgs.kodi.withPackages (p: with p; [ jellyfin pvr-iptvsimple vfs-sftp ])";
-        description = ''
-          Package that should be used for Kodi.
-        '';
-      };
     };
   };
 
@@ -31,11 +21,11 @@ in
     services.xserver.desktopManager.session = [{
       name = "kodi";
       start = ''
-        LIRC_SOCKET_PATH=/run/lirc/lircd ${cfg.package}/bin/kodi --standalone &
+        LIRC_SOCKET_PATH=/run/lirc/lircd ${pkgs.kodi}/bin/kodi --standalone &
         waitPID=$!
       '';
     }];
 
-    environment.systemPackages = [ cfg.package ];
+    environment.systemPackages = [ pkgs.kodi ];
   };
 }

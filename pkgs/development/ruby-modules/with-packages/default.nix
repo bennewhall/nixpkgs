@@ -57,7 +57,7 @@ let
       nativeBuildInputs = [ makeWrapper ];
       buildInputs = [ selected ruby ];
 
-      dontUnpack = true;
+      unpackPhase = ":";
 
       installPhase = ''
         for i in ${ruby}/bin/* ${gemEnv}/bin/*; do

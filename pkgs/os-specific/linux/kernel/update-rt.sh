@@ -36,9 +36,7 @@ file-version() {
 latest-rt-version() {
     branch="$1" # e.g. 5.4
     curl -sL "$mirror/projects/rt/$branch/sha256sums.asc" |
-        sed -ne '/.patch.xz/ { s/.*patch-\(.*\).patch.xz/\1/p}' |
-        grep -v '\-rc' |
-        tail -n 1
+        sed -ne '/.patch.xz/ { s/.*patch-\(.*\).patch.xz/\1/; p; q }'
 }
 
 update-if-needed() {
@@ -60,7 +58,7 @@ update-if-needed() {
         msg="$nixattr: $cur -> $new"
     else
         msg="$nixattr: init at $new"
-        prev=$(ls -v "$(dirname "$0")"/linux-rt-*.nix | tail -1)
+        prev=$(ls "$(dirname "$0")"/linux-rt-*.nix | tail -1)
         cp "$prev" "$file"
         cur=$(file-version "$file")
     fi

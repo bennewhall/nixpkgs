@@ -1,10 +1,9 @@
-{ lib
+{ stdenv
 , mkDerivation
 , fetchurl
 , autoPatchelfHook
 , pkg-config
-, curl
-, ffmpeg
+, ffmpeg_3
 , openssl
 , qtbase
 , zlib
@@ -14,23 +13,22 @@
 }:
 
 let
-  version = "1.16.5";
+  version = "1.15.3";
   # Using two URLs as the first one will break as soon as a new version is released
   src_bin = fetchurl {
     urls = [
       "http://www.makemkv.com/download/makemkv-bin-${version}.tar.gz"
       "http://www.makemkv.com/download/old/makemkv-bin-${version}.tar.gz"
     ];
-    sha256 = "1y14yxhjj0sdq0s24qr58m0ddhna2rf0q0w3ny888as4wbqiwvm0";
+    hash = "sha256-Y23aetnwqLGaBIgJ/AP0oCrh8P5jpVrcMJgmc0Oe+i8=";
   };
   src_oss = fetchurl {
     urls = [
       "http://www.makemkv.com/download/makemkv-oss-${version}.tar.gz"
       "http://www.makemkv.com/download/old/makemkv-oss-${version}.tar.gz"
     ];
-    sha256 = "131vdi4gyc996z77rrcqb9nfbd62j8314ai4ib1jnilmrsrk93p5";
+    hash = "sha256-Qruq9YKAaNF1pDtOhptP95UjFL2NA4EuROR4v6XZHEw=";
   };
-
 in mkDerivation {
   pname = "makemkv";
   inherit version;
@@ -41,34 +39,26 @@ in mkDerivation {
 
   nativeBuildInputs = [ autoPatchelfHook pkg-config ];
 
-  buildInputs = [ ffmpeg openssl qtbase zlib ];
-
-  runtimeDependencies = [ (lib.getLib curl) ];
+  buildInputs = [ ffmpeg_3 openssl qtbase zlib ];
 
   qtWrapperArgs =
     let
-      binPath = lib.makeBinPath [ jre_headless ];
-    in lib.optionals withJava [
-      "--prefix PATH : ${binPath}"
+      binPath = stdenv.lib.makeBinPath [ jre_headless ];
+    in stdenv.lib.optionals withJava [
+      ''--prefix PATH : ${binPath}''
     ];
 
   installPhase = ''
     runHook preInstall
 
-    install -Dm555 -t $out/bin                          out/makemkv ../makemkv-bin-${version}/bin/amd64/makemkvcon
-    install -D     -t $out/lib                          out/lib{driveio,makemkv,mmbd}.so.*
-    install -D     -t $out/share/MakeMKV                ../makemkv-bin-${version}/src/share/*
-    install -Dm444 -t $out/share/applications           ../makemkv-oss-${version}/makemkvgui/share/makemkv.desktop
-    install -Dm444 -t $out/share/icons/hicolor/16x16    ../makemkv-oss-${version}/makemkvgui/share/icons/16x16/*
-    install -Dm444 -t $out/share/icons/hicolor/32x32    ../makemkv-oss-${version}/makemkvgui/share/icons/32x32/*
-    install -Dm444 -t $out/share/icons/hicolor/64x64    ../makemkv-oss-${version}/makemkvgui/share/icons/64x64/*
-    install -Dm444 -t $out/share/icons/hicolor/128x128  ../makemkv-oss-${version}/makemkvgui/share/icons/128x128/*
-    install -Dm444 -t $out/share/icons/hicolor/256x256  ../makemkv-oss-${version}/makemkvgui/share/icons/256x256/*
+    install -Dm555 -t $out/bin           out/makemkv ../makemkv-bin-${version}/bin/amd64/makemkvcon
+    install -D     -t $out/lib           out/lib{driveio,makemkv,mmbd}.so.*
+    install -D     -t $out/share/MakeMKV ../makemkv-bin-${version}/src/share/*
 
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Convert blu-ray and dvd to mkv";
     longDescription = ''
       makemkv is a one-click QT application that transcodes an encrypted
@@ -82,6 +72,6 @@ in mkDerivation {
     license = licenses.unfree;
     homepage = "http://makemkv.com";
     platforms = [ "x86_64-linux" ];
-    maintainers = with maintainers; [ titanous ];
+    maintainers = with maintainers; [ danieldk titanous ];
   };
 }

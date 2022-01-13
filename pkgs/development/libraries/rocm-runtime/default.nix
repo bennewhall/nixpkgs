@@ -1,33 +1,30 @@
 { stdenv
-, lib
 , fetchFromGitHub
-, writeScript
 , addOpenGLRunpath
 , clang-unwrapped
 , cmake
 , xxd
 , elfutils
 , llvm
-, numactl
 , rocm-device-libs
 , rocm-thunk }:
 
 stdenv.mkDerivation rec {
   pname = "rocm-runtime";
-  version = "4.5.2";
+  version = "3.10.0";
 
   src = fetchFromGitHub {
     owner = "RadeonOpenCompute";
     repo = "ROCR-Runtime";
     rev = "rocm-${version}";
-    hash = "sha256-DJDlEHnXhegcenO8BIY/8GnZdHldVs0GFLrQy4Z6heY=";
+    hash = "sha256-8hNb0Yo9ApedOG7xrUr5rwiA/YsqDTcyr6dBRg8lXro=";
   };
 
   sourceRoot = "source/src";
 
   nativeBuildInputs = [ cmake xxd ];
 
-  buildInputs = [ clang-unwrapped elfutils llvm numactl ];
+  buildInputs = [ clang-unwrapped elfutils llvm ];
 
   cmakeFlags = [
    "-DBITCODE_DIR=${rocm-device-libs}/amdgcn/bitcode"
@@ -42,17 +39,10 @@ stdenv.mkDerivation rec {
     rm -rf $out/hsa
   '';
 
-  passthru.updateScript = writeScript "update.sh" ''
-    #!/usr/bin/env nix-shell
-    #!nix-shell -i bash -p curl jq common-updater-scripts
-    version="$(curl -sL "https://api.github.com/repos/RadeonOpenCompute/ROCR-Runtime/releases?per_page=1" | jq '.[0].tag_name | split("-") | .[1]' --raw-output)"
-    update-source-version rocm-runtime "$version"
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Platform runtime for ROCm";
     homepage = "https://github.com/RadeonOpenCompute/ROCR-Runtime";
     license = with licenses; [ ncsa ];
-    maintainers = with maintainers; [ lovesegfault ];
+    maintainers = with maintainers; [ danieldk ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub
+{ stdenv, fetchFromGitHub
 , pkgs, makeWrapper, buildEnv
 , nodejs, runtimeShell
 }:
@@ -42,8 +42,7 @@ let
 in stdenv.mkDerivation {
   inherit name version src;
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ nodejs ];
+  buildInputs = [ makeWrapper nodejs ];
 
   dontBuild = true;
 
@@ -61,7 +60,7 @@ in stdenv.mkDerivation {
       --set NODE_PATH "${runtimeEnv}/lib/node_modules"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A web-interface for hipache-proxy";
     license = licenses.mit;
     homepage = "https://github.com/emblica/airfield";

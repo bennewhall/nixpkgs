@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchurl, makeDesktopItem
+{ stdenv, fetchurl, makeDesktopItem
 , ghostscript, atk, gtk2, glib, fontconfig, freetype
 , libgnomecanvas, libgnomeprint, libgnomeprintui
 , pango, libX11, xorgproto, zlib, poppler
-, autoconf, automake, libtool, pkg-config}:
+, autoconf, automake, libtool, pkgconfig}:
 
 let
   isGdkQuartzBackend = (gtk2.gdktarget == "quartz");
@@ -20,14 +20,14 @@ stdenv.mkDerivation rec {
     ghostscript atk gtk2 glib fontconfig freetype
     libgnomecanvas
     pango libX11 xorgproto zlib poppler
-  ] ++ lib.optionals (!stdenv.isDarwin) [
+  ] ++ stdenv.lib.optionals (!stdenv.isDarwin) [
     libgnomeprint libgnomeprintui
   ];
 
-  nativeBuildInputs = [ autoconf automake libtool pkg-config ];
+  nativeBuildInputs = [ autoconf automake libtool pkgconfig ];
 
   NIX_LDFLAGS = "-lz"
-    + lib.optionalString (!isGdkQuartzBackend) " -lX11";
+    + stdenv.lib.optionalString (!isGdkQuartzBackend) " -lX11";
 
   desktopItem = makeDesktopItem {
     name = name;
@@ -55,7 +55,7 @@ stdenv.mkDerivation rec {
       cp $out/share/xournal/pixmaps/xournal.png $out/share/icons
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://xournal.sourceforge.net/";
     description = "Note-taking application (supposes stylus)";
     maintainers = [ maintainers.guibert ];

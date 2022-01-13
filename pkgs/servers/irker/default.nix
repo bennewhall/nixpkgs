@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, python3, pkg-config
+{ stdenv, fetchFromGitLab, python, pkgconfig
 , xmlto, docbook2x, docbook_xsl, docbook_xml_dtd_412 }:
 
 stdenv.mkDerivation {
@@ -12,16 +12,14 @@ stdenv.mkDerivation {
     sha256 = "1hslwqa0gqsnl3l6hd5hxpn0wlachxd51infifhlwhyhd6iwgx8p";
   };
 
-  nativeBuildInputs = [ pkg-config xmlto docbook2x docbook_xsl docbook_xml_dtd_412 ];
+  nativeBuildInputs = [ pkgconfig xmlto docbook2x docbook_xsl docbook_xml_dtd_412 ];
 
   buildInputs = [
-    python3
+    python
     # Needed for proxy support I believe, which I haven't tested.
     # Probably needs to be propagated and some wrapPython magic
     # python.pkgs.pysocks
   ];
-
-  strictDeps = true;
 
   postPatch = ''
     substituteInPlace Makefile \
@@ -33,7 +31,7 @@ stdenv.mkDerivation {
     "DESTDIR=$$out"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "IRC client that runs as a daemon accepting notification requests";
     homepage = "https://gitlab.com/esr/irker";
     license = licenses.bsd2;

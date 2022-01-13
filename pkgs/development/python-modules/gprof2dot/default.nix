@@ -1,36 +1,17 @@
-{ lib
-, fetchFromGitHub
-, buildPythonApplication
-, python
-, graphviz
-}:
+{ lib, fetchFromGitHub, buildPythonApplication, python, graphviz }:
 
-buildPythonApplication rec {
-  pname = "gprof2dot";
-  version = "2021.02.21";
+buildPythonApplication {
+  name = "gprof2dot-2019-11-30";
 
   src = fetchFromGitHub {
     owner = "jrfonseca";
     repo = "gprof2dot";
-    rev = version;
-    sha256 = "1jjhsjf5fdi1fkn7mvhnzkh6cynl8gcjrygd3cya5mmda3akhzic";
+    rev = "2019.11.30";
+    sha256 = "1nw4cfwimd0djarw4wc756q095xir78js8flmycg6g7sl3l6p27s";
   };
 
-  makeWrapperArgs = [
-    "--prefix PATH : ${lib.makeBinPath [ graphviz ]}"
-  ];
-
-  # Needed so dot is on path of the test script
   checkInputs = [ graphviz ];
-
-  checkPhase = ''
-    runHook preCheck
-
-    # if options not specified, will use unwrapped gprof2dot from original source
-    ${python.interpreter} tests/test.py --python bash --gprof2dot $out/bin/gprof2dot
-
-    runHook postCheck
-  '';
+  checkPhase = "${python.interpreter} tests/test.py";
 
   meta = with lib; {
     homepage = "https://github.com/jrfonseca/gprof2dot";

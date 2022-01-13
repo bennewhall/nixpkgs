@@ -1,11 +1,11 @@
 { buildPythonPackage
 , callPackage
-, pytest-cov
+, pytestcov
 , fetchPypi
 , lib
 , pytest
 , pythonOlder
-, pytest-runner
+, pytestrunner
 }:
 
 buildPythonPackage rec {
@@ -18,13 +18,13 @@ buildPythonPackage rec {
     sha256 = "bd70ecb5e94e7659e564ea153f0c7673291dc37c526c246800fc08d6c5378099";
   };
 
-  nativeBuildInputs = [ pytest-runner ];
+  nativeBuildInputs = [ pytestrunner ];
 
   # Is private because the author states it's unmaintained
   # and shouldn't be used in production code
   propagatedBuildInputs = [ (callPackage ./infix.nix { }) ];
 
-  checkInputs = [ pytest pytest-cov ];
+  checkInputs = [ pytest pytestcov ];
 
   meta = with lib; {
     homepage = "https://gitlab.com/danielhones/pycategories";

@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, cmake, libminc }:
+{ stdenv, fetchFromGitHub, cmake, libminc }:
 
 stdenv.mkDerivation rec {
   pname = "EBTKS";
-  version  = "unstable-2017-09-23";
+  name  = "${pname}-2017-09-23";
 
   src = fetchFromGitHub {
     owner  = "BIC-MNI";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [ "-DLIBMINC_DIR=${libminc}/lib/cmake" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/BIC-MNI/${pname}";
     description = "Library for working with MINC files";
     maintainers = with maintainers; [ bcdarwin ];

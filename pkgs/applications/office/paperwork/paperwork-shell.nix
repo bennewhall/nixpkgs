@@ -10,7 +10,6 @@
 , paperwork-backend
 , fabulous
 , getkey
-, psutil
 
 , pkgs
 }:
@@ -35,7 +34,6 @@ buildPythonPackage rec {
     paperwork-backend
     fabulous
     getkey
-    psutil
   ];
 
   checkInputs = [

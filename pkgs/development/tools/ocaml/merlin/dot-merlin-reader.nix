@@ -1,16 +1,16 @@
-{ lib, fetchurl, yojson, csexp, result, buildDunePackage }:
+{ lib, fetchurl, ocamlPackages }:
+
+with ocamlPackages;
 
 buildDunePackage rec {
   pname = "dot-merlin-reader";
-  version = "4.1";
+  version = "3.4.0";
 
-  useDune2 = true;
-
-  minimumOCamlVersion = "4.06";
+  minimumOCamlVersion = "4.02.1";
 
   src = fetchurl {
-    url = "https://github.com/ocaml/merlin/releases/download/v${version}/dot-merlin-reader-v${version}.tbz";
-    sha256 = "14a36d6fb8646a5df4530420a7861722f1a4ee04753717947305e3676031e7cd";
+    url = "https://github.com/ocaml/merlin/releases/download/v${version}/merlin-v${version}.tbz";
+    sha256 = "048rkpbvayksv8mgmkgi17vv0y9xplv7v2ww4d1hs7bkm5zzsvg2";
   };
 
   buildInputs = [ yojson csexp result ];

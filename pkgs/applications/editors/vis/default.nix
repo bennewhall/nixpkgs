@@ -1,29 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, makeWrapper, makeDesktopItem
-, ncurses, libtermkey, lua
+{ stdenv, fetchFromGitHub, pkgconfig, makeWrapper, makeDesktopItem
+, ncurses, libtermkey, lpeg, lua
 , acl ? null, libselinux ? null
 }:
 
-let
-  luaEnv = lua.withPackages(ps: [ ps.lpeg ]);
-in
 stdenv.mkDerivation rec {
   pname = "vis";
-  version  = "0.7";
+  version  = "0.6";
 
   src = fetchFromGitHub {
     rev = "v${version}";
-    sha256 = "1g05ncsnk57kcqm9wsv6sz8b24kyzj8r5rfpa1wfwj8qkjzx3vji";
+    sha256 = "1zjm89cn3rfq8fxpwp66khy53s6vqlmw6q103qyyvix8ydzxdmsh";
     repo = "vis";
     owner = "martanne";
   };
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
 
   buildInputs = [
     ncurses
     libtermkey
-    luaEnv
-  ] ++ lib.optionals stdenv.isLinux [
+    lua
+    lpeg
+  ] ++ stdenv.lib.optionals stdenv.isLinux [
     acl
     libselinux
   ];
@@ -32,13 +30,16 @@ stdenv.mkDerivation rec {
     patchShebangs ./configure
   '';
 
+  LUA_CPATH="${lpeg}/lib/lua/${lua.luaversion}/?.so;";
+  LUA_PATH="${lpeg}/share/lua/${lua.luaversion}/?.lua";
+
   postInstall = ''
     mkdir -p "$out/share/applications"
     cp $desktopItem/share/applications/* $out/share/applications
     echo wrapping $out/bin/vis with runtime environment
     wrapProgram $out/bin/vis \
-      --prefix LUA_CPATH ';' "${luaEnv}/lib/lua/${lua.luaversion}/?.so" \
-      --prefix LUA_PATH ';' "${luaEnv}/share/lua/${lua.luaversion}/?.lua" \
+      --prefix LUA_CPATH ';' "${lpeg}/lib/lua/${lua.luaversion}/?.so" \
+      --prefix LUA_PATH ';' "${lpeg}/share/lua/${lua.luaversion}/?.lua" \
       --prefix VIS_PATH : "\$HOME/.config:$out/share/vis"
   '';
 
@@ -50,17 +51,17 @@ stdenv.mkDerivation rec {
     comment = meta.description;
     desktopName = "vis";
     genericName = "Text editor";
-    categories = lib.concatStringsSep ";" [
+    categories = stdenv.lib.concatStringsSep ";" [
       "Application" "Development" "IDE"
     ];
-    mimeType = lib.concatStringsSep ";" [
+    mimeType = stdenv.lib.concatStringsSep ";" [
       "text/plain" "application/octet-stream"
     ];
     startupNotify = "false";
     terminal = "true";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A vim like editor";
     homepage = "https://github.com/martanne/vis";
     license = licenses.isc;

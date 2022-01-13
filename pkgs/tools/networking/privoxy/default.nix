@@ -1,47 +1,32 @@
-{ lib, stdenv
-, nixosTests
-, fetchurl, autoreconfHook
-, zlib, pcre, w3m, man
-, openssl, brotli
-}:
+{ stdenv, fetchurl, autoreconfHook, zlib, pcre, w3m, man }:
 
 stdenv.mkDerivation rec {
 
   pname = "privoxy";
-  version = "3.0.33";
+  version = "3.0.29";
 
   src = fetchurl {
     url = "mirror://sourceforge/ijbswa/Sources/${version}%20%28stable%29/${pname}-${version}-stable-src.tar.gz";
-    sha256 = "sha256-BLEE5w2sYVYbndEQaEslD6/IwT2+Q3pg+uGN3ZqIH64=";
+    sha256 = "17a8fbdyb0ixc0wwq68fg7xn7l6n7jq67njpq93psmxgzng0dii5";
   };
 
   hardeningEnable = [ "pie" ];
 
   nativeBuildInputs = [ autoreconfHook w3m man ];
-  buildInputs = [ zlib pcre openssl brotli ];
+  buildInputs = [ zlib pcre ];
 
-  makeFlags = [ "STRIP=" ];
-  configureFlags = [
-    "--with-openssl"
-    "--with-brotli"
-    "--enable-external-filters"
-    "--enable-compression"
-  ];
+  makeFlags = [ "STRIP="];
 
   postInstall = ''
-    rm -r $out/var
+    rm -rf $out/var
   '';
 
-  passthru.tests.privoxy = nixosTests.privoxy;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.privoxy.org/";
     description = "Non-caching web proxy with advanced filtering capabilities";
-    # When linked with mbedtls, the license becomes GPLv3 (or later), otherwise
-    # GPLv2 (or later). See https://www.privoxy.org/user-manual/copyright.html
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
     platforms = platforms.all;
-    maintainers = [ ];
+    maintainers = [ maintainers.phreedom ];
   };
 
 }

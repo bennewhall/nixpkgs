@@ -1,52 +1,46 @@
-{ lib, python3Packages, fetchFromGitHub, wrapGAppsHook, gobject-introspection, libpulseaudio, glib, gtk3, pango, xorg }:
+{ stdenv, fetchFromGitHub, python3, libpulseaudio, glib, gtk3, gobject-introspection, wrapGAppsHook }:
 
-python3Packages.buildPythonApplication rec {
+python3.pkgs.buildPythonApplication rec {
   pname = "volctl";
-  version = "0.8.2";
+  version = "0.6.3";
 
   src = fetchFromGitHub {
     owner = "buzz";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "1cx27j83pz2qffnzb85fbl1x6pp3irv1kbw7g1hri7kaw6ky4xiz";
+    rev = version;
+    sha256 = "0rppqc5wiqxd83z2mgvhi6gdx7yhy9wnav1dbbi1wvm7lzw6fnil";
   };
-
-  postPatch = ''
-    substituteInPlace volctl/lib/xwrappers.py \
-      --replace 'libXfixes.so' "${xorg.libXfixes}/lib/libXfixes.so" \
-      --replace 'libXfixes.so.3' "${xorg.libXfixes}/lib/libXfixes.so.3"
-  '';
-
-  preBuild = ''
-    export LD_LIBRARY_PATH=${libpulseaudio}/lib
-  '';
 
   nativeBuildInputs = [
     gobject-introspection
     wrapGAppsHook
   ];
 
-  propagatedBuildInputs = [ pango gtk3 ] ++ (with python3Packages; [
-    click
-    pycairo
-    pygobject3
-    pyyaml
-  ]);
+  buildInputs = [
+    glib
+    gtk3
+    libpulseaudio
+  ];
 
-  # with strictDeps importing "gi.repository.Gtk" fails with "gi.RepositoryError: Typelib file for namespace 'Pango', version '1.0' not found"
+  pythonPath = with python3.pkgs; [
+    pygobject3
+  ];
+
   strictDeps = false;
 
-  # no tests included
-  doCheck = false;
-
-  pythonImportsCheck = [ "volctl" ];
+  preBuild = ''
+    export LD_LIBRARY_PATH=${libpulseaudio}/lib
+  '';
 
   preFixup = ''
     glib-compile-schemas ${glib.makeSchemaPath "$out" "${pname}-${version}"}
-    gappsWrapperArgs+=(--prefix LD_LIBRARY_PATH : "${libpulseaudio}/lib")
+
+    gappsWrapperArgs+=(
+      --prefix LD_LIBRARY_PATH : "${libpulseaudio}/lib"
+    )
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PulseAudio enabled volume control featuring per-app sliders";
     homepage = "https://buzz.github.io/volctl/";
     license = licenses.gpl2;

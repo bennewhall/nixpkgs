@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cups, perl, glibc, ghostscript, which, makeWrapper}:
+{ stdenv, fetchurl, cups, perl, glibc, ghostscript, which, makeWrapper}:
 
 /*
     [Setup instructions](http://support.brother.com/g/s/id/linux/en/instruction_prn1a.html).
@@ -28,18 +28,17 @@
 */
 
 let
-  myPatchElf = file: with lib; ''
+  myPatchElf = file: with stdenv.lib; ''
     patchelf --set-interpreter \
       ${stdenv.glibc}/lib/ld-linux${optionalString stdenv.is64bit "-x86-64"}.so.2 \
       ${file}
   '';
 in
 stdenv.mkDerivation rec {
-  pname = "brgenml1lpr";
-  version = "3.1.0-1";
 
+  name = "brgenml1lpr-3.1.0-1";
   src = fetchurl {
-    url = "https://download.brother.com/welcome/dlf101123/brgenml1lpr-${version}.i386.deb";
+    url = "https://download.brother.com/welcome/dlf101123/${name}.i386.deb";
     sha256 = "0zdvjnrjrz9sba0k525linxp55lr4cyivfhqbkq1c11br2nvy09f";
   };
 
@@ -87,8 +86,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Brother BrGenML1 LPR driver";
     homepage = "http://www.brother.com";
-    platforms = lib.platforms.linux;
-    license = lib.licenses.unfreeRedistributable;
-    maintainers = with lib.maintainers; [ jraygauthier ];
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.unfreeRedistributable;
+    maintainers = with stdenv.lib.maintainers; [ jraygauthier ];
   };
 }

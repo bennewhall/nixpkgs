@@ -1,20 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, cmake, openssl, popt, xmlto }:
+{ stdenv, fetchFromGitHub, cmake, openssl, popt, xmlto }:
 
 stdenv.mkDerivation rec {
   pname = "rabbitmq-c";
-  version = "0.11.0";
+  version = "0.10.0";
 
   src = fetchFromGitHub {
     owner = "alanxz";
     repo = "rabbitmq-c";
     rev = "v${version}";
-    sha256 = "sha256-u1uOrZRiQOU/6vlLdQHypBRSCo3zw7FC1AI9v3NlBVE=";
+    sha256 = "1iv7aww4pam8497s524xjxbbxypyqd01qgrb0b429y3q9x06m4sw";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ openssl popt xmlto ];
+  buildInputs = [ cmake openssl popt xmlto ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "RabbitMQ C AMQP client library";
     homepage = "https://github.com/alanxz/rabbitmq-c";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, symlinkJoin, pidgin, makeWrapper, plugins }:
+{ symlinkJoin, pidgin, makeWrapper, plugins }:
 
 let
 extraArgs = map (x: x.wrapArgs or "") plugins;
@@ -11,10 +11,10 @@ in symlinkJoin {
 
   postBuild = ''
     wrapProgram $out/bin/pidgin \
-      --suffix-each PURPLE_PLUGIN_PATH ':' "$out/lib/purple-${lib.versions.major pidgin.version} $out/lib/pidgin" \
+      --suffix-each PURPLE_PLUGIN_PATH ':' "$out/lib/purple-${pidgin.majorVersion} $out/lib/pidgin" \
       ${toString extraArgs}
     wrapProgram $out/bin/finch \
-      --suffix-each PURPLE_PLUGIN_PATH ':' "$out/lib/purple-${lib.versions.major pidgin.version}" \
+      --suffix-each PURPLE_PLUGIN_PATH ':' "$out/lib/purple-${pidgin.majorVersion}" \
       ${toString extraArgs}
   '';
 }

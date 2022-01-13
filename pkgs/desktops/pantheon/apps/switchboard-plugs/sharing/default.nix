@@ -1,11 +1,11 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
 , fetchpatch
+, pantheon
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , vala
 , libgee
 , granite
@@ -15,23 +15,14 @@
 
 stdenv.mkDerivation rec {
   pname = "switchboard-plug-sharing";
-  version = "2.1.5";
+  version = "2.1.4";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = pname;
     rev = version;
-    sha256 = "00lqrxq1wz3y2s9jiz8rh9d571va2vza2gdwj6c86z3q4c4hmn17";
+    sha256 = "sha256-/M60w14zfAUXspabvTUWlOPRrHvKtCYUio82b034k6s=";
   };
-
-  patches = [
-    # Upstream code not respecting our localedir
-    # https://github.com/elementary/switchboard-plug-sharing/pull/55
-    (fetchpatch {
-      url = "https://github.com/elementary/switchboard-plug-sharing/commit/5219839738b79e3c5f039a811d96a40eb2644eab.patch";
-      sha256 = "020w746q7gzmic0pdnbxs792sx15wlsqaf2x770r5xwbyfmqr7bs";
-    })
-  ];
 
   passthru = {
     updateScript = nix-update-script {
@@ -42,7 +33,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    pkg-config
+    pkgconfig
     vala
   ];
 
@@ -53,11 +44,11 @@ stdenv.mkDerivation rec {
     switchboard
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Switchboard Sharing Plug";
     homepage = "https://github.com/elementary/switchboard-plug-sharing";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
+    maintainers = pantheon.maintainers;
   };
 }

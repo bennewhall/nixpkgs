@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , nose
@@ -15,7 +15,7 @@ buildPythonPackage rec {
 
   buildInputs = [ nose ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utilities for manipulating IP addresses including a class that can be used to include CIDR network blocks in Django's INTERNAL_IPS setting";
     homepage = "https://pypi.python.org/pypi/iptools";
     license = licenses.bsd0;

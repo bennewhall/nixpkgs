@@ -1,4 +1,4 @@
-{ lib, mkDerivation, fetchFromGitHub, boost
+{ stdenv, mkDerivation, fetchFromGitHub, boost
 , qtbase, qtwebkit, poppler, qmake, hunspell, html-tidy}:
 
 mkDerivation rec {
@@ -13,6 +13,8 @@ mkDerivation rec {
   };
 
   buildInputs = [ boost qtbase qtwebkit poppler hunspell ];
+
+  enableParallelBuilding = true;
 
   nativeBuildInputs = [ qmake ];
 
@@ -33,7 +35,7 @@ mkDerivation rec {
     cp theme.ini $out/share/nixnote2/theme.ini
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An unofficial client of Evernote";
     homepage = "http://www.nixnote.org/";
     license = licenses.gpl2Plus;

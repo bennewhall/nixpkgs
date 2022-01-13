@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , xorgserver
@@ -20,7 +20,7 @@ buildPythonPackage rec {
 
   checkInputs = [ mock ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Run headless display inside X virtual framebuffer (Xvfb)";
     homepage = "https://github.com/cgoldberg/xvfbwrapper";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , nose, psutil, mock }:
 
 buildPythonPackage rec {
@@ -21,7 +21,7 @@ buildPythonPackage rec {
       --exclude=test_above_fd_setsize
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.github.com/SethMichaelLarson/selectors2";
     description = "Back-ported, durable, and portable selectors";
     license = licenses.mit;

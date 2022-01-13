@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper
+{ stdenv, fetchurl, makeWrapper
 , boost, gmp
 , tcl-8_5, tk-8_5
 , emacs
@@ -23,7 +23,7 @@ stdenv.mkDerivation {
 
   src = binaries.${stdenv.hostPlatform.system} or (throw "unsupported system: ${stdenv.hostPlatform.system}");
 
-  libPath = lib.makeLibraryPath
+  libPath = stdenv.lib.makeLibraryPath
     [ stdenv.cc.cc
       boost
       gmp
@@ -33,7 +33,7 @@ stdenv.mkDerivation {
 
   TK_LIBRARY = "${tk-8_5}/lib/tk8.5";
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   buildCommand = ''
     mkdir $out
@@ -51,8 +51,8 @@ stdenv.mkDerivation {
 
     wrapProgram $out/bin/ozemulator --set OZHOME $out
 
-    ${lib.optionalString (emacs != null) ''
-      wrapProgram $out/bin/oz --suffix PATH ":" ${lib.makeBinPath [ emacs ]}
+    ${stdenv.lib.optionalString (emacs != null) ''
+      wrapProgram $out/bin/oz --suffix PATH ":" ${stdenv.lib.makeBinPath [ emacs ]}
     ''}
 
     sed -i $out/share/applications/oz.desktop \
@@ -63,7 +63,7 @@ stdenv.mkDerivation {
     patchShebangs $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.mozart-oz.org/";
     description = "Multiplatform implementation of the Oz programming language";
     longDescription = ''

@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchurl, intltool, ntfs3g, util-linux
+{ stdenv, fetchurl, intltool, ntfs3g, util-linux
 , mediaDir ? "/media/"
 , lockDir ? "/var/lock/pmount"
 , whiteList ? "/etc/pmount.allow"
 }:
 
 # constraint mention in the configure.ac
-assert lib.hasSuffix "/" mediaDir;
+assert stdenv.lib.hasSuffix "/" mediaDir;
 
 stdenv.mkDerivation rec {
   pname = "pmount";
@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://bazaar.launchpad.net/~fourmond/pmount/main/files";
     description = "Mount removable devices as normal user";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

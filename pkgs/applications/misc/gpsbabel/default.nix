@@ -1,14 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, libusb1, qtbase, zlib, IOKit, which, expat }:
+{ lib, stdenv, fetchFromGitHub, fetchpatch, zlib, which, IOKit, qtbase, libusb-compat-0_1 }:
 
 stdenv.mkDerivation rec {
   pname = "gpsbabel";
-  version = "1.7.0";
+  version = "1.6.0";
 
   src = fetchFromGitHub {
     owner = "gpsbabel";
     repo = "gpsbabel";
     rev = "gpsbabel_${lib.replaceStrings ["."] ["_"] version}";
-    sha256 = "010g0vd2f5knpq5p7qfnl31kv3r8m5sjdsafcinbj5gh02j2nzpy";
+    sha256 = "0q17jhmaf7z5lld2ff7h6jb3v1yz8hbwd2rmaq2dsamc53dls8iw";
   };
 
   patches = [
@@ -18,10 +18,8 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  buildInputs = [ libusb1 qtbase zlib ]
+  buildInputs = [ zlib qtbase which libusb-compat-0_1 ]
     ++ lib.optionals stdenv.isDarwin [ IOKit ];
-
-  checkInputs = [ expat.dev which ]; # Avoid ./testo.d/kml.test: line 74: which: command not found. Skipping KML validation phase.
 
   /* FIXME: Building the documentation, with "make doc", requires this:
 
@@ -32,21 +30,17 @@ stdenv.mkDerivation rec {
   configureFlags = [ "--with-zlib=system" ]
     # Floating point behavior on i686 causes test failures. Preventing
     # extended precision fixes this problem.
-    ++ lib.optionals stdenv.isi686 [
+    ++ stdenv.lib.optionals stdenv.isi686 [
       "CFLAGS=-ffloat-store" "CXXFLAGS=-ffloat-store"
     ];
 
   enableParallelBuilding = true;
-
-  dontWrapQtApps = true;
 
   doCheck = true;
   preCheck = ''
     patchShebangs testo
     substituteInPlace testo \
       --replace "-x /usr/bin/hexdump" ""
-
-    rm -v testo.d/alantrl.test
   ''
     # The raymarine and gtm tests fail on i686 despite -ffloat-store.
   + lib.optionalString stdenv.isi686 "rm -v testo.d/raymarine.test testo.d/gtm.test;"
@@ -55,7 +49,7 @@ stdenv.mkDerivation rec {
     # The arc-project test fails on aarch64.
   + lib.optionalString stdenv.isAarch64 "rm -v testo.d/arc-project.test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Convert, upload and download data from GPS and Map programs";
     longDescription = ''
       GPSBabel converts waypoints, tracks, and routes between popular
@@ -77,6 +71,7 @@ stdenv.mkDerivation rec {
     '';
     homepage = "http://www.gpsbabel.org/";
     license = licenses.gpl2Plus;
+    maintainers = [ maintainers.rycee ];
     platforms = platforms.all;
   };
 }

@@ -1,23 +1,23 @@
-{ lib, stdenv, fetchurl, makeWrapper, php }:
+{ stdenv, fetchurl, makeWrapper, php }:
 
 let
   versions = {
     matomo = {
-      version = "4.5.0";
-      sha256 = "sha256-OyjdzY+ENYxOTVjDLjj2unJbpaGODIH2I5Acmt45HDA=";
+      version = "3.14.1";
+      sha256 = "0gp6v797118z703nh0p77zvsizvdg0c2jkn26996d4sqw5pa78v3";
     };
 
     matomo-beta = {
-      version = "4.6.0";
+      version = "3.14.1";
       # `beta` examples: "b1", "rc1", null
-      # when updating: use null if stable version is >= latest beta or release candidate
-      beta = "b2";
-      sha256 = "sha256-7p/ZPtr5a/tBjrM27ILF3rNfxDIWuzWKCXNom3HlyL8=";
+      # TOOD when updating: use null if stable version is >= latest beta or release candidate
+      beta = null;
+      sha256 = "0gp6v797118z703nh0p77zvsizvdg0c2jkn26996d4sqw5pa78v3";
     };
   };
   common = pname: { version, sha256, beta ? null }:
     let
-      fullVersion = version + lib.optionalString (beta != null) "-${toString beta}";
+      fullVersion = version + stdenv.lib.optionalString (beta != null) "-${toString beta}";
       name = "${pname}-${fullVersion}";
     in
 
@@ -74,9 +74,10 @@ let
           "misc/composer/clean-xhprof.sh"
           "misc/cron/archive.sh"
           "plugins/Installation/FormDatabaseSetup.php"
+          "vendor/leafo/lessphp/package.sh"
           "vendor/pear/archive_tar/sync-php4"
           "vendor/szymach/c-pchart/coverage.sh"
-          "vendor/matomo/matomo-php-tracker/run_tests.sh"
+          # drupal_test.sh does not exist in 3.12.0-b3; added for 3.13.0
           "vendor/twig/twig/drupal_test.sh"
         ];
 
@@ -91,20 +92,18 @@ let
               length="$(wc -c "$f" | cut -d' ' -f1)"
               hash="$(md5sum "$f" | cut -d' ' -f1)"
               sed -i "s:\\(\"$f\"[^(]*(\\).*:\\1\"$length\", \"$hash\"),:g" config/manifest.inc.php
-            else
-              echo "INFO(files-to-fix): $f does not exist in this version"
             fi
           done
           popd > /dev/null
         '';
 
-        meta = with lib; {
+        meta = with stdenv.lib; {
           description = "A real-time web analytics application";
           license = licenses.gpl3Plus;
           homepage = "https://matomo.org/";
           platforms = platforms.all;
-          maintainers = with maintainers; [ florianjacob kiwi sebbel ];
+          maintainers = with maintainers; [ florianjacob kiwi ];
         };
       };
 in
-lib.mapAttrs common versions
+stdenv.lib.mapAttrs common versions

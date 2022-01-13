@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl
-, pkg-config, libsoup, meson, ninja }:
+{ stdenv, fetchurl
+, pkgconfig, libsoup, meson, ninja }:
 
 let
   version = "2.5";
@@ -19,15 +19,15 @@ in stdenv.mkDerivation rec {
     "-Dudev=disabled"
   ];
 
-  nativeBuildInputs = [ libsoup pkg-config meson ninja ];
+  nativeBuildInputs = [ libsoup pkgconfig meson ninja ];
 
   outputs = [ "out" "dev" "lib" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "WebDav server implementation and library using libsoup";
     homepage = "https://wiki.gnome.org/phodav";
     license = licenses.lgpl21;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ gnidorah ];
     platforms = platforms.linux;
   };
 }

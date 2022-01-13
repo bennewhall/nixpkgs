@@ -4,13 +4,12 @@
 }:
 
 buildPythonPackage rec {
-  pname = "dash-table";
-  version = "5.0.0";
+  pname = "dash_table";
+  version = "4.11.0";
 
   src = fetchPypi {
-    pname = "dash_table";
-    inherit version;
-    sha256 = "sha256-GGJNaT1MjvLd7Jmm8WdZNDen6gvxU6og8xjBcMW8cwg=";
+    inherit pname version;
+    sha256 = "3170504a8626a9676b016c5ab456ab8c1fb1ea0206dcc2eddb8c4c6589216304";
   };
 
   # No tests in archive

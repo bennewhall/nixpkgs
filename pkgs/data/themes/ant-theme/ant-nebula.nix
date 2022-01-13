@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gtk-engine-murrine }:
+{ stdenv, fetchurl, gtk-engine-murrine }:
 
 let
   themeName = "Ant-Nebula";
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Nebula variant of the Ant theme";
     homepage = "https://github.com/EliverLara/${themeName}";
     license = licenses.gpl3;

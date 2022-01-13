@@ -1,6 +1,7 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
+, python
 , httplib2
 }:
 
@@ -17,7 +18,7 @@ buildPythonPackage rec {
 
   doCheck = false; # Tests are not provided.
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python library for interacting with the pipedrive.com API";
     homepage = "https://github.com/jscott1989/python-pipedrive";
     license = licenses.unfree;

@@ -1,9 +1,9 @@
-{ lib
+{ stdenv
 , fetchFromGitHub
 , buildPythonPackage
 , python
 , pygobject3
-, xvfb-run
+, xvfb_run
 , gobject-introspection
 , gtk3
 , pythonOlder
@@ -32,12 +32,12 @@ buildPythonPackage rec {
 
   checkPhase = ''
     runHook preCheck
-    ${xvfb-run}/bin/xvfb-run -s '-screen 0 800x600x24' \
+    ${xvfb_run}/bin/xvfb-run -s '-screen 0 800x600x24' \
       ${python.interpreter} nix_run_setup test
     runHook postCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A python library built to easily handle data structure such are lists, trees and acyclic graphs";
     homepage = "https://github.com/getting-things-gnome/liblarch";
     downloadPage = "https://github.com/getting-things-gnome/liblarch/releases";

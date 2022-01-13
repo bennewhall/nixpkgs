@@ -1,53 +1,52 @@
 { lib
 , buildPythonPackage
-, fetchFromGitHub
+, fetchPypi
 , chardet
+, pyyaml
 , requests
-, ruamel-yaml
 , six
 , semver
-, pytestCheckHook
+, pytest
+, pytestcov
+, pytestrunner
+, sphinx
 , openapi-spec-validator
 }:
 
 buildPythonPackage rec {
   pname = "prance";
-  version = "0.21.8.0";
+  version = "0.19.0";
 
-  src = fetchFromGitHub {
-    owner = "RonnyPfannschmidt";
-    repo = pname;
-    rev = "v${version}";
-    fetchSubmodules = true;
-    sha256 = "sha256-kGANMHfWwhW3ZBw2ZVCJZR/bV2EPhcydMKhDeDTVwcQ=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "0ffpfny3z8v3g0drirm27qafafbbvbc4h5k8v7yiwirnh0vn9v46";
   };
+
+  buildInputs = [
+    pytestrunner
+  ];
 
   propagatedBuildInputs = [
     chardet
+    pyyaml
     requests
-    ruamel-yaml
     six
     semver
   ];
 
   checkInputs = [
-    pytestCheckHook
+    pytest
+    pytestcov
     openapi-spec-validator
   ];
 
   postPatch = ''
-    substituteInPlace setup.cfg \
-      --replace "--cov=prance --cov-report=term-missing --cov-fail-under=90" ""
+    substituteInPlace setup.py \
+      --replace "tests_require = dev_require," "tests_require = None,"
   '';
 
-  # Disable tests that require network
-  disabledTestPaths = [
-    "tests/test_convert.py"
-  ];
-  disabledTests = [
-    "test_fetch_url_http"
-  ];
-  pythonImportsCheck = [ "prance" ];
+  # many tests require network connection
+  doCheck = false;
 
   meta = with lib; {
     description = "Resolving Swagger/OpenAPI 2.0 and 3.0.0 Parser";

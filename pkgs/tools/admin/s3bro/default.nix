@@ -1,4 +1,4 @@
-{ lib, python3Packages }:
+{ stdenv, python3Packages }:
 
 python3Packages.buildPythonPackage rec {
   pname = "s3bro";
@@ -14,7 +14,7 @@ python3Packages.buildPythonPackage rec {
   # No tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A handy s3 cli tool";
     homepage = "https://github.com/rsavordelli/s3bro";
     license = licenses.mit;

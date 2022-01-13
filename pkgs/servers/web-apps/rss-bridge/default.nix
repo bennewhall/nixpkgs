@@ -1,17 +1,17 @@
-{ stdenv, lib, fetchFromGitHub }:
+{ config, lib, pkgs, fetchFromGitHub, stdenv, ... }:
 
 stdenv.mkDerivation rec {
   pname = "rss-bridge";
-  version = "2021-04-25";
+  version = "2020-11-10";
 
   src = fetchFromGitHub {
     owner = "RSS-Bridge";
     repo = "rss-bridge";
     rev = version;
-    sha256 = "0dkw8xq710q0wclyr003357gk0vgb5pmpcx75k13pv56c3mrg9vm";
+    sha256 = "00cp61lqvhi7b7j0rglsqg3l7cg8s9b8vq098bgvg5dygyi44hyv";
   };
 
-  postPatch = ''
+  patchPhase = ''
     substituteInPlace lib/rssbridge.php \
       --replace "define('PATH_CACHE', PATH_ROOT . 'cache/');" "define('PATH_CACHE', getenv('RSSBRIDGE_DATA') . '/cache/');" \
       --replace "define('FILE_CONFIG', PATH_ROOT . 'config.ini.php');" "define('FILE_CONFIG', getenv('RSSBRIDGE_DATA') . '/config.ini.php');" \

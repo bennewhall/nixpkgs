@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <spawn.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 #include <sys/stat.h>
@@ -10,7 +9,6 @@
 #include <sys/wait.h>
 
 #define TESTPATH "/foo/bar/test"
-#define SUBTEST "./test sub"
 
 extern char **environ;
 
@@ -33,15 +31,7 @@ void test_execv(void) {
     assert(execv(TESTPATH, argv) == 0);
 }
 
-void test_system(void) {
-    assert(system(TESTPATH) == 0);
-}
-
-void test_subprocess(void) {
-    assert(system(SUBTEST) == 0);
-}
-
-int main(int argc, char *argv[])
+int main(void)
 {
     FILE *testfp;
     int testfd;
@@ -60,15 +50,6 @@ int main(int argc, char *argv[])
     assert(stat(TESTPATH, &testsb) != -1);
 
     test_spawn();
-    test_system();
-
-    // Only run subprocess if no arguments are given
-    // as the subprocess will be called without argument
-    // otherwise we will have infinite recursion
-    if (argc == 1) {
-        test_subprocess();
-    }
-
     test_execv();
 
     /* If all goes well, this is never reached because test_execv() replaces

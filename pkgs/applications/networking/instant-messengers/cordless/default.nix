@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "cordless";
@@ -15,7 +15,7 @@ buildGoModule rec {
 
   vendorSha256 = "01anbhwgwam70dymcmvkia1xpw48658rq7wv4m7fiavxvnli6z2y";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Bios-Marcel/cordless";
     description = "Discord terminal client";
     license = licenses.bsd3;

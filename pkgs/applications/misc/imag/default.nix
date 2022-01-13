@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , rustPlatform
 , fetchFromGitHub
 , llvmPackages
@@ -23,12 +23,12 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ installShellFiles pkg-config ];
   buildInputs = [ openssl ]
-    ++ lib.optional stdenv.isDarwin Security;
+    ++ stdenv.lib.optional stdenv.isDarwin Security;
   checkInputs = [ gitMinimal util-linuxMinimal ];
 
-  LIBCLANG_PATH = "${llvmPackages.libclang.lib}/lib";
+  LIBCLANG_PATH = "${llvmPackages.libclang}/lib";
 
-  cargoSha256 = "1vnrc72g2271i2p847z30kplxmdpi60n3dzpw0s7dahg33g14ai6";
+  cargoSha256 = "0n8cw70qh8g4hfwfaxwwxbrrx5hm2z037z8kdhvdpqkxljl9189x";
 
   checkPhase = ''
     export HOME=$TMPDIR
@@ -53,7 +53,7 @@ rustPlatform.buildRustPackage rec {
     installShellCompletion target/imag.{bash,fish} --zsh target/_imag
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Commandline personal information management suite";
     homepage = "https://imag-pim.org/";
     license = licenses.lgpl21;

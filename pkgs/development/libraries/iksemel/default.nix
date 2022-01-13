@@ -1,4 +1,4 @@
-{ lib, stdenv, autoreconfHook, libtool, pkg-config, gnutls, fetchFromGitHub, texinfo }:
+{ stdenv, autoreconfHook, libtool, pkgconfig, gnutls, fetchFromGitHub, texinfo }:
 
 stdenv.mkDerivation rec {
   pname = "iksemel";
@@ -11,10 +11,10 @@ stdenv.mkDerivation rec {
     sha256 = "1xv302p344hnpxqcgs3z6wwxhrik39ckgfw5cjyrw0dkf316z9yh";
   };
 
-  nativeBuildInputs = [ pkg-config autoreconfHook libtool texinfo ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook libtool texinfo ];
   buildInputs = [ gnutls ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "XML parser for jabber";
 
     homepage = "https://github.com/timothytylee/iksemel-1.4";

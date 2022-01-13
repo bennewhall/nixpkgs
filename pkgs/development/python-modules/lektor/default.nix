@@ -12,8 +12,8 @@
 , flask
 , pyopenssl
 , ndg-httpsclient
-, pytestCheckHook
-, pytest-cov
+, pytest
+, pytestcov
 , pytest-mock
 , pytest-pylint
 , pytest-click
@@ -39,8 +39,12 @@ buildPythonPackage rec {
   ] ++ lib.optionals isPy27 [ functools32 ];
 
   checkInputs = [
-    pytestCheckHook pytest-cov pytest-mock pytest-pylint pytest-click
+    pytest pytestcov pytest-mock pytest-pylint pytest-click
   ];
+
+  checkPhase = ''
+    pytest
+  '';
 
   # many errors -- tests assume inside of git repo, linting errors 13/317 fail
   doCheck = false;
@@ -49,7 +53,7 @@ buildPythonPackage rec {
     description = "A static content management system";
     homepage    = "https://www.getlektor.com/";
     license     = licenses.bsd0;
-    maintainers = with maintainers; [ costrouc ];
+    maintainers = with maintainers; [ vozz costrouc ];
   };
 
 }

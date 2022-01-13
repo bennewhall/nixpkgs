@@ -1,13 +1,9 @@
-{ lib
-, sway-unwrapped
+{ lib, stdenv
+, sway-unwrapped, swaybg
 , makeWrapper, symlinkJoin, writeShellScriptBin
 , withBaseWrapper ? true, extraSessionCommands ? "", dbus
 , withGtkWrapper ? false, wrapGAppsHook, gdk-pixbuf, glib, gtk3
 , extraOptions ? [] # E.g.: [ "--verbose" ]
-# Used by the NixOS module:
-, isNixOS ? false
-
-, enableXWayland ? true
 }:
 
 assert extraSessionCommands != "" -> withBaseWrapper;
@@ -15,26 +11,24 @@ assert extraSessionCommands != "" -> withBaseWrapper;
 with lib;
 
 let
-  sway = sway-unwrapped.override { inherit isNixOS enableXWayland; };
   baseWrapper = writeShellScriptBin "sway" ''
      set -o errexit
      if [ ! "$_SWAY_WRAPPER_ALREADY_EXECUTED" ]; then
-       export XDG_CURRENT_DESKTOP=sway
        ${extraSessionCommands}
        export _SWAY_WRAPPER_ALREADY_EXECUTED=1
      fi
      if [ "$DBUS_SESSION_BUS_ADDRESS" ]; then
        export DBUS_SESSION_BUS_ADDRESS
-       exec ${sway}/bin/sway "$@"
+       exec ${sway-unwrapped}/bin/sway "$@"
      else
-       exec ${dbus}/bin/dbus-run-session ${sway}/bin/sway "$@"
+       exec ${dbus}/bin/dbus-run-session ${sway-unwrapped}/bin/sway "$@"
      fi
    '';
 in symlinkJoin {
-  name = "sway-${sway.version}";
+  name = "sway-${sway-unwrapped.version}";
 
   paths = (optional withBaseWrapper baseWrapper)
-    ++ [ sway ];
+    ++ [ sway-unwrapped ];
 
   nativeBuildInputs = [ makeWrapper ]
     ++ (optional withGtkWrapper wrapGAppsHook);
@@ -48,14 +42,12 @@ in symlinkJoin {
     ${optionalString withGtkWrapper "gappsWrapperArgsHook"}
 
     wrapProgram $out/bin/sway \
+      --prefix PATH : "${swaybg}/bin" \
       ${optionalString withGtkWrapper ''"''${gappsWrapperArgs[@]}"''} \
       ${optionalString (extraOptions != []) "${concatMapStrings (x: " --add-flags " + x) extraOptions}"}
   '';
 
-  passthru = {
-    inherit (sway.passthru) tests;
-    providedSessions = [ "sway" ];
-  };
+  passthru.providedSessions = [ "sway" ];
 
-  inherit (sway) meta;
+  inherit (sway-unwrapped) meta;
 }

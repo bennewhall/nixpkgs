@@ -1,29 +1,40 @@
-{ lib, rust, stdenv, rustPlatform, fetchCrate, nasm, cargo-c, libiconv }:
+{ stdenv, rustPlatform, fetchurl, fetchFromGitHub, lib, nasm, cargo-c }:
 
-let
-  rustTargetPlatformSpec = rust.toRustTargetSpec stdenv.hostPlatform;
-in rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage rec {
   pname = "rav1e";
-  version = "0.4.1";
+  version = "0.4.0-alpha";
 
-  src = fetchCrate {
-    inherit pname version;
-    sha256 = "sha256-9fBAH1vuLJ3yu8X5+CQGLQFDlzTYoFBUTy3Muo6hLkw=";
+  src = stdenv.mkDerivation rec {
+    name = "${pname}-${version}-source";
+
+    src = fetchFromGitHub {
+      owner = "xiph";
+      repo = "rav1e";
+      rev = "v${version}";
+      sha256 = "1fw1gxi8330kfhl9hfzpn0lcmyn5604lc74d6g6iadzz2hmv4mb9";
+    };
+
+    cargoLock = fetchurl {
+      url = "https://github.com/xiph/rav1e/releases/download/v0.4.0-alpha/Cargo.lock";
+      sha256 = "002s2wlzpifn5p2ahdrjdkjl48c1wr6fslg0if4gf9qpl8qj05fl";
+    };
+
+    installPhase = ''
+      mkdir -p $out
+      cp -r ./* $out/
+      cp ${cargoLock} $out/Cargo.lock
+    '';
   };
 
-  cargoSha256 = "sha256-QhWVqHcNjJF94uTvHGVnV8MTp2bYOuCEjaMBfViOLRo=";
-
+  cargoSha256 = "1i5ldqb77rrhfxxf9krp7f6yj3h6rsqak6hf23fd2znhgmi7psb1";
   nativeBuildInputs = [ nasm cargo-c ];
-  buildInputs = lib.optionals stdenv.isDarwin [ libiconv ];
-
-  checkType = "debug";
 
   postBuild = ''
-    cargo cbuild --release --frozen --prefix=${placeholder "out"} --target ${rustTargetPlatformSpec}
+    cargo cbuild --release --frozen --prefix=${placeholder "out"}
   '';
 
   postInstall = ''
-    cargo cinstall --release --frozen --prefix=${placeholder "out"} --target ${rustTargetPlatformSpec}
+    cargo cinstall --release --frozen --prefix=${placeholder "out"}
   '';
 
   meta = with lib; {
@@ -37,6 +48,6 @@ in rustPlatform.buildRustPackage rec {
     homepage = "https://github.com/xiph/rav1e";
     changelog = "https://github.com/xiph/rav1e/releases/tag/v${version}";
     license = licenses.bsd2;
-    maintainers = [ ];
+    maintainers = [ maintainers.primeos ];
   };
 }

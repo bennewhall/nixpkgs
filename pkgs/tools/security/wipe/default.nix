@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "wipe";
@@ -11,11 +11,11 @@ stdenv.mkDerivation rec {
 
   patches = [ ./fix-install.patch ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Secure file wiping utility";
     homepage    = "http://wipe.sourceforge.net/";
     license     = licenses.gpl2;
-    platforms   = platforms.all;
+    platforms   = platforms.linux;
     maintainers = [ maintainers.abbradar ];
   };
 }

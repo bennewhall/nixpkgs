@@ -19,6 +19,8 @@ in stdenv.mkDerivation rec {
     sha256 = "1894g6fymr8kra9vwhbmnrcr58l022mcd7g9ans4zd3izla2j3gx";
   };
 
+  phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase" ];
+
   patches = lib.optionalString (rubies != null) [
     ./env.patch
   ];

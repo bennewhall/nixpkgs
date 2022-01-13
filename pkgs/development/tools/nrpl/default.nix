@@ -1,9 +1,8 @@
-{ lib, nimPackages, fetchFromGitHub, fetchpatch, makeWrapper, pcre, tinycc }:
+{ stdenv, lib, fetchFromGitHub, fetchpatch, makeWrapper, nim, pcre, tinycc }:
 
-nimPackages.buildNimPackage {
+stdenv.mkDerivation {
   pname = "nrpl";
   version = "20150522";
-  nimBinOnly = true;
 
   src = fetchFromGitHub {
     owner  = "wheineman";
@@ -12,8 +11,7 @@ nimPackages.buildNimPackage {
     sha256 = "1cly9lhrawnc42r31b7r0p0i6hcx8r00aa17gv7w9pcpj8ngb4v2";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ pcre ];
+  buildInputs = [ makeWrapper nim pcre ];
 
   patches = [
     (fetchpatch {
@@ -25,12 +23,19 @@ nimPackages.buildNimPackage {
 
   NIX_LDFLAGS = "-lpcre";
 
-  postFixup = ''
-    wrapProgram $out/bin/nrpl \
-      --prefix PATH : ${lib.makeBinPath [ nimPackages.nim tinycc ]}
+  buildPhase = ''
+    HOME=$TMPDIR
+    nim c -d:release nrpl.nim
   '';
 
-  meta = with lib; {
+  installPhase = "install -Dt $out/bin nrpl";
+
+  postFixup = ''
+    wrapProgram $out/bin/nrpl \
+      --prefix PATH : ${lib.makeBinPath [ nim tinycc ]}
+  '';
+
+  meta = with stdenv.lib; {
     description = "REPL for the Nim programming language";
     homepage = "https://github.com/wheineman/nrpl";
     license = licenses.mit;

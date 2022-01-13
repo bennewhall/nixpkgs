@@ -1,4 +1,4 @@
-{ lib, stdenv, meson, ninja, fetchFromGitHub, which, python3, fetchpatch
+{ stdenv, meson, ninja, fetchFromGitHub, which, python, fetchpatch
 , libiconv }:
 
 stdenv.mkDerivation rec {
@@ -19,13 +19,11 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ meson ninja which python3 ];
+  nativeBuildInputs = [ meson ninja which python ];
 
   buildInputs = [ libiconv ];
 
-  strictDeps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "KornShell Command And Programming Language";
     longDescription = ''
       The KornShell language was designed and developed by David G. Korn at

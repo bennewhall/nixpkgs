@@ -1,4 +1,4 @@
-{ lib, fetchurl, pythonPackages }:
+{ stdenv, fetchurl, pythonPackages }:
 
 pythonPackages.buildPythonApplication rec {
   pname = "nagstamon";
@@ -15,13 +15,11 @@ pythonPackages.buildPythonApplication rec {
   propagatedBuildInputs = with pythonPackages; [ configparser pyqt5 psutil requests
      beautifulsoup4 keyring requests-kerberos kerberos lxml ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A status monitor for the desktop";
     homepage = "https://nagstamon.ifw-dresden.de/";
     license = licenses.gpl2;
     maintainers = with maintainers; [ pSub ];
-    # fails to install with:
-    # TypeError: cannot unpack non-iterable bool object
-    broken = true;
+    inherit version;
   };
 }

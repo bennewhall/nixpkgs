@@ -1,42 +1,30 @@
-{ lib
-, async_generator
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
-, geographiclib
 , isPy3k
-, pytestCheckHook
+, geographiclib
 }:
 
 buildPythonPackage rec {
-  pname = "geopy";
-  version = "2.2.0";
-  disabled = !isPy3k; # only Python 3
+  pname = "geopy-unstable";
+  version = "2019-11-10";
 
-  src = fetchFromGitHub {
-    owner = pname;
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-zFz0T/M/CABKkChuiKsFkWj2pphZuFeE5gz0HxZYaz8=";
-  };
+  disabled = !isPy3k; # only Python 3
+  doCheck = false; # Needs network access
 
   propagatedBuildInputs = [ geographiclib ];
 
-  checkInputs = [
-    async_generator
-    pytestCheckHook
-  ];
+  src = fetchFromGitHub {
+    owner = "geopy";
+    repo = "geopy";
+    rev = "531b7de6126838a3e69370227aa7f2086ba52b89";
+    sha256 = "07l1pblzg3hb3dbvd9rq8x78ly5dv0zxbc5hwskqil0bhv5v1p39";
+  };
 
-  # Exclude tests which perform API calls
-  pytestFlagsArray = [ "--ignore test/geocoders/" ];
-  pythonImportsCheck = [ "geopy" ];
-
-  __darwinAllowLocalNetworking = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/geopy/geopy";
     description = "Python Geocoding Toolbox";
-    changelog = "https://github.com/geopy/geopy/releases/tag/${version}";
-    license = with licenses; [ mit ];
-    maintainers = with maintainers; [ GuillaumeDesforges ];
+    license = licenses.mit;
+    maintainers = with maintainers; [GuillaumeDesforges];
   };
 }

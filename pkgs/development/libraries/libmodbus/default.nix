@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   name = "libmodbus-3.1.6";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     "ac_cv_func_realloc_0_nonnull=yes"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library to send/receive data according to the Modbus protocol";
     homepage = "https://libmodbus.org/";
     license = licenses.lgpl21Plus;

@@ -1,6 +1,7 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k
+{ lib, pkgs, buildPythonPackage, fetchPypi, isPy3k
 , numpy
 , pyqt5
+, nose
 }:
 
 buildPythonPackage rec {
@@ -13,13 +14,14 @@ buildPythonPackage rec {
     sha256 = "b02bd2dc7de774f954544312ec1020cf2d7e03fdd23ec9eb79901da55ccb3365";
   };
 
+  checkInputs = [
+    nose
+  ];
+
   propagatedBuildInputs = [
     numpy
     pyqt5
   ];
-
-  # no tests executed
-  doCheck = false;
 
   meta = {
     homepage = "https://github.com/hmeine/qimage2ndarray";

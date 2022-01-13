@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, libtool, pkg-config, zlib, serd }:
+{ stdenv, fetchFromGitHub, autoreconfHook, libtool, pkgconfig, zlib, serd }:
 
 stdenv.mkDerivation rec {
   pname = "hdt";
@@ -13,11 +13,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ zlib serd ];
 
-  nativeBuildInputs = [ autoreconfHook libtool pkg-config ];
+  nativeBuildInputs = [ autoreconfHook libtool pkgconfig ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.rdfhdt.org/";
     description = "Header Dictionary Triples (HDT) is a compression format for RDF data that can also be queried for Triple Patterns";
     license = licenses.lgpl21;

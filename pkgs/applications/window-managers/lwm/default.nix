@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , imake, libX11, libSM, libXext, libICE }:
 
 stdenv.mkDerivation rec {
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     install -m644 lwm.man $out/share/man/man1/lwm.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lightweight Window Manager";
     longDescription = ''
       lwm is a window manager for X that tries to keep out of your face. There

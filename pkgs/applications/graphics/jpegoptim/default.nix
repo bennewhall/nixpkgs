@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libjpeg }:
+{ stdenv, fetchurl, libjpeg }:
 
 stdenv.mkDerivation rec {
   version = "1.4.6";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libjpeg ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Optimize JPEG files";
     homepage = "https://www.kokkonen.net/tjko/projects.html";
     license = licenses.gpl2;

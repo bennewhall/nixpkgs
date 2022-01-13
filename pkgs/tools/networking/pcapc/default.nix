@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libpcap, cmake }:
+{ stdenv, fetchFromGitHub, libpcap, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "pcapc";
@@ -16,9 +16,11 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
+  enableParallelBuilding = true;
+
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pfactum/pcapc";
     description = "Compile libpcap filter expressions into BPF opcodes";
     license = licenses.gpl3;

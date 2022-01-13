@@ -1,8 +1,8 @@
 {
-  mkDerivation, lib,
+  mkDerivation,
   extra-cmake-modules, kdoctools,
   kconfigwidgets, kcoreaddons, kdeclarative, kglobalaccel, ki18n, kwindowsystem, plasma-framework,
-  qtbase, qtdeclarative,
+  qtdeclarative,
   gconf, glib, libcanberra-gtk3, libpulseaudio, sound-theme-freedesktop
 }:
 
@@ -15,6 +15,6 @@ mkDerivation {
     kconfigwidgets kcoreaddons kdeclarative kglobalaccel ki18n plasma-framework
     kwindowsystem
 
-    qtbase qtdeclarative
+    qtdeclarative
   ];
 }

@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl
-, pkg-config }:
+{ stdenv, fetchurl
+, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "libast";
@@ -10,9 +10,9 @@ stdenv.mkDerivation rec {
     sha256 = "1w7bs46r4lykfd83kc3bg9i1rxzzlb4ydk23ikf8mx8avz05q1aj";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library of Assorted Spiffy Things";
     homepage = "https://www.eterm.org";
     license = licenses.bsd2;

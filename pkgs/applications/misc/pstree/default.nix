@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "pstree";
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Show the set of running processes as a tree";
     homepage = "http://www.thp.uni-duisburg.de/pstree/";
     license = licenses.gpl2;

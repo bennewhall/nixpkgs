@@ -1,4 +1,4 @@
-{ mkDerivation, lib, fetchFromGitHub, qtbase, qmake, exiv2 }:
+{ mkDerivation, stdenv, fetchFromGitHub, qtbase, qmake, exiv2 }:
 
 mkDerivation rec {
   pname = "phototonic";
@@ -18,7 +18,7 @@ mkDerivation rec {
     sed -i 's;/usr;$$PREFIX/;g' phototonic.pro
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An image viewer and organizer";
     homepage = "https://sourceforge.net/projects/phototonic/";
     license = licenses.gpl3;

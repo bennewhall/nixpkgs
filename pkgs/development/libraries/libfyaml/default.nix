@@ -1,25 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, autoreconfHook }:
+{ stdenv, fetchurl, gnum4 }:
 
 stdenv.mkDerivation rec {
   pname = "libfyaml";
-  version = "0.7.3";
+  version = "0.5.7";
 
-  src = fetchFromGitHub {
-    owner = "pantoniou";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-RxaeDtsdPtcTYJ7qMVmBCm1TsMI7YsXCz2w/Bq2RmaA=";
+  src = fetchurl {
+    url = "https://github.com/pantoniou/libfyaml/releases/download/v${version}/libfyaml-${version}.tar.gz";
+    sha256 = "143m30f006jsvhikk9nc050hxzqi8xg0sbd88kjrgfpyncdz689j";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ gnum4 ];
 
-  doCheck = true;
-
-  preCheck = ''
-    patchShebangs test
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pantoniou/libfyaml";
     description = "Fully feature complete YAML parser and emitter, supporting the latest YAML spec and passing the full YAML testsuite";
     license = licenses.mit;

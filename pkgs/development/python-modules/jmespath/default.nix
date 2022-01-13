@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , ply
@@ -17,7 +17,7 @@ buildPythonPackage rec {
   buildInputs = [ nose ];
   propagatedBuildInputs = [ ply ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/boto/jmespath";
     description = "JMESPath allows you to declaratively specify how to extract elements from a JSON document";
     license = "BSD";

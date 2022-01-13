@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , django
 , netaddr
@@ -41,7 +41,7 @@ buildPythonPackage rec {
     six
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Django PostgreSQL netfields implementation";
     homepage = "https://github.com/jimfunk/django-postgresql-netfields";
     license = licenses.bsd2;

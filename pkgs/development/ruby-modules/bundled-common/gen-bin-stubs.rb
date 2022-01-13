@@ -34,7 +34,6 @@ paths.each do |path|
 ENV["BUNDLE_GEMFILE"] = #{gemfile.dump}
 ENV.delete 'BUNDLE_PATH'
 ENV['BUNDLE_FROZEN'] = '1'
-ENV['BUNDLE_IGNORE_CONFIG'] = '1'
 
 Gem.paths = { 'GEM_HOME' => #{bundle_path.dump} }
 

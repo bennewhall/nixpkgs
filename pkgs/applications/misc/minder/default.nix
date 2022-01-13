@@ -1,62 +1,24 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, desktop-file-utils
-, meson
-, ninja
-, pkg-config
-, python3
-, shared-mime-info
-, vala
-, wrapGAppsHook
-, cairo
-, discount
-, glib
-, gtk3
-, gtksourceview4
+{ stdenv, fetchFromGitHub
+, pkgconfig, meson, ninja, python3
+, wrapGAppsHook, vala, shared-mime-info
+, cairo, pantheon, glib, gtk3, libxml2, libgee, libarchive
+, discount, gtksourceview3
 , hicolor-icon-theme # for setup-hook
-, libarchive
-, libgee
-, libhandy
-, libxml2
-, pantheon
 }:
 
 stdenv.mkDerivation rec {
   pname = "minder";
-  version = "1.13.1";
+  version = "1.11.3";
 
   src = fetchFromGitHub {
     owner = "phase1geo";
     repo = pname;
     rev = version;
-    sha256 = "07mq595c1vxwsnwkr2zdci0r06yhs75ph2db09mc63k5fjvi8rya";
+    sha256 = "137kyf82n5a2v0cm9q02rhv8rmbjgnj60h64prq90h0d42prj3gd";
   };
 
-  nativeBuildInputs = [
-    desktop-file-utils
-    meson
-    ninja
-    pkg-config
-    python3
-    shared-mime-info
-    vala
-    wrapGAppsHook
-  ];
-
-  buildInputs = [
-    cairo
-    discount
-    glib
-    gtk3
-    gtksourceview4
-    hicolor-icon-theme
-    libarchive
-    libgee
-    libhandy
-    libxml2
-    pantheon.granite
-  ];
+  nativeBuildInputs = [ pkgconfig meson ninja python3 wrapGAppsHook vala shared-mime-info ];
+  buildInputs = [ cairo pantheon.granite glib gtk3 libxml2 libgee libarchive hicolor-icon-theme discount gtksourceview3 ];
 
   postPatch = ''
     chmod +x meson/post_install.py
@@ -69,12 +31,12 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
-    description = "Mind-mapping application for elementary OS";
+  meta = with stdenv.lib; {
+    description = "Mind-mapping application for Elementary OS";
     homepage = "https://github.com/phase1geo/Minder";
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ dtzWill ] ++ teams.pantheon.members;
-    mainProgram = "com.github.phase1geo.minder";
+    maintainers = with maintainers; [ dtzWill ];
   };
 }
+

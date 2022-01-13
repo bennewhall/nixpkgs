@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, pkg-config, makeWrapper
+{ stdenv, lib, fetchurl, pkgconfig, makeWrapper
 , libusb1, tcl, util-linux, coreutils, bash }:
 
 stdenv.mkDerivation rec {
@@ -35,9 +35,9 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [ libusb1 tcl ];
-  nativeBuildInputs = [ pkg-config makeWrapper ];
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A mode switching tool for controlling 'multi-mode' USB devices";
     license = licenses.gpl2;
     maintainers = with maintainers; [ marcweber peterhoeg ];

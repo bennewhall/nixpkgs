@@ -1,42 +1,27 @@
-{ lib
-, buildPythonPackage
-, pythonOlder
-, fetchFromGitHub
-, pytestCheckHook
-, pytz
-, simplejson
+{ lib, buildPythonPackage, fetchPypi,
+  dateutil, simplejson, isPy27
 }:
 
 buildPythonPackage rec {
   pname = "marshmallow";
-  version = "3.13.0";
+  version = "3.9.1";
+  disabled = isPy27;
 
-  disabled = pythonOlder "3.6";
-
-  src = fetchFromGitHub {
-    owner = "marshmallow-code";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-tP/RKo2Hzxz2bT7ybRs9wGzq7TpsmzmOPi3BGuSLDA0=";
-  };
-
-  checkInputs = [
-    pytestCheckHook
-    pytz
-    simplejson
-  ];
-
-  pythonImportsCheck = [
-    "marshmallow"
-  ];
-
-  meta = with lib; {
+  meta = {
+    homepage = "https://github.com/marshmallow-code/marshmallow";
     description = ''
       A lightweight library for converting complex objects to and from
       simple Python datatypes.
     '';
-    homepage = "https://github.com/marshmallow-code/marshmallow";
-    license = licenses.mit;
-    maintainers = with maintainers; [ cript0nauta ];
+    license = lib.licenses.mit;
   };
+
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "73facc37462dfc0b27f571bdaffbef7709e19f7a616beb3802ea425b07843f4e";
+  };
+
+  propagatedBuildInputs = [ dateutil simplejson ];
+
+  doCheck = false;
 }

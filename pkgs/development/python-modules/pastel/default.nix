@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, pytest }:
+{ lib, buildPythonPackage, fetchPypi, poetry, pytest }:
 
 buildPythonPackage rec {
   pname = "pastel";

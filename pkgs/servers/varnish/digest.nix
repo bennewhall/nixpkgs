@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, varnish, libmhash, docutils, coreutils, version, sha256 }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, varnish, libmhash, docutils }:
 
 stdenv.mkDerivation rec {
-  pname = "${varnish.name}-digest";
-  inherit version;
+  version = "1.0.2";
+  name = "${varnish.name}-digest-${version}";
 
   src = fetchFromGitHub {
     owner = "varnish";
     repo = "libvmod-digest";
-    rev = version;
-    inherit sha256;
+    rev = "libvmod-digest-${version}";
+    sha256 = "0jwkqqalydn0pwfdhirl5zjhbc3hldvhh09hxrahibr72fgmgpbx";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config docutils ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig docutils ];
   buildInputs = [ varnish libmhash ];
 
   postPatch = ''
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Digest and HMAC vmod";
     homepage = "https://github.com/varnish/libvmod-digest";
     inherit (varnish.meta) license platforms maintainers;

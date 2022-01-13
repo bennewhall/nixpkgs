@@ -1,73 +1,52 @@
-{ fetchFromGitHub
-, lib
-, python3Packages
-, mp3Support ? true
-, lame
-, opusSupport ? true
-, opusTools
-, faacSupport ? false
-, faac
-, flacSupport ? true
-, flac
-, soxSupport ? true
-, sox
-, vorbisSupport ? true
-, vorbis-tools
-, pulseaudio
+{ fetchFromGitHub, stdenv, pythonPackages
+, mp3Support ? true, lame ? null
+, opusSupport ? true, opusTools ? null
+, faacSupport ? false, faac ? null
+, flacSupport ? true, flac ? null
+, soxSupport ? true, sox ? null
+, vorbisSupport ? true, vorbis-tools ? null
 }:
 
-python3Packages.buildPythonApplication {
+assert mp3Support -> lame != null;
+assert opusSupport -> opusTools != null;
+assert faacSupport -> faac != null;
+assert flacSupport -> flac != null;
+assert soxSupport -> sox != null;
+assert vorbisSupport -> vorbis-tools != null;
+
+let
+  zeroconf = pythonPackages.callPackage ./zeroconf.nix { };
+in
+pythonPackages.buildPythonApplication {
   pname = "pulseaudio-dlna";
-  version = "unstable-2021-11-09";
+  version = "unstable-2017-11-01";
 
   src = fetchFromGitHub {
-    owner = "Cygn";
+    owner = "masmu";
     repo = "pulseaudio-dlna";
-    rev = "637a2e7bba2277137c5f12fb58e63100dab7cbe6";
-    sha256 = "sha256-Oda+zQQJE2D3fiNWTzxYvI8cZVHG5JAoV2Wf5Z6IU3M=";
+    rev = "4472928dd23f274193f14289f59daec411023ab0";
+    sha256 = "1dfn7036vrq49kxv4an7rayypnm5dlawsf02pfsldw877hzdamqk";
   };
 
-  patches = [
-    ./0001-setup.py-remove-dbus-python-from-list.patch
-  ];
-
-  propagatedBuildInputs = with python3Packages; [
-    dbus-python
-    docopt
-    requests
-    setproctitle
-    protobuf
-    psutil
-    chardet
-    netifaces
-    notify2
-    pyroute2
-    pygobject3
-    PyChromecast
-    lxml
-    setuptools
-    zeroconf
-  ]
-  ++ lib.optional mp3Support lame
-  ++ lib.optional opusSupport opusTools
-  ++ lib.optional faacSupport faac
-  ++ lib.optional flacSupport flac
-  ++ lib.optional soxSupport sox
-  ++ lib.optional vorbisSupport vorbis-tools;
-
-  # pulseaudio-dlna shells out to pactl to configure sinks and sources.
-  # As pactl might not be in $PATH, add --suffix it (so pactl configured by the
-  # user get priority)
-  makeWrapperArgs = [ "--suffix PATH : ${lib.makeBinPath [ pulseaudio ]}" ];
+  propagatedBuildInputs = with pythonPackages; [
+    dbus-python docopt requests setproctitle protobuf psutil futures
+    chardet notify2 netifaces pyroute2 pygobject2 lxml setuptools ]
+    ++ [ zeroconf ]
+    ++ stdenv.lib.optional mp3Support lame
+    ++ stdenv.lib.optional opusSupport opusTools
+    ++ stdenv.lib.optional faacSupport faac
+    ++ stdenv.lib.optional flacSupport flac
+    ++ stdenv.lib.optional soxSupport sox
+    ++ stdenv.lib.optional vorbisSupport vorbis-tools;
 
   # upstream has no tests
   checkPhase = ''
     $out/bin/pulseaudio-dlna --help > /dev/null
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A lightweight streaming server which brings DLNA / UPNP and Chromecast support to PulseAudio and Linux";
-    homepage = "https://github.com/Cygn/pulseaudio-dlna";
+    homepage = "https://github.com/masmu/pulseaudio-dlna";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ mog ];
     platforms = platforms.linux;

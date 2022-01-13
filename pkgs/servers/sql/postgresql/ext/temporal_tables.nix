@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, postgresql }:
+{ stdenv, fetchFromGitHub, postgresql }:
 
 stdenv.mkDerivation rec {
   pname = "temporal_tables";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     cp *.control $out/share/postgresql/extension
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Temporal Tables PostgreSQL Extension ";
     homepage    = "https://github.com/mlt/temporal_tables";
     maintainers = with maintainers; [ ggpeti ];

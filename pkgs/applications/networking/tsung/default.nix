@@ -1,34 +1,25 @@
-{ lib
-, stdenv
-, fetchurl
-, makeWrapper
-, erlang
-, python3
-, python3Packages
-, perlPackages
-, gnuplot
-}:
+{ fetchurl, stdenv, lib, makeWrapper,
+  erlang,
+  python2, python2Packages,
+  perlPackages,
+  gnuplot }:
 
 stdenv.mkDerivation rec {
   pname = "tsung";
   version = "1.7.0";
-
   src = fetchurl {
     url = "http://tsung.erlang-projects.org/dist/tsung-${version}.tar.gz";
     sha256 = "6394445860ef34faedf8c46da95a3cb206bc17301145bc920151107ffa2ce52a";
   };
 
-  nativeBuildInputs = [
-    makeWrapper
-  ];
-
+  buildInputs = [ makeWrapper ];
   propagatedBuildInputs = [
     erlang
     gnuplot
     perlPackages.perl
     perlPackages.TemplateToolkit
-    python3
-    python3Packages.matplotlib
+    python2
+    python2Packages.matplotlib
   ];
 
 
@@ -44,7 +35,7 @@ stdenv.mkDerivation rec {
         --set PERL5LIB "${perlPackages.makePerlPath [ perlPackages.TemplateToolkit ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://tsung.erlang-projects.org/";
     description = "A high-performance benchmark framework for various protocols including HTTP, XMPP, LDAP, etc";
     longDescription = ''
@@ -52,8 +43,8 @@ stdenv.mkDerivation rec {
       can currently be used to stress HTTP, WebDAV, SOAP, PostgreSQL, MySQL,
       AMQP, MQTT, LDAP and Jabber/XMPP servers.
     '';
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ uskudnik ];
+    license = licenses.gpl2;
+    maintainers = [ maintainers.uskudnik ];
     platforms = platforms.unix;
   };
 }

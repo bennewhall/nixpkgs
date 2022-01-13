@@ -1,5 +1,5 @@
 { fetchFromGitHub
-, lib, stdenv
+, stdenv
 , perl
 }:
 
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/doona
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/wireghoul/doona";
     description = "A fork of the Bruteforce Exploit Detector Tool (BED)";
     longDescription = ''

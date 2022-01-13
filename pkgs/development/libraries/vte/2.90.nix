@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, intltool, pkg-config, glib, gtk3, ncurses, gobject-introspection }:
+{ stdenv, fetchurl, intltool, pkgconfig, glib, gtk3, ncurses, gobject-introspection }:
 
 stdenv.mkDerivation rec {
   versionMajor = "0.36";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "54e5b07be3c0f7b158302f54ee79d4de1cb002f4259b6642b79b1e0e314a959c";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ gobject-introspection intltool glib gtk3 ncurses ];
 
   configureFlags = [ "--enable-introspection" ];
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/lib/libvte2_90.la --replace "-lncurses" "-L${ncurses.out}/lib -lncurses"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.gnome.org/";
     description = "A library implementing a terminal emulator widget for GTK";
     longDescription = ''
@@ -35,7 +35,7 @@ stdenv.mkDerivation rec {
       the system's terminfo database.
     '';
     license = licenses.lgpl2;
-    maintainers = with maintainers; [ astsmtl antono ];
+    maintainers = with maintainers; [ astsmtl antono lethalman ];
     platforms = platforms.linux;
   };
 }

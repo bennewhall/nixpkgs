@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl, yasm
+{ stdenv, fetchFromGitHub, perl, yasm
 , vp8DecoderSupport ? true # VP8 decoder
 , vp8EncoderSupport ? true # VP8 encoder
 , vp9DecoderSupport ? true # VP9 decoder
@@ -40,7 +40,7 @@
 
 let
   inherit (stdenv) is64bit isMips isDarwin isCygwin;
-  inherit (lib) enableFeature optional optionals;
+  inherit (stdenv.lib) enableFeature optional optionals;
 in
 
 assert vp8DecoderSupport || vp8EncoderSupport || vp9DecoderSupport || vp9EncoderSupport;
@@ -56,30 +56,16 @@ assert isCygwin -> unitTestsSupport && webmIOSupport && libyuvSupport;
 
 stdenv.mkDerivation rec {
   pname = "libvpx";
-  version = "1.11.0";
+  version = "1.9.0";
 
   src = fetchFromGitHub {
     owner = "webmproject";
     repo = pname;
     rev = "v${version}";
-    sha256 = "00f1jrclai2b6ys78dpsg6r1mvcyxlna93vxcz8zjyia24c2pjsb";
+    sha256 = "16xv6ambc82g14h1y0q1vyy57wp6j9fbp0nk0wd5csnrw407rhry";
   };
 
-  postPatch = ''
-    patchShebangs --build \
-      build/make/*.sh \
-      build/make/*.pl \
-      build/make/*.pm \
-      test/*.sh \
-      configure
-
-    # When cross-compiling (for aarch64-multiplatform), the compiler errors out on these flags.
-    # Since they're 'just' warnings, it's fine to just remove them.
-    substituteInPlace configure \
-      --replace "check_add_cflags -Wparentheses-equality" "" \
-      --replace "check_add_cflags -Wunreachable-code-loop-increment" "" \
-      --replace "check_cflags -Wshorten-64-to-32 && add_cflags_only -Wshorten-64-to-32" ""
-  '';
+  postPatch = "patchShebangs .";
 
   outputs = [ "bin" "dev" "out" ];
   setOutputFlags = false;
@@ -145,6 +131,12 @@ stdenv.mkDerivation rec {
                     experimentalFpMbStatsSupport ||
                     experimentalEmulateHardwareSupport) "experimental")
   ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+    #"--extra-cflags="
+    #"--extra-cxxflags="
+    #"--prefix="
+    #"--libc="
+    #"--libdir="
+    "--enable-external-build"
     # libvpx darwin targets include darwin version (ie. ARCH-darwinXX-gcc, XX being the darwin version)
     # See all_platforms: https://github.com/webmproject/libvpx/blob/master/configure
     # Darwin versions: 10.4=8, 10.5=9, 10.6=10, 10.7=11, 10.8=12, 10.9=13, 10.10=14
@@ -177,10 +169,9 @@ stdenv.mkDerivation rec {
 
   postInstall = ''moveToOutput bin "$bin" '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "WebM VP8/VP9 codec SDK";
     homepage    = "https://www.webmproject.org/";
-    changelog   = "https://github.com/webmproject/libvpx/raw/v${version}/CHANGELOG";
     license     = licenses.bsd3;
     maintainers = with maintainers; [ codyopel ];
     platforms   = platforms.all;

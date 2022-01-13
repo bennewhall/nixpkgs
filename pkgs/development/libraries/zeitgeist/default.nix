@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , fetchpatch
-, pkg-config
+, pkgconfig
 , glib
 , sqlite
 , gobject-introspection
@@ -20,23 +20,23 @@
 
 stdenv.mkDerivation rec {
   pname = "zeitgeist";
-  version = "1.0.3";
+  version = "1.0.2";
 
-  outputs = [ "out" "lib" "dev" "man" ] ++ lib.optional pythonSupport "py";
+  outputs = [ "out" "lib" "dev" "man" ] ++ stdenv.lib.optional pythonSupport "py";
 
   src = fetchFromGitLab {
     domain = "gitlab.freedesktop.org";
     owner = pname;
     repo = pname;
     rev = "v${version}";
-    sha256 = "0y6fyzxl5np4yskcxibd0p03h619w9ir907nhf40h02y0pk1kgkp";
+    sha256 = "0ig3d3j1n0ghaxsgfww6g2hhcdwx8cljwwfmp9jk1nrvkxd6rnmv";
   };
 
   patches = [
-    # Fix build with Vala 0.52
+    # Fix build with gettext 0.20
     (fetchpatch {
-      url = "https://gitlab.freedesktop.org/zeitgeist/zeitgeist/commit/64ac3a6f94cd299e5e14945dc31b48f009dec152.patch";
-      sha256 = "Dw1kNE3JoFdmgcQ0eFoFLYvmxlPjXNj56Jkn2meINz4=";
+      url = "https://gitlab.freedesktop.org/zeitgeist/zeitgeist/commit/b5c00e80189fd59a059a95c4e276728a2492cb89.patch";
+      sha256 = "1r7f7j3l2p6xlzxajihgx8bzbc2sxcb9spc9pi26rz9bwmngdyq7";
     })
   ];
 
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
     autoconf
     automake
     libtool
-    pkg-config
+    pkgconfig
     gettext
     gobject-introspection
     vala
@@ -75,14 +75,14 @@ stdenv.mkDerivation rec {
     NOCONFIGURE=1 ./autogen.sh
   '';
 
-  postFixup = lib.optionalString pythonSupport ''
+  postFixup = stdenv.lib.optionalString pythonSupport ''
     moveToOutput lib/${python3.libPrefix} "$py"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A service which logs the users’s activities and events";
     homepage = "https://zeitgeist.freedesktop.org/";
-    maintainers = teams.freedesktop.members ++ (with maintainers; [ ]);
+    maintainers = with maintainers; [ lethalman worldofpeace ];
     license = licenses.lgpl21Plus;
     platforms = platforms.linux;
   };

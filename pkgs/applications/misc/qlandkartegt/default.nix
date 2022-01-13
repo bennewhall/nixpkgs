@@ -63,6 +63,8 @@ mkDerivation rec {
     "-DEXIF_INCLUDE_DIRS=${libexif}/include"
   ];
 
+  enableParallelBuilding = true;
+
   postPatch = ''
     substituteInPlace ConfigureChecks.cmake \
       --replace \$\{PLUGIN_INSTALL_DIR\} "${garmindev}/lib/qlandkartegt"

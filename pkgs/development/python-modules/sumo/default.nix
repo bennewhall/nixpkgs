@@ -1,46 +1,39 @@
-{ lib, buildPythonPackage, fetchFromGitHub
-, pythonOlder
+{ stdenv, buildPythonPackage, fetchFromGitHub, isPy27
 , h5py
 , matplotlib
 , numpy
 , phonopy
 , pymatgen
+, pytest
 , scipy
 , seekpath
 , spglib
-, castepxbin
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "sumo";
-  version = "2.2.5";
-
-  disabled = pythonOlder "3.6";
+  version = "1.0.9";
 
   # No tests in Pypi tarball
   src = fetchFromGitHub {
     owner = "SMTG-UCL";
     repo = "sumo";
     rev = "v${version}";
-    sha256 = "1vwqyv215yf51j1278cn7l8mpqmy1grm9j7z3hxjlz4w65cff324";
+    sha256 = "1zw86qp9ycw2k0anw6pzvwgd3zds0z2cwy0s663zhiv9mnb5hx1n";
   };
 
-  propagatedBuildInputs = [
-    spglib
-    numpy
-    scipy
-    h5py
-    pymatgen
-    phonopy
-    matplotlib
-    seekpath
-    castepxbin
-  ];
+  propagatedBuildInputs = [ numpy scipy spglib pymatgen h5py matplotlib seekpath phonopy ];
 
-  checkInputs = [ pytestCheckHook ];
+  checkInputs = [ pytest ];
 
-  meta = with lib; {
+  checkPhase = ''
+    pytest .
+  '';
+
+  # tests have type annotations, can only run on 3.5+
+  doCheck = (!isPy27);
+
+  meta = with stdenv.lib; {
     description = "Toolkit for plotting and analysis of ab initio solid-state calculation data";
     homepage = "https://github.com/SMTG-UCL/sumo";
     license = licenses.mit;

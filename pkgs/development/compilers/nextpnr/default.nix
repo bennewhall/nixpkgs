@@ -1,34 +1,34 @@
-{ lib, stdenv, fetchFromGitHub, cmake
-, boost, python3, eigen, python3Packages
+{ stdenv, fetchFromGitHub, cmake
+, boost, python3, eigen
 , icestorm, trellis
 , llvmPackages
 
-, enableGui ? false
-, wrapQtAppsHook ? null
-, qtbase ? null
+, enableGui ? true
+, wrapQtAppsHook
+, qtbase
 , OpenGL ? null
 }:
 
 let
   boostPython = boost.override { python = python3; enablePython = true; };
 in
-stdenv.mkDerivation rec {
+with stdenv; mkDerivation rec {
   pname = "nextpnr";
-  version = "2021.15.21";
+  version = "2020.12.01";
 
   srcs = [
     (fetchFromGitHub {
-      owner = "YosysHQ";
-      repo  = "nextpnr";
-      rev   = "d04cfd5f0f6da184f5b8a03f0ce18fbd1d98eca3";
-      hash  = "sha256-gm/+kwIZ/m10+KuCJoK45F56nKZD3tM0myHwbFKIKAs=";
-      name  = "nextpnr";
+      owner  = "YosysHQ";
+      repo   = "nextpnr";
+      rev    = "868902fbdf0b476bdccf4d25cbb80ba602d2cc11";
+      sha256 = "1kb5lhixb7f4q800gjyw9xm9ff1yaq3pgna17f5f0bw6b4ds56zc";
+      name   = "nextpnr";
     })
     (fetchFromGitHub {
       owner  = "YosysHQ";
       repo   = "nextpnr-tests";
-      rev    = "ccc61e5ec7cc04410462ec3196ad467354787afb";
-      sha256 = "sha256-VT0JfpRLgfo2WG+eoMdE0scPM5nKZZ/v1XlkeDNcQCU=";
+      rev    = "8f93e7e0f897b1b5da469919c9a43ba28b623b2a";
+      sha256 = "0zpd0w49k9l7rs3wmi2v8z5s4l4lad5rprs5l83w13667himpzyc";
       name   = "nextpnr-tests";
     })
   ];
@@ -39,29 +39,29 @@ stdenv.mkDerivation rec {
      = [ cmake ]
     ++ (lib.optional enableGui wrapQtAppsHook);
   buildInputs
-     = [ boostPython python3 eigen python3Packages.apycula ]
+     = [ boostPython python3 eigen ]
     ++ (lib.optional enableGui qtbase)
     ++ (lib.optional stdenv.cc.isClang llvmPackages.openmp);
 
+  enableParallelBuilding = true;
   cmakeFlags =
     [ "-DCURRENT_GIT_VERSION=${lib.substring 0 7 (lib.elemAt srcs 0).rev}"
-      "-DARCH=generic;ice40;ecp5;gowin"
+      "-DARCH=generic;ice40;ecp5"
       "-DBUILD_TESTS=ON"
-      "-DICESTORM_INSTALL_PREFIX=${icestorm}"
+      "-DICEBOX_ROOT=${icestorm}/share/icebox"
       "-DTRELLIS_INSTALL_PREFIX=${trellis}"
       "-DTRELLIS_LIBDIR=${trellis}/lib/trellis"
-      "-DGOWIN_BBA_EXECUTABLE=${python3Packages.apycula}/bin/gowin_bba"
       "-DUSE_OPENMP=ON"
       # warning: high RAM usage
-      "-DSERIALIZE_CHIPDBS=OFF"
+      "-DSERIALIZE_CHIPDB=OFF"
     ]
-    ++ (lib.optional enableGui "-DBUILD_GUI=ON")
+    ++ (lib.optional (!enableGui) "-DBUILD_GUI=OFF")
     ++ (lib.optional (enableGui && stdenv.isDarwin)
         "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks");
 
   patchPhase = with builtins; ''
     # use PyPy for icestorm if enabled
-    substituteInPlace ./ice40/CMakeLists.txt \
+    substituteInPlace ./ice40/family.cmake \
       --replace ''\'''${PYTHON_EXECUTABLE}' '${icestorm.pythonInterp}'
   '';
 
@@ -75,7 +75,6 @@ stdenv.mkDerivation rec {
     wrapQtApp $out/bin/nextpnr-generic
     wrapQtApp $out/bin/nextpnr-ice40
     wrapQtApp $out/bin/nextpnr-ecp5
-    wrapQtApp $out/bin/nextpnr-gowin
   '';
 
   meta = with lib; {

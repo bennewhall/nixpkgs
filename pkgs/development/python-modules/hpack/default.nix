@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -12,7 +12,7 @@ buildPythonPackage rec {
     sha256 = "fc41de0c63e687ebffde81187a948221294896f6bdc0ae2312708df339430095";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pure-Python HPACK header compression";
     homepage = "http://hyper.rtfd.org";
     license = licenses.mit;

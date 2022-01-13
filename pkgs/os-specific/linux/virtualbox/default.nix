@@ -1,8 +1,7 @@
 { stdenv, virtualbox, kernel }:
 
 stdenv.mkDerivation {
-  pname = "virtualbox-modules";
-  version = "${virtualbox.version}-${kernel.version}";
+  name = "virtualbox-modules-${virtualbox.version}-${kernel.version}";
   src = virtualbox.modsrc;
   hardeningDisable = [
     "fortify" "pic" "stackprotector"

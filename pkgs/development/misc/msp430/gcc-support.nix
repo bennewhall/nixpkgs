@@ -1,4 +1,4 @@
-{ lib, stdenvNoCC, fetchzip }:
+{ stdenvNoCC, fetchzip }:
 
 let
   mspgccVersion = "6_1_1_0";
@@ -19,7 +19,7 @@ in stdenvNoCC.mkDerivation rec {
     touch $out/lib/lib
   '';
 
-  meta = with lib; {
+  meta = with stdenvNoCC.lib; {
     description = ''
       Development headers and linker scripts for TI MSP430 microcontrollers
     '';

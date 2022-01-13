@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, boost, pkg-config, librevenge, zlib }:
+{ stdenv, fetchurl, boost, pkgconfig, librevenge, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "libwps";
@@ -9,12 +9,12 @@ stdenv.mkDerivation rec {
     sha256 = "16c6vq6hhi5lcvgyb9dwarr3kz69l1g5fs39b2hwqhkwzx5igpcl";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ boost librevenge zlib ];
 
   NIX_CFLAGS_COMPILE = "-Wno-error=implicit-fallthrough";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://libwps.sourceforge.net/";
     description = "Microsoft Works document format import filter library";
     platforms = platforms.unix;

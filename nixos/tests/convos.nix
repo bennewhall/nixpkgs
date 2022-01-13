@@ -6,7 +6,7 @@ let
 in
 {
   name = "convos";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ sgo ];
   };
 

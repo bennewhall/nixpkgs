@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation {
-  pname = "clean";
-  version = "3.0";
+  name = "clean-3.0";
 
   src =
     if stdenv.hostPlatform.system == "i686-linux" then (fetchurl {
@@ -46,8 +45,8 @@ stdenv.mkDerivation {
     '';
 
     homepage = "http://wiki.clean.cs.ru.nl/Clean";
-    license = lib.licenses.bsd2;
-    maintainers = [ lib.maintainers.erin ];
+    license = stdenv.lib.licenses.lgpl21;
+    maintainers = [ stdenv.lib.maintainers.kkallio ];
     platforms = [ "i686-linux" "x86_64-linux" ];
   };
 }

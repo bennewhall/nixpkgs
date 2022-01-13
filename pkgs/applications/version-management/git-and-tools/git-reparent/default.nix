@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, git, gnused }:
+{ stdenv, fetchFromGitHub, makeWrapper, git, gnused }:
 
 stdenv.mkDerivation rec {
   pname = "git-reparent";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "0v0yxydpw6r4awy0hb7sbnh520zsk86ibzh1xjf3983yhsvkfk5v";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   dontBuild = true;
 
@@ -20,10 +20,10 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    wrapProgram $out/bin/git-reparent --prefix PATH : "${lib.makeBinPath [ git gnused ]}"
+    wrapProgram $out/bin/git-reparent --prefix PATH : "${stdenv.lib.makeBinPath [ git gnused ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Git command to recommit HEAD with a new set of parents";
     maintainers = [ maintainers.marsam ];

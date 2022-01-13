@@ -1,37 +1,32 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
-, pythonOlder
-, pytestCheckHook
+, isPy3k
+, pytest
 , pyyaml
-, ruamel-yaml
+, ruamel_yaml
 }:
 
 buildPythonPackage rec {
   pname = "yamale";
-  version = "4.0.2";
-  format = "setuptools";
+  version = "3.0.4";
 
-  disabled = pythonOlder "3.6";
+  disabled = !isPy3k;
 
   src = fetchFromGitHub {
     owner = "23andMe";
     repo = pname;
     rev = version;
-    sha256 = "sha256-hFBU3o3HpL0Schgzcx3oYq0IAUVGKThIfEteYcFbLnk=";
+    sha256 = "1xjvah4r3gpwk4zxql3c9jpllb34k175fm6iq1zvsd2vv2fwf8s2";
   };
 
   propagatedBuildInputs = [
     pyyaml
-    ruamel-yaml
+    ruamel_yaml
   ];
 
   checkInputs = [
-    pytestCheckHook
-  ];
-
-  pythonImportsCheck = [
-    "yamale"
+    pytest
   ];
 
   meta = with lib; {

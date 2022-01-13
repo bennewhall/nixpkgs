@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
-stdenv.mkDerivation rec {
-  pname = "vlan";
-  version = "1.9";
+stdenv.mkDerivation {
+  name = "vlan-1.9";
 
   src = fetchurl {
-    url = "mirror://gentoo/distfiles/vlan.${version}.tar.gz";
+    url = "mirror://gentoo/distfiles/vlan.1.9.tar.gz";
     sha256 = "1jjc5f26hj7bk8nkjxsa8znfxcf8pgry2ipnwmj2fr6ky0dhm3rv";
   };
 
@@ -26,7 +25,7 @@ stdenv.mkDerivation rec {
       cp vconfig.8 $out/share/man/man8/
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "User mode programs to enable VLANs on Ethernet devices";
     platforms = platforms.linux;
     license = licenses.gpl2Plus;

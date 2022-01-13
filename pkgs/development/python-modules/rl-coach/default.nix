@@ -1,4 +1,5 @@
-{ lib
+{ stdenv
+, lib
 , buildPythonPackage
 , pythonOlder
 , fetchPypi
@@ -88,7 +89,7 @@ buildPythonPackage rec {
 
   disabled = pythonOlder "3.5"; # minimum required version
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Enables easy experimentation with state of the art Reinforcement Learning algorithms";
     homepage = "https://nervanasystems.github.io/coach/";
     license = licenses.asl20;

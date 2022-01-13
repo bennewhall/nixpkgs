@@ -1,11 +1,11 @@
-{lib, stdenv, fetchurl, makeWrapper, ocaml, ncurses}:
+{stdenv, fetchurl, makeWrapper, ocaml, ncurses}:
 let
   pname = "omake";
   version = "0.9.8.6-0.rc1";
   webpage = "http://omake.metaprl.org";
 in
 
-if lib.versionAtLeast ocaml.version "4.06"
+if stdenv.lib.versionAtLeast ocaml.version "4.06"
 then throw "${pname}-${version} is not available for OCaml ${ocaml.version}"
 else
 
@@ -20,10 +20,9 @@ stdenv.mkDerivation {
   patchFlags = [ "-p0" ];
   patches = [ ./warn.patch ];
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ ocaml ncurses ];
+  buildInputs = [ ocaml makeWrapper ncurses ];
 
-  dontInstall = true;
+  phases = "unpackPhase patchPhase buildPhase";
   buildPhase = ''
     make bootstrap
     make PREFIX=$out all
@@ -33,7 +32,7 @@ stdenv.mkDerivation {
 #
 #  configureFlags = if transitional then "--transitional" else "--strict";
 #
-#  buildFlags = [ "world.opt" ];
+#  buildFlags = [ "world.opt" ];		
 
   meta = {
     description = "Omake build system";

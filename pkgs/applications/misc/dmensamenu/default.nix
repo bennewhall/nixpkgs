@@ -1,14 +1,14 @@
-{ lib, buildPythonApplication, fetchFromGitHub, substituteAll, requests, dmenu }:
+{ stdenv, buildPythonApplication, fetchFromGitHub, substituteAll, requests, dmenu }:
 
 buildPythonApplication rec {
   pname = "dmensamenu";
-  version = "1.2.2";
+  version = "1.2.1";
 
   src = fetchFromGitHub {
     owner = "dotlambda";
     repo = "dmensamenu";
     rev = version;
-    sha256 = "1ck1i1k40bli6m3n49ff6987hglby9fn4vfr28jpkm3h70s2km3n";
+    sha256 = "15c8g2vdban3dw3g979icypgpx52irpvv39indgk19adicgnzzqp";
   };
 
   patches = [
@@ -25,7 +25,7 @@ buildPythonApplication rec {
   # No tests implemented
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/dotlambda/dmensamenu";
     description = "Print German canteen menus using dmenu and OpenMensa";
     license = licenses.mit;

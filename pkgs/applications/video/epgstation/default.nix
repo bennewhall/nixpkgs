@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , common-updater-scripts
 , genericUpdater
@@ -27,7 +26,7 @@ let
     # FIXME: This should be removed when a complete fix is available
     # https://github.com/svanderburg/node2nix/issues/145
     name = "workaround-opencollective-buildfailures";
-    dontUnpack = true;
+    phases = [ "installPhase" ];
     installPhase = ''
       mkdir -p $out/bin
       touch $out/bin/opencollective-postinstall
@@ -83,7 +82,7 @@ let
 
       makeWrapper ${nodejs}/bin/npm $out/bin/epgstation \
        --run "cd $out/lib/node_modules/EPGStation" \
-       --prefix PATH : ${lib.makeBinPath runtimeDeps}
+       --prefix PATH : ${stdenv.lib.makeBinPath runtimeDeps}
 
       popd
     '';
@@ -91,7 +90,7 @@ let
     # NOTE: this may take a while since it has to update all packages in
     # nixpkgs.nodePackages
     passthru.updateScript = import ./update.nix {
-      inherit lib;
+      inherit (stdenv) lib;
       inherit (src.meta) homepage;
       inherit
         pname
@@ -114,7 +113,7 @@ in
 pkg // {
   name = "${pname}-${version}";
 
-  meta = with lib; pkg.meta // {
+  meta = with stdenv.lib; pkg.meta // {
     maintainers = with maintainers; [ midchildan ];
 
     # NOTE: updateScript relies on this being correct

@@ -2,6 +2,8 @@
 , buildPythonPackage
 , fetchPypi
 , azure-nspkg
+, python
+, isPy3k
 }:
 
 buildPythonPackage rec {

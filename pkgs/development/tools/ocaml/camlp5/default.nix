@@ -1,35 +1,26 @@
-{ lib, stdenv, fetchFromGitHub, ocaml, perl }:
+{ stdenv, fetchzip, ocaml }:
 
-if lib.versionOlder ocaml.version "4.02"
-then throw "camlp5 is not available for OCaml ${ocaml.version}"
-else
+stdenv.mkDerivation {
 
-stdenv.mkDerivation rec {
+  name = "camlp5-7.13";
 
-  pname = "camlp5";
-  version = "7.14";
-
-  src = fetchFromGitHub {
-    owner = "camlp5";
-    repo = "camlp5";
-    rev = "rel${builtins.replaceStrings [ "." ] [ "" ] version}";
-    sha256 = "1dd68bisbpqn5lq2pslm582hxglcxnbkgfkwhdz67z4w9d5nvr7w";
+  src = fetchzip {
+    url = "https://github.com/camlp5/camlp5/archive/rel713.tar.gz";
+    sha256 = "1d9spy3f5ahixm8nxxk086kpslzva669a5scn49am0s7vx4i71kp";
   };
 
-  buildInputs = [ ocaml perl ];
+  buildInputs = [ ocaml ];
 
   prefixKey = "-prefix ";
 
-  preConfigure = ''
-    configureFlagsArray=(--strict --libdir $out/lib/ocaml/${ocaml.version}/site-lib)
-    patchShebangs ./config/find_stuffversion.pl
-  '';
+  preConfigure = "configureFlagsArray=(--strict" +
+                  " --libdir $out/lib/ocaml/${ocaml.version}/site-lib)";
 
   buildFlags = [ "world.opt" ];
 
   dontStrip = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Preprocessor-pretty-printer for OCaml";
     longDescription = ''
       Camlp5 is a preprocessor and pretty-printer for OCaml programs.

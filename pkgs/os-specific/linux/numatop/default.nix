@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, numactl, ncurses, check }:
+{ stdenv, fetchurl, pkgconfig, numactl, ncurses, check }:
 
 stdenv.mkDerivation rec {
   pname = "numatop";
@@ -8,13 +8,13 @@ stdenv.mkDerivation rec {
     sha256 = "1s7psq1xyswj0lpx10zg5lnppav2xy9safkfx3rssrs9c2fp5d76";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ numactl ncurses ];
   checkInputs = [ check ];
 
   doCheck  = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for runtime memory locality characterization and analysis of processes and threads on a NUMA system";
     homepage = "https://01.org/numatop";
     license = licenses.bsd3;

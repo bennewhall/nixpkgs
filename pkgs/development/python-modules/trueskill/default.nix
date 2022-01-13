@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , six }:
 
 buildPythonPackage rec {
@@ -17,7 +17,7 @@ buildPythonPackage rec {
   # Can't build distribute, see https://github.com/NixOS/nixpkgs/pull/49340
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The video game rating system";
     homepage = "https://trueskill.org";
     license = licenses.bsd3;

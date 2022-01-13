@@ -1,8 +1,8 @@
-{ lib, buildPythonPackage, fetchFromGitHub, isPy3k, matplotlib, numpy, pytestCheckHook, seaborn }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, isPy3k, numpy, pytest }:
 
 buildPythonPackage rec {
   pname = "pycm";
-  version = "3.3";
+  version = "2.5";
 
   disabled = !isPy3k;
 
@@ -10,21 +10,23 @@ buildPythonPackage rec {
     owner  = "sepandhaghighi";
     repo   = pname;
     rev    = "v${version}";
-    sha256 = "0i3qpb20mnc22qny1ar3yvxb1dac7njwi8bvi5sy5kywz10c5dkw";
+    sha256 = "0zfv20hd7zq95sflsivjk47b0sm7q76w7fv2i2mafn83ficzx0p0";
   };
 
   # remove a trivial dependency on the author's `art` Python ASCII art library
   postPatch = ''
     rm pycm/__main__.py
-    rm Otherfiles/notebook_check.py  # also depends on python3Packages.notebook
     substituteInPlace setup.py --replace '=get_requires()' '=[]'
   '';
 
-  checkInputs = [ pytestCheckHook ];
-  disabledTests = [ "pycm.pycm_compare.Compare" ];  # output formatting error
-  propagatedBuildInputs = [ matplotlib numpy seaborn ];
+  checkInputs = [ pytest ];
+  propagatedBuildInputs = [ numpy ];
 
-  meta = with lib; {
+  checkPhase = ''
+    pytest Test/
+  '';
+
+  meta = with stdenv.lib; {
     description = "Multiclass confusion matrix library";
     homepage = "https://pycm.ir";
     license = licenses.mit;

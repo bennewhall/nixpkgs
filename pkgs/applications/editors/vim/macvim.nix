@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, runCommand, ncurses, gettext
-, pkg-config, cscope, ruby, tcl, perl, luajit
+{ stdenv, fetchFromGitHub, runCommand, ncurses, gettext
+, pkgconfig, cscope, ruby, tcl, perl, luajit
 , darwin
 
 , usePython27 ? false
@@ -38,7 +38,7 @@ stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = [ pkg-config buildSymlinks ];
+  nativeBuildInputs = [ pkgconfig buildSymlinks ];
   buildInputs = [
     gettext ncurses cscope luajit ruby tcl perl python.pkg
   ];
@@ -175,7 +175,7 @@ stdenv.mkDerivation {
     (deny file-read* file-write* process-exec mach-lookup (subpath "/usr/local") (with no-log))
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Vim - the text editor - for macOS";
     homepage    = "https://github.com/macvim-dev/macvim";
     license = licenses.vim;

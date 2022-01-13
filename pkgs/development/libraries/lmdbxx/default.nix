@@ -1,26 +1,26 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , lmdb }:
 
 stdenv.mkDerivation rec {
   pname = "lmdbxx";
-  version = "1.0.0";
+  version = "0.9.14.0";
 
   src = fetchFromGitHub {
-    owner = "hoytech";
+    owner = "drycpp";
     repo = "lmdbxx";
     rev = version;
-    sha256 = "sha256-7CxQZdgHVvmof6wVR9Mzic6tg89XJT3Z1ICGRs7PZYo=";
+    sha256 = "1jmb9wg2iqag6ps3z71bh72ymbcjrb6clwlkgrqf1sy80qwvlsn6";
   };
 
   buildInputs = [ lmdb ];
   makeFlags = [ "PREFIX=$(out)" ];
 
   meta = {
-    homepage = "https://github.com/hoytech/lmdbxx#readme";
+    homepage = "https://github.com/drycpp/lmdbxx#readme";
     description = "C++11 wrapper for the LMDB embedded B+ tree database library";
-    license = lib.licenses.unlicense;
-    maintainers = with lib.maintainers; [ fgaz ];
+    license = stdenv.lib.licenses.unlicense;
+    maintainers = with stdenv.lib.maintainers; [ fgaz ];
   };
 }
 

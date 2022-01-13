@@ -4,20 +4,18 @@
 , cmake
 , future
 , numpy
-, qdldl
 , scipy
 # check inputs
 , pytestCheckHook
-, cvxopt
 }:
 
 buildPythonPackage rec {
   pname = "osqp";
-  version = "0.6.2.post0";
+  version = "0.6.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "5f0695f26a3bef0fae91254bc283fab790dcca0064bfe0f425167f9c9e8b4cbc";
+    sha256 = "130frig5bznfacqp9jwbshmbqd2xw3ixdspsbkrwsvkdaab7kca7";
   };
 
   nativeBuildInputs = [ cmake ];
@@ -26,14 +24,15 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     future
     numpy
-    qdldl
     scipy
   ];
 
   pythonImportsCheck = [ "osqp" ];
-  checkInputs = [ pytestCheckHook cvxopt ];
+  checkInputs = [ pytestCheckHook ];
+  dontUseSetuptoolsCheck = true;  # don't run checks twice
   disabledTests = [
     "mkl_"
+    "update_matrices_tests" # broken w/ scipy >= 1.5.0. Remove next release. See https://github.com/oxfordcontrol/osqp-python/issues/44
   ];
 
   meta = with lib; {

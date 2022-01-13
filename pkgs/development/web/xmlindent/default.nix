@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, flex }:
+{ stdenv, fetchurl, flex }:
 
 stdenv.mkDerivation rec {
   pname = "xmlindent";
@@ -18,8 +18,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "XML stream reformatter";
     homepage = "http://xmlindent.sourceforge.net/";
-    license = lib.licenses.gpl3;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = [ ];
   };
 }

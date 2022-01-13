@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , nose
@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ nose ipython ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/flavioamieiro/nose-ipdb/tree/master";
     description = "Nose plugin to use iPdb instead of Pdb when tests fail";
     license = licenses.lgpl2;

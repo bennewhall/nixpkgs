@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchgit, makeWrapper, pkg-config,
-  gnome2, gtk2, glib, pango, cairo, gdk-pixbuf, atk, freetype, xorg,
+{ stdenv, fetchgit, makeWrapper, pkgconfig,
+  gnome2, glib, pango, cairo, gdk-pixbuf, atk, freetype, xorg,
   configH ? ""
 }:
 
@@ -14,8 +14,8 @@ stdenv.mkDerivation {
   };
 
   buildInputs = [
-    gnome2.vte glib pango gtk2 cairo gdk-pixbuf atk freetype xorg.libX11
-    xorg.xorgproto xorg.libXext makeWrapper pkg-config
+    gnome2.vte glib pango gnome2.gtk cairo gdk-pixbuf atk freetype xorg.libX11
+    xorg.xorgproto xorg.libXext makeWrapper pkgconfig
   ];
 
   buildPhase = ''
@@ -25,7 +25,7 @@ stdenv.mkDerivation {
     make
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "VTE based, highly customizable terminal emulator";
     homepage = "http://www.calno.com/evilvte";
     license = licenses.gpl2;

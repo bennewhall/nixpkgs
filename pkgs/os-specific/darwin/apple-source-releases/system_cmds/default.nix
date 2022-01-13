@@ -1,5 +1,5 @@
 { stdenv, appleDerivation, lib
-, libutil, Librpcsvc, apple_sdk, pam, CF, openbsm }:
+, Librpcsvc, apple_sdk, pam, CF, openbsm }:
 
 appleDerivation {
   # xcbuild fails with:
@@ -7,7 +7,7 @@ appleDerivation {
   # see issue facebook/xcbuild#188
   # buildInputs = [ xcbuild ];
 
-  buildInputs = [ libutil Librpcsvc apple_sdk.frameworks.OpenDirectory pam CF
+  buildInputs = [ Librpcsvc apple_sdk.frameworks.OpenDirectory pam CF
                   apple_sdk.frameworks.IOKit openbsm ];
   # NIX_CFLAGS_COMPILE = lib.optionalString hostPlatform.isi686 "-D__i386__"
   #                    + lib.optionalString hostPlatform.isx86_64 "-D__x86_64__"
@@ -35,11 +35,6 @@ appleDerivation {
       --replace bsm/audit_session.h bsm/audit.h
     substituteInPlace login.tproj/login_audit.c \
       --replace bsm/audit_session.h bsm/audit.h
-  '' + lib.optionalString stdenv.isAarch64 ''
-    substituteInPlace sysctl.tproj/sysctl.c \
-      --replace "GPROF_STATE" "0"
-    substituteInPlace login.tproj/login.c \
-      --replace "defined(__arm__)" "defined(__arm__) || defined(__arm64__)"
   '';
 
   buildPhase = ''
@@ -103,7 +98,7 @@ appleDerivation {
   '';
 
   meta = {
-    platforms = lib.platforms.darwin;
-    maintainers = with lib.maintainers; [ shlevy matthewbauer ];
+    platforms = stdenv.lib.platforms.darwin;
+    maintainers = with stdenv.lib.maintainers; [ shlevy matthewbauer ];
   };
 }

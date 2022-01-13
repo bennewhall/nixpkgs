@@ -1,55 +1,22 @@
-{ lib
-, fetchFromGitHub
-, imagemagick
-, python3
-, tesseract
-, xpdf
-}:
+{ stdenv, python3Packages, xpdf, imagemagick, tesseract }:
 
-python3.pkgs.buildPythonApplication rec {
+python3Packages.buildPythonPackage rec {
   pname = "invoice2data";
-  version = "0.3.6";
-  format = "setuptools";
+  version = "0.2.93";
 
-  src = fetchFromGitHub {
-    owner = "invoice-x";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-t1jgLyKtQsLINlnkCdSbVfTM6B/EiD1yGtx9UHjyZVE=";
+  src = python3Packages.fetchPypi {
+    inherit pname version;
+    sha256 = "1phz0a8jxg074k0im7shrrdfvdps7bn1fa4zwcf8q3sa2iig26l4";
   };
 
-  nativeBuildInputs = with python3.pkgs; [
-    setuptools-git
-  ];
+  makeWrapperArgs = ["--prefix" "PATH" ":" (stdenv.lib.makeBinPath [ imagemagick xpdf tesseract ]) ];
 
-  propagatedBuildInputs = with python3.pkgs; [
-    chardet
-    dateparser
-    pdfminer
-    pillow
-    pyyaml
-    unidecode
-  ];
-
-  postPatch = ''
-    substituteInPlace setup.cfg \
-      --replace "pytest-runner" ""
-  '';
-
-  makeWrapperArgs = ["--prefix" "PATH" ":" (lib.makeBinPath [
-    imagemagick
-    tesseract
-    xpdf
-  ])];
+  propagatedBuildInputs = with python3Packages; [ unidecode dateparser pyyaml pillow chardet pdfminer ];
 
   # Tests fails even when ran manually on my ubuntu machine !!
   doCheck = false;
 
-  pythonImportsCheck = [
-    "invoice2data"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Data extractor for PDF invoices";
     homepage = "https://github.com/invoice-x/invoice2data";
     license = licenses.mit;

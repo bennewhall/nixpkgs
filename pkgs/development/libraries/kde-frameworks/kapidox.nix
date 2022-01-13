@@ -1,8 +1,9 @@
-{ mkDerivation, lib, extra-cmake-modules, python3 }:
+{ mkDerivation, lib, extra-cmake-modules, python }:
 
 mkDerivation {
   name = "kapidox";
-  nativeBuildInputs = [ extra-cmake-modules python3 python3.pkgs.setuptools ];
+  meta = { maintainers = [ lib.maintainers.ttuegel ]; };
+  nativeBuildInputs = [ extra-cmake-modules python ];
   postFixup = ''
     moveToOutput bin $bin
   '';

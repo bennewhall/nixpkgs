@@ -1,5 +1,4 @@
 { lib
-, pythonOlder
 , fetchFromGitHub
 , meson
 , ninja
@@ -7,14 +6,12 @@
 , pytestCheckHook
 , pkg-config
 , cairo
-, python
+, isPy3k
 }:
 
 buildPythonPackage rec {
   pname = "pycairo";
-  version = "1.20.1";
-
-  disabled = pythonOlder "3.6";
+  version = "1.18.2";
 
   format = "other";
 
@@ -22,7 +19,7 @@ buildPythonPackage rec {
     owner = "pygobject";
     repo = "pycairo";
     rev = "v${version}";
-    sha256 = "09aisph7ycgb4xi2xglvrn59i3cyqms8jbb876cl9763g7yqbcr6";
+    sha256 = "142145a2whvlk92jijrbf3i2bqrzmspwpysj0bfypw0krzi0aa6j";
   };
 
   nativeBuildInputs = [
@@ -40,14 +37,11 @@ buildPythonPackage rec {
   ];
 
   mesonFlags = [
-    # This is only used for figuring out what version of Python is in
-    # use, and related stuff like figuring out what the install prefix
-    # should be, but it does need to be able to execute Python code.
-    "-Dpython=${python.pythonForBuild.interpreter}"
+    "-Dpython=${if isPy3k then "python3" else "python"}"
   ];
 
   meta = with lib; {
-    description = "Python 3 bindings for cairo";
+    description = "Python 2/3 bindings for cairo";
     homepage = "https://pycairo.readthedocs.io/";
     license = with licenses; [ lgpl21Only mpl11 ];
     platforms = lib.platforms.linux ++ lib.platforms.darwin;

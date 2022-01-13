@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   version = "0.6.8";
@@ -26,13 +26,11 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/hedning/nix-bash-completions";
     description = "Bash completions for Nix, NixOS, and NixOps";
     license = licenses.bsd3;
     platforms = platforms.all;
     maintainers = with maintainers; [ hedning ];
-    # Set a lower priority such that the newly provided completion from Nix 2.4 are preferred.
-    priority = 10;
   };
 }

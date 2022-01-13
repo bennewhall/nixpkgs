@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "attempto-clex";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     cp clex_lexicon.pl $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Large lexicon for APE (~100,000 entries)";
     license = licenses.gpl3;
     platforms = platforms.unix;

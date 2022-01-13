@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, libmilter, perl, perlPackages, makeWrapper }:
+{ stdenv, fetchFromGitHub, autoreconfHook, libmilter, perl, perlPackages, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "opendmarc";
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A free open source software implementation of the DMARC specification";
     homepage = "http://www.trusteddomain.org/opendmarc/";
     license = with licenses; [ bsd3 sendmail ];

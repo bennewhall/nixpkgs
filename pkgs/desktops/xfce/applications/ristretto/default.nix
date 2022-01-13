@@ -1,19 +1,17 @@
-{ lib, mkXfceDerivation, gtk3, glib, libexif
+{ mkXfceDerivation, automakeAddFlags, exo, gtk3, glib, libexif
 , libxfce4ui, libxfce4util, xfconf }:
 
 mkXfceDerivation {
   category = "apps";
   pname = "ristretto";
-  version = "0.12.1";
+  version = "0.10.0";
 
-  sha256 = "sha256-Kwtema8mydSPQadeaw/OTnGCHUNuJpvHbf7l4YtICYE=";
+  sha256 = "07h7wbq3xh2ac6q4kp2ai1incfn0zfxxngap7hzqx47a5xw2mrm8";
 
+  nativeBuildInputs = [ exo ];
   buildInputs = [ glib gtk3 libexif libxfce4ui libxfce4util xfconf ];
 
-  NIX_CFLAGS_COMPILE = "-I${glib.dev}/include/gio-unix-2.0";
-
-  meta = with lib; {
+  meta = {
     description = "A fast and lightweight picture-viewer for the Xfce desktop environment";
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
   };
 }

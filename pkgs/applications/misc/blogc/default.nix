@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, ronn, git, cmocka }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, ronn, git, cmocka }:
 
 stdenv.mkDerivation rec {
   pname = "blogc";
-  version = "0.20.1";
+  version = "0.20.0";
 
   src = fetchFromGitHub {
     owner = "blogc";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-YAwGgV5Vllz8JlIASbGIkdRzpciQbgPiXl5DjiSEJyE=";
+    sha256 = "0hx0gpvmv7rd910czafvmcpxabbvfmvdyxk4d1mckmblx8prb807";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ ronn git cmocka ];
 
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A blog compiler";
     license = licenses.bsd3;
     homepage = "https://blogc.rgm.io";

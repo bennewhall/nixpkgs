@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, makeWrapper, gcc, ncurses }:
+{ stdenv, fetchFromGitLab, makeWrapper, gcc, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "icmake";
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
      --prefix PATH : ${ncurses}/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A program maintenance (make) utility using a C-like grammar";
     homepage = "https://fbb-git.gitlab.io/icmake/";
     license = licenses.gpl3;

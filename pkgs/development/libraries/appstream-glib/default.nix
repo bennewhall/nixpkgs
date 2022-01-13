@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , substituteAll
 , docbook_xml_dtd_42
@@ -19,12 +19,11 @@
 , libxslt
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , pngquant
 }:
 stdenv.mkDerivation rec {
-  pname = "appstream-glib";
-  version = "0.7.18";
+  name = "appstream-glib-0.7.18";
 
   outputs = [ "out" "dev" "man" "installedTests" ];
   outputBin = "dev";
@@ -32,7 +31,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "hughsie";
     repo = "appstream-glib";
-    rev = "${lib.replaceStrings ["-"] ["_"] pname}_${lib.replaceStrings ["."] ["_"] version}";
+    rev = stdenv.lib.replaceStrings [ "." "-" ] [ "_" "_" ] name;
     sha256 = "12s7d3nqjs1fldnppbg2mkjg4280f3h8yzj3q1hiz3chh1w0vjbx";
   };
 
@@ -46,7 +45,7 @@ stdenv.mkDerivation rec {
     libxslt
     meson
     ninja
-    pkg-config
+    pkgconfig
   ];
 
   buildInputs = [
@@ -85,11 +84,11 @@ stdenv.mkDerivation rec {
     moveToOutput "share/installed-tests" "$installedTests"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Objects and helper methods to read and write AppStream metadata";
     homepage = "https://people.freedesktop.org/~hughsient/appstream-glib/";
     license = licenses.lgpl2Plus;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ matthewbauer ];
+    maintainers = with maintainers; [ lethalman matthewbauer ];
   };
 }

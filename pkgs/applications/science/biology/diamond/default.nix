@@ -1,14 +1,11 @@
-{ lib, stdenv, fetchFromGitHub, cmake, zlib }:
+{ stdenv, fetchurl, cmake, zlib }:
 
-stdenv.mkDerivation rec {
-  pname = "diamond";
-  version = "0.8.36";
+stdenv.mkDerivation {
+  name = "diamond-0.8.36";
 
-  src = fetchFromGitHub {
-    owner = "bbuchfink";
-    repo = "diamond";
-    rev = "v${version}";
-    sha256 = "sha256-7uqOQOzkYN0RNwKBGUZ/Ny5NVZMoGByOk+GUvjdBzck=";
+  src = fetchurl {
+    url = "https://github.com/bbuchfink/diamond/archive/v0.8.36.tar.gz";
+    sha256 = "092smzzjcg51n3x4h84k52ijpz9m40ri838j9k2i463ribc3c8rh";
   };
 
   patches = [
@@ -18,7 +15,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
   buildInputs = [ zlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Accelerated BLAST compatible local sequence aligner";
     longDescription = ''
       A sequence aligner for protein and translated DNA
@@ -33,7 +30,7 @@ stdenv.mkDerivation rec {
       B. Buchfink, Xie C., D. Huson,
       "Fast and sensitive protein alignment using DIAMOND",
       Nature Methods 12, 59-60 (2015).
-    '';
+        '';
     homepage = "https://github.com/bbuchfink/diamond";
     license = {
       fullName = "University of Tuebingen, Benjamin Buchfink";

@@ -1,10 +1,8 @@
-{ lib, fetchurl, buildDunePackage }:
+{ stdenv, fetchurl, buildDunePackage }:
 
 buildDunePackage rec {
   pname = "wtf8";
   version = "1.0.2";
-
-  useDune2 = true;
 
   minimumOCamlVersion = "4.02";
 
@@ -13,7 +11,7 @@ buildDunePackage rec {
     sha256 = "09ygcxxd5warkdzz17rgpidrd0pg14cy2svvnvy1hna080lzg7vp";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/flowtype/ocaml-wtf8";
     description = "WTF-8 is a superset of UTF-8 that allows unpaired surrogates.";
     license = licenses.mit;

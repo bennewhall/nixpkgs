@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pcre } :
+{ stdenv, fetchFromGitHub, pcre } :
 
 stdenv.mkDerivation {
   pname = "imatix_gsl";
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
   preBuild = "cd src";
   installFlags = [ "DESTDIR=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.gpl3Plus;
     homepage = "https://github.com/imatix/gsl/";
     description = "A universal code generator";

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "mailcheck";
@@ -14,9 +14,11 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Simple command line tool to check for new messages";
     homepage    = "http://mailcheck.sourceforge.net/";
-    license     = lib.licenses.gpl2;
-    maintainers = with lib.maintainers; [ kovirobi ];
-    platforms   = lib.platforms.linux;
+    license     = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ kovirobi ];
+    platforms   = stdenv.lib.platforms.linux;
+    inherit version;
+
     longDescription = ''
       A simple command line tool to check for new mail in local mbox and
       maildir and remote POP3 and IMAP mailboxes.

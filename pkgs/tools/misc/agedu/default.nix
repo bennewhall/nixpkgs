@@ -1,22 +1,20 @@
-{lib, stdenv, fetchgit, autoreconfHook, halibut}:
+{stdenv, fetchgit, autoreconfHook, halibut}:
 let
-  date = "20200705";
-  rev = "2a7d4a2";
+  date = "20200206";
+  rev = "963bc9d";
 in
 stdenv.mkDerivation {
-  pname = "agedu";
-  version = "${date}.${rev}";
-
+  name = "agedu-${date}.${rev}";
   # upstream provides tarballs but it seems they disappear after the next version is released
   src = fetchgit {
     url = "https://git.tartarus.org/simon/agedu.git";
     inherit rev;
-    sha256 = "gRNscl/vhBoZaHFCs9JjDBHDRoEpILJLtiI4YV+K/b4=";
+    sha256 = "1jmvgg2v6aqgbgpxbndrdhgfhlglrq4yv4sdbjaj6bsz9fb8lqhc";
   };
 
   nativeBuildInputs = [autoreconfHook halibut];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Unix utility for tracking down wasted disk space";
     longDescription = ''
        Most Unix file systems, in their default mode, helpfully record when a
@@ -32,6 +30,6 @@ stdenv.mkDerivation {
     homepage = "https://www.chiark.greenend.org.uk/~sgtatham/agedu/";
     license = licenses.mit;
     maintainers = with maintainers; [ symphorien ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

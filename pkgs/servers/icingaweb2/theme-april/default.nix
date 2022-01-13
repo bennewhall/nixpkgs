@@ -1,15 +1,10 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-}:
-
-stdenv.mkDerivation rec {
-  pname = "icingaweb2-theme-april";
+{ stdenv, lib, fetchFromGitHub }: with lib; stdenv.mkDerivation rec {
+  name = "icingaweb2-theme-april";
   version = "1.0.4";
 
   src = fetchFromGitHub {
     owner = "Mikesch-mp";
-    repo = pname;
+    repo = name;
     rev = "v${version}";
     sha256 = "0i1js2k47llzgmc77q9frvcmr02mqlhg0qhswx1486fvm6myxg0g";
   };
@@ -19,7 +14,7 @@ stdenv.mkDerivation rec {
     cp -r * "$out"
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Icingaweb2 theme for april fools";
     homepage = "https://github.com/Mikesch-mp/icingaweb2-theme-april";
     license = licenses.publicDomain;

@@ -1,6 +1,6 @@
-{ appleDerivation', stdenv }:
+{ appleDerivation }:
 
-appleDerivation' stdenv {
+appleDerivation {
   dontBuild = true;
   installPhase = ''
     mkdir -p $out/Library/Frameworks/EAP8021X.framework/Headers

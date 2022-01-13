@@ -1,6 +1,6 @@
 import ./make-test-python.nix ({ pkgs, lib, ...} : {
   name = "documize";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ ma27 ];
   };
 

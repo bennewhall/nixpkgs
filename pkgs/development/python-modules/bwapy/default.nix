@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , pythonOlder
 , fetchPypi
@@ -33,7 +33,7 @@ buildPythonPackage rec {
   doCheck = false;
   pythonImportsCheck = [ "bwapy" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ACEnglish/acebinf";
     description = "Python bindings to bwa mem aligner";
     license = licenses.mpl20;

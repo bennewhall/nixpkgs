@@ -1,4 +1,4 @@
-{ lib }:
+{ stdenv }:
 # helper functions for packaging programs with plugin systems
 {
 
@@ -13,7 +13,7 @@
   diffPlugins = expectedPlugins: foundPluginsFilePath: ''
      # sort both lists first
      plugins_expected=$(mktemp)
-     (${lib.concatMapStrings (s: "echo \"${s}\";") expectedPlugins}) \
+     (${stdenv.lib.concatMapStrings (s: "echo \"${s}\";") expectedPlugins}) \
        | sort -u > "$plugins_expected"
      plugins_found=$(mktemp)
      sort -u "${foundPluginsFilePath}" > "$plugins_found"

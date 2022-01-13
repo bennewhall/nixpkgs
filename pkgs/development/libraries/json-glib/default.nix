@@ -1,84 +1,37 @@
-{ lib
-, stdenv
-, fetchurl
-, glib
-, meson
-, ninja
-, pkg-config
-, gettext
-, withIntrospection ? stdenv.buildPlatform == stdenv.hostPlatform
-, gobject-introspection
-, fixDarwinDylibNames
-, gi-docgen
-, gnome
+{ stdenv, fetchurl, glib, meson, ninja, pkgconfig, gettext
+, gobject-introspection, fixDarwinDylibNames, gnome3
 }:
 
-stdenv.mkDerivation rec {
+let
   pname = "json-glib";
-  version = "1.6.6";
-
-  outputs = [ "out" "dev" ]
-    ++ lib.optional withIntrospection "devdoc";
+  version = "1.4.4";
+in stdenv.mkDerivation rec {
+  name = "${pname}-${version}";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "luyYvnqR9t3jNjZyDj2i/27LuQ52zKpJSX8xpoVaSQ4=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${name}.tar.xz";
+    sha256 = "0ixwyis47v5bkx6h8a1iqlw3638cxcv57ivxv4gw2gaig51my33j";
   };
 
-  strictDeps = true;
+  propagatedBuildInputs = [ glib ];
+  nativeBuildInputs = [ meson ninja pkgconfig gettext gobject-introspection glib ]
+    ++ stdenv.lib.optional stdenv.hostPlatform.isDarwin fixDarwinDylibNames;
 
-  depsBuildBuild = [
-    pkg-config
-  ];
-
-  nativeBuildInputs = [
-    meson
-    ninja
-    pkg-config
-    gettext
-    glib
-  ] ++ lib.optional stdenv.hostPlatform.isDarwin [
-    fixDarwinDylibNames
-  ] ++ lib.optionals withIntrospection [
-    gobject-introspection
-    gi-docgen
-  ];
-
-  propagatedBuildInputs = [
-    glib
-  ];
-
-  mesonFlags = lib.optionals (!withIntrospection) [
-    "-Dintrospection=disabled"
-    # gi-docgen relies on introspection data
-    "-Dgtk_doc=disabled"
-  ];
+  outputs = [ "out" "dev" ];
 
   doCheck = true;
 
-  postFixup = ''
-    # Move developer documentation to devdoc output.
-    # Cannot be in postInstall, otherwise _multioutDocs hook in preFixup will move right back.
-    if [[ -d "$out/share/doc" ]]; then
-        find -L "$out/share/doc" -type f -regex '.*\.devhelp2?' -print0 \
-          | while IFS= read -r -d ''' file; do
-            moveToOutput "$(dirname "''${file/"$out/"/}")" "$devdoc"
-        done
-    fi
-  '';
-
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library providing (de)serialization support for the JavaScript Object Notation (JSON) format";
     homepage = "https://wiki.gnome.org/Projects/JsonGlib";
-    license = licenses.lgpl21Plus;
-    maintainers = teams.gnome.members;
+    license = licenses.lgpl2;
+    maintainers = with maintainers; [ lethalman ];
     platforms = with platforms; unix;
   };
 }

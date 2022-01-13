@@ -1,6 +1,6 @@
 { lib
 , buildPythonPackage
-, fetchFromGitHub
+, fetchPypi
 , beautifulsoup4
 , geojson
 , lxml
@@ -13,13 +13,12 @@
 
 buildPythonPackage rec {
   pname = "osmpythontools";
-  version = "0.3.3";
+  version = "0.2.8";
 
-  src = fetchFromGitHub {
-    owner = "mocnik-science";
-    repo = "osm-python-tools";
-    rev = "v.${version}";
-    sha256 = "sha256-335zo/kOX4OpUwHas2aaPibY6zNmDaaHJpolbTQWqKk=";
+  src = fetchPypi {
+    pname = "OSMPythonTools";
+    inherit version;
+    sha256 = "8a33adbd266127e342d12da755075fae08f398032a6f0909b5e86bef13960a85";
   };
 
   propagatedBuildInputs = [
@@ -33,7 +32,7 @@ buildPythonPackage rec {
     xarray
   ];
 
-  # tests touch network
+  # no tests included
   doCheck = false;
 
   pythonImportsCheck = [
@@ -53,7 +52,7 @@ buildPythonPackage rec {
       Nominatim, and the OpenStreetMap editing API.
     '';
     homepage = "https://github.com/mocnik-science/osm-python-tools";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ das-g ];
   };
 }

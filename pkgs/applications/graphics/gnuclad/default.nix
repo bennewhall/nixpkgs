@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, pkg-config
+{ stdenv, lib, fetchurl, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -12,9 +12,9 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-Wno-error=catch-value";
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://launchpad.net/gnuclad";
     description = "gnuclad tries to help the environment by creating trees.  Its primary use will be generating cladogram trees for the GNU/Linux distro timeline project";
     license = licenses.gpl3Plus;

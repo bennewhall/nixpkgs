@@ -4,7 +4,7 @@
 }:
 
 mkDerivation {
-  pname = "kdegraphics-thumbnailers";
+  name = "kdegraphics-thumbnailers";
   meta = {
     license = [ lib.licenses.lgpl21 ];
     maintainers = [ lib.maintainers.ttuegel ];

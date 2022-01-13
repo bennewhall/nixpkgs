@@ -1,4 +1,4 @@
-{ lib, stdenv, alsa-lib, atk, at-spi2-atk, cairo, cups, dbus, dpkg, expat, fontconfig, freetype
+{ stdenv, alsaLib, atk, at-spi2-atk, cairo, cups, dbus, dpkg, expat, fontconfig, freetype
 , fetchurl, GConf, gdk-pixbuf, glib, gtk2, gtk3, libpulseaudio, makeWrapper, nspr
 , nss, pango, udev, xorg
 }:
@@ -7,7 +7,7 @@ let
   version = "4.7.1";
 
   deps = [
-    alsa-lib
+    alsaLib
     atk
     at-spi2-atk
     cairo
@@ -53,7 +53,7 @@ stdenv.mkDerivation {
   };
 
   dontBuild = true;
-  nativeBuildInputs = [ dpkg makeWrapper ];
+  buildInputs = [ dpkg makeWrapper ];
 
   unpackPhase = ''
     dpkg -x $src .
@@ -69,14 +69,14 @@ stdenv.mkDerivation {
 
     wrapProgram $out/bin/google-play-music-desktop-player \
       --prefix LD_LIBRARY_PATH : "$out/share/google-play-music-desktop-player" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath deps}"
+      --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath deps}"
   '';
 
   meta = {
     homepage = "https://www.googleplaymusicdesktopplayer.com/";
-    description = "A beautiful cross platform Desktop Player for Google Play Music and YouTube Music";
-    license = lib.licenses.mit;
+    description = "A beautiful cross platform Desktop Player for Google Play Music";
+    license = stdenv.lib.licenses.mit;
     platforms = [ "x86_64-linux" ];
-    maintainers = with lib.maintainers; [ anna328p SuprDewd ];
+    maintainers = [ stdenv.lib.maintainers.SuprDewd ];
   };
 }

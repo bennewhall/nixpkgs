@@ -1,5 +1,4 @@
-{ lib
-
+{ stdenv
 , buildPythonPackage
 , notmuch
 , python
@@ -17,11 +16,7 @@ buildPythonPackage {
       notmuch/globals.py
   '';
 
-  # no tests
-  doCheck = false;
-  pythonImportsCheck = [ "notmuch" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Python wrapper around notmuch";
     homepage = "https://notmuchmail.org/";
     license = licenses.gpl3;

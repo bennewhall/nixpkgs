@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  version = "3.8";
+  version = "3.7";
   pname = "xtermcontrol";
 
   src = fetchurl {
     url = "https://thrysoee.dk/xtermcontrol/xtermcontrol-${version}.tar.gz";
-    sha256 = "sha256-Vh6GNiDkjNhaD9U/3fG2LpMLN39L3jRUgG/FQeG1z40=";
+    sha256 = "04m12ddaps5sdbqvkwkp6lh81i8vh5ya5gzcxkrkilsga3m6qff2";
   };
 
   meta = {
@@ -18,8 +18,8 @@ stdenv.mkDerivation rec {
       To complete the feature set; xtermcontrol lets advanced users issue any xterm control sequence of their choosing.
     '';
     homepage = "http://thrysoee.dk/xtermcontrol";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.unix;
-    maintainers = [ lib.maintainers.derchris ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.derchris ];
   };
 }

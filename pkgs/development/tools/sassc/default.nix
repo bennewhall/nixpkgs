@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, libsass }:
+{ stdenv, fetchFromGitHub, autoreconfHook, libsass }:
 
 stdenv.mkDerivation rec {
   pname = "sassc";
-  version = "3.6.2"; # also check libsass for updates
+  version = "3.6.1";
 
   src = fetchFromGitHub {
     owner = "sass";
     repo = pname;
     rev = version;
-    sha256 = "sha256-jcs3+orRqKt9C3c2FTdeaj4H2rBP74lW3HF8CHSm7lQ=";
+    sha256 = "1sxm54mkhs9m4vnl7vn11y17mhzamc403hv3966j1c7p2rbzg5pv";
   };
 
-  preConfigure = ''
+  patchPhase = ''
     export SASSC_VERSION=${version}
   '';
 
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libsass ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A front-end for libsass";
     homepage = "https://github.com/sass/sassc/";
     license = licenses.mit;

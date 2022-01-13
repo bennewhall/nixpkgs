@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, writeText, erlang }:
+{stdenv, fetchFromGitHub, writeText, erlang }:
 
 let
   shell = drv: stdenv.mkDerivation {
@@ -7,14 +7,14 @@ let
   };
 
   pkg = self: stdenv.mkDerivation {
-    pname = "webdriver";
-    version = "0.pre+unstable=2015-02-08";
+    name = "webdriver";
+    version = "0.0.0+build.18.7ceaf1f";
 
     src = fetchFromGitHub {
-      owner = "Quviq";
-      repo = "webdrv";
-      rev = "7ceaf1f67d834e841ca0133b4bf899a9fa2db6bb";
-      sha256 = "1pq6pmlr6xb4hv2fvmlrvzd8c70kdcidlgjv4p8n9pwvkif0cb87";
+        owner = "Quviq";
+        repo = "webdrv";
+        rev = "7ceaf1f67d834e841ca0133b4bf899a9fa2db6bb";
+        sha256 = "1pq6pmlr6xb4hv2fvmlrvzd8c70kdcidlgjv4p8n9pwvkif0cb87";
     };
 
     setupHook = writeText "setupHook.sh" ''
@@ -27,14 +27,14 @@ let
 
     meta = {
       description = "WebDriver implementation in Erlang";
-      license = lib.licenses.mit;
+      license = stdenv.lib.licenses.mit;
       homepage = "https://github.com/Quviq/webdrv";
-      maintainers = with lib.maintainers; [ ericbmerritt ];
+      maintainers = with stdenv.lib.maintainers; [ ericbmerritt ];
     };
 
     passthru = {
       env = shell self;
     };
 
-  };
-in lib.fix pkg
+};
+in stdenv.lib.fix pkg

@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchgit, libgtop, xmessage, which, pkg-config }:
+{ stdenv, fetchgit, libgtop, xmessage, which, pkgconfig }:
 
 stdenv.mkDerivation {
   pname = "das_watchdog";
-  version = "unstable-2015-09-12";
+  version = "git-2015-09-12";
 
   src = fetchgit {
     url = "https://github.com/kmatheussen/das_watchdog.git";
@@ -10,7 +10,7 @@ stdenv.mkDerivation {
     sha256 = "02y1vfb3wh4908xjj1kpyf8kgxk29x8dw7yl3pnl220qz2gi99vr";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libgtop xmessage which ];
 
   installPhase = ''
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
     cp test_rt $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/kmatheussen/das_watchdog";
     description = "A general watchdog for the linux operating system";
     longDescription = ''

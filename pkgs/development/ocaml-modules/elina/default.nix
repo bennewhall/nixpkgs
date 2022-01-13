@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, perl, gmp, mpfr, ocaml, findlib, camlidl, apron }:
+{ stdenv, fetchurl, perl, gmp, mpfr, ocaml, findlib, camlidl, apron }:
 
 stdenv.mkDerivation rec {
   version = "1.1";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     "--use-opam"
     "--apron-prefix" apron
   ]
-  ++ lib.optional stdenv.isDarwin "--absolute-dylibs"
+  ++ stdenv.lib.optional stdenv.isDarwin "--absolute-dylibs"
   ;
 
   createFindlibDestdir = true;
@@ -26,8 +26,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "ETH LIbrary for Numerical Analysis";
     homepage = "http://elina.ethz.ch/";
-    license = lib.licenses.lgpl3;
-    maintainers = [ lib.maintainers.vbgl ];
+    license = stdenv.lib.licenses.lgpl3;
+    maintainers = [ stdenv.lib.maintainers.vbgl ];
     inherit (ocaml.meta) platforms;
   };
 }

@@ -1,60 +1,30 @@
-{ lib
-, buildPythonPackage
-, pythonOlder
-, fetchPypi
-
-# build dependencies
-, setuptools-scm
-
-# dependencies
-, django
-
-# tests
-, geopy
-, nose
-, pysolr
-, python-dateutil
-, requests
-, whoosh
-}:
+{ lib, buildPythonPackage, fetchPypi
+, setuptools, setuptools_scm, django, dateutil, whoosh, pysolr
+, coverage, mock, nose, geopy, requests }:
 
 buildPythonPackage rec {
   pname = "django-haystack";
-  version = "3.1.1";
-  format = "setuptools";
-  disabled = pythonOlder "3.5";
+  version = "3.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "6d05756b95d7d5ec1dbd4668eb999ced1504b47f588e2e54be53b1404c516a82";
+    sha256 = "d490f920afa85471dd1fa5000bc8eff4b704daacbe09aee1a64e75cbc426f3be";
   };
 
+  checkInputs = [ pysolr whoosh dateutil geopy coverage nose mock coverage requests ];
+  propagatedBuildInputs = [ django setuptools ];
+  nativeBuildInputs = [ setuptools_scm ];
+
   postPatch = ''
-    substituteInPlace setup.py \
-      --replace "geopy==" "geopy>="
+    sed -i 's/geopy==/geopy>=/' setup.py
   '';
 
-  nativeBuildInputs = [
-    setuptools-scm
-  ];
-
-  propagatedBuildInputs = [
-    django
-  ];
-
-  checkInputs = [
-    geopy
-    nose
-    pysolr
-    python-dateutil
-    requests
-    whoosh
-  ];
+  # ImportError: cannot import name django.contrib.gis.geos.prototypes
+  doCheck = false;
 
   meta = with lib; {
-    description = "Pluggable search for Django";
+    description = "Modular search for Django";
     homepage = "http://haystacksearch.org/";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
   };
 }

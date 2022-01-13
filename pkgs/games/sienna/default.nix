@@ -1,12 +1,8 @@
-{ lib, stdenv, fetchurl, love, lua, makeWrapper, makeDesktopItem }:
+{ stdenv, fetchurl, love, lua, makeWrapper, makeDesktopItem }:
 
-stdenv.mkDerivation rec {
+let
   pname = "sienna";
   version = "1.0c";
-  src = fetchurl {
-    url = "https://github.com/SimonLarsen/${pname}/releases/download/v${version}/${pname}-${version}.love";
-    sha256 = "1x15276fhqspgrrv8fzkp032i2qa8piywc0yy061x59mxhdndzj6";
-  };
 
   icon = fetchurl {
     url = "http://tangramgames.dk/img/thumb/sienna.png";
@@ -17,16 +13,26 @@ stdenv.mkDerivation rec {
     name = "sienna";
     exec = pname;
     icon = icon;
-    comment = "Fast-paced one button platformer";
+    comment = "Fast-paced one button platformer"; 
     desktopName = "Sienna";
     genericName = "sienna";
     categories = "Game;";
   };
 
+in
+
+stdenv.mkDerivation {
+  name = "${pname}-${version}";
+
+  src = fetchurl {
+    url = "https://github.com/SimonLarsen/${pname}/releases/download/v${version}/${pname}-${version}.love";
+    sha256 = "1x15276fhqspgrrv8fzkp032i2qa8piywc0yy061x59mxhdndzj6";
+  };
+
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ lua love ];
 
-  dontUnpack = true;
+  phases = "installPhase";
 
   installPhase =
   ''
@@ -42,7 +48,7 @@ stdenv.mkDerivation rec {
     ln -s ${desktopItem}/share/applications/* $out/share/applications/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast-paced one button platformer";
     maintainers = with maintainers; [ leenaars ];
     platforms = platforms.linux;

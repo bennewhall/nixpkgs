@@ -1,9 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, cmake, docutils, pkg-config, glib, libpthreadstubs
+{ stdenv, fetchFromGitHub, cmake, docutils, pkgconfig, glib, libpthreadstubs
 , libXau, libXdmcp, xcbutil }:
 
 stdenv.mkDerivation {
-  pname = "xss-lock";
-  version = "unstable-2018-05-31";
+  name = "xss-lock-git-2018-05-31";
 
   src = fetchFromGitHub {
     owner = "xdbob";
@@ -12,10 +11,11 @@ stdenv.mkDerivation {
     sha256 = "040nqgfh564frvqkrkmak3x3h0yadz6kzk81jkfvd9vd20a9drh7";
   };
 
-  nativeBuildInputs = [ cmake pkg-config docutils ];
-  buildInputs = [ glib libpthreadstubs libXau libXdmcp xcbutil ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ cmake docutils glib libpthreadstubs libXau
+                  libXdmcp xcbutil ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Use external locker (such as i3lock) as X screen saver";
     license = licenses.mit;
     maintainers = with maintainers; [ malyn offline ];

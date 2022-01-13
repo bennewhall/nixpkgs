@@ -1,22 +1,27 @@
-{ lib, fetchFromGitHub, buildDunePackage }:
+{ stdenv, fetchFromGitHub, ocaml, findlib }:
 
-buildDunePackage rec {
-  pname = "opam-file-format";
-  version = "2.1.3";
+stdenv.mkDerivation rec {
+  version = "2.0.0";
+  name = "ocaml${ocaml.version}-opam-file-format-${version}";
 
   src = fetchFromGitHub {
     owner = "ocaml";
-    repo = pname;
+    repo = "opam-file-format";
     rev = version;
-    sha256 = "1fxhppdmrysr2nb5z3c448h17np48f3ga9jih33acj78r4rdblcs";
+    sha256 = "0fqb99asnair0043hhc8r158d6krv5nzvymd0xwycr5y72yrp0hv";
   };
 
-  useDune2 = true;
+  buildInputs = [ ocaml findlib ];
 
-  meta = with lib; {
+  installFlags = [ "LIBDIR=$(OCAMLFIND_DESTDIR)" ];
+
+  patches = [ ./optional-static.patch ];
+
+  meta = {
     description = "Parser and printer for the opam file syntax";
-    license = licenses.lgpl21;
-    maintainers = with maintainers; [ vbgl ];
-    homepage = "https://github.com/ocaml/opam-file-format/";
+    license = stdenv.lib.licenses.lgpl21;
+    maintainers = [ stdenv.lib.maintainers.vbgl ];
+    inherit (src.meta) homepage;
+    inherit (ocaml.meta) platforms;
   };
 }

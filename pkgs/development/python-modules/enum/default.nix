@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy3k
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
   doCheck = !isPyPy;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://pypi.python.org/pypi/enum/";
     description = "Robust enumerated type support in Python";
     license = licenses.gpl2;

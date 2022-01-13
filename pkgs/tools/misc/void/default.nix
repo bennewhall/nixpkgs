@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, rustPlatform }:
+{ stdenv, fetchFromGitHub, rustPlatform }:
 
 rustPlatform.buildRustPackage rec {
   pname = "void";
@@ -14,9 +14,9 @@ rustPlatform.buildRustPackage rec {
   # The tests are long-running and not that useful
   doCheck = false;
 
-  cargoSha256 = "1wh1yb02w5afghd19i2s0v8mq4lq20djsljrr44xciq68bqfdcp0";
+  cargoSha256 = "0fnkcjxcsiw9j0ibh4z7zy0m6r5d84q5hvr2darwpckbn9ryrh3k";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Terminal-based personal organizer";
     homepage = "https://github.com/spacejam/void";
     license = licenses.gpl3;

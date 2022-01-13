@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config }:
+{ stdenv, fetchFromGitHub, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "tinyfecvpn";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   };
 
   enableParallelBuilding = true;
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   patchPhase = ''
     runHook prePatch
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/wangyu-/tinyfecVPN";
     description = "A VPN Designed for Lossy Links, with Build-in Forward Error Correction(FEC) Support";
     license = licenses.mit;

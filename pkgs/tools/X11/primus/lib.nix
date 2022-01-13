@@ -1,10 +1,5 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, fetchpatch
-, libX11
-, libGL
-, mesa
+{ stdenv, fetchFromGitHub, fetchpatch
+, libX11, libGL, mesa
 , nvidia_x11 ? null
 , libglvnd
 }:
@@ -15,10 +10,8 @@ let
     else if nvidia_x11.useGLVND then libglvnd
     else nvidia_x11;
 
-in
-stdenv.mkDerivation {
-  pname = "primus-lib";
-  version = "unstable-2015-04-28";
+in stdenv.mkDerivation {
+  name = "primus-lib-2015-04-28";
 
   src = fetchFromGitHub {
     owner = "amonakov";
@@ -37,12 +30,11 @@ stdenv.mkDerivation {
 
   buildInputs = [ libX11 libGL ];
 
-  makeFlags = [
-    "LIBDIR=$(out)/lib"
-    "PRIMUS_libGLa=${aPackage}/lib/libGL.so"
-    "PRIMUS_libGLd=${libGL}/lib/libGL.so"
-    "PRIMUS_LOAD_GLOBAL=${mesa}/lib/libglapi.so"
-  ];
+  makeFlags = [ "LIBDIR=$(out)/lib"
+                "PRIMUS_libGLa=${aPackage}/lib/libGL.so"
+                "PRIMUS_libGLd=${libGL}/lib/libGL.so"
+                "PRIMUS_LOAD_GLOBAL=${mesa}/lib/libglapi.so"
+              ];
 
   installPhase = ''
     ln -s $out/lib/libGL.so.1 $out/lib/libGL.so
@@ -50,7 +42,7 @@ stdenv.mkDerivation {
 
   passthru.glvnd = if nvidia_x11 != null && nvidia_x11.useGLVND then nvidia_x11 else null;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Low-overhead client-side GPU offloading";
     homepage = "https://github.com/amonakov/primus";
     platforms = [ "i686-linux" "x86_64-linux" ];

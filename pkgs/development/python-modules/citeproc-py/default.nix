@@ -9,11 +9,11 @@
 
 buildPythonPackage rec {
   pname = "citeproc-py";
-  version = "0.6.0";
+  version = "0.5.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "d9e3a224f936fe2e5033b5d9ffdacab769cedb61d96c4e0cf2f0b488f1d24b4e";
+    sha256 = "00aaff50jy4j0nakdzq9258z1gzrac9baarli2ymgspj88jg5968";
   };
 
   buildInputs = [ rnc2rng ];

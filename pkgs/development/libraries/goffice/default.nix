@@ -1,18 +1,18 @@
-{ fetchurl, lib, stdenv, pkg-config, intltool, glib, gtk3, lasem
-, libgsf, libxml2, libxslt, cairo, pango, librsvg, gnome }:
+{ fetchurl, stdenv, pkgconfig, intltool, glib, gtk3, lasem
+, libgsf, libxml2, libxslt, cairo, pango, librsvg, gnome3 }:
 
 stdenv.mkDerivation rec {
   pname = "goffice";
-  version = "0.10.50";
+  version = "0.10.48";
 
   outputs = [ "out" "dev" "devdoc" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "LFw93HsIs0UkCMgbEhxfASpzSYHXXkRN68yxxY5cv9w=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1z6f3q8fxkd1ysqrwdxdi0844zqa00vjpf07gq8mh3kal8picfd4";
   };
 
-  nativeBuildInputs = [ pkg-config intltool ];
+  nativeBuildInputs = [ pkgconfig intltool ];
 
   propagatedBuildInputs = [
     glib gtk3 libxml2 cairo pango libgsf lasem
@@ -24,9 +24,8 @@ stdenv.mkDerivation rec {
   doCheck = true;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
@@ -39,8 +38,8 @@ stdenv.mkDerivation rec {
       documents, undo/redo.
     '';
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

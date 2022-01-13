@@ -1,5 +1,4 @@
-{ lib, stdenv, fetchurl, fetchFromGitHub, cmake }:
-
+{ stdenv, fetchurl, fetchFromGitHub, cmake, unzip }:
 stdenv.mkDerivation rec {
   pname = "msgpack-tools";
   version = "0.6";
@@ -33,9 +32,10 @@ stdenv.mkDerivation rec {
     cp ${mpack} $sourceRoot/contrib/mpack-df17e83f0fa8571b9cd0d8ccf38144fa90e244d1.tar.gz
   '';
 
-  nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  buildInputs = [ cmake unzip ];
+
+  meta = with stdenv.lib; {
     description = "Command-line tools for converting between MessagePack and JSON";
     homepage = "https://github.com/ludocode/msgpack-tools";
     license = licenses.mit;

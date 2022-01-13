@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , fetchpatch
 , coreutils
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.sagemath.org/spkg/rubiks";
     description = "Several programs for working with Rubik's cubes";
     # The individual websites are no longer available

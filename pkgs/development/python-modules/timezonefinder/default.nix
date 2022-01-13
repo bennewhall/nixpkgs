@@ -5,25 +5,25 @@
 , numba
 , numpy
 , pytestCheckHook
-, pytest-cov
+, pytestcov
 }:
 
 buildPythonPackage rec {
   pname = "timezonefinder";
-  version = "5.2.0";
+  version = "4.5.0";
 
   disabled = isPy27;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "a374570295a8dbd923630ce85f754e52578e288cb0a9cf575834415e84758352";
+    sha256 = "99b0cea5abf304e8738ecf5cceae0c0e5182534843f19638a26a220fa212fbad";
   };
 
   propagatedBuildInputs = [
     numpy
   ];
 
-  checkInputs = [ numba pytestCheckHook pytest-cov ];
+  checkInputs = [ numba pytestCheckHook pytestcov ];
 
   meta = with lib; {
     description = "fast python package for finding the timezone of any point on earth (coordinates) offline";

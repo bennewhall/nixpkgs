@@ -1,12 +1,11 @@
-{ lib, stdenv, fetchurl, unzip, makeWrapper
+{ stdenv, fetchurl, unzip, makeWrapper
 , cairo, fontconfig, freetype, gdk-pixbuf, glib
 , glibc, gtk2, libX11, nspr, nss, pango, gconf
-, libxcb, libXi, libXrender, libXext, dbus
-, testVersion, chromedriver
+, libxcb, libXi, libXrender, libXext
 }:
 
 let
-  upstream-info = (lib.importJSON ../../../../applications/networking/browsers/chromium/upstream-info.json).stable.chromedriver;
+  upstream-info = (stdenv.lib.importJSON ../../../../applications/networking/browsers/chromium/upstream-info.json).stable.chromedriver;
   allSpecs = {
     x86_64-linux = {
       system = "linux64";
@@ -17,23 +16,17 @@ let
       system = "mac64";
       sha256 = upstream-info.sha256_darwin;
     };
-
-    aarch64-darwin = {
-      system = "mac64_m1";
-      sha256 = upstream-info.sha256_darwin_aarch64;
-    };
   };
 
   spec = allSpecs.${stdenv.hostPlatform.system}
     or (throw "missing chromedriver binary for ${stdenv.hostPlatform.system}");
 
-  libs = lib.makeLibraryPath [
+  libs = stdenv.lib.makeLibraryPath [
     stdenv.cc.cc.lib
     cairo fontconfig freetype
     gdk-pixbuf glib gtk2 gconf
     libX11 nspr nss pango libXrender
     gconf libxcb libXext libXi
-    dbus
   ];
 
 in stdenv.mkDerivation rec {
@@ -51,14 +44,12 @@ in stdenv.mkDerivation rec {
 
   installPhase = ''
     install -m755 -D chromedriver $out/bin/chromedriver
-  '' + lib.optionalString (!stdenv.isDarwin) ''
+  '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
     patchelf --set-interpreter ${glibc.out}/lib/ld-linux-x86-64.so.2 $out/bin/chromedriver
-    wrapProgram "$out/bin/chromedriver" --prefix LD_LIBRARY_PATH : "${libs}"
+    wrapProgram "$out/bin/chromedriver" --prefix LD_LIBRARY_PATH : "${libs}:\$LD_LIBRARY_PATH"
   '';
 
-  passthru.tests.version = testVersion { package = chromedriver; };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://chromedriver.chromium.org/";
     description = "A WebDriver server for running Selenium tests on Chrome";
     longDescription = ''

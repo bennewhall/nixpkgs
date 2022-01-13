@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, boost, libpng, zlib }:
+{ stdenv, fetchFromGitHub, cmake, boost, libpng, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "apngasm";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ boost libpng zlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Create an APNG from multiple PNG files";
     homepage = "https://github.com/apngasm/apngasm";
     license = licenses.zlib;

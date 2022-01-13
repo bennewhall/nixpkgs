@@ -2,27 +2,26 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "discocss";
-  version = "0.2.0";
+  version = "0.1.0";
 
   src = fetchFromGitHub {
     owner = "mlvzk";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-afmQCOOZ1MwQkbZZNHYfq2+IRv2eOtYBrGVHzDEbUHw=";
+    sha256 = "1818jca3sw2ngw1n488q82w5rakx4cxgknnkmsaa0sz4h8gldfy8";
   };
 
   dontBuild = true;
 
   installPhase = ''
-    install -Dm755 ./discocss $out/bin/discocss
+    install -m755 -D ./discocss $out/bin/discocss
   '';
 
   meta = with lib; {
     description = "A tiny Discord css-injector";
-    changelog = "https://github.com/mlvzk/discocss/releases/tag/v${version}";
     homepage = "https://github.com/mlvzk/discocss";
     license = licenses.mpl20;
-    platforms = platforms.unix;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ mlvzk ];
   };
 }

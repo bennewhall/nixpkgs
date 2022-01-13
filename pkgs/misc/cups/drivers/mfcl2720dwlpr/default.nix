@@ -1,4 +1,4 @@
-{ pkgs, lib, stdenv, fetchurl, dpkg, makeWrapper, coreutils, ghostscript, gnugrep, gnused, which, perl }:
+{ pkgs, stdenv, fetchurl, dpkg, makeWrapper, coreutils, ghostscript, gnugrep, gnused, which, perl }:
 
 stdenv.mkDerivation rec {
   pname = "mfcl2720dwlpr";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ dpkg makeWrapper ];
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
     dpkg-deb -x $src $out
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
       --replace "PRINTER =~" "PRINTER = \"MFCL2720DW\"; #"
 
     wrapProgram $dir/lpd/filter_MFCL2720DW \
-      --prefix PATH : ${lib.makeBinPath [
+      --prefix PATH : ${stdenv.lib.makeBinPath [
         coreutils ghostscript gnugrep gnused which
       ]}
 
@@ -38,8 +38,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Brother MFC-L2720DW lpr driver";
     homepage = "http://www.brother.com/";
-    license = lib.licenses.unfree;
+    license = stdenv.lib.licenses.unfree;
     platforms = [ "x86_64-linux" "i686-linux" ];
-    maintainers = [ lib.maintainers.xeji ];
+    maintainers = [ stdenv.lib.maintainers.xeji ];
   };
 }

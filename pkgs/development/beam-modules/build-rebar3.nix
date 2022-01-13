@@ -1,34 +1,30 @@
-{ stdenv, writeText, erlang, rebar3WithPlugins, openssl, libyaml, lib }:
+{ stdenv, writeText, erlang, rebar3, openssl, libyaml,
+  pc, lib }:
 
-{ name
-, version
+{ name, version
 , src
 , setupHook ? null
-, buildInputs ? [ ]
-, beamDeps ? [ ]
-, buildPlugins ? [ ]
+, buildInputs ? [], beamDeps ? [], buildPlugins ? []
 , postPatch ? ""
+, compilePorts ? false
 , installPhase ? null
 , buildPhase ? null
 , configurePhase ? null
-, meta ? { }
+, meta ? {}
 , enableDebugInfo ? false
-, ...
-}@attrs:
+, ... }@attrs:
 
-with lib;
+with stdenv.lib;
 
 let
   debugInfoFlag = lib.optionalString (enableDebugInfo || erlang.debugInfo) "debug-info";
 
-  rebar3 = rebar3WithPlugins {
-    plugins = buildPlugins;
-  };
+  ownPlugins = buildPlugins ++ (if compilePorts then [pc] else []);
 
   shell = drv: stdenv.mkDerivation {
-    name = "interactive-shell-${drv.name}";
-    buildInputs = [ drv ];
-  };
+          name = "interactive-shell-${drv.name}";
+          buildInputs = [ drv ];
+    };
 
   customPhases = filterAttrs
     (_: v: v != null)
@@ -40,26 +36,35 @@ let
     inherit version;
 
     buildInputs = buildInputs ++ [ erlang rebar3 openssl libyaml ];
-    propagatedBuildInputs = unique beamDeps;
+    propagatedBuildInputs = unique (beamDeps ++ ownPlugins);
+
+    dontStrip = true;
+    # The following are used by rebar3-nix-bootstrap
+    inherit compilePorts;
+    buildPlugins = ownPlugins;
 
     inherit src;
 
-    # stripping does not have any effect on beam files
-    # it is however needed for dependencies with NIFs
-    # false is the default but we keep this for readability
-    dontStrip = false;
-
     setupHook = writeText "setupHook.sh" ''
-      addToSearchPath ERL_LIBS "$1/lib/erlang/lib/"
+       addToSearchPath ERL_LIBS "$1/lib/erlang/lib/"
     '';
 
     postPatch = ''
       rm -f rebar rebar3
     '' + postPatch;
 
+    configurePhase = ''
+      runHook preConfigure
+      ${erlang}/bin/escript ${rebar3.bootstrapper} ${debugInfoFlag}
+      runHook postConfigure
+    '';
+
     buildPhase = ''
       runHook preBuild
-      HOME=. rebar3 bare compile -path ""
+      HOME=. rebar3 compile
+      ${if compilePorts then ''
+        HOME=. rebar3 pc compile
+      '' else ''''}
       runHook postBuild
     '';
 
@@ -67,9 +72,10 @@ let
       runHook preInstall
       mkdir -p "$out/lib/erlang/lib/${name}-${version}"
       for reldir in src ebin priv include; do
-        [ -d "$reldir" ] || continue
-        # $out/lib/erlang/lib is a convention used in nixpkgs for compiled BEAM packages
-        cp -Hrt "$out/lib/erlang/lib/${name}-${version}" "$reldir"
+        fd="_build/default/lib/${name}/$reldir"
+        [ -d "$fd" ] || continue
+        cp -Hrt "$out/lib/erlang/lib/${name}-${version}" "$fd"
+        success=1
       done
       runHook postInstall
     '';
@@ -85,4 +91,4 @@ let
     };
   } // customPhases);
 in
-fix pkg
+  fix pkg

@@ -2,27 +2,22 @@
 
 buildPythonPackage rec {
   pname = "pymavlink";
-  version = "2.4.19";
+  version = "2.4.14";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "08ppwlsnrvzkpi4fn14d4d4grzx2bmsd0m9369q3f9hw48fgf645";
+    sha256 = "3bc3709c735ebb3f98f19e96c8887868f4671077d4808076cfc5445912633881";
   };
 
   propagatedBuildInputs = [ future lxml ];
 
-  # No tests included in PyPI tarball. We cannot use the GitHub tarball because
-  # we would like to use the same commit of the mavlink messages repo as
-  # included in the PyPI tarball, and there is no easy way to determine what
-  # commit is included.
+  # No tests included in PyPI tarball
   doCheck = false;
-
-  pythonImportsCheck = [ "pymavlink" ];
 
   meta = with lib; {
     description = "Python MAVLink interface and utilities";
     homepage = "https://github.com/ArduPilot/pymavlink";
-    license = with licenses; [ lgpl3Plus mit ];
+    license = licenses.lgpl3;
     maintainers = with maintainers; [ lopsided98 ];
   };
 }

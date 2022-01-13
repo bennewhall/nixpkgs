@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, mfcj470dwlpr, makeWrapper}:
+{ stdenv, fetchurl, mfcj470dwlpr, makeWrapper}:
 
 stdenv.mkDerivation rec {
   pname = "mfcj470dw-cupswrapper";
@@ -21,7 +21,8 @@ stdenv.mkDerivation rec {
     --replace /etc "$out/etc"
 
     substituteInPlace $WRAPPER \
-    --replace "cp " "cp -p "
+    --replace "\`cp " "\`cp -p " \
+    --replace "\`mv " "\`cp -p "
     '';
 
   buildPhase = ''
@@ -32,18 +33,11 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     TARGETFOLDER=$out/opt/brother/Printers/mfcj470dw/cupswrapper/
-    PPDFOLDER=$out/share/cups/model/
-    FILTERFOLDER=$out/lib/cups/filter/
-
-    mkdir -p $TARGETFOLDER
-    mkdir -p $PPDFOLDER
-    mkdir -p $FILTERFOLDER
+    mkdir -p $out/opt/brother/Printers/mfcj470dw/cupswrapper/
 
     cp brcupsconfpt1/brcupsconfpt1 $TARGETFOLDER
-    cp cupswrapper/cupswrappermfcj470dw $TARGETFOLDER
-    cp PPD/brother_mfcj470dw_printer_en.ppd $PPDFOLDER
-
-    ln -s ${mfcj470dwlpr}/lib/cups/filter/brother_lpdwrapper_mfcj470dw $FILTERFOLDER/
+    cp cupswrapper/cupswrappermfcj470dw $TARGETFOLDER/
+    cp PPD/brother_mfcj470dw_printer_en.ppd $TARGETFOLDER/
     '';
 
   cleanPhase = ''
@@ -54,9 +48,9 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.brother.com/";
     description = "Brother MFC-J470DW CUPS wrapper driver";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
     downloadPage = "http://support.brother.com/g/b/downloadlist.aspx?c=us&lang=en&prod=mfcj470dw_us_eu_as&os=128";
-    maintainers = [ lib.maintainers.yochai ];
+    maintainers = [ stdenv.lib.maintainers.yochai ];
   };
 }

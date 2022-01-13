@@ -1,14 +1,14 @@
 { stdenv, lib, fetchurl, unzip, glib, systemd, nss, nspr, gtk3-x11, pango,
-atk, cairo, gdk-pixbuf, xorg, xorg_sys_opengl, util-linux, alsa-lib, dbus, at-spi2-atk,
-cups, vivaldi-ffmpeg-codecs, libpulseaudio, at-spi2-core, libxkbcommon, mesa }:
+atk, cairo, gdk-pixbuf, xorg, xorg_sys_opengl, util-linux, alsaLib, dbus, at-spi2-atk,
+cups, vivaldi-ffmpeg-codecs, libpulseaudio, at-spi2-core }:
 
 stdenv.mkDerivation rec {
   pname = "exodus";
-  version = "21.10.25";
+  version = "20.12.4";
 
   src = fetchurl {
     url = "https://downloads.exodus.io/releases/${pname}-linux-x64-${version}.zip";
-    sha256 = "a85ddda4e73dfadddbb77cf9bc84c30fc6b893ead46367d702976bbf4da5afa4";
+    sha256 = "1j1iqmcbwfj72l7g83ah701bipas9cqwazyhh0af5hp2ckj9nmmf";
   };
 
   sourceRoot = ".";
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     ln -s $out/bin/Exodus $out/bin/exodus
     ln -s $out/exodus.desktop $out/share/applications
     substituteInPlace $out/share/applications/exodus.desktop \
-          --replace 'Exec=bash -c "cd \`dirname %k\` && ./Exodus %u"' "Exec=Exodus %u"
+          --replace 'Exec=bash -c "cd `dirname %k` && ./Exodus"' "Exec=Exodus"
   '';
 
   dontPatchELF = true;
@@ -49,13 +49,12 @@ stdenv.mkDerivation rec {
       xorg.libXfixes
       xorg.libXi
       xorg.libXrender
-      xorg.libxshmfence
       xorg.libXtst
       xorg_sys_opengl
       util-linux
       xorg.libXrandr
       xorg.libXScrnSaver
-      alsa-lib
+      alsaLib
       dbus.lib
       at-spi2-atk
       at-spi2-core
@@ -63,8 +62,6 @@ stdenv.mkDerivation rec {
       libpulseaudio
       systemd
       vivaldi-ffmpeg-codecs
-      libxkbcommon
-      mesa
     ];
   in ''
     patchelf \
@@ -73,7 +70,7 @@ stdenv.mkDerivation rec {
       $out/Exodus
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.exodus.io/";
     description = "Top-rated cryptocurrency wallet with Trezor integration and built-in Exchange";
     license = licenses.unfree;

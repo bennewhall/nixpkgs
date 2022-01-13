@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, python3, libxslt, texlive
+{ stdenv, fetchurl, python2, libxslt, texlive
 , enableAllFeatures ? false, imagemagick ? null, transfig ? null, inkscape ? null, fontconfig ? null, ghostscript ? null
 
 , tex ? texlive.combine { # satisfy all packages that ./configure mentions
@@ -21,22 +21,21 @@ assert enableAllFeatures ->
   ghostscript != null;
 
 stdenv.mkDerivation rec {
-  pname = "dblatex";
-  version = "0.3.12";
+  name = "dblatex-0.3.11";
 
   src = fetchurl {
-    url = "mirror://sourceforge/dblatex/${pname}3-${version}.tar.bz2";
-    sha256 = "0yd09nypswy3q4scri1dg7dr99d7gd6r2dwx0xm81l9f4y32gs0n";
+    url = "mirror://sourceforge/dblatex/${name}.tar.bz2";
+    sha256 = "0rp1bc2lgisigscq1i7zxfd2qdaxxxld6khbcxss4pq7fpi9fzkv";
   };
 
-  buildInputs = [ python3 libxslt tex ]
-    ++ lib.optionals enableAllFeatures [ imagemagick transfig ];
+  buildInputs = [ python2 libxslt tex ]
+    ++ stdenv.lib.optionals enableAllFeatures [ imagemagick transfig ];
 
   # TODO: dblatex tries to execute texindy command, but nixpkgs doesn't have
   # that yet. In Ubuntu, texindy is a part of the xindy package.
   preConfigure = ''
     sed -i 's|self.install_layout == "deb"|False|' setup.py
-  '' + lib.optionalString enableAllFeatures ''
+  '' + stdenv.lib.optionalString enableAllFeatures ''
     for file in $(find -name "*.py"); do
         sed -e 's|cmd = \["xsltproc|cmd = \["${libxslt.bin}/bin/xsltproc|g' \
             -e 's|Popen(\["xsltproc|Popen(\["${libxslt.bin}/bin/xsltproc|g' \
@@ -59,7 +58,7 @@ stdenv.mkDerivation rec {
   dontBuild = true;
 
   installPhase = ''
-    ${python3.interpreter} ./setup.py install --prefix="$out" --use-python-path --verbose
+    ${python2.interpreter} ./setup.py install --prefix="$out" --use-python-path --verbose
   '';
 
   passthru = { inherit tex; };
@@ -67,7 +66,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A program to convert DocBook to DVI, PostScript or PDF via LaTeX or ConTeXt";
     homepage = "http://dblatex.sourceforge.net/";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

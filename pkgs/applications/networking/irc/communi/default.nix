@@ -1,4 +1,4 @@
-{ fetchgit, libcommuni, qtbase, qmake, lib, stdenv, wrapQtAppsHook }:
+{ fetchgit, libcommuni, qtbase, qmake, stdenv }:
 
 stdenv.mkDerivation rec {
   pname = "communi";
@@ -11,12 +11,11 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ qmake ]
-    ++ lib.optional stdenv.isDarwin wrapQtAppsHook;
+  nativeBuildInputs = [ qmake ];
 
   buildInputs = [ libcommuni qtbase ];
 
-  dontWrapQtApps = true;
+  enableParallelBuilding = true;
 
   preConfigure = ''
     export QMAKEFEATURES=${libcommuni}/features
@@ -24,21 +23,14 @@ stdenv.mkDerivation rec {
 
   qmakeFlags = [
     "COMMUNI_INSTALL_PREFIX=${placeholder "out"}"
+    "COMMUNI_INSTALL_BINS=${placeholder "out"}/bin"
     "COMMUNI_INSTALL_PLUGINS=${placeholder "out"}/lib/communi/plugins"
     "COMMUNI_INSTALL_ICONS=${placeholder "out"}/share/icons/hicolor"
     "COMMUNI_INSTALL_DESKTOP=${placeholder "out"}/share/applications"
     "COMMUNI_INSTALL_THEMES=${placeholder "out"}/share/communi/themes"
-    (if stdenv.isDarwin
-      then [ "COMMUNI_INSTALL_BINS=${placeholder "out"}/Applications" ]
-      else [ "COMMUNI_INSTALL_BINS=${placeholder "out"}/bin" ])
   ];
 
-  postInstall = if stdenv.isDarwin then ''
-    # Nix qmake does not add the bundle rpath by default.
-    install_name_tool \
-      -add_rpath @executable_path/../Frameworks \
-      $out/Applications/Communi.app/Contents/MacOS/Communi
-  '' else ''
+  postInstall = stdenv.lib.optionalString stdenv.isLinux ''
     substituteInPlace "$out/share/applications/communi.desktop" \
       --replace "/usr/bin" "$out/bin"
   '';
@@ -47,7 +39,7 @@ stdenv.mkDerivation rec {
     rm -rf lib
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple and elegant cross-platform IRC client";
     homepage = "https://github.com/communi/communi-desktop";
     license = licenses.bsd3;

@@ -1,11 +1,11 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , glib
-, pkg-config
+, pkgconfig
 , perl
 , gettext
 , gobject-introspection
-, gnome
+, gnome3
 , gtk-doc
 }:
 
@@ -14,12 +14,12 @@ stdenv.mkDerivation rec {
   version = "2.40.0";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "1m6jbqk8maa52gxrf223442fr5bvvxgb7ham6v039i3r1i62gwvq";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     gtk-doc
     perl
     gettext
@@ -31,13 +31,12 @@ stdenv.mkDerivation rec {
   ];
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library that reads information about processes and the running system";
     license = licenses.gpl2Plus;
     maintainers = teams.gnome.members;

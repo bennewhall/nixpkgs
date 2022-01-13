@@ -1,5 +1,5 @@
-{ lib, stdenv
-, fetchurl, autoreconfHook, gettext, netbsd
+{ stdenv
+, fetchurl, autoreconfHook, gettext
 }:
 
 # Note: this package is used for bootstrapping fetchurl, and thus
@@ -8,11 +8,10 @@
 # files.
 
 stdenv.mkDerivation rec {
-  pname = "libelf";
-  version = "0.8.13";
+  name = "libelf-0.8.13";
 
   src = fetchurl {
-    url = "https://fossies.org/linux/misc/old/${pname}-${version}.tar.gz";
+    url = "https://fossies.org/linux/misc/old/${name}.tar.gz";
     sha256 = "0vf7s9dwk2xkmhb79aigqm0x0yfbw1j0b9ksm51207qwr179n6jr";
   };
 
@@ -28,27 +27,26 @@ stdenv.mkDerivation rec {
   configureFlags = []
        # Configure check for dynamic lib support is broken, see
        # http://lists.uclibc.org/pipermail/uclibc-cvs/2005-August/019383.html
-    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "mr_cv_target_elf=yes"
+    ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "mr_cv_target_elf=yes"
        # Libelf's custom NLS macros fail to determine the catalog file extension
        # on Darwin, so disable NLS for now.
-    ++ lib.optional stdenv.hostPlatform.isDarwin "--disable-nls";
+    ++ stdenv.lib.optional stdenv.hostPlatform.isDarwin "--disable-nls";
 
-  nativeBuildInputs =
-    if stdenv.hostPlatform.isNetBSD then [ netbsd.gencat ] else [ gettext ]
+  nativeBuildInputs = [ gettext ]
        # Need to regenerate configure script with newer version in order to pass
        # "mr_cv_target_elf=yes", but `autoreconfHook` brings in `makeWrapper`
        # which doesn't work with the bootstrapTools bash, so can only do this
        # for cross builds when `stdenv.shell` is a newer bash.
-    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) autoreconfHook;
+    ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) autoreconfHook;
 
   meta = {
     description = "ELF object file access library";
 
     homepage = "https://github.com/Distrotech/libelf";
 
-    license = lib.licenses.lgpl2Plus;
+    license = stdenv.lib.licenses.lgpl2Plus;
 
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
     maintainers = [ ];
   };
 }

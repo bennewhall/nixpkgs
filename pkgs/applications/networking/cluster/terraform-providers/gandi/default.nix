@@ -1,27 +1,23 @@
-{ lib, fetchFromGitHub, buildGoModule }:
-buildGoModule rec {
+{ stdenv, fetchFromGitHub, buildGoPackage }:
+buildGoPackage rec {
   pname = "terraform-provider-gandi";
-  version = "1.1.1";
+  version = "1.0.0";
+
+  goPackagePath = "github.com/tiramiseb/terraform-provider-gandi";
+  goDeps = ./deps.nix;
 
   src = fetchFromGitHub {
-    owner = "go-gandi";
+    owner = "tiramiseb";
     repo = "terraform-provider-gandi";
     rev = "v${version}";
-    sha256 = "sha256-PI7cujatzmljyxosGMaqg3Jizee9Py7ffq9gKdehlvo=";
+    sha256 = "0byydpqsimvnk11bh9iz8zlxbsmsk65w55pvkp18vjzqrhf4kyfv";
   };
-
-  vendorSha256 = "sha256-dASIvZ3d7xTYMfvqeTcSJt+kaswGNRNqjHDcgoRVxNk=";
-  deleteVendor = true;
-
-  doCheck = false;
-
-  subPackages = [ "." ];
 
   # Terraform allow checking the provider versions, but this breaks
   # if the versions are not provided via file paths.
-  postBuild = "mv $NIX_BUILD_TOP/go/bin/terraform-provider-gandi{,_v${version}}";
+  postBuild = "mv go/bin/terraform-provider-gandi{,_v${version}}";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Terraform provider for the Gandi LiveDNS service.";
     homepage = "https://github.com/tiramiseb/terraform-provider-gandi";
     license = licenses.mpl20;

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , meson
 , ninja
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     patchShebangs meson_install.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple color chooser written in GTK3";
     homepage = "https://gitlab.gnome.org/World/gcolor3";
     license = licenses.gpl2Plus;

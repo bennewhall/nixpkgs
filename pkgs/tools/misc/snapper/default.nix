@@ -1,30 +1,37 @@
-{ lib, stdenv, fetchFromGitHub
-, autoreconfHook, pkg-config, docbook_xsl, libxslt, docbook_xml_dtd_45
+{ stdenv, fetchFromGitHub
+, autoreconfHook, pkgconfig, docbook_xsl, libxslt, docbook_xml_dtd_45
 , acl, attr, boost, btrfs-progs, dbus, diffutils, e2fsprogs, libxml2
-, lvm2, pam, python, util-linux, json_c, nixosTests
-, ncurses }:
+, lvm2, pam, python, util-linux, fetchpatch, json_c, nixosTests }:
 
 stdenv.mkDerivation rec {
   pname = "snapper";
-  version = "0.9.1";
+  version = "0.8.14";
 
   src = fetchFromGitHub {
     owner = "openSUSE";
     repo = "snapper";
     rev = "v${version}";
-    sha256 = "1ci5mdsph2n5cqad51zf4sank35yj741adsqy2gg7vqwxrhpm8mj";
+    sha256 = "1q687bjwy668klxnhsrc2rlhisa59j8bhmh1jw220rq7z0hm2khr";
   };
 
   nativeBuildInputs = [
-    autoreconfHook pkg-config
+    autoreconfHook pkgconfig
     docbook_xsl libxslt docbook_xml_dtd_45
   ];
   buildInputs = [
     acl attr boost btrfs-progs dbus diffutils e2fsprogs libxml2
-    lvm2 pam python util-linux json_c ncurses
+    lvm2 pam python util-linux json_c
   ];
 
   passthru.tests.snapper = nixosTests.snapper;
+
+  patches = [
+    # Don't use etc/dbus-1/system.d
+    (fetchpatch {
+      url = "https://github.com/openSUSE/snapper/commit/c51708aea22d9436da287cba84424557ad03644b.patch";
+      sha256 = "106pf7pv8z3q37c8ckmgwxs1phf2fy7l53a9g5xq5kk2rjj1cx34";
+    })
+  ];
 
   postPatch = ''
     # Hard-coded root paths, hard-coded root paths everywhere...
@@ -58,10 +65,10 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool for Linux filesystem snapshot management";
     homepage = "http://snapper.io";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.linux;
     maintainers = with maintainers; [ tstrobel markuskowa ];
   };

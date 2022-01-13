@@ -1,49 +1,24 @@
-{ lib
-, stdenv
-, buildPackages
-, fetchurl
-, which
-, autoconf
-, automake
-, flex
-, bison
-, glibc
-, perl
-, libkrb5
-, libxslt
-, docbook_xsl
-, file
-, docbook_xml_dtd_43
-, libtool_2
-, withDevdoc ? false
-, doxygen
-, dblatex # Extra developer documentation
+{ stdenv, buildPackages, fetchurl, which, autoconf, automake, flex
+, yacc , glibc, perl, kerberos, libxslt, docbook_xsl, file
+, docbook_xml_dtd_43, libtool_2
+, withDevdoc ? false, doxygen, dblatex # Extra developer documentation
 , ncurses # Extra ncurses utilities. Needed for debugging and monitoring.
 , tsmbac ? null # Tivoli Storage Manager Backup Client from IBM
 }:
 
 with (import ./srcs.nix { inherit fetchurl; });
 let
-  inherit (lib) optional optionalString optionals;
+  inherit (stdenv.lib) optional optionalString optionals;
 
-in
-stdenv.mkDerivation {
+in stdenv.mkDerivation {
   pname = "openafs";
   inherit version srcs;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [
-    autoconf
-    automake
-    flex
-    libxslt
-    libtool_2
-    perl
-    which
-    bison
-  ] ++ optionals withDevdoc [ doxygen dblatex ];
+  nativeBuildInputs = [ autoconf automake flex libxslt libtool_2 perl
+    which yacc ] ++ optionals withDevdoc [ doxygen dblatex ];
 
-  buildInputs = [ libkrb5 ncurses ];
+  buildInputs = [ kerberos ncurses ];
 
   patches = [ ./bosserver.patch ./cross-build.patch ] ++ optional (tsmbac != null) ./tsmbac.patch;
 
@@ -119,7 +94,7 @@ stdenv.mkDerivation {
     rm -rf "$(pwd)" && mkdir "$(pwd)"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     outputsToInstall = [ "out" "doc" "man" ];
     description = "Open AFS client";
     homepage = "https://www.openafs.org";

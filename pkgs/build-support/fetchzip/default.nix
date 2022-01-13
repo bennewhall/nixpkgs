@@ -5,26 +5,16 @@
 # (e.g. due to minor changes in the compression algorithm, or changes
 # in timestamps).
 
-{ lib, fetchurl, unzip }:
+{ fetchurl, unzip }:
 
 { # Optionally move the contents of the unpacked tree up one level.
   stripRoot ? true
-, url ? ""
-, urls ? []
+, url
 , extraPostFetch ? ""
 , name ? "source"
-, # Allows to set the extension for the intermediate downloaded
-  # file. This can be used as a hint for the unpackCmdHooks to select
-  # an appropriate unpacking tool.
-  extension ? null
 , ... } @ args:
 
-(fetchurl (let
-  tmpFilename =
-    if extension != null
-    then "download.${extension}"
-    else baseNameOf (if url != "" then url else builtins.head urls);
-in {
+(fetchurl ({
   inherit name;
 
   recursiveHash = true;
@@ -37,10 +27,9 @@ in {
       mkdir "$unpackDir"
       cd "$unpackDir"
 
-      renamed="$TMPDIR/${tmpFilename}"
+      renamed="$TMPDIR/${baseNameOf url}"
       mv "$downloadedFile" "$renamed"
       unpackFile "$renamed"
-      chmod -R +w "$unpackDir"
     ''
     + (if stripRoot then ''
       if [ $(ls "$unpackDir" | wc -l) != 1 ]; then
@@ -56,15 +45,20 @@ in {
     '' else ''
       mv "$unpackDir" "$out"
     '')
-    + ''
-      ${extraPostFetch}
-    ''
-    # Remove non-owner write permissions
+    + extraPostFetch
+    # Remove write permissions for files unpacked with write bits set
     # Fixes https://github.com/NixOS/nixpkgs/issues/38649
+    #
+    # However, we should (for the moment) retain write permission on the directory
+    # itself, to avoid tickling https://github.com/NixOS/nix/issues/4295 in
+    # single-user Nix installations. This is because in sandbox mode we'll try to
+    # move the path, and if we don't have write permissions on the directory,
+    # then we can't update the ".." entry.
     + ''
-      chmod 755 "$out"
+      chmod -R a-w "$out"
+      chmod u+w "$out"
     '';
-} // removeAttrs args [ "stripRoot" "extraPostFetch" "extension" ])).overrideAttrs (x: {
+} // removeAttrs args [ "stripRoot" "extraPostFetch" ])).overrideAttrs (x: {
   # Hackety-hack: we actually need unzip hooks, too
   nativeBuildInputs = x.nativeBuildInputs ++ [ unzip ];
 })

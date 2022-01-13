@@ -1,17 +1,17 @@
 { buildGoModule, fetchFromGitHub, lib }:
 
-buildGoModule rec {
+buildGoModule {
   pname = "protoc-gen-doc-unstable";
-  version = "1.5.0";
+  version = "2019-04-22";
 
   src = fetchFromGitHub {
     owner = "pseudomuto";
     repo = "protoc-gen-doc";
-    rev = "v${version}";
-    sha256 = "1bpb5wv76p0sjffh5d1frbygp3q1p07sdh5c8pznl5bdh5pd7zxq";
+    rev = "f824a8908ce33f213b2dba1bf7be83384c5c51e8";
+    sha256 = "004axh2gqc4f115mdxxg59d19hph3rr0bq9d08n3nyl315f590kj";
   };
 
-  vendorSha256 = "08pk9nxsl28dw3qmrlb7vsm8xbdzmx98qwkxgg93ykrhzx235k1b";
+  vendorSha256 = "17qdpsff8jk7ks5v6ix1rb966x3yvq03vk5bs2zbnxfdra7bv3n6";
 
   doCheck = false;
 

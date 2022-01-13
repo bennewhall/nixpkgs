@@ -76,7 +76,6 @@ in
       identity.hostname = mkOption {
         type = types.str;
         default = config.networking.hostName;
-        defaultText = literalExpression "config.networking.hostName";
         example = "example.com";
         description = ''
           The hostname of this ncdns instance, which defaults to the machine
@@ -165,7 +164,7 @@ in
       settings = mkOption {
         type = configType;
         default = { };
-        example = literalExpression ''
+        example = literalExample ''
           { # enable webserver
             ncdns.httplistenaddr = ":8202";
 
@@ -244,12 +243,8 @@ in
         xlog.journal = true;
     };
 
-    users.users.ncdns = {
-      isSystemUser = true;
-      group = "ncdns";
-      description = "ncdns daemon user";
-    };
-    users.groups.ncdns = {};
+    users.users.ncdns =
+      { description = "ncdns daemon user"; };
 
     systemd.services.ncdns = {
       description = "ncdns daemon";

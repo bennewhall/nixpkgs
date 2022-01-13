@@ -3,22 +3,16 @@
 , qscintilla
 , qtbase
 }:
-
-let
-  inherit (pythonPackages) buildPythonPackage isPy3k python sip_4 pyqt5;
-in buildPythonPackage rec {
+with pythonPackages;
+buildPythonPackage {
   pname = "qscintilla";
   version = qscintilla.version;
   src = qscintilla.src;
   format = "other";
 
-  disabled = !isPy3k;
-
-  nativeBuildInputs = [ sip_4 qtbase ];
+  nativeBuildInputs = [ sip qtbase ];
   buildInputs = [ qscintilla ];
   propagatedBuildInputs = [ pyqt5 ];
-
-  dontWrapQtApps = true;
 
   postPatch = ''
     substituteInPlace Python/configure.py \
@@ -42,20 +36,10 @@ in buildPythonPackage rec {
       --qsci-incdir=${qscintilla}/include \
       --qsci-featuresdir=${qscintilla}/mkspecs/features \
       --qsci-libdir=${qscintilla}/lib \
-      --pyqt-sipdir=${pyqt5}/${python.sitePackages}/PyQt5/bindings \
+      --pyqt-sipdir=${pyqt5}/share/sip/PyQt5 \
       --qsci-sipdir=$out/share/sip/PyQt5 \
-      --sip-incdir=${sip_4}/include
+      --sip-incdir=${sip}/include
   '';
-
-  postInstall = ''
-    # Needed by pythonImportsCheck to find the module
-    export PYTHONPATH="$out/${python.sitePackages}:$PYTHONPATH"
-  '';
-
-  # Checked using pythonImportsCheck
-  doCheck = false;
-
-  pythonImportsCheck = [ "PyQt5.Qsci" ];
 
   meta = with lib; {
     description = "A Python binding to QScintilla, Qt based text editing control";

@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     runHook postInstallCheck
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "WMI client for Linux (binary)";
     homepage    = "https://www.openvas.org";
     license     = licenses.mit;

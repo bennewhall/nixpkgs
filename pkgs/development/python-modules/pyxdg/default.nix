@@ -1,6 +1,7 @@
 { lib
 , buildPythonPackage
 , fetchFromGitLab
+, nose
 }:
 
 buildPythonPackage rec {

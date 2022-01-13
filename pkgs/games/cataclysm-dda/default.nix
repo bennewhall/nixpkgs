@@ -33,8 +33,7 @@ let
     buildMod
     buildSoundPack
     buildTileSet
-    wrapCDDA
-    attachPkgs;
+    wrapCDDA;
 
     inherit pkgs;
   };

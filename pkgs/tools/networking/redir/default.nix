@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "redir";
@@ -16,8 +16,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A TCP port redirector for UNIX";
     homepage = "https://github.com/troglobit/redir";
-    license = lib.licenses.gpl2;
-    maintainers = with lib.maintainers; [ ];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

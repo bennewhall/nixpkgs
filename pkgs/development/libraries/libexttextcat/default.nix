@@ -1,15 +1,14 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "libexttextcat";
-  version = "3.4.6";
+  name = "libexttextcat-3.4.5";
 
   src = fetchurl {
-    url = "https://dev-www.libreoffice.org/src/libexttextcat/${pname}-${version}.tar.xz";
-    sha256 = "sha256-bXfqziDp6hBsEzDiaO3nDJpKiXRN3CVxVoJ1TsozaN8=";
+    url = "https://dev-www.libreoffice.org/src/libexttextcat/${name}.tar.xz";
+    sha256 = "1j6sjwkyhqvsgyw938bxxfwkzzi1mahk66g5342lv6j89jfvrz8k";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An N-Gram-Based Text Categorization library primarily intended for language guessing";
     homepage = "https://wiki.documentfoundation.org/Libexttextcat";
     platforms = platforms.all;

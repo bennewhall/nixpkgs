@@ -1,6 +1,6 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, pkg-config
+, pkgconfig
 , desktop-file-utils
 , SDL
 , gtk3
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     desktop-file-utils
   ];
 
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "DESTDIR=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.drpetter.se/project_sfxr.html";
     description = "A videogame sound effect generator";
     license = licenses.mit;

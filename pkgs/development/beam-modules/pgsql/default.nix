@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, buildRebar3 }:
+{stdenv, fetchFromGitHub, buildRebar3 }:
 
 let
   shell = drv: stdenv.mkDerivation {
@@ -21,9 +21,9 @@ let
 
     meta = {
       description = "Erlang PostgreSQL Driver";
-      license = lib.licenses.mit;
+      license = stdenv.lib.licenses.mit;
       homepage = "https://github.com/semiocast/pgsql";
-      maintainers = with lib.maintainers; [ ericbmerritt ];
+      maintainers = with stdenv.lib.maintainers; [ ericbmerritt ];
     };
 
     passthru = {
@@ -31,4 +31,4 @@ let
     };
 
 };
-in lib.fix pkg
+in stdenv.lib.fix pkg

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, mozjpeg, makeWrapper, coreutils, parallel, findutils }:
+{ stdenv, fetchFromGitHub, mozjpeg, makeWrapper, coreutils, parallel, findutils }:
 
 stdenv.mkDerivation {
   pname = "jpeg-archive";
@@ -22,10 +22,9 @@ stdenv.mkDerivation {
   '';
 
   makeFlags = [
-    "CC=${stdenv.cc.targetPrefix}cc"
     "PREFIX=$(out)"
     "MOZJPEG_PREFIX=${mozjpeg}"
-    "LIBJPEG=${mozjpeg}/lib/libjpeg${stdenv.hostPlatform.extensions.sharedLibrary}"
+    "LIBJPEG=${mozjpeg}/lib/libjpeg.so"
   ];
 
   postInstall = ''
@@ -33,7 +32,7 @@ stdenv.mkDerivation {
       --set PATH "$out/bin:${coreutils}/bin:${parallel}/bin:${findutils}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utilities for archiving photos for saving to long term storage or serving over the web";
     homepage    = "https://github.com/danielgtaylor/jpeg-archive";
     license = licenses.mit;

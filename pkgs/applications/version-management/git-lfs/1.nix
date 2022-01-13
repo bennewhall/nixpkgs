@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "git-lfs";
@@ -22,7 +22,7 @@ buildGoPackage rec {
     popd
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Git extension for versioning large files";
     homepage    = "https://git-lfs.github.com/";
     license     = [ licenses.mit ];

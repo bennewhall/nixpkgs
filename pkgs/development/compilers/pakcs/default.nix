@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper
+{ stdenv, fetchurl, makeWrapper
 , haskellPackages, haskell
 , which, swiProlog, rlwrap, tk
 , curl, git, unzip, gnutar, coreutils, sqlite }:
@@ -16,14 +16,14 @@ let
 
   curry-frontend = (haskellPackages.override {
     overrides = self: super: {
-      curry-base = haskell.lib.compose.overrideCabal (drv: {
+      curry-base = haskell.lib.overrideCabal (super.callPackage ./curry-base.nix {}) (drv: {
         inherit src;
         postUnpack = "sourceRoot+=/frontend/curry-base";
-      }) (super.callPackage ./curry-base.nix {});
-      curry-frontend = haskell.lib.compose.overrideCabal (drv: {
+      });
+      curry-frontend = haskell.lib.overrideCabal (super.callPackage ./curry-frontend.nix {}) (drv: {
         inherit src;
         postUnpack = "sourceRoot+=/frontend/curry-frontend";
-      }) (super.callPackage ./curry-frontend.nix {});
+      });
     };
   }).curry-frontend;
 in stdenv.mkDerivation {
@@ -74,10 +74,10 @@ in stdenv.mkDerivation {
 
     # List of dependencies from currytools/cpm/src/CPM/Main.curry
     wrapProgram $out/pakcs/bin/cypm \
-      --prefix PATH ":" "${lib.makeBinPath [ curl git unzip gnutar coreutils sqlite ]}"
+      --prefix PATH ":" "${stdenv.lib.makeBinPath [ curl git unzip gnutar coreutils sqlite ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.informatik.uni-kiel.de/~pakcs/";
     description = "An implementation of the multi-paradigm declarative language Curry";
     license = licenses.bsd3;
@@ -94,7 +94,7 @@ in stdenv.mkDerivation {
       with dynamic web pages, prototyping embedded systems).
     '';
 
-    maintainers = with maintainers; [ kkallio ];
+    maintainers = with maintainers; [ kkallio gnidorah ];
     platforms = platforms.linux;
   };
 }

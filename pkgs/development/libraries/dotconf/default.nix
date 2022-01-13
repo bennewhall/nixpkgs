@@ -1,4 +1,4 @@
-{ fetchFromGitHub, lib, stdenv, autoreconfHook }:
+{ fetchFromGitHub, stdenv, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   name = "dotconf-" + version;
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [ ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A configuration parser library";
     maintainers = with maintainers; [ pSub ];
     homepage = "https://github.com/williamh/dotconf";

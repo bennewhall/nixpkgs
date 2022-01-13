@@ -1,17 +1,17 @@
-{ fetchFromGitHub, lib
+{ stdenv, fetchFromGitHub, lib
 , wrapGAppsHook, intltool
 , python3Packages, gtk3, poppler_gi
 }:
 
 python3Packages.buildPythonApplication rec {
   pname = "pdfarranger";
-  version = "1.8.1";
+  version = "1.6.2";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = version;
-    sha256 = "1lcmlr7x4143f7wcn0m1ijlvch07nww2qfp3jfnacgy889ijvbfx";
+    sha256 = "wJ6ImWpszfgErfLh7YgHirVKFIt0ij8A/CdYJmkNBP0=";
   };
 
   nativeBuildInputs = [
@@ -29,7 +29,6 @@ python3Packages.buildPythonApplication rec {
     pikepdf
     img2pdf
     setuptools
-    python-dateutil
   ];
 
   # incompatible with wrapGAppsHook
@@ -46,6 +45,6 @@ python3Packages.buildPythonApplication rec {
     description = "Merge or split pdf documents and rotate, crop and rearrange their pages using an interactive and intuitive graphical interface";
     platforms = platforms.linux;
     maintainers = with maintainers; [ symphorien ];
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
   };
 }

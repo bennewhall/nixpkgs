@@ -1,10 +1,8 @@
-{ lib, buildDunePackage, fetchFromGitHub, m4, core_kernel, ounit }:
+{ stdenv, buildDunePackage, fetchFromGitHub, m4, core_kernel, ounit }:
 
 buildDunePackage rec {
   pname = "cfstream";
   version = "1.3.1";
-
-  useDune2 = true;
 
   minimumOCamlVersion = "4.04.1";
 
@@ -23,7 +21,7 @@ buildDunePackage rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Simple Core-inspired wrapper for standard library Stream module";
     maintainers = [ maintainers.bcdarwin ];

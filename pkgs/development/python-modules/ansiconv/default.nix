@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pytest }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, pytest }:
 
 buildPythonPackage rec {
   pname = "ansiconv";
@@ -13,7 +13,7 @@ buildPythonPackage rec {
 
   checkInputs = [ pytest ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A module for converting ANSI coded text and converts it to either plain text or HTML";
     homepage = "https://github.com/ansible/ansiconv";
     license = licenses.mit;

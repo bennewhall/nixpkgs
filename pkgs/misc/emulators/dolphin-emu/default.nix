@@ -1,10 +1,10 @@
 { stdenv
 , lib
 , fetchpatch
-, pkg-config
+, pkgconfig
 , cmake
 , bluez
-, ffmpeg
+, ffmpeg_3
 , libao
 , gtk2
 , glib
@@ -69,14 +69,16 @@ stdenv.mkDerivation rec {
     "-DENABLE_LTO=True"
   ];
 
+  enableParallelBuilding = true;
+
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     cmake
   ];
 
   buildInputs = [
     bluez
-    ffmpeg
+    ffmpeg_3
     libao
     libGLU
     libGL

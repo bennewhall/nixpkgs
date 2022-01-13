@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pillow
@@ -17,10 +17,10 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ pillow ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library for building interactive maps";
     homepage = "http://modestmaps.com";
-    license = licenses.bsd3;
+    license = stdenv.lib.licenses.bsd3;
   };
 
 }

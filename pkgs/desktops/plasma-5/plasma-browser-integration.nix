@@ -3,7 +3,7 @@
   extra-cmake-modules,
   qtbase,
   kfilemetadata, kio, ki18n, kconfig , kdbusaddons, knotifications, kpurpose,
-  krunner, kwindowsystem, kactivities, plasma-workspace
+  krunner, kwindowsystem, kactivities,
 }:
 
 mkDerivation {
@@ -13,6 +13,6 @@ mkDerivation {
   ];
   buildInputs = [
     qtbase kfilemetadata kio ki18n kconfig kdbusaddons knotifications kpurpose
-    krunner kwindowsystem kactivities plasma-workspace
+    krunner kwindowsystem kactivities
   ];
 }

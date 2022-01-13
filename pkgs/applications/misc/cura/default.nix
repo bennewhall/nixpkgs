@@ -3,26 +3,26 @@
 
 mkDerivation rec {
   pname = "cura";
-  version = "4.12.1";
+  version = "4.8.0";
 
   src = fetchFromGitHub {
     owner = "Ultimaker";
     repo = "Cura";
     rev = version;
-    sha256 = "sha256-QvX9o1nrYmY6zzPcxl+xD6JTMdphzT/is1SMYrISu4o=";
+    sha256 = "060fqzspipm93ks0inrj7yrj5wmvkdfv8xaxrv22590yb9f95s9m";
   };
 
   materials = fetchFromGitHub {
     owner = "Ultimaker";
     repo = "fdm_materials";
     rev = version;
-    sha256 = "0ykf14j4yx4cf12qw0d4bff9ixrx96m6wxqvi83sn721y7dsd2rs";
+    sha256 = "0hi9w1fsnazlr0vvxdr3alsdb8m1vjjfp5zhmlz4kyyxhsy3bc33";
   };
 
   buildInputs = [ qtbase qtquickcontrols2 qtgraphicaleffects ];
   propagatedBuildInputs = with python3.pkgs; [
     libsavitar numpy-stl pyserial requests uranium zeroconf pynest2d
-    sentry-sdk trimesh keyring
+    sentry-sdk trimesh
   ] ++ plugins;
   nativeBuildInputs = [ cmake python3.pkgs.wrapPython ];
 

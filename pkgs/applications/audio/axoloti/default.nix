@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchurl, makeWrapper, unzip
+{ stdenv, fetchFromGitHub, fetchurl, makeWrapper, unzip
 , gnumake, gcc-arm-embedded, binutils-arm-embedded
 , dfu-util-axoloti, jdk, ant, libfaketime }:
 
@@ -87,7 +87,7 @@ stdenv.mkDerivation rec {
     makeWrapper ${jdk}/bin/java $out/bin/axoloti --add-flags "-Daxoloti_release=$out/share/axoloti -Daxoloti_runtime=$out/share/axoloti -jar $out/share/axoloti/Axoloti.jar"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.axoloti.com";
     description = ''
       Sketching embedded digital audio algorithms.

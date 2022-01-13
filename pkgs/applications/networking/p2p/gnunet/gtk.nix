@@ -1,11 +1,10 @@
 { stdenv, fetchurl
-, glade
+, gnome3
 , gnunet
 , gnutls
 , gtk3
 , libextractor
 , libgcrypt
-, libsodium
 , libxml2
 , pkg-config
 , wrapGAppsHook
@@ -13,11 +12,11 @@
 
 stdenv.mkDerivation rec {
   pname = "gnunet-gtk";
-  version = "0.14.0";
+  version = "0.13.1";
 
   src = fetchurl {
     url = "mirror://gnu/gnunet/${pname}-${version}.tar.gz";
-    sha256 = "18rc7mb45y17d5nrlpf2p4ixp7ir67gcgjf4hlj4r95ic5zi54wa";
+    sha256 = "1zdzgq16h77w6ybwg3lqjsjr965np6iqvncqvkbj07glqd4wss0j";
   };
 
   nativeBuildInputs= [
@@ -26,17 +25,14 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    glade
+    gnome3.glade
     gnunet
     gnutls
     gtk3
     libextractor
     libgcrypt
-    libsodium
     libxml2
   ];
-
-  configureFlags = [ "--with-gnunet=${gnunet}" ];
 
   patchPhase = "patchShebangs pixmaps/icon-theme-installer";
 

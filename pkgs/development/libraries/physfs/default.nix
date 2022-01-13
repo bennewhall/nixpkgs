@@ -1,4 +1,5 @@
-{ lib, stdenv, fetchurl, cmake, doxygen, zlib, Foundation, Carbon }:
+{ stdenv, fetchurl, cmake, doxygen
+, zlib }:
 
 let
   generic = version: sha256:
@@ -13,8 +14,9 @@ let
 
     nativeBuildInputs = [ cmake doxygen ];
 
-    buildInputs = [ zlib ]
-      ++ lib.optionals stdenv.isDarwin [ Foundation Carbon ];
+    buildInputs = [ zlib ];
+
+    enableParallelBuilding = true;
 
     patchPhase = ''
       sed s,-Werror,, -i CMakeLists.txt
@@ -26,11 +28,11 @@ let
       ./test_physfs --version
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       homepage = "http://icculus.org/physfs/";
       description = "Library to provide abstract access to various archives";
       license = licenses.free;
-      platforms = platforms.unix;
+      platforms = platforms.linux;
     };
   };
 

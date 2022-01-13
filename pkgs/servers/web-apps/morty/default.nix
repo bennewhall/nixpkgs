@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchgit }:
+{ stdenv, buildGoPackage, fetchgit }:
 
 buildGoPackage rec {
   pname = "morty";
@@ -14,7 +14,7 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/asciimoo/morty";
     maintainers = with maintainers; [ leenaars ];
     license = licenses.agpl3;

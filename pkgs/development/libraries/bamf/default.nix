@@ -1,16 +1,16 @@
-{ lib, stdenv
+{ stdenv
 , pantheon
 , autoconf
 , automake
 , libtool
-, gnome
+, gnome3
 , which
 , fetchgit
 , libgtop
-, libwnck
+, libwnck3
 , glib
 , vala
-, pkg-config
+, pkgconfig
 , libstartup_notification
 , gobject-introspection
 , gtk-doc
@@ -23,14 +23,14 @@
 
 stdenv.mkDerivation rec {
   pname = "bamf";
-  version = "0.5.5";
+  version = "0.5.4";
 
   outputs = [ "out" "dev" "devdoc" ];
 
   src = fetchgit {
     url = "https://git.launchpad.net/~unity-team/bamf";
-    rev = "${version}+21.10.20210710-0ubuntu1";
-    sha256 = "0iwz5z5cz9r56pmfjvjd2kcjlk416dw6g38svs33ynssjgsqbdm0";
+    rev = version;
+    sha256 = "1klvij1wyhdj5d8sr3b16pfixc1yk8ihglpjykg7zrr1f50jfgsz";
   };
 
   nativeBuildInputs = [
@@ -39,11 +39,11 @@ stdenv.mkDerivation rec {
     automake
     dbus
     docbook_xsl
-    gnome.gnome-common
+    gnome3.gnome-common
     gobject-introspection
     gtk-doc
     libtool
-    pkg-config
+    pkgconfig
     vala
     which
     wrapGAppsHook
@@ -54,7 +54,12 @@ stdenv.mkDerivation rec {
     glib
     libgtop
     libstartup_notification
-    libwnck
+    libwnck3
+  ];
+
+  patches = [
+    # Port tests and checks to python3 lxml.
+    ./gtester2xunit-python3.patch
   ];
 
   # Fix hard-coded path
@@ -85,7 +90,7 @@ stdenv.mkDerivation rec {
   # glib-2.62 deprecations
   NIX_CFLAGS_COMPILE = "-DGLIB_DISABLE_DEPRECATION_WARNINGS";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Application matching framework";
     longDescription = ''
       Removes the headache of applications matching
@@ -94,6 +99,6 @@ stdenv.mkDerivation rec {
     homepage = "https://launchpad.net/bamf";
     license = licenses.lgpl3;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ davidak ] ++ teams.pantheon.members;
+    maintainers = with maintainers; [ davidak ] ++ pantheon.maintainers;
   };
 }

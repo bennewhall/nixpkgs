@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, autoreconfHook }:
+{stdenv, fetchurl, autoreconfHook }:
 
 stdenv.mkDerivation rec {
-  pname = "gperf";
-  version = "3.0.4";
+  name = "gperf-3.0.4";
 
   src = fetchurl {
-    url = "mirror://gnu/gperf/gperf-${version}.tar.gz";
+    url = "mirror://gnu/gperf/${name}.tar.gz";
     sha256 = "0gnnm8iqcl52m8iha3sxrzrl9mcyhg7lfrhhqgdn4zj00ji14wbn";
   };
 
@@ -28,9 +27,9 @@ stdenv.mkDerivation rec {
       employed by gperf.
     '';
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
     homepage = "https://www.gnu.org/software/gperf/";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

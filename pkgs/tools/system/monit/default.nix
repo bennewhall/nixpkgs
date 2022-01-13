@@ -1,47 +1,41 @@
-{ lib
-, stdenv
-, fetchurl
-, bison
-, flex
+{ stdenv
+, fetchurl, bison, flex
 , zlib
-, usePAM ? stdenv.hostPlatform.isLinux
-, pam
-, useSSL ? true
-, openssl
+, usePAM ? stdenv.hostPlatform.isLinux, pam
+, useSSL ? true, openssl
 }:
 
 stdenv.mkDerivation rec {
-  pname = "monit";
-  version = "5.29.0";
+  name = "monit-5.27.1";
 
   src = fetchurl {
-    url = "${meta.homepage}dist/monit-${version}.tar.gz";
-    sha256 = "sha256-9mXm3R8mp0tWgomah3k0Fn3islguBIZS7PA2MYR3iF8=";
+    url = "${meta.homepage}dist/${name}.tar.gz";
+    sha256 = "0lgdhif6x11fcpli0qn138rpdvrfnwmkzsy4lc9pas45c78hhx7m";
   };
 
   nativeBuildInputs = [ bison flex ];
   buildInputs = [ zlib.dev ] ++
-    lib.optionals useSSL [ openssl ] ++
-    lib.optionals usePAM [ pam ];
+    stdenv.lib.optionals useSSL [ openssl ] ++
+    stdenv.lib.optionals usePAM [ pam ];
 
   configureFlags = [
-    (lib.withFeature usePAM "pam")
+    (stdenv.lib.withFeature usePAM "pam")
   ] ++ (if useSSL then [
-    "--with-ssl-incl-dir=${openssl.dev}/include"
-    "--with-ssl-lib-dir=${openssl.out}/lib"
-  ] else [
-    "--without-ssl"
-  ]) ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+      "--with-ssl-incl-dir=${openssl.dev}/include"
+      "--with-ssl-lib-dir=${openssl.out}/lib"
+    ] else [
+      "--without-ssl"
+  ]) ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     # will need to check both these are true for musl
     "libmonit_cv_setjmp_available=yes"
     "libmonit_cv_vsnprintf_c99_conformant=yes"
   ];
 
   meta = {
-    homepage = "https://mmonit.com/monit/";
+    homepage = "http://mmonit.com/monit/";
     description = "Monitoring system";
-    license = lib.licenses.agpl3;
-    maintainers = with lib.maintainers; [ raskin wmertens ryantm ];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.agpl3;
+    maintainers = with stdenv.lib.maintainers; [ raskin wmertens ];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

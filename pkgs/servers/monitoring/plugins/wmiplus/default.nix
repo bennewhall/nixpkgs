@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, perlPackages, txt2man
+{ stdenv, fetchFromGitHub, makeWrapper, perlPackages, txt2man
 , monitoring-plugins
 , wmic-bin ? null }:
 
@@ -68,7 +68,7 @@ stdenv.mkDerivation rec {
     gzip $out/share/man/man1/check_wmi_plus.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A sensu/nagios plugin using WMI to query Windows hosts";
     homepage = "http://edcint.co.nz/checkwmiplus";
     license = licenses.gpl2;

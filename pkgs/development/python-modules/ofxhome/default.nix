@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, nose }:
+{ stdenv, buildPythonPackage, fetchPypi, nose }:
 
 buildPythonPackage rec {
   version = "0.3.3";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
   # ImportError: No module named tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/captin411/ofxhome";
     description = "ofxhome.com financial institution lookup REST client";
     license = licenses.mit;

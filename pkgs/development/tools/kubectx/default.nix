@@ -1,17 +1,17 @@
-{ lib, buildGoModule, fetchFromGitHub, installShellFiles }:
+{ stdenv, buildGoModule, fetchFromGitHub, installShellFiles }:
 
 buildGoModule rec {
   pname = "kubectx";
-  version = "0.9.4";
+  version = "0.9.1";
 
   src = fetchFromGitHub {
     owner = "ahmetb";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-WY0zFt76mvdzk/s2Rzqys8n+DVw6qg7V6Y8JncOUVCM=";
+    sha256 = "1c7y5hj4w72bm6y3riw0acayn4w9x7bbf1vykqcprbyw3a3dvcsw";
   };
 
-  vendorSha256 = "sha256-4sQaqC0BOsDfWH3cHy2EMQNMq6qiAcbV+RwxCdcSxsg=";
+  vendorSha256 = "168hfdc2rfwpz2ls607bz5vsm1aw4brhwm8hmbiq1n1l2dn2dj0y";
 
   doCheck = false;
 
@@ -21,7 +21,7 @@ buildGoModule rec {
     installShellCompletion completion/*
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast way to switch between clusters and namespaces in kubectl!";
     license = licenses.asl20;
     homepage = "https://github.com/ahmetb/kubectx";

@@ -1,13 +1,14 @@
 { lib
 , fetchPypi
 , buildPythonPackage
+, isPy3k
 , guessit
 , babelfish
 , enzyme
 , beautifulsoup4
 , requests
 , click
-, dogpile-cache
+, dogpile_cache
 , stevedore
 , chardet
 , pysrt
@@ -15,12 +16,14 @@
 , appdirs
 , rarfile
 , pytz
+, futures
 , sympy
 , vcrpy
 , pytest
+, pytestpep8
 , pytest-flakes
-, pytest-cov
-, pytest-runner
+, pytestcov
+, pytestrunner
 }:
 
 buildPythonPackage rec {
@@ -34,18 +37,17 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     guessit babelfish enzyme beautifulsoup4 requests
-    click dogpile-cache stevedore chardet pysrt six
+    click dogpile_cache stevedore chardet pysrt six
     appdirs rarfile pytz
-  ];
+  ] ++ lib.optional (!isPy3k) futures;
 
   checkInputs = [
-    sympy vcrpy pytest pytest-flakes
-    pytest-cov pytest-runner
+    sympy vcrpy pytest pytestpep8 pytest-flakes
+    pytestcov pytestrunner
   ];
 
   # https://github.com/Diaoul/subliminal/pull/963
   doCheck = false;
-  pythonImportsCheck = [ "subliminal" ];
 
   meta = with lib; {
     homepage = "https://github.com/Diaoul/subliminal";

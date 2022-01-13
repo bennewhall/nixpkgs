@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, makeWrapper, makeDesktopItem
-, alsa-lib, libpulseaudio, libX11, libXcursor, libXinerama, libXrandr, libXi, libGL
+{ stdenv, fetchurl, makeWrapper, makeDesktopItem
+, alsaLib, libpulseaudio, libX11, libXcursor, libXinerama, libXrandr, libXi, libGL
 , libSM, libICE, libXext, factorio-utils
 , releaseType
 , mods ? []
@@ -13,7 +13,7 @@ assert releaseType == "alpha"
 
 let
 
-  inherit (lib) importJSON;
+  inherit (stdenv.lib) importJSON;
 
   helpMsg = ''
 
@@ -42,7 +42,7 @@ let
 
       releaseType=alpha
       version=0.17.74
-      nix-prefetch-url file://\''$HOME/Downloads/factorio_\''${releaseType}_x64_\''${version}.tar.xz --name factorio_\''${releaseType}_x64-\''${version}.tar.xz
+      nix-prefetch-url file://$HOME/Downloads/factorio_\''${releaseType}_x64_\''${version}.tar.xz --name factorio_\''${releaseType}_x64-\''${version}.tar.xz
 
     Note the ultimate "_" is replaced with "-" in the --name arg!
   '';
@@ -83,7 +83,7 @@ let
       if !needsAuth then
         fetchurl { inherit name url sha256; }
       else
-        (lib.overrideDerivation
+        (stdenv.lib.overrideDerivation
           (fetchurl {
             inherit name url sha256;
             curlOpts = [
@@ -133,8 +133,9 @@ let
   modDir = factorio-utils.mkModDirDrv mods;
 
   base = with actual; {
-    pname = "factorio-${releaseType}";
-    inherit version src;
+    name = "factorio-${releaseType}-${version}";
+
+    inherit src;
 
     preferLocalBuild = true;
     dontBuild = true;
@@ -167,8 +168,8 @@ let
         version 1.0 in mid 2020.
       '';
       homepage = "https://www.factorio.com/";
-      license = lib.licenses.unfree;
-      maintainers = with lib.maintainers; [ Baughn elitak erictapen priegger lukegb ];
+      license = stdenv.lib.licenses.unfree;
+      maintainers = with stdenv.lib.maintainers; [ Baughn elitak erictapen priegger lukegb ];
       platforms = [ "x86_64-linux" ];
     };
   };
@@ -177,11 +178,10 @@ let
     headless = base;
     demo = base // {
 
-      nativeBuildInputs = [ makeWrapper ];
-      buildInputs = [ libpulseaudio ];
+      buildInputs = [ makeWrapper libpulseaudio ];
 
-      libPath = lib.makeLibraryPath [
-        alsa-lib
+      libPath = stdenv.lib.makeLibraryPath [
+        alsaLib
         libpulseaudio
         libX11
         libXcursor

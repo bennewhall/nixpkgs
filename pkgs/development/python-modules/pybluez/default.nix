@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , pkgs
@@ -20,7 +20,7 @@ buildPythonPackage rec {
   # the tests do not pass
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bluetooth Python extension module";
     license = licenses.gpl2;
     maintainers = with maintainers; [ leenaars ];

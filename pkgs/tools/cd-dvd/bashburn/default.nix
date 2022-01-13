@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, util-linux
+{ stdenv, fetchurl, util-linux
 , cdparanoia, cdrdao, dvdplusrwtools, flac, lame, mpg123, normalize
 , vorbis-tools, xorriso }:
 
@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
     sh Install.sh --prefix $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bash script CD Burner Writer";
     longDescription = ''
       It might not be the best looking application out there, but it works.

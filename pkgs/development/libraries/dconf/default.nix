@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
@@ -9,51 +9,47 @@
 , glib
 , bash-completion
 , dbus
-, gnome
+, gnome3
+, libxml2
 , gtk-doc
 , docbook-xsl-nons
 , docbook_xml_dtd_42
 }:
-let
-  isCross = (stdenv.hostPlatform != stdenv.buildPlatform);
-in
+
 stdenv.mkDerivation rec {
   pname = "dconf";
-  version = "0.40.0";
+  version = "0.38.0";
 
-  outputs = [ "out" "lib" "dev" ]
-    ++ lib.optional (!isCross) "devdoc";
+  outputs = [ "out" "lib" "dev" "devdoc" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "0cs5nayg080y8pb9b7qccm1ni8wkicdmqp1jsgc22110r6j24zyg";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0n2gqkp6d61h7gnnp2xnxp6w5wcl7w9ay58krrf729qd6d0hzxj5";
   };
 
   nativeBuildInputs = [
     meson
     ninja
+    vala
     pkg-config
     python3
     libxslt
+    libxml2
     glib
+    gtk-doc
     docbook-xsl-nons
     docbook_xml_dtd_42
-  ] ++ lib.optional (!isCross) gtk-doc;
+  ];
 
   buildInputs = [
     glib
     bash-completion
     dbus
-  ] ++ lib.optional (!isCross) vala;
-  # Vala cross compilation is broken. For now, build dconf without vapi when cross-compiling.
+  ];
 
   mesonFlags = [
     "--sysconfdir=/etc"
-    "-Dgtk_doc=${lib.boolToString (!isCross)}" # gtk-doc does do some gobject introspection, which doesn't yet cross-compile.
-  ] ++ lib.optional isCross "-Dvapi=false";
-
-  checkInputs = [
-    dbus # for dbus-daemon
+    "-Dgtk_doc=true"
   ];
 
   doCheck = !stdenv.isAarch32 && !stdenv.isAarch64 && !stdenv.isDarwin;
@@ -65,13 +61,12 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Projects/dconf";
     license = licenses.lgpl21Plus;
     platforms = platforms.unix;

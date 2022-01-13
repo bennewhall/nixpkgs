@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl, pkg-config, glib, libXaw, libX11, libXext
+{ stdenv, fetchurl, pkgconfig, glib, libXaw, libX11, libXext
   , libDSKSupport ? true, libdsk
   , motifSupport ? false, lesstif
 }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   version = "20070122";
   pname = "xcpc";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
     sha256 = "0hxsbhmyzyyrlidgg0q8izw55q0z40xrynw5a1c3frdnihj9jf7n";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ glib libdsk libXaw libX11 libXext ]
     ++ optional libDSKSupport libdsk

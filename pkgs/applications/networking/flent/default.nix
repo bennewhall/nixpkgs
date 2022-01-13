@@ -1,18 +1,18 @@
-{ lib, buildPythonApplication, fetchPypi, matplotlib, procps, pyqt5, python
-, pythonPackages, qt5, sphinx, xvfb-run }:
+{ stdenv, buildPythonApplication, fetchPypi, matplotlib, procps, pyqt5, python
+, pythonPackages, qt5, sphinx, xvfb_run }:
 
 buildPythonApplication rec {
   pname = "flent";
-  version = "2.0.1";
+  version = "1.3.2";
   src = fetchPypi {
     inherit pname version;
-    sha256 = "300a09938dc2b4a0463c9144626f25e0bd736fd47806a9444719fa024d671796";
+    sha256 = "1k265xxxjld6q38m9lsgy7p0j70qp9a49vh9zg0njbi4i21lxq23";
   };
 
   buildInputs = [ sphinx ];
   nativeBuildInputs = [ qt5.wrapQtAppsHook ];
   propagatedBuildInputs = [ matplotlib procps pyqt5 ];
-  checkInputs = [ procps pythonPackages.mock pyqt5 xvfb-run ];
+  checkInputs = [ procps pythonPackages.mock pyqt5 xvfb_run ];
 
   checkPhase = ''
     cat >test-runner <<EOF
@@ -29,7 +29,7 @@ buildPythonApplication rec {
     makeWrapperArgs+=("''${qtWrapperArgs[@]}")
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The FLExible Network Tester";
     homepage = "https://flent.org";
     license = licenses.gpl3;

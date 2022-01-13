@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, Hypervisor }:
+{ stdenv, fetchFromGitHub, cmake, Hypervisor }:
 
 stdenv.mkDerivation rec {
   pname = "noah";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
   buildInputs = [ Hypervisor ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bash on Ubuntu on macOS";
     homepage = "https://github.com/linux-noah/noah";
     license = [ licenses.mit licenses.gpl2 ];

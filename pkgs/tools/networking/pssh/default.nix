@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, pythonPackages, openssh, rsync }:
+{ stdenv, fetchFromGitHub, pythonPackages, openssh, rsync }:
 
 pythonPackages.buildPythonApplication rec {
   pname = "pssh";
@@ -20,7 +20,7 @@ pythonPackages.buildPythonApplication rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Parallel SSH Tools";
     longDescription = ''
       PSSH provides parallel versions of OpenSSH and related tools,

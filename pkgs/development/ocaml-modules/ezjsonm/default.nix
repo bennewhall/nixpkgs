@@ -1,4 +1,4 @@
-{ lib, fetchurl, buildDunePackage, jsonm, hex, sexplib0 }:
+{ stdenv, fetchurl, buildDunePackage, jsonm, hex, sexplib0 }:
 
 buildDunePackage rec {
   pname = "ezjsonm";
@@ -16,7 +16,7 @@ buildDunePackage rec {
   meta = {
     description = "An easy interface on top of the Jsonm library";
     homepage = "https://github.com/mirage/ezjsonm";
-    license = lib.licenses.isc;
-    maintainers = with lib.maintainers; [ vbgl ];
+    license = stdenv.lib.licenses.isc;
+    maintainers = with stdenv.lib.maintainers; [ vbgl ];
   };
 }

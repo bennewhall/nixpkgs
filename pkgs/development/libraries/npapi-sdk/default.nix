@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "npapi-sdk";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "0xxfcsjmmgbbyl9zwpzdshbx27grj5fnzjfmldmm9apws2yk9gq1";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A bundle of NPAPI headers by Mozilla";
 
     homepage = "https://bitbucket.org/mgorny/npapi-sdk"; # see also https://github.com/mozilla/npapi-sdk

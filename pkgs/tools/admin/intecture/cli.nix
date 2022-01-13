@@ -1,5 +1,5 @@
 { lib, fetchFromGitHub, rustPlatform
-, openssl, zeromq, czmq, pkg-config, cmake, zlib }:
+, openssl, zeromq, czmq, pkgconfig, cmake, zlib }:
 
 with rustPlatform;
 
@@ -14,11 +14,11 @@ buildRustPackage rec {
     sha256 = "16a5fkpyqkf8w20k3ircc1d0qmif7nygkzxj6mzk9609dlb0dmxq";
   };
 
-  cargoSha256 = "09phc0gxz1amrk1bbl5ajg0jmgxcqm4xzbvq3nj58qps991kvgf1";
+  cargoSha256 = "11r551baz3hrkyf9nv68mdf09nqyvbcfjh2rgy8babmi7jljpzav";
 
   buildInputs = [ openssl zeromq czmq zlib ];
 
-  nativeBuildInputs = [ pkg-config cmake ];
+  nativeBuildInputs = [ pkgconfig cmake ];
 
   # Needed for tests
   USER = "$(whoami)";

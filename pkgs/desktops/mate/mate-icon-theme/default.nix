@@ -1,15 +1,15 @@
-{ lib, stdenv, fetchurl, pkg-config, gettext, iconnamingutils, librsvg, gtk3, hicolor-icon-theme, mateUpdateScript }:
+{ stdenv, fetchurl, pkgconfig, gettext, iconnamingutils, librsvg, gtk3, hicolor-icon-theme }:
 
 stdenv.mkDerivation rec {
   pname = "mate-icon-theme";
-  version = "1.26.0";
+  version = "1.24.0";
 
   src = fetchurl {
-    url = "https://pub.mate-desktop.org/releases/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "0nha555fhhn0j5wmzmdc7bh93ckzwwdm8mwmzma5whkzslv09xa1";
+    url = "https://pub.mate-desktop.org/releases/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0a2lz61ivwwcdznmwlmgjr6ipr9sdl5g2czbagnpxkwz8f3m77na";
   };
 
-  nativeBuildInputs = [ pkg-config gettext iconnamingutils ];
+  nativeBuildInputs = [ pkgconfig gettext iconnamingutils ];
 
   buildInputs = [ librsvg ];
 
@@ -27,13 +27,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  passthru.updateScript = mateUpdateScript { inherit pname version; };
-
-  meta = with lib; {
+  meta = {
     description = "Icon themes from MATE";
     homepage = "https://mate-desktop.org";
-    license = licenses.lgpl3Plus;
-    platforms = platforms.linux;
-    maintainers = teams.mate.members;
+    license = stdenv.lib.licenses.lgpl3;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.romildo ];
   };
 }

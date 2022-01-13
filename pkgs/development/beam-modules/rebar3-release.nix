@@ -1,108 +1,83 @@
-{ stdenv
-, erlang
-, rebar3WithPlugins
-, openssl
-, lib
-}:
+{ stdenv, writeText, erlang, rebar3, openssl,
+  lib }:
 
-{ pname
-, version
+{ name, version
 , src
-, beamDeps ? [ ]
-, buildPlugins ? [ ]
 , checkouts ? null
 , releaseType
-, buildInputs ? [ ]
+, buildInputs ? []
 , setupHook ? null
 , profile ? "default"
 , installPhase ? null
 , buildPhase ? null
 , configurePhase ? null
-, meta ? { }
-, ...
-}@attrs:
+, meta ? {}
+, enableDebugInfo ? false
+, ... }@attrs:
 
-with lib;
+with stdenv.lib;
 
 let
   shell = drv: stdenv.mkDerivation {
-    name = "interactive-shell-${drv.pname}";
-    buildInputs = [ drv ];
-  };
+          name = "interactive-shell-${drv.name}";
+          buildInputs = [ drv ];
+    };
 
   customPhases = filterAttrs
     (_: v: v != null)
     { inherit setupHook configurePhase buildPhase installPhase; };
 
-  # When using the `beamDeps` argument, it is important that we use
-  # `rebar3WithPlugins` here even when there are no plugins. The vanilla
-  # `rebar3` package is an escript archive with bundled dependencies which can
-  # interfere with those in the app we are trying to build. `rebar3WithPlugins`
-  # doesn't have this issue since it puts its own deps last on the code path.
-  rebar3 = rebar3WithPlugins {
-    plugins = buildPlugins;
-  };
+  pkg = self: stdenv.mkDerivation (attrs // {
 
-  pkg =
-    assert beamDeps != [ ] -> checkouts == null;
-    self: stdenv.mkDerivation (attrs // {
+    name = "${name}-${version}";
+    inherit version;
 
-      name = "${pname}-${version}";
-      inherit version pname;
+    buildInputs = buildInputs ++ [ erlang rebar3 openssl ];
+    propagatedBuildInputs = [checkouts];
 
-      buildInputs = buildInputs ++ [ erlang rebar3 openssl ] ++ beamDeps;
+    dontStrip = true;
 
-      # ensure we strip any native binaries (eg. NIFs, ports)
-      stripDebugList = lib.optional (releaseType == "release") "rel";
+    inherit src;
 
-      inherit src;
+    setupHook = writeText "setupHook.sh" ''
+       addToSearchPath ERL_LIBS "$1/lib/erlang/lib/"
+    '';
 
-      REBAR_IGNORE_DEPS = beamDeps != [ ];
+    configurePhase = ''
+      runHook preConfigure
+      ${if checkouts != null then
+          ''cp --no-preserve=all -R ${checkouts}/_checkouts .''
+        else
+          ''''}
+      runHook postConfigure
+    '';
 
-      configurePhase = ''
-        runHook preConfigure
-        ${lib.optionalString (checkouts != null)
-        "cp --no-preserve=all -R ${checkouts}/_checkouts ."}
-        runHook postConfigure
-      '';
+    buildPhase = ''
+      runHook preBuild
+      HOME=. DEBUG=1 rebar3 as ${profile} ${if releaseType == "escript"
+                                            then '' escriptize''
+                                            else '' release''}
+      runHook postBuild
+    '';
 
-      buildPhase = ''
-        runHook preBuild
-        HOME=. DEBUG=1 rebar3 as ${profile} ${if releaseType == "escript"
-                                              then "escriptize"
-                                              else "release"}
-        runHook postBuild
-      '';
+    installPhase = ''
+      runHook preInstall
+      dir=${if releaseType == "escript"
+            then ''bin''
+            else ''rel''}
+      mkdir -p "$out/$dir"
+      cp -R --preserve=mode "_build/${profile}/$dir" "$out"
+      runHook postInstall
+    '';
 
-      installPhase = ''
-        runHook preInstall
-        dir=${if releaseType == "escript"
-              then "bin"
-              else "rel"}
-        mkdir -p "$out/$dir" "$out/bin"
-        cp -R --preserve=mode "_build/${profile}/$dir" "$out"
-        ${lib.optionalString (releaseType == "release")
-          "find $out/rel/*/bin -type f -executable -exec ln -s -t $out/bin {} \\;"}
-        runHook postInstall
-      '';
+    meta = {
+      inherit (erlang.meta) platforms;
+    } // meta;
 
-      postInstall = ''
-        for dir in $out/rel/*/erts-*; do
-          echo "ERTS found in $dir - removing references to erlang to reduce closure size"
-          for f in $dir/bin/{erl,start}; do
-            substituteInPlace "$f" --replace "${erlang}/lib/erlang" "''${dir/\/erts-*/}"
-          done
-        done
-      '';
-
-      meta = {
-        inherit (erlang.meta) platforms;
-      } // meta;
-
-      passthru = ({
-        packageName = pname;
-        env = shell self;
-      } // (if attrs ? passthru then attrs.passthru else { }));
-    } // customPhases);
+    passthru = {
+      packageName = name;
+      env = shell self;
+   };
+  } // customPhases);
 in
-fix pkg
+  fix pkg

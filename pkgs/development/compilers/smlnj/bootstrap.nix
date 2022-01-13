@@ -1,8 +1,4 @@
-# This derivation should be redundant, now that regular smlnj works on Darwin,
-# and is preserved only for pre-existing direct usage. New use cases should
-# just use the regular smlnj derivation.
-
-{ lib, stdenv, fetchurl, cpio, rsync, xar, makeWrapper }:
+{ stdenv, fetchurl, cpio, rsync, xar, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "smlnj-bootstrap";
@@ -14,8 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "12jn50h5jz0ac1vzld2mb94p1dyc8h0mk0hip2wj5xqk1dbzwxl4";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ cpio rsync ];
+  buildInputs = [ cpio rsync makeWrapper ];
 
   unpackPhase = ''
     ${xar}/bin/xar -xf $src
@@ -41,8 +36,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Compiler for the Standard ML '97 programming language";
     homepage    = "http://www.smlnj.org";
-    license     = lib.licenses.free;
-    platforms   = lib.platforms.darwin;
-    maintainers = [ lib.maintainers.jwiegley ];
+    license     = stdenv.lib.licenses.free;
+    platforms   = stdenv.lib.platforms.darwin;
+    maintainers = [ stdenv.lib.maintainers.jwiegley ];
   };
 }

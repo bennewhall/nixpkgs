@@ -1,11 +1,12 @@
-{ faust
+{ stdenv
+, faust
 , libjack2
 , cargo
 , binutils
 , gcc
 , gnumake
 , openssl
-, pkg-config
+, pkgconfig
 
 }:
 
@@ -13,5 +14,5 @@ faust.wrapWithBuildEnv {
 
   baseName = "faust2jackrust";
 
-  propagatedBuildInputs = [ libjack2 cargo binutils gcc gnumake openssl pkg-config ];
+  propagatedBuildInputs = [ libjack2 cargo binutils gcc gnumake openssl pkgconfig ];
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fltk, alsa-lib, freetype, libXrandr, libXinerama, libXcursor, lv2, libjack2, cmake, pkg-config }:
+{ stdenv, fetchFromGitHub, fltk, alsaLib, freetype, libXrandr, libXinerama, libXcursor, lv2, libjack2, cmake, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "ensemble-chorus";
@@ -12,13 +12,13 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [
-    fltk alsa-lib freetype libXrandr libXinerama libXcursor lv2 libjack2
+    fltk alsaLib freetype libXrandr libXinerama libXcursor lv2 libjack2
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jpcima/ensemble-chorus";
     description = "Digital model of electronic string ensemble chorus";
     maintainers = [ maintainers.magnetophon ];

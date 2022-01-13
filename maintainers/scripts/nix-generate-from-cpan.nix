@@ -1,4 +1,4 @@
-{ stdenv, lib, makeWrapper, perl, perlPackages }:
+{ stdenv, makeWrapper, perl, perlPackages }:
 
 stdenv.mkDerivation {
   name = "nix-generate-from-cpan-3";
@@ -18,8 +18,8 @@ stdenv.mkDerivation {
     '';
 
   meta = {
-    maintainers = with lib.maintainers; [ eelco ];
+    maintainers = with stdenv.lib.maintainers; [ eelco rycee ];
     description = "Utility to generate a Nix expression for a Perl package from CPAN";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv, python3Packages, texinfo }:
+{ fetchurl, stdenv, python3Packages, texinfo }:
 
 python3Packages.buildPythonApplication rec {
   pname = "rubber";
@@ -24,7 +24,7 @@ python3Packages.buildPythonApplication rec {
     cd tests && ${stdenv.shell} run.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Wrapper for LaTeX and friends";
     longDescription = ''
       Rubber is a program whose purpose is to handle all tasks related

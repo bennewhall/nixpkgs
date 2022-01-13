@@ -1,10 +1,9 @@
-{ lib, stdenv }:
+{ stdenv }:
 
-{ paths, disabledDefaultBackends ? [] }:
+{ paths }:
 
-with lib;
-let
-installSanePath = path: ''
+with stdenv.lib;
+let installSanePath = path: ''
       if [ -e "${path}/lib/sane" ]; then
         find "${path}/lib/sane" -maxdepth 1 -not -type d | while read backend; do
           symlink "$backend" "$out/lib/sane/$(basename "$backend")"
@@ -28,10 +27,6 @@ installSanePath = path: ''
         done
       fi
     '';
-    disableBackend = backend: ''
-      grep -q '${backend}' $out/etc/sane.d/dll.conf || { echo '${backend} is not a default plugin in $SANE_CONFIG_DIR/dll.conf'; exit 1; }
-      substituteInPlace $out/etc/sane.d/dll.conf --replace '${backend}' '# ${backend} disabled in nixos config'
-    '';
 in
 stdenv.mkDerivation {
   name = "sane-config";
@@ -47,7 +42,5 @@ stdenv.mkDerivation {
     }
 
     mkdir -p $out/etc/sane.d $out/etc/sane.d/dll.d $out/lib/sane
-  ''
-  + (concatMapStrings installSanePath paths)
-  + (concatMapStrings disableBackend disabledDefaultBackends);
+  '' + concatMapStrings installSanePath paths;
 }

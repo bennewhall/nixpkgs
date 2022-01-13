@@ -1,21 +1,21 @@
-{ lib, stdenv, fetchurl, pkg-config, file, zip, wxGTK30-gtk3, gtk3
-, contribPlugins ? false, hunspell, gamin, boost, wrapGAppsHook
+{ stdenv, fetchurl, autoreconfHook, libtool, pkgconfig, file, zip, wxGTK, gtk2
+, contribPlugins ? false, hunspell, gamin, boost
 }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
-  name = "${pname}-${lib.optionalString contribPlugins "full-"}${version}";
-  version = "20.03";
+  name = "${pname}-${stdenv.lib.optionalString contribPlugins "full-"}${version}";
+  version = "17.12";
   pname = "codeblocks";
 
   src = fetchurl {
-    url = "mirror://sourceforge/codeblocks/Sources/${version}/codeblocks-${version}.tar.xz";
-    sha256 = "1idaksw1vacmm83krxh5zlb12kad3dkz9ixh70glw1gaibib7vhm";
+    url = "mirror://sourceforge/codeblocks/Sources/${version}/codeblocks_${version}.tar.xz";
+    sha256 = "1q2pph7md1p10i83rir2l4gvy7ym2iw8w6sk5vl995knf851m20k";
   };
 
-  nativeBuildInputs = [ pkg-config file zip wrapGAppsHook ];
-  buildInputs = [ wxGTK30-gtk3 gtk3 ]
+  nativeBuildInputs = [ autoreconfHook pkgconfig libtool file zip ];
+  buildInputs = [ wxGTK gtk2 ]
     ++ optionals contribPlugins [ hunspell gamin boost ];
   enableParallelBuilding = true;
   patches = [ ./writable-projects.patch ];

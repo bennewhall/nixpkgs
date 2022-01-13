@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, opencl-clhpp, ocl-icd }:
+{ stdenv, fetchFromGitHub, opencl-clhpp, ocl-icd }:
 
 stdenv.mkDerivation {
-  pname = "opencl-info";
-  version = "unstable-2014-02-21";
+  name = "opencl-info-2014-02-21";
 
   src = fetchFromGitHub {
     owner = "marchv";
@@ -27,7 +26,7 @@ stdenv.mkDerivation {
     install -Dm755 opencl-info $out/bin/opencl-info
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool to dump OpenCL platform/device information";
     homepage = "https://github.com/marchv/opencl-info";
     license = licenses.mit;

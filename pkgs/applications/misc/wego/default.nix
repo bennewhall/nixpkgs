@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchgit }:
+{ stdenv, buildGoPackage, fetchgit }:
 
 buildGoPackage rec {
   pname = "wego";
@@ -16,7 +16,7 @@ buildGoPackage rec {
   goDeps = ./deps.nix;
 
   meta = {
-    license = lib.licenses.isc;
+    license = stdenv.lib.licenses.isc;
     homepage = "https://github.com/schachmat/wego";
     description = "Weather app for the terminal";
   };

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, ace
+{ stdenv, fetchFromGitHub, cmake, ace
 }:
 
 stdenv.mkDerivation rec {
@@ -11,8 +11,9 @@ stdenv.mkDerivation rec {
     sha256 = "0mphh899niy30xbjjwi9xpsliq8mladfldbbbjfngdrqfhiray1a";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ ace ];
+  buildInputs = [ cmake ace ];
+
+  enableParallelBuilding = true;
 
   cmakeFlags = [
     "-DYARP_COMPILE_UNMAINTAINED:BOOL=ON"
@@ -28,9 +29,9 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Yet Another Robot Platform";
     homepage = "http://yarp.it";
-    license = lib.licenses.lgpl21;
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.nico202 ];
+    license = stdenv.lib.licenses.lgpl21;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.nico202 ];
   };
 }
 

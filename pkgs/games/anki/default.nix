@@ -4,9 +4,8 @@
 , python
 , fetchurl
 , fetchFromGitHub
-, fetchpatch
 , lame
-, mpv-unwrapped
+, mplayer
 , libpulseaudio
 , pyqtwebengine
 , decorator
@@ -48,7 +47,7 @@ let
       rev = rev-manual;
       sha256 = sha256-manual;
     };
-    dontInstall = true;
+    phases = [ "unpackPhase" "patchPhase" "buildPhase" ];
     nativeBuildInputs = [ asciidoc ];
     patchPhase = ''
       # rsync isnt needed
@@ -106,16 +105,11 @@ buildPythonApplication rec {
   checkInputs = [ pytest glibcLocales nose ];
 
   nativeBuildInputs = [ pyqtwebengine.wrapQtAppsHook ];
-  buildInputs = [ lame mpv-unwrapped libpulseaudio ];
+  buildInputs = [ lame mplayer libpulseaudio ];
 
   patches = [
     # Disable updated version check.
     ./no-version-check.patch
-    (fetchpatch {
-      name = "fix-mpv-args.patch";
-      url = "https://sources.debian.org/data/main/a/anki/2.1.15+dfsg-3/debian/patches/fix-mpv-args.patch";
-      sha256 = "1dimnnawk64m5bbdbjrxw5k08q95l728n94cgkrrwxwavmmywaj2";
-    })
   ];
 
   # Anki does not use setup.py
@@ -133,9 +127,6 @@ buildPythonApplication rec {
 
   # UTF-8 locale needed for testing
   LC_ALL = "en_US.UTF-8";
-
-  # tests fail with to many open files
-  doCheck = !stdenv.isDarwin;
 
   # - Anki writes some files to $HOME during tests
   # - Skip tests using network
@@ -179,7 +170,7 @@ buildPythonApplication rec {
   preFixup = ''
     makeWrapperArgs+=(
       "''${qtWrapperArgs[@]}"
-      --prefix PATH ':' "${lame}/bin:${mpv-unwrapped}/bin"
+      --prefix PATH ':' "${lame}/bin:${mplayer}/bin"
     )
   '';
 
@@ -203,7 +194,8 @@ buildPythonApplication rec {
       or even practicing guitar chords!
     '';
     license = licenses.agpl3Plus;
+    broken = stdenv.hostPlatform.isAarch64;
     platforms = platforms.mesaPlatforms;
-    maintainers = with maintainers; [ oxij Profpatsch ];
+    maintainers = with maintainers; [ oxij Profpatsch enzime ];
   };
 }

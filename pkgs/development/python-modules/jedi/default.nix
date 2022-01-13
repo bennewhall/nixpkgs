@@ -1,53 +1,31 @@
-{ lib
-, stdenv
-, buildPythonPackage
-, pythonOlder
-, fetchFromGitHub
-, colorama
-, django
-, docopt
-, pytestCheckHook
-, parso
-}:
+{ stdenv, buildPythonPackage, fetchFromGitHub, fetchPypi, pytest, glibcLocales, tox, pytestcov, parso }:
 
 buildPythonPackage rec {
   pname = "jedi";
-  version = "0.18.0";
-  disabled = pythonOlder "3.6";
+  # switch back to stable version on the next release.
+  # current stable is incompatible with parso
+  version = "2020-08-06";
 
   src = fetchFromGitHub {
     owner = "davidhalter";
     repo = "jedi";
-    rev = "v${version}";
-    sha256 = "0d8zdj56hyxbsvvrid6r3nprm0ygxaad6zpsbhbj6k7p3dcx7acw";
+    rev = "216f976fd5cab7a460e5d287e853d11759251e52";
+    sha256 = "1kb2ajzigadl95pnwglg8fxz9cvpg9hx30hqqj91jkgrc7djdldj";
     fetchSubmodules = true;
   };
 
+  checkInputs = [ pytest glibcLocales tox pytestcov ];
+
   propagatedBuildInputs = [ parso ];
 
-  checkInputs = [
-    colorama
-    django
-    docopt
-    pytestCheckHook
-  ];
-
-  preCheck = ''
-    export HOME=$TMPDIR
+  checkPhase = ''
+    LC_ALL="en_US.UTF-8" py.test test
   '';
 
-  disabledTests = [
-    # Assertions mismatches with pytest>=6.0
-    "test_completion"
+  # tox required for tests: https://github.com/davidhalter/jedi/issues/808
+  doCheck = false;
 
-    # sensitive to platform, causes false negatives on darwin
-    "test_import"
-  ] ++ lib.optionals (stdenv.isAarch64 && pythonOlder "3.9") [
-    # AssertionError: assert 'foo' in ['setup']
-    "test_init_extension_module"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/davidhalter/jedi";
     description = "An autocompletion tool for Python that can be used for text editors";
     license = licenses.lgpl3Plus;

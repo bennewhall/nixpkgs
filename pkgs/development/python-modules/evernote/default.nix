@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , isPy27
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
    propagatedBuildInputs = [ oauth2 ];
 
-   meta = with lib; {
+   meta = with stdenv.lib; {
     description = "Evernote SDK for Python";
     homepage = "https://dev.evernote.com";
     license = licenses.asl20;

@@ -1,6 +1,6 @@
 { lib
 , buildPythonPackage
-, fetchFromGitHub
+, fetchPypi
 , pythonOlder
 , tqdm
 , spacy
@@ -8,15 +8,12 @@
 
 buildPythonPackage rec {
   pname = "pysbd";
-  version = "0.3.4";
+  version = "0.3.3";
   disabled = pythonOlder "3.5";
 
-  # provides no sdist on pypi
-  src = fetchFromGitHub {
-    owner = "nipunsadvilkar";
-    repo = "pySBD";
-    rev = "v${version}";
-    sha256 = "12p7qm237z56hw4zr03n8rycgfymhki2m9c4w3ib0mvqq122a5dp";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "56ab48a28a8470f0042a4cb7c9da8a6dde8621ecf87a86d75f201cbf1837e77f";
   };
 
   checkInputs = [ tqdm spacy ];
@@ -29,6 +26,6 @@ buildPythonPackage rec {
     description = "Pysbd (Python Sentence Boundary Disambiguation) is a rule-based sentence boundary detection that works out-of-the-box across many languages";
     homepage = "https://github.com/nipunsadvilkar/pySBD";
     license = licenses.mit;
-    maintainers = teams.tts.members;
+    maintainers = [ maintainers.mic92 ];
   };
 }

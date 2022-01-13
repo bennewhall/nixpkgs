@@ -1,7 +1,7 @@
-{ lib, appleDerivation, xcbuildHook, llvmPackages, makeWrapper }:
+{ stdenv, appleDerivation, xcbuildHook, llvmPackages }:
 
 appleDerivation {
-  nativeBuildInputs = [ xcbuildHook makeWrapper ];
+  nativeBuildInputs = [ xcbuildHook ];
 
   patches = [
     # The following copied from
@@ -11,9 +11,8 @@ appleDerivation {
   ];
 
   postPatch = ''
-    makeWrapper ${llvmPackages.clang}/bin/clang $out/bin/clang-cpp --add-flags "--driver-mode=cpp"
     substituteInPlace rpcgen/rpc_main.c \
-      --replace "/usr/bin/cpp" "$out/bin/clang-cpp"
+      --replace "/usr/bin/cpp" "${llvmPackages.clang-unwrapped}/bin/clang-cpp"
   '';
 
   # temporary install phase until xcodebuild has "install" support
@@ -31,7 +30,7 @@ appleDerivation {
   '';
 
   meta = {
-    platforms = lib.platforms.darwin;
-    maintainers = with lib.maintainers; [ matthewbauer ];
+    platforms = stdenv.lib.platforms.darwin;
+    maintainers = with stdenv.lib.maintainers; [ matthewbauer ];
   };
 }

@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, zlib, gperf}:
+{stdenv, fetchurl, zlib, gperf}:
 
 stdenv.mkDerivation rec {
   pname = "libid3tag";
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
       --subst-var-by version "${version}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ID3 tag manipulation library";
     homepage = "http://mad.sourceforge.net/";
     license = licenses.gpl2;

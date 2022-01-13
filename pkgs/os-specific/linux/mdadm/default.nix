@@ -1,11 +1,10 @@
-{ lib, stdenv, util-linux, coreutils, fetchurl, groff, system-sendmail }:
+{ stdenv, util-linux, coreutils, fetchurl, groff, system-sendmail }:
 
 stdenv.mkDerivation rec {
-  pname = "mdadm";
-  version = "4.1";
+  name = "mdadm-4.1";
 
   src = fetchurl {
-    url = "mirror://kernel/linux/utils/raid/mdadm/mdadm-${version}.tar.xz";
+    url = "mirror://kernel/linux/utils/raid/mdadm/${name}.tar.xz";
     sha256 = "0jjgjgqijpdp7ijh8slzzjjw690kydb1jjadf0x5ilq85628hxmb";
   };
 
@@ -16,7 +15,7 @@ stdenv.mkDerivation rec {
     "SYSTEMD_DIR=$(out)/lib/systemd/system"
     "MANDIR=$(out)/share/man" "RUN_DIR=/dev/.mdadm"
     "STRIP="
-  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
   ];
 
@@ -42,7 +41,7 @@ stdenv.mkDerivation rec {
     grep -r $out $out/bin && false || true
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Programs for managing RAID arrays under Linux";
     homepage = "http://neil.brown.name/blog/mdadm";
     license = licenses.gpl2;

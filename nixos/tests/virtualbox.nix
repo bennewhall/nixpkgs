@@ -226,16 +226,18 @@ let
 
 
       def create_vm_${name}():
-          vbm("createvm --name ${name} ${createFlags}")
-          vbm("modifyvm ${name} ${vmFlags}")
-          vbm("setextradata ${name} VBoxInternal/PDM/HaltOnReset 1")
-          vbm("storagectl ${name} ${controllerFlags}")
-          vbm("storageattach ${name} ${diskFlags}")
-          vbm("sharedfolder add ${name} ${sharedFlags}")
-          vbm("sharedfolder add ${name} ${nixstoreFlags}")
+          # fmt: off
+          vbm(f"createvm --name ${name} ${createFlags}")
+          vbm(f"modifyvm ${name} ${vmFlags}")
+          vbm(f"setextradata ${name} VBoxInternal/PDM/HaltOnReset 1")
+          vbm(f"storagectl ${name} ${controllerFlags}")
+          vbm(f"storageattach ${name} ${diskFlags}")
+          vbm(f"sharedfolder add ${name} ${sharedFlags}")
+          vbm(f"sharedfolder add ${name} ${nixstoreFlags}")
           cleanup_${name}()
 
           ${mkLog "$HOME/VirtualBox VMs/${name}/Logs/VBox.log" "HOST-${name}"}
+          # fmt: on
 
 
       def destroy_vm_${name}():
@@ -257,7 +259,9 @@ let
 
       def wait_for_ip_${name}(interface):
           property = f"/VirtualBox/GuestInfo/Net/{interface}/V4/IP"
+          # fmt: off
           getip = f"VBoxManage guestproperty get ${name} {property} | sed -n -e 's/^Value: //p'"
+          # fmt: on
 
           ip = machine.succeed(
               ru(
@@ -390,13 +394,15 @@ let
 
       machine.wait_for_x()
 
+      # fmt: off
       ${mkLog "$HOME/.config/VirtualBox/VBoxSVC.log" "HOST-SVC"}
+      # fmt: on
 
       ${testScript}
       # (keep black happy)
     '';
 
-    meta = with pkgs.lib.maintainers; {
+    meta = with pkgs.stdenv.lib.maintainers; {
       maintainers = [ aszlig cdepillabout ];
     };
   };
@@ -430,7 +436,7 @@ in mapAttrs (mkVBoxTest false vboxVMs) {
 
 
     create_vm_simple()
-    machine.succeed(ru("VirtualBox >&2 &"))
+    machine.succeed(ru("VirtualBox &"))
     machine.wait_until_succeeds(ru("xprop -name 'Oracle VM VirtualBox Manager'"))
     machine.sleep(5)
     machine.screenshot("gui_manager_started")

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "dhcping";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Send DHCP request to find out if a DHCP server is running";
     longDescription = ''
       dhcping sends either a DHCPREQUEST or DHCPINFORM packet to the server
@@ -27,6 +27,6 @@ stdenv.mkDerivation rec {
     '';
     homepage = "http://www.mavetju.org/unix/general.php";
     license = licenses.bsd2;
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

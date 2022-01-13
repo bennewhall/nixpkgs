@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl
-, pkg-config
+{ stdenv, fetchurl
+, pkgconfig
 , intltool
 , libX11, libXv, libSM
 , gtk, libglade
@@ -7,7 +7,7 @@
 , perlPackages
 , xvidcore
 , mjpegtools
-, alsa-lib
+, alsaLib
 , libv4l
 , cimg }:
 
@@ -21,8 +21,8 @@ stdenv.mkDerivation rec {
     sha256 = "1765bvc65fpzn9ycnnj5hais9xkx9v0sm6a878d35x54bpanr859";
   };
 
-  buildInputs = with lib;
-  [ pkg-config intltool libX11 libXv libSM gtk libglade wxGTK perlPackages.XMLParser xvidcore mjpegtools alsa-lib libv4l cimg ];
+  buildInputs = with stdenv.lib;
+  [ pkgconfig intltool libX11 libXv libSM gtk libglade wxGTK perlPackages.XMLParser xvidcore mjpegtools alsaLib libv4l cimg ];
 
   NIX_CFLAGS_COMPILE="-I ${cimg}/include/cimg";
 
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
     make install prefix="$out" wxcamdocdir="$out/share/doc/wxcam"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An open-source, wxGTK-based webcam app for Linux";
     longDescription = ''
     wxCam is a webcam application for linux. It supports video recording

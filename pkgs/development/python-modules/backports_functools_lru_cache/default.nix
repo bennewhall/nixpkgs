@@ -1,26 +1,26 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, setuptools-scm
+, setuptools_scm
 , isPy3k
 , pytest
 , pytest-black
 , pytest-flake8
-, pytest-cov
+, pytestcov
 }:
 
 buildPythonPackage rec {
   pname = "backports.functools_lru_cache";
-  version = "1.6.4";
+  version = "1.6.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "d5ed2169378b67d3c545e5600d363a923b09c456dab1593914935a68ad478271";
+    sha256 = "8fde5f188da2d593bd5bc0be98d9abc46c95bb8a9dde93429570192ee6cc2d4a";
   };
 
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools_scm ];
 
-  checkInputs = [ pytest pytest-flake8 pytest-black pytest-cov ];
+  checkInputs = [ pytest pytest-flake8 pytest-black pytestcov ];
   # ironically, they fail a linting test, and pytest.ini forces that test suite
   checkPhase = ''
     rm backports/functools_lru_cache.py
@@ -29,8 +29,6 @@ buildPythonPackage rec {
 
   # Test fail on Python 2
   doCheck = isPy3k;
-
-  pythonNamespaces = [ "backports" ];
 
   meta = {
     description = "Backport of functools.lru_cache";

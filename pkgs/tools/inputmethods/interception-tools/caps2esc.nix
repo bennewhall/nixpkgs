@@ -1,20 +1,19 @@
-{ lib, stdenv, fetchFromGitLab, cmake }:
+{ stdenv, fetchFromGitLab, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "caps2esc";
-  version = "0.3.2";
+  version = "0.1.3";
 
   src = fetchFromGitLab {
-    group = "interception";
-    owner = "linux/plugins";
+    owner = "interception/linux/plugins";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-gPFElAixiDTTwcl2XKM7MbTkpRrg8ToO5K7H8kz3DHk=";
+    sha256 = "10xv56vh5h3lxyii3ni166ddv1sz2pylrjmdwxhb4gd2p5zgl1ji";
   };
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://gitlab.com/interception/linux/plugins/caps2esc";
     description = "Transforming the most useless key ever into the most useful one";
     license = licenses.mit;

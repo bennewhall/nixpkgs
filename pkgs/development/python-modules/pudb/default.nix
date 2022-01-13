@@ -1,55 +1,29 @@
-{ lib
+{ stdenv
 , buildPythonPackage
-, dataclasses
-, isPy3k
 , fetchPypi
-, jedi
 , pygments
 , urwid
-, urwid-readline
-, pytest-mock
-, pytestCheckHook
-, pythonOlder
+, isPy3k
 }:
 
 buildPythonPackage rec {
   pname = "pudb";
-  version = "2021.2.2";
-  format = "setuptools";
-
-  disabled = !isPy3k;
+  version = "2019.2";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "82a524ab4b89d2c701b089071ccc6afa9c8a838504e3d68eb33faa8a8abbe4cb";
+    sha256 = "1p2qizb35f9lfhklldzrn8g9mwiar3zmpc44463h5n1ln40ymw78";
   };
 
-  propagatedBuildInputs = [
-    jedi
-    pygments
-    urwid
-    urwid-readline
-  ] ++ lib.optionals (pythonOlder "3.7") [
-    dataclasses
-  ];
+  propagatedBuildInputs = [ pygments urwid ];
 
-  checkInputs = [
-    pytest-mock
-    pytestCheckHook
-  ];
+  # Tests fail on python 3 due to writes to the read-only home directory
+  doCheck = !isPy3k;
 
-  preCheck = ''
-    export HOME=$TMPDIR
-  '';
-
-  pythonImportsCheck = [
-    "pudb"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A full-screen, console-based Python debugger";
-    homepage = "https://github.com/inducer/pudb";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    platforms = platforms.all;
   };
+
 }

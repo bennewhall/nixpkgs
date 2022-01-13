@@ -15,7 +15,7 @@ buildGoModule rec {
 
   subPackages = [ "cmd/jb" ];
 
-  ldflags = [ "-s" "-w" "-X main.Version=${version}" ];
+  buildFlagsArray = [ "-ldflags=-s -w -X main.Version=${version}" ];
 
   meta = with lib; {
     description = "A jsonnet package manager";

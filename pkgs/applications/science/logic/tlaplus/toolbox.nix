@@ -1,16 +1,11 @@
-{ lib
-, fetchzip
-, makeWrapper
-, makeDesktopItem
-, stdenv
-, gtk3
-, libXtst
-, glib
-, zlib
-, wrapGAppsHook
+{ lib, fetchzip, makeWrapper, makeDesktopItem, stdenv
+, gtk, libXtst, glib, zlib
 }:
 
 let
+  version = "1.7.0";
+  arch = "x86_64";
+
   desktopItem = makeDesktopItem rec {
     name = "TLA+Toolbox";
     exec = "tla-toolbox";
@@ -25,30 +20,22 @@ let
   };
 
 
-in
-stdenv.mkDerivation rec {
+in stdenv.mkDerivation {
   pname = "tla-toolbox";
-  version = "1.7.1";
+  inherit version;
   src = fetchzip {
-    url = "https://tla.msr-inria.inria.fr/tlatoolbox/products/TLAToolbox-${version}-linux.gtk.x86_64.zip";
-    sha256 = "02a2y2mkfab5cczw8g604m61h4xr0apir49zbd1aq6mmgcgngw80";
+    url = "https://tla.msr-inria.inria.fr/tlatoolbox/products/TLAToolbox-${version}-linux.gtk.${arch}.zip";
+    sha256 = "0v15wscawair5bghr5ixb4i062kmh9by1m0hnz2r1sawlqyafz02";
   };
 
-  buildInputs = [ gtk3 ];
+  buildInputs = [ makeWrapper  ];
 
-  nativeBuildInputs = [ makeWrapper wrapGAppsHook ];
-
-  dontWrapGApps = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p "$out/bin"
     cp -r "$src" "$out/toolbox"
     chmod -R +w "$out/toolbox"
-
-    fixupPhase
-    gappsWrapperArgsHook
 
     patchelf \
       --set-interpreter $(cat $NIX_CC/nix-support/dynamic-linker) \
@@ -56,18 +43,12 @@ stdenv.mkDerivation rec {
 
     patchelf \
       --set-interpreter $(cat $NIX_CC/nix-support/dynamic-linker) \
-      --set-rpath "${lib.makeLibraryPath [ zlib ]}:$(patchelf --print-rpath $(find "$out/toolbox" -name java))" \
       "$(find "$out/toolbox" -name java)"
-
-    patchelf \
-      --set-interpreter $(cat $NIX_CC/nix-support/dynamic-linker) \
-      "$(find "$out/toolbox" -name jspawnhelper)"
 
     makeWrapper $out/toolbox/toolbox $out/bin/tla-toolbox \
       --run "set -x; cd $out/toolbox" \
       --add-flags "-data ~/.tla-toolbox" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ gtk3 libXtst glib zlib ]}"  \
-      "''${gappsWrapperArgs[@]}"
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ gtk libXtst glib zlib ]}"
 
     echo -e "\nCreating TLA Toolbox icons..."
     pushd "$src"
@@ -82,8 +63,6 @@ stdenv.mkDerivation rec {
 
     echo -e "\nCreating TLA Toolbox desktop entry..."
     cp -r "${desktopItem}/share/applications"* "$out/share/applications"
-
-    runHook postInstall
   '';
 
   meta = {
@@ -96,7 +75,7 @@ stdenv.mkDerivation rec {
     '';
     # http://lamport.azurewebsites.net/tla/license.html
     license = with lib.licenses; [ mit ];
-    platforms = [ "x86_64-linux" ];
+    platforms = stdenv.lib.platforms.linux;
     maintainers = [ ];
   };
 }

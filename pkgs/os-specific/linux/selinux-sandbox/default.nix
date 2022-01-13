@@ -1,20 +1,20 @@
-{ lib, stdenv, fetchurl, bash, coreutils, python3
+{ stdenv, fetchurl, bash, coreutils, python3
 , libcap_ng, policycoreutils, selinux-python, dbus
 , xorgserver, openbox, xmodmap }:
 
 # this is python3 only as it depends on selinux-python
 
-with lib;
+with stdenv.lib; 
 with python3.pkgs;
 
 stdenv.mkDerivation rec {
   pname = "selinux-sandbox";
-  version = "3.3";
-  inherit (policycoreutils) se_url;
+  version = "2.9";
+  inherit (policycoreutils) se_release se_url;
 
   src = fetchurl {
-    url = "${se_url}/${version}/selinux-sandbox-${version}.tar.gz";
-    sha256 = "0rw8pxfqhl6ww4w31fbf4hi3zilh1n3b1rfjm7ra76mm78wfyylj";
+    url = "${se_url}/${se_release}/selinux-sandbox-${version}.tar.gz";
+    sha256 = "0qj20jyi8v1653xdqj5yak3wwbvg5bw8f2jmx8fpahl6y1bmz481";
   };
 
   nativeBuildInputs = [ wrapPython ];
@@ -58,3 +58,4 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
   };
 }
+

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "pretend";
@@ -12,7 +12,7 @@ buildPythonPackage rec {
   # No tests in archive
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/alex/pretend";
     license = licenses.bsd3;
   };

@@ -1,6 +1,6 @@
-{ lib, fetchFromGitHub, stdenv, bitlbee, autoconf, automake, libtool, pkg-config, glib, libgcrypt }:
+{ fetchFromGitHub, stdenv, bitlbee, autoconf, automake, libtool, pkgconfig, glib, libgcrypt }:
 
-with lib;
+with stdenv.lib;
 stdenv.mkDerivation rec {
   version = "1.4.2";
   pname = "bitlbee-steam";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "121r92mgwv445wwxzh35n19fs5k81ihr0j19k256ia5502b1xxaq";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ bitlbee autoconf automake libtool libgcrypt ];
 
   preConfigure = ''
@@ -25,6 +25,6 @@ stdenv.mkDerivation rec {
 
     homepage = "https://github.com/jgeboski/bitlbee-steam";
     license = licenses.gpl2Plus;
-    platforms = lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

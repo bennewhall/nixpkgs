@@ -1,19 +1,17 @@
-{ lib, buildOcaml, fetchFromGitHub }:
+{stdenv, buildOcaml, fetchurl}:
 
 buildOcaml rec {
-  pname = "pipebang";
+  name = "pipebang";
   version = "113.00.00";
 
   minimumSupportedOcamlVersion = "4.00";
 
-  src = fetchFromGitHub {
-    owner = "janestreet";
-    repo = "pipebang";
-    rev = version;
-    sha256 = "sha256-9A3X/ciL5HtuKQ5awS+hDDBLL5ytOr12wHsmJLNRn+Q=";
+  src = fetchurl {
+    url = "https://github.com/janestreet/pipebang/archive/${version}.tar.gz";
+    sha256 = "0acm2y8wxvnapa248lkgm0vcc44hlwhrjxqkx1awjxzcmarnxhfk";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/janestreet/pipebang";
     description = "Syntax extension to transform x |! f into f x";
     license = licenses.asl20;

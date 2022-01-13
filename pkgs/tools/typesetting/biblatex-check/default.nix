@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, python3 }:
+{ stdenv, fetchFromGitHub, python }:
 
 stdenv.mkDerivation {
   pname = "biblatex-check";
@@ -11,15 +11,13 @@ stdenv.mkDerivation {
     sha256 = "1bq0yqckhssazwkivipdjmn1jpsf301i4ppyl88qhc5igx39wg25";
   };
 
-  buildInputs = [ python3 ];
-
-  strictDeps = true;
+  buildInputs = [ python ];
 
   installPhase = ''
     install -Dm755 biblatex_check.py $out/bin/biblatex-check
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python2/3 script for checking BibLatex .bib files";
     homepage = "https://github.com/Pezmc/BibLatex-Check";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, pure, libffi }:
+{ stdenv, fetchurl, pkgconfig, pure, libffi }:
 
 stdenv.mkDerivation rec {
   baseName = "ffi";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "0331f48efaae40af21b23cf286fd7eac0ea0a249d08fd97bf23246929c0ea71a";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ pure libffi ];
   makeFlags = [ "libdir=$(out)/lib" "prefix=$(out)/" ];
   setupHook = ../generic-setup-hook.sh;
@@ -18,8 +18,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Provides an interface to libffi which enables you to call C functions from Pure and vice versa";
     homepage = "http://puredocs.bitbucket.org/pure-ffi.html";
-    license = lib.licenses.lgpl3Plus;
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ asppsa ];
+    license = stdenv.lib.licenses.lgpl3Plus;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ asppsa ];
   };
 }

@@ -1,23 +1,23 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "stripe-cli";
-  version = "1.7.9";
+  version = "1.5.5";
 
   src = fetchFromGitHub {
     owner = "stripe";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-rCo3iHLfiEH/+APNztKKSdoJerz161jF7sNx8qTFw3U=";
+    sha256 = "0r0szzw3xl9cn5vcqgn6sc4wbk2j17r1rhg14qgix835lzp9wpdv";
   };
 
-  vendorSha256 = "sha256-Duu6lP87KKLC1eGIebycBSIPw7FN6BBxPexize9+jPE=";
+  vendorSha256 = "05cyn9cgmijj6dl075slwm5qc6fj6m5sm414wqm50xz2fjs0400r";
 
   subPackages = [
     "cmd/stripe"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://stripe.com/docs/stripe-cli";
     description = "A command-line tool for Stripe";
     license = with licenses; [ asl20 ];

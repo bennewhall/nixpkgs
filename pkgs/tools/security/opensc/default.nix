@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, zlib, readline, openssl
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, zlib, readline, openssl
 , libiconv, pcsclite, libassuan, libXt
 , docbook_xsl, libxslt, docbook_xml_dtd_412
 , Carbon, PCSC, buildPackages
@@ -7,21 +7,21 @@
 
 stdenv.mkDerivation rec {
   pname = "opensc";
-  version = "0.22.0";
+  version = "0.21.0";
 
   src = fetchFromGitHub {
     owner = "OpenSC";
     repo = "OpenSC";
     rev = version;
-    sha256 = "sha256-0IFpiG1SJq4cpS5z6kwpWSPVWjO0q0SHs+doD2vbUKs=";
+    sha256 = "sha256-OjOfA1pIu8NeN+hPuow5UVMKsg0PrsLojw5h05/Qm+o=";
   };
 
-  nativeBuildInputs = [ pkg-config autoreconfHook ];
+  nativeBuildInputs = [ pkgconfig autoreconfHook ];
   buildInputs = [
     zlib readline openssl libassuan
     libXt libxslt libiconv docbook_xml_dtd_412
   ]
-  ++ lib.optional stdenv.isDarwin Carbon
+  ++ stdenv.lib.optional stdenv.isDarwin Carbon
   ++ (if withApplePCSC then [ PCSC ] else [ pcsclite ]);
 
   NIX_CFLAGS_COMPILE = "-Wno-error";
@@ -41,13 +41,13 @@ stdenv.mkDerivation rec {
       if withApplePCSC then
         "${PCSC}/Library/Frameworks/PCSC.framework/PCSC"
       else
-        "${lib.getLib pcsclite}/lib/libpcsclite${stdenv.hostPlatform.extensions.sharedLibrary}"
+        "${stdenv.lib.getLib pcsclite}/lib/libpcsclite${stdenv.hostPlatform.extensions.sharedLibrary}"
       }"
-    (lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform)
+    (stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform)
       "XSLTPROC=${buildPackages.libxslt}/bin/xsltproc")
   ];
 
-  PCSC_CFLAGS = lib.optionalString withApplePCSC
+  PCSC_CFLAGS = stdenv.lib.optionalString withApplePCSC
     "-I${PCSC}/Library/Frameworks/PCSC.framework/Headers";
 
   installFlags = [
@@ -55,11 +55,11 @@ stdenv.mkDerivation rec {
     "completiondir=$(out)/etc"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Set of libraries and utilities to access smart cards";
     homepage = "https://github.com/OpenSC/OpenSC/wiki";
     license = licenses.lgpl21Plus;
     platforms = platforms.all;
-    maintainers = [ maintainers.michaeladler ];
+    maintainers = [ maintainers.erictapen ];
   };
 }

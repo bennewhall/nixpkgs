@@ -1,24 +1,22 @@
-{ lib
-, stdenv
+{ stdenv
 , buildPythonPackage
-, fetchFromGitHub
-, libarchive
+, fetchPypi
+, pytest
 , glibcLocales
+, libarchive
 , mock
-, pytestCheckHook
 }:
 
 buildPythonPackage rec {
   pname = "libarchive-c";
-  version = "3.2";
-  format = "setuptools";
+  version = "2.9";
 
-  src = fetchFromGitHub {
-    owner = "Changaco";
-    repo = "python-${pname}";
-    rev = version;
-    sha256 = "1kj3y9vnsc9m2hvnvgk5inawxfknz5drj3q51hqgcbq8p4dm8vli";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "9919344cec203f5db6596a29b5bc26b07ba9662925a05e24980b84709232ef60";
   };
+
+  checkInputs = [ mock pytest glibcLocales ];
 
   LC_ALL="en_US.UTF-8";
 
@@ -27,17 +25,11 @@ buildPythonPackage rec {
       "find_library('archive')" "'${libarchive.lib}/lib/libarchive${stdenv.hostPlatform.extensions.sharedLibrary}'"
   '';
 
-  pythonImportsCheck = [
-    "libarchive"
-  ];
+  checkPhase = ''
+    py.test tests -k 'not test_check_archiveentry_with_unicode_entries_and_name_zip and not test_check_archiveentry_using_python_testtar'
+  '';
 
-  checkInputs = [
-    glibcLocales
-    mock
-    pytestCheckHook
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/Changaco/python-libarchive-c";
     description = "Python interface to libarchive";
     license = licenses.cc0;

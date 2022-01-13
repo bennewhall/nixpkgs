@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, alsa-lib }:
+{ stdenv, fetchFromGitHub, alsaLib }:
 
 stdenv.mkDerivation rec {
    version = "0.2";
@@ -13,15 +13,15 @@ stdenv.mkDerivation rec {
 
    hardeningDisable = [ "format" ];
 
-   buildInputs = [ alsa-lib ];
+   buildInputs = [ alsaLib ];
 
    prePatch = ''sed -i "s@/usr/local@$out@" Makefile'';
 
    meta = {
      description = "Small command-line utilities";
      homepage = "https://github.com/baskerville/sutils";
-     maintainers = [ lib.maintainers.meisternu ];
+     maintainers = [ stdenv.lib.maintainers.meisternu ];
      license = "Custom";
-     platforms = lib.platforms.linux;
+     platforms = stdenv.lib.platforms.linux;
    };
 }

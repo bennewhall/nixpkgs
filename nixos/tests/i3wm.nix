@@ -1,6 +1,6 @@
 import ./make-test-python.nix ({ pkgs, ...} : {
   name = "i3wm";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ aszlig ];
   };
 

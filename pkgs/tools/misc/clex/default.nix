@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ncurses }:
+{ stdenv, fetchurl, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "clex";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "File manager with full-screen terminal interface";
     longDescription = ''
       CLEX (pronounced KLEKS) displays directory contents including the file

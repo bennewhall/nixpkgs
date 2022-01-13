@@ -1,29 +1,13 @@
-{ lib
-, stdenv
-, fetchurl
-, bash
-, btrfs-progs
-, openssh
-, perl
-, perlPackages
-, util-linux
-, asciidoc
-, asciidoctor
-, mbuffer
-, makeWrapper
-, genericUpdater
-, curl
-, writeShellScript
-, nixosTests
-}:
+{ stdenv, fetchurl, coreutils, bash, btrfs-progs, openssh, perl, perlPackages
+, util-linux, asciidoc, asciidoctor, mbuffer, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "btrbk";
-  version = "0.31.3";
+  version = "0.29.1";
 
   src = fetchurl {
     url = "https://digint.ch/download/btrbk/releases/${pname}-${version}.tar.xz";
-    sha256 = "1lx7vnf386nsik8mxrrfyx1h7mkqk5zs26sy0s0lynfxcm4lkxb2";
+    sha256 = "153inyvvnl17hq1w3nsa783havznaykdam2yrj775bmi2wg6fvwn";
   };
 
   nativeBuildInputs = [ asciidoc asciidoctor makeWrapper ];
@@ -38,9 +22,13 @@ stdenv.mkDerivation rec {
     done
 
     # Tainted Mode disables PERL5LIB
-    substituteInPlace btrbk \
-      --replace "perl -T" "perl" \
-      --replace "\$0" "\$ENV{'program_name'}"
+    substituteInPlace btrbk --replace "perl -T" "perl"
+
+    # Fix btrbk-mail
+    substituteInPlace contrib/cron/btrbk-mail \
+      --replace "/bin/date" "${coreutils}/bin/date" \
+      --replace "/bin/echo" "${coreutils}/bin/echo" \
+      --replace '$btrbk' 'btrbk'
 
     # Fix SSH filter script
     sed -i '/^export PATH/d' ssh_filter_btrbk.sh
@@ -48,27 +36,17 @@ stdenv.mkDerivation rec {
   '';
 
   preFixup = ''
-    wrapProgram $out/bin/btrbk \
+    wrapProgram $out/sbin/btrbk \
       --set PERL5LIB $PERL5LIB \
-      --run 'export program_name=$0' \
-      --prefix PATH ':' "${lib.makeBinPath [ btrfs-progs bash mbuffer openssh ]}"
+      --prefix PATH ':' "${stdenv.lib.makeBinPath [ btrfs-progs bash mbuffer openssh ]}"
   '';
 
-  passthru.tests.btrbk = nixosTests.btrbk;
-
-  passthru.updateScript = genericUpdater {
-    inherit pname version;
-    versionLister = writeShellScript "btrbk-versionLister" ''
-      echo "# Versions for $1:" >> "$2"
-      ${curl}/bin/curl -s https://digint.ch/download/btrbk/releases/ | ${perl}/bin/perl -lne 'print $1 if /btrbk-([0-9.]*)\.tar/'
-    '';
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A backup tool for btrfs subvolumes";
     homepage = "https://digint.ch/btrbk";
-    license = licenses.gpl3Only;
+    license = licenses.gpl3;
     platforms = platforms.unix;
     maintainers = with maintainers; [ asymmetric ];
+    inherit version;
   };
 }

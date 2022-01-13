@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, lib, qt4, openssl, pkg-config }:
+{ stdenv, fetchurl, lib, qt4, openssl, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "yate";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
   };
 
   # TODO zaptel ? postgres ?
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ qt4 openssl ];
 
   # /dev/null is used when linking which is a impure path for the wrapper

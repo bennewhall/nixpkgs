@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , substituteAll
 , nixosTests
@@ -11,7 +11,7 @@
 , gettext
 , libxml2
 , libxslt
-, pkg-config
+, pkgconfig
 , xmlto
 
 , acl
@@ -21,7 +21,6 @@
 , coreutils
 , cpio
 , curl
-, debugedit
 , elfutils
 , flatpak
 , gitMinimal
@@ -47,14 +46,43 @@ let
   installed_test_metadir = "${placeholder "installedTests"}/share/installed-tests/flatpak-builder";
 in stdenv.mkDerivation rec {
   pname = "flatpak-builder";
-  version = "1.2.0";
+  version = "1.0.11";
 
   outputs = [ "out" "doc" "man" "installedTests" ];
 
   src = fetchurl {
     url = "https://github.com/flatpak/flatpak-builder/releases/download/${version}/${pname}-${version}.tar.xz";
-    sha256 = "sha256-38tqPKONYeB3W3CkaatQUoXhKTYUYt8JAE5tQlHCRqg=";
+    sha256 = "EYNLdrvSs8S/GCYy0jGsnP1+C988y1j7WzcLfczM1Ew=";
   };
+
+  nativeBuildInputs = [
+    autoreconfHook
+    docbook_xml_dtd_412
+    docbook_xml_dtd_42
+    docbook_xml_dtd_43
+    docbook_xsl
+    gettext
+    libxml2
+    libxslt
+    pkgconfig
+    xmlto
+  ];
+
+  buildInputs = [
+    acl
+    bzip2
+    curl
+    elfutils
+    flatpak
+    glib
+    json-glib
+    libcap
+    libdwarf
+    libsoup
+    libxml2
+    libyaml
+    ostree
+  ];
 
   patches = [
     # patch taken from gtk_doc
@@ -85,41 +113,8 @@ in stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [
-    autoreconfHook
-    # TODO: Remove older versions.
-    # https://github.com/flatpak/flatpak-builder/pull/437
-    docbook_xml_dtd_412
-    docbook_xml_dtd_42
-    docbook_xml_dtd_43
-    docbook_xsl
-    gettext
-    libxml2
-    libxslt
-    pkg-config
-    xmlto
-  ];
-
-  buildInputs = [
-    acl
-    bzip2
-    curl
-    debugedit
-    elfutils
-    flatpak
-    glib
-    json-glib
-    libcap
-    libdwarf
-    libsoup
-    libxml2
-    libyaml
-    ostree
-  ];
-
   configureFlags = [
     "--enable-installed-tests"
-    "--with-system-debugedit"
   ];
 
   makeFlags = [
@@ -129,8 +124,6 @@ in stdenv.mkDerivation rec {
 
   # Some scripts used by tests  need to use shebangs that are available in Flatpak runtimes.
   dontPatchShebangs = true;
-
-  enableParallelBuilding = true;
 
   # Installed tests
   postFixup = ''
@@ -152,7 +145,7 @@ in stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tool to build flatpaks from source";
     homepage = "https://github.com/flatpak/flatpak-builder";
     license = licenses.lgpl21Plus;

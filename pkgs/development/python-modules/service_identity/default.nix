@@ -1,47 +1,37 @@
 { lib
-, attrs
 , buildPythonPackage
-, cryptography
 , fetchFromGitHub
-, idna
+, pythonOlder
+, cryptography
 , ipaddress
 , pyasn1
 , pyasn1-modules
-, pytestCheckHook
-, pythonOlder
+, idna
+, attrs
+, pytest
 }:
 
 buildPythonPackage rec {
-  pname = "service-identity";
-  version = "21.1.0";
+  pname = "service_identity";
+  version = "18.1.0";
 
   src = fetchFromGitHub {
     owner = "pyca";
     repo = pname;
     rev = version;
-    sha256 = "sha256-pWc2rU3ULqEukMhd1ySY58lTm3s8f/ayQ7CY4nG24AQ=";
+    sha256 = "1aw475ksmd4vpl8cwfdcsw2v063nbhnnxpy633sb75iqp9aazhlx";
   };
 
   propagatedBuildInputs = [
-    attrs
-    cryptography
-    idna
-    pyasn1
-    pyasn1-modules
-  ] ++ lib.optionals (pythonOlder "3.3") [
-    ipaddress
-  ];
+    pyasn1 pyasn1-modules idna attrs cryptography
+  ] ++ lib.optionals (pythonOlder "3.3") [ ipaddress ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  pythonImportsCheck = [ "service_identity" ];
+  checkInputs = [ pytest ];
+  checkPhase = "py.test";
 
   meta = with lib; {
     description = "Service identity verification for pyOpenSSL";
-    homepage = "https://service-identity.readthedocs.io";
     license = licenses.mit;
-    maintainers = with maintainers; [ fab ];
+    homepage = "https://service-identity.readthedocs.io";
   };
 }

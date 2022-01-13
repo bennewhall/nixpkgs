@@ -1,11 +1,10 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , gdk-pixbuf
 , librsvg
 , gtk-engine-murrine
 , gtk3
-, gnome
+, gnome3
 , gnome-icon-theme
 , numix-icon-theme-circle
 , hicolor-icon-theme
@@ -13,13 +12,13 @@
 
 stdenv.mkDerivation rec {
   pname = "canta-theme";
-  version = "2021-09-08";
+  version = "2020-05-17";
 
   src = fetchFromGitHub {
     owner = "vinceliuice";
     repo = pname;
     rev = version;
-    sha256 = "05h42nrggb6znzjcbh4lqqfcm41h4r85n3vwimp3l4lq5p90igr2";
+    sha256 = "0b9ffkw611xxb2wh43sjqla195jp0ygxph5a8dvifkxdw6nxc2y0";
   };
 
   nativeBuildInputs = [
@@ -32,7 +31,7 @@ stdenv.mkDerivation rec {
   ];
 
   propagatedBuildInputs = [
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
     gnome-icon-theme
     numix-icon-theme-circle
     hicolor-icon-theme
@@ -55,10 +54,10 @@ stdenv.mkDerivation rec {
     gtk-update-icon-cache $out/share/icons/Canta
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Flat Design theme for GTK based desktop environments";
     homepage = "https://github.com/vinceliuice/Canta-theme";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.linux; # numix-icon-theme-circle unavailable in darwin
     maintainers = [ maintainers.romildo ];
   };

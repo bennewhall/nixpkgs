@@ -1,21 +1,21 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, zlib, cmake, jemalloc }:
+{ stdenv, fetchFromGitHub, pkgconfig, zlib, cmake, jemalloc }:
 
 stdenv.mkDerivation rec {
   pname = "lwan";
-  version = "0.4";
+  version = "0.3";
 
   src = fetchFromGitHub {
     owner = "lpereira";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-Z8kiuZHLEupCKFrj8guiu9fTG7s+5KiQ6x0pg9iMy0c=";
+    sha256 = "1znkcsbxw3r10prqvf2x27w1wmm9kd485pj59c364wlvqdhidwqr";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [ jemalloc zlib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Lightweight high-performance multi-threaded web server";
     longDescription = "A lightweight and speedy web server with a low memory
       footprint (~500KiB for 10k idle connections), with minimal system calls and

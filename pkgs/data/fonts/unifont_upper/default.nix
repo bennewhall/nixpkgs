@@ -1,7 +1,7 @@
 { lib, fetchzip }:
 
 let
-  version = "14.0.01";
+  version = "13.0.04";
 in fetchzip rec {
   name = "unifont_upper-${version}";
 
@@ -9,14 +9,14 @@ in fetchzip rec {
 
   postFetch = "install -Dm644 $downloadedFile $out/share/fonts/truetype/unifont_upper.ttf";
 
-  sha256 = "0sb3m2qg0ri7zmxhjvrq8n0jmxxjx8rrx9rpibh5f5fbfkibq4gm";
+  sha256 = "0bji0crx84nbjf1m1lzql7icrb02zbs3l66dn21pvr9czsry870f";
 
   meta = with lib; {
     description = "Unicode font for glyphs above the Unicode Basic Multilingual Plane";
-    homepage = "https://unifoundry.com/unifont/";
+    homepage = "http://unifoundry.com/unifont.html";
 
     # Basically GPL2+ with font exception.
-    license = "https://unifoundry.com/LICENSE.txt";
+    license = "http://unifoundry.com/LICENSE.txt";
     maintainers = [ maintainers.mathnerd314 maintainers.vrthra ];
     platforms = platforms.all;
   };

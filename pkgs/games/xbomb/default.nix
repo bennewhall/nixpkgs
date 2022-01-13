@@ -1,20 +1,19 @@
-{ lib, stdenv, fetchurl, libX11, libXaw }:
+{ stdenv, fetchurl, libX11, libXaw }:
 
 stdenv.mkDerivation rec {
-  pname = "xbomb";
-  version = "2.2b";
+  name = "xbomb-2.2b";
   src = fetchurl {
-    url    = "https://www.gedanken.org.uk/software/xbomb/download/xbomb-${version}.tgz";
+    url    = "https://www.gedanken.org.uk/software/xbomb/download/${name}.tgz";
     sha256 = "0692gjw28qvh8wj9l58scjw6kxj7jdyb3yzgcgs9wcznq11q839m";
   };
 
   buildInputs = [ libX11 libXaw ];
 
   makeFlags = [
-    "INSTDIR=${placeholder "out"}"
+    "INSTDIR=${placeholder ''out''}"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.gedanken.org.uk/software/xbomb/";
     description = "Minesweeper for X11 with various grid sizes and shapes";
     license = licenses.gpl2Plus;

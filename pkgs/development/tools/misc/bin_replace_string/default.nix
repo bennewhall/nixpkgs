@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libelf, txt2man }:
+{ stdenv, fetchurl, libelf, txt2man }:
 
 stdenv.mkDerivation {
   pname = "bin_replace_string";
@@ -14,7 +14,7 @@ stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Edit precompiled binaries";
     longDescription = ''
       bin_replace_string edits C-style strings in precompiled binaries. This is

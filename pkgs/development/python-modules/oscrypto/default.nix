@@ -1,29 +1,24 @@
-{ lib
-, buildPythonPackage
+{ buildPythonPackage
 , asn1crypto
 , fetchPypi
+, lib
 , openssl
 }:
 
 buildPythonPackage rec {
   pname = "oscrypto";
-  version = "1.2.1";
+  version = "1.1.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1546si2bdgkqnbvv4mw1hr4mhh6bq39d9z4wxgv1m7fq6miclb3x";
+    sha256 = "1vlryamwr442w2av8f54ldhls8fqs6678fg60pqbrf5pjy74kg23";
   };
 
   testSources = fetchPypi {
     inherit version;
     pname = "oscrypto_tests";
-    sha256 = "1ha68dsrbx6mlra44x0n81vscn17pajbl4yg7cqkk7mq1zfmjwks";
+    sha256 = "1crndz647pqdd8148yn3n5l63xwr6qkwa1qarsz59nk3ip0dsyq5";
   };
-
-  propagatedBuildInputs = [
-    asn1crypto
-    openssl
-  ];
 
   preCheck = ''
     tar -xf ${testSources}
@@ -33,11 +28,14 @@ buildPythonPackage rec {
     sed -e '/TLSTests/d' -e '/TrustListTests/d' -i tests/__init__.py
   '';
 
-  pythonImportsCheck = [ "oscrypto" ];
+  propagatedBuildInputs = [
+    asn1crypto
+    openssl
+  ];
 
   meta = with lib; {
-    description = "Encryption library for Python";
-    homepage = "https://github.com/wbond/oscrypto";
+    description = "A compilation-free, always up-to-date encryption library for Python that works on Windows, OS X, Linux and BSD.";
+    homepage = "https://www.snowflake.com/";
     license = licenses.mit;
   };
 }

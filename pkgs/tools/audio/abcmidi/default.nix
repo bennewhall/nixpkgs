@@ -1,15 +1,18 @@
-{ lib, stdenv, fetchzip }:
+{ stdenv, fetchzip }:
 
 stdenv.mkDerivation rec {
   pname = "abcMIDI";
-  version = "2021.12.12";
+  version = "2020.11.07";
 
   src = fetchzip {
     url = "https://ifdo.ca/~seymour/runabc/${pname}-${version}.zip";
-    hash = "sha256-34yRMa68x93u8/fGTzflh1L/Lf7ULPXsDaC7GUy+i8g=";
+    sha256 = "0zwzgqy1wa7yd2cm6spq11lw21mdn92lx8qzrxpk9kxcl03mv5jd";
   };
 
-  meta = with lib; {
+  # There is also a file called "makefile" which seems to be preferred by the standard build phase
+  makefile = "Makefile";
+
+  meta = with stdenv.lib; {
     homepage = "http://abc.sourceforge.net/abcMIDI/";
     downloadPage = "https://ifdo.ca/~seymour/runabc/top.html";
     license = licenses.gpl2Plus;

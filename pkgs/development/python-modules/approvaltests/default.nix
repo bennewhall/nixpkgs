@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pyperclip }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, isPy37, pyperclip }:
 
 buildPythonPackage rec {
   version = "0.2.6";
@@ -19,7 +19,7 @@ buildPythonPackage rec {
       --replace "pyperclip==1.5.27" "pyperclip>=1.5.27"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Assertion/verification library to aid testing";
     homepage = "https://github.com/approvals/ApprovalTests.Python";
     license = licenses.asl20;

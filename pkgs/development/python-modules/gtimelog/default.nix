@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, makeWrapper
+{ stdenv, fetchFromGitHub, makeWrapper
 , glibcLocales, gobject-introspection, gtk3, libsoup, libsecret
 , buildPythonPackage, python
 , pygobject3, freezegun, mock
@@ -37,7 +37,7 @@ buildPythonPackage rec {
       --prefix LD_LIBRARY_PATH ":" "${gtk3.out}/lib" \
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A time tracking app";
     longDescription = ''
       GTimeLog is a small time tracking application for GNOME.
@@ -46,11 +46,11 @@ buildPythonPackage rec {
       To run gtimelog successfully on a system that does not have full GNOME 3
       installed, the following NixOS options should be set:
       - programs.dconf.enable = true;
-      - services.gnome.gnome-keyring.enable = true;
+      - services.gnome3.gnome-keyring.enable = true;
 
       In addition, the following packages should be added to the environment:
-      - gnome.adwaita-icon-theme
-      - gnome.dconf
+      - gnome3.adwaita-icon-theme
+      - gnome3.dconf
     '';
     homepage = "https://gtimelog.org/";
     license = licenses.gpl2Plus;

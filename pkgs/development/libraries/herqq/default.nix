@@ -1,11 +1,11 @@
-{ lib, mkDerivation, fetchFromGitHub, qmake, qtmultimedia, qtbase }:
+{ lib, mkDerivation, unzip, fetchFromGitHub, qmake, qtmultimedia, qtbase }:
 
 mkDerivation rec {
   version = "unstable-20-06-26";
   pname = "herqq";
 
   nativeBuildInputs = [ qmake ];
-  buildInputs = [ qtbase qtmultimedia ];
+  buildInputs = [ qtbase unzip qtmultimedia ];
 
   outputs = [ "out" "dev" ];
 

@@ -1,13 +1,13 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, gettext
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, gettext
 , glibmm, libxmlxx, pango, librsvg
-, SDL2, glew, boost, ffmpeg, portaudio, libepoxy
+, SDL2, glew, boost, libav, portaudio, epoxy
 }:
 
 stdenv.mkDerivation rec {
   pname = "performous";
   version = "1.1";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Karaoke, band and dancing game";
     homepage    = "http://performous.org/";
     license     = licenses.gpl2Plus;
@@ -23,10 +23,10 @@ stdenv.mkDerivation rec {
 
   patches = [ ./performous-cmake.patch ];
 
-  nativeBuildInputs = [ cmake pkg-config gettext ];
+  nativeBuildInputs = [ cmake pkgconfig gettext ];
 
   buildInputs = [
     glibmm libxmlxx pango librsvg
-    SDL2 glew boost ffmpeg portaudio libepoxy
+    SDL2 glew boost libav portaudio epoxy
   ];
 }

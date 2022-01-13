@@ -1,14 +1,13 @@
-{ lib, stdenv, fetchFromGitHub, kernel, bc }:
-
+{ stdenv, fetchFromGitHub, kernel, bc }:
 stdenv.mkDerivation rec {
-  pname = "rtl8821ce";
-  version = "${kernel.version}-unstable-2021-11-19";
+  name = "rtl8821ce-${kernel.version}-${version}";
+  version = "5.5.2_34066.20200325";
 
   src = fetchFromGitHub {
     owner = "tomaspinho";
     repo = "rtl8821ce";
-    rev = "ca204c60724d23ab10244f920d4e50759ed1affb";
-    sha256 = "18ma8a8h1l90dss0k6al7q6plwr57jc9g67p22g9917k1jfbhm97";
+    rev = "8d7edbe6a78fd79cfab85d599dad9dc34138abd1";
+    sha256 = "1hsf8lqjnkrkvk0gps8yb3lx72mvws6xbgkbdmgdkz7qdxmha8bp";
   };
 
   hardeningDisable = [ "pic" ];
@@ -28,14 +27,11 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/lib/modules/${kernel.modDirVersion}/kernel/net/wireless/"
   '';
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Realtek rtl8821ce driver";
     homepage = "https://github.com/tomaspinho/rtl8821ce";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.linux;
-    broken = stdenv.isAarch64;
-    maintainers = with maintainers; [ hhm ivar ];
+    maintainers = with maintainers; [ hhm samuelgrf ];
   };
 }

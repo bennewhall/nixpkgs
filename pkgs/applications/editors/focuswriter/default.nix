@@ -1,4 +1,4 @@
-{ lib, fetchurl, pkg-config, qmake, qttools, hunspell, qtbase, qtmultimedia, mkDerivation }:
+{ stdenv, fetchurl, pkgconfig, qmake, qttools, hunspell, qtbase, qtmultimedia, mkDerivation }:
 
 mkDerivation rec {
   pname = "focuswriter";
@@ -9,13 +9,15 @@ mkDerivation rec {
     sha256 = "0h85f6cs9zbxv118mjfxqfv41j19zkx2xq36mpnlmrlzkjj7dx9l";
   };
 
-  nativeBuildInputs = [ pkg-config qmake qttools ];
+  nativeBuildInputs = [ pkgconfig qmake qttools ];
   buildInputs = [ hunspell qtbase qtmultimedia ];
+
+  enableParallelBuilding = true;
 
   qmakeFlags = [ "PREFIX=/" ];
   installFlags = [ "INSTALL_ROOT=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple, distraction-free writing environment";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ madjar ];

@@ -1,19 +1,19 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "distlib";
-  version = "0.3.3";
+  version = "0.3.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "d982d0751ff6eaaab5e2ec8e691d949ee80eddf01a62eaa96ddb11531fe16b05";
+    sha256 = "edf6116872c863e1aa9d5bb7cb5e05a022c519a4594dc703843343a9ddd9bff1";
     extension = "zip";
   };
 
   # Tests use pypi.org.
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Low-level components of distutils2/packaging";
     homepage = "https://distlib.readthedocs.io";
     license = licenses.psfl;

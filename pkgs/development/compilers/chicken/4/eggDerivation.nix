@@ -1,4 +1,4 @@
-{ lib, stdenv, chicken, makeWrapper }:
+{ stdenv, chicken, makeWrapper }:
 { name, src
 , buildInputs ? []
 , chickenInstallFlags ? []
@@ -8,7 +8,7 @@
 let
   libPath = "${chicken}/var/lib/chicken/${toString chicken.binaryVersion}/";
   overrides = import ./overrides.nix;
-  baseName = lib.getName name;
+  baseName = stdenv.lib.getName name;
   override = if builtins.hasAttr baseName overrides
    then
      builtins.getAttr baseName overrides
@@ -18,10 +18,9 @@ in
 stdenv.mkDerivation ({
   name = "chicken-${name}";
   propagatedBuildInputs = buildInputs;
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ chicken ];
+  buildInputs = [ makeWrapper chicken ];
 
-  CSC_OPTIONS = lib.concatStringsSep " " cscOptions;
+  CSC_OPTIONS = stdenv.lib.concatStringsSep " " cscOptions;
 
   CHICKEN_REPOSITORY = libPath;
   CHICKEN_INSTALL_PREFIX = "$out";
@@ -29,7 +28,7 @@ stdenv.mkDerivation ({
   installPhase = ''
     runHook preInstall
 
-    chicken-install -p $out ${lib.concatStringsSep " " chickenInstallFlags}
+    chicken-install -p $out ${stdenv.lib.concatStringsSep " " chickenInstallFlags}
 
     for f in $out/bin/*
     do

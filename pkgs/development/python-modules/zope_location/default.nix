@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , zope_proxy
@@ -22,7 +22,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/zopefoundation/zope.location/";
     description = "Zope Location";
     license = licenses.zpl20;

@@ -1,35 +1,33 @@
-{ lib, stdenv, fetchFromGitHub, ocaml, findlib, libGLU, libGL, freeglut } :
+{stdenv, fetchurl, ocaml, lablgtk, findlib, libGLU, libGL, freeglut, camlp4 } :
 
-if !lib.versionAtLeast ocaml.version "4.03"
-then throw "lablgl is not available for OCaml ${ocaml.version}"
-else
+let
+  pname = "lablgl";
+in
 
 stdenv.mkDerivation rec {
-  pname = "ocaml${ocaml.version}-lablgl";
-  version = "1.06";
+  name = "${pname}-${version}";
+  version = "1.05";
 
-  src = fetchFromGitHub {
-    owner = "garrigue";
-    repo = "lablgl";
-    rev = "v${version}";
-    sha256 = "sha256:141kc816iv59z96738i3vn9m9iw9g2zhi45hk4cchpwd99ar5l6k";
+  src = fetchurl { 
+    url = "http://wwwfun.kurims.kyoto-u.ac.jp/soft/lsl/dist/lablgl-${version}.tar.gz";
+    sha256 = "0qabydd219i4ak7hxgc67496qnnscpnydya2m4ijn3cpbgih7zyq";
   };
 
-  buildInputs = [ ocaml findlib freeglut ];
+  buildInputs = [ocaml findlib lablgtk freeglut camlp4];
   propagatedBuildInputs = [ libGLU libGL ];
 
   patches = [ ./Makefile.config.patch ./META.patch ];
 
   preConfigure = ''
-    mkdir -p $out/bin
-    mkdir -p $out/lib/ocaml/${ocaml.version}/site-lib/stublibs
     substituteInPlace Makefile.config \
-      --subst-var-by BINDIR $out/bin/ \
-      --subst-var-by INSTALLDIR $out/lib/ocaml/${ocaml.version}/site-lib/lablgl/ \
-      --subst-var-by DLLDIR $out/lib/ocaml/${ocaml.version}/site-lib/stublibs/ \
+      --subst-var-by BINDIR $out/bin \
+      --subst-var-by INSTALLDIR $out/lib/ocaml/${ocaml.version}/site-lib/lablgl \
+      --subst-var-by DLLDIR $out/lib/ocaml/${ocaml.version}/site-lib/lablgl \
       --subst-var-by TKINCLUDES "" \
       --subst-var-by XINCLUDES ""
   '';
+
+  createFindlibDestdir = true;
 
   buildFlags = [ "lib" "libopt" "glut" "glutopt" ];
 
@@ -37,7 +35,7 @@ stdenv.mkDerivation rec {
     cp ./META $out/lib/ocaml/${ocaml.version}/site-lib/lablgl
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://wwwfun.kurims.kyoto-u.ac.jp/soft/lsl/lablgl.html";
     description = "OpenGL bindings for ocaml";
     license = licenses.gpl2;

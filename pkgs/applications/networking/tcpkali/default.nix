@@ -1,4 +1,4 @@
-{lib, stdenv, autoreconfHook, fetchFromGitHub, bison}:
+{stdenv, autoreconfHook, fetchFromGitHub, bison}:
 
 let version = "1.1.1"; in
 
@@ -18,9 +18,9 @@ stdenv.mkDerivation rec {
   buildInputs = [ bison];
   meta = {
     description = "High performance TCP and WebSocket load generator and sink";
-    license = lib.licenses.bsd2;
+    license = stdenv.lib.licenses.bsd2;
     inherit (src.meta) homepage;
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ ethercrow ];
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ ethercrow ];
   };
 }

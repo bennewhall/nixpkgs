@@ -1,37 +1,35 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
-, pkg-config
+, pkgconfig
 , glib
 , gobject-introspection
 , meson
 , ninja
 , python3
   # just for passthru
-, gnome
+, gnome3
 }:
 
 stdenv.mkDerivation rec {
   pname = "gsettings-desktop-schemas";
-  version = "41.0";
+  version = "3.38.0";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.major version}/${pname}-${version}.tar.xz";
-    sha256 = "dyiZcuWW0ERYPwwFYwbY8dvYrc+RKRClDaCmY+ZTMu0=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0rwcg9sd5rv7gjwapcd1jjk6l16w0p3j7wkicq1rdch4c0kch12p";
   };
 
-  strictDeps = true;
-  depsBuildBuild = [ pkg-config ];
   nativeBuildInputs = [
     glib
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
-    gobject-introspection
   ];
 
-  mesonFlags = [
-    "-Dintrospection=${lib.boolToString (stdenv.buildPlatform == stdenv.hostPlatform)}"
+  buildInputs = [
+    glib
+    gobject-introspection
   ];
 
   postPatch = ''
@@ -54,12 +52,12 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Collection of GSettings schemas for settings shared by various components of a desktop";
     license = licenses.lgpl21Plus;
     maintainers = teams.gnome.members;

@@ -1,32 +1,23 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, pytest-cov
-, pytestCheckHook
-, pythonOlder
+{ stdenv, buildPythonPackage, fetchFromGitHub
 , requests
-, responses
+, responses, pytestCheckHook, pytest, pytestcov, isPy27
 }:
 
 buildPythonPackage rec {
   pname = "googlemaps";
-  version = "4.5.3";
-  disabled = pythonOlder "3.5";
+  version = "4.4.2";
+  disabled = isPy27;
 
   src = fetchFromGitHub {
     owner = "googlemaps";
     repo = "google-maps-services-python";
     rev = "v${version}";
-    sha256 = "1yfsfspvjngrb1lwaq04ahm94j9y2dwzdf4dsg3yl1c8w0vgf9yw";
+    sha256 = "DYhW1OGce/0gY7Jmwq6iM45PxLyXIYo4Cfg2u6Xuyg4=";
   };
 
   propagatedBuildInputs = [ requests ];
 
-  checkInputs = [
-    pytest-cov
-    pytestCheckHook
-    responses
-  ];
+  checkInputs = [ pytestCheckHook responses pytestcov ];
 
   disabledTests = [
     # touches network
@@ -34,9 +25,7 @@ buildPythonPackage rec {
     "test_transit_without_time"
   ];
 
-  pythonImportsCheck = [ "googlemaps" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/googlemaps/google-maps-services-python";
     description = "Python client library for Google Maps API Web Services";
     license = licenses.asl20;

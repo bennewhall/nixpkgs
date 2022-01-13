@@ -32,7 +32,6 @@ in stdenv.mkDerivation {
       ghuntley
       peterromfeldhk
       jlesquembre
-      cpcloud
     ];
   };
 }

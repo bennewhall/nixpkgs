@@ -15,6 +15,7 @@ mkDerivation rec {
   };
 
   outputs = [ "out" "dev" ];
+  enableParallelBuilding = true;
 
   nativeBuildInputs = [ cmake extra-cmake-modules ];
 
@@ -25,6 +26,6 @@ mkDerivation rec {
     homepage = "https://github.com/repos-holder/kdecoration2-kde2";
     license = licenses.bsd2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ gnidorah ];
   };
 }

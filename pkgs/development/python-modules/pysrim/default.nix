@@ -1,7 +1,7 @@
 { lib
 , fetchPypi
 , buildPythonPackage
-, pytest-runner
+, pytestrunner
 , numpy
 , pyyaml
 }:
@@ -15,7 +15,7 @@ buildPythonPackage rec {
     sha256 = "ada088f73f7e1a3bf085206e81e0f83ed89c1d0b23a789ecd0ba0a250724aee8";
   };
 
-  buildInputs = [ pytest-runner ];
+  buildInputs = [ pytestrunner ];
   propagatedBuildInputs = [ numpy pyyaml ];
 
   # Tests require git lfs download of repository

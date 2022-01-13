@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv, texinfo, help2man }:
+{ fetchurl, stdenv, texinfo, help2man }:
 
 stdenv.mkDerivation rec {
   pname = "gengetopt";
@@ -15,8 +15,7 @@ stdenv.mkDerivation rec {
     rm tests/test_conf_parser_save.sh
   '';
 
-  # test suite is not thread safe
-  enableParallelBuilding = false;
+  enableParallelBuilding = true;
 
   nativeBuildInputs = [ texinfo help2man ];
 
@@ -38,9 +37,9 @@ stdenv.mkDerivation rec {
 
     homepage = "https://www.gnu.org/software/gengetopt/";
 
-    license = lib.licenses.gpl3Plus;
+    license = stdenv.lib.licenses.gpl3Plus;
 
     maintainers = [ ];
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

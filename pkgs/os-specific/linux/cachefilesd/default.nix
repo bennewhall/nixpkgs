@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "cachefilesd";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     "MANDIR=$(out)/share/man"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Local network file caching management daemon";
     homepage = "https://people.redhat.com/dhowells/fscache/";
     license = licenses.gpl2Plus;

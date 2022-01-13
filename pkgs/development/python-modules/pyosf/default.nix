@@ -2,7 +2,7 @@
 , buildPythonPackage
 , fetchFromGitHub
 , isPy27
-, pytest-runner
+, pytestrunner
 , requests
 }:
 
@@ -19,7 +19,7 @@ buildPythonPackage rec {
   };
 
   preBuild = "export HOME=$TMP";
-  buildInputs = [ pytest-runner ];  # required via `setup_requires`
+  buildInputs = [ pytestrunner ];  # required via `setup_requires`
   propagatedBuildInputs = [ requests ];
 
   doCheck = false;  # requires network access

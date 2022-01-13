@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, boost, catch2, metal }:
+{ stdenv, fetchFromGitHub, cmake, boost, catch2, metal }:
 stdenv.mkDerivation rec {
   pname = "fcppt";
   version = "3.5.0";
@@ -15,7 +15,9 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [ "-DCMAKE_SKIP_BUILD_RPATH=false" "-DENABLE_BOOST=true" "-DENABLE_EXAMPLES=true" "-DENABLE_CATCH=true" "-DENABLE_TEST=true" ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "Freundlich's C++ toolkit";
     longDescription = ''
       Freundlich's C++ Toolkit (fcppt) is a collection of libraries focusing on

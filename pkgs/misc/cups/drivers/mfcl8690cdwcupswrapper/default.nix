@@ -1,5 +1,5 @@
 { coreutils, dpkg, fetchurl, gnugrep, gnused, makeWrapper,
-mfcl8690cdwlpr, perl, lib, stdenv}:
+mfcl8690cdwlpr, perl, stdenv}:
 
 stdenv.mkDerivation rec {
   pname = "mfcl8690cdwcupswrapper";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ dpkg makeWrapper ];
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
     dpkg-deb -x $src $out
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
       --replace "PRINTER =~" "PRINTER = \"mfcl8690cdw\"; #"
 
     wrapProgram $dir/cupswrapper/brother_lpdwrapper_mfcl8690cdw \
-      --prefix PATH : ${lib.makeBinPath [ coreutils gnugrep gnused ]}
+      --prefix PATH : ${stdenv.lib.makeBinPath [ coreutils gnugrep gnused ]}
 
     mkdir -p $out/lib/cups/filter
     mkdir -p $out/share/cups/model
@@ -38,8 +38,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Brother MFC-L8690CDW CUPS wrapper driver";
     homepage = "http://www.brother.com/";
-    license = lib.licenses.unfree;
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.fuzzy-id ];
+    license = stdenv.lib.licenses.unfree;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.fuzzy-id ];
   };
 }

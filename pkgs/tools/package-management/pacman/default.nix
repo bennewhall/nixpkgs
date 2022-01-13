@@ -1,5 +1,5 @@
-{ stdenv, lib, fetchurl, pkg-config, m4, perl, libarchive, openssl, zlib, bzip2,
-xz, curl, runtimeShell }:
+{ stdenv, lib, fetchurl, pkgconfig, m4, perl, libarchive, openssl, zlib, bzip2,
+lzma, curl, runtimeShell }:
 
 stdenv.mkDerivation rec {
   pname = "pacman";
@@ -23,8 +23,8 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "sysconfdir=${placeholder "out"}/etc" ];
 
-  nativeBuildInputs = [ pkg-config m4 ];
-  buildInputs = [ curl perl libarchive openssl zlib bzip2 xz ];
+  nativeBuildInputs = [ pkgconfig m4 ];
+  buildInputs = [ curl perl libarchive openssl zlib bzip2 lzma ];
 
   postFixup = ''
     substituteInPlace $out/bin/repo-add \

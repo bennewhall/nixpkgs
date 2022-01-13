@@ -1,33 +1,29 @@
-{ lib
-, fetchFromGitHub
-, installShellFiles
-, python3Packages
-, pandoc
-}:
+{ stdenv, fetchFromGitHub, python3Packages, docutils, fetchpatch }:
 
 python3Packages.buildPythonApplication rec {
   pname = "httpie";
-  version = "2.6.0";
+  version = "2.2.0";
 
   src = fetchFromGitHub {
-    owner = "httpie";
+    owner = "jakubroztocil";
     repo = "httpie";
     rev = version;
-    sha256 = "1y77dg27dn6bajwp3w6qvw1ls5wfhd1j1788l3fjhxg7j4qjki4g";
+    sha256 = "0caazv24jr0844c4mdx77vzwwi5m869n10wa42cydb08ppx1xxj6";
   };
 
-  nativeBuildInputs = [
-    installShellFiles
-    pandoc
-  ];
+  outputs = [ "out" "doc" "man" ];
 
-  propagatedBuildInputs = with python3Packages; [
-    charset-normalizer
-    defusedxml
-    pygments
-    requests
-    requests-toolbelt
-    setuptools
+  propagatedBuildInputs = with python3Packages; [ pygments requests setuptools ];
+  dontUseSetuptoolsCheck = true;
+  patches = [
+    ./strip-venv.patch
+
+    # Fix `test_ciphers_none_can_be_selected`
+    # TODO: remove on next release
+    (fetchpatch {
+      url = "https://github.com/jakubroztocil/httpie/commit/49e71d252f54871a6bc49cb1cba103d385a543b8.patch";
+      sha256 = "13b2faf50gimj7f17dlx4gmd8ph8ipgihpzfqbvmfjlbf1v95fsj";
+    })
   ];
 
   checkInputs = with python3Packages; [
@@ -35,41 +31,73 @@ python3Packages.buildPythonApplication rec {
     pytest
     pytest-httpbin
     pytestCheckHook
-    responses
   ];
 
   postInstall = ''
     # install completions
-    installShellCompletion --bash \
-      --name http.bash extras/httpie-completion.bash
-    installShellCompletion --fish \
-      --name http.fish extras/httpie-completion.fish
+    install -Dm555 \
+      extras/httpie-completion.bash \
+      $out/share/bash-completion/completions/http.bash
+    install -Dm555 \
+      extras/httpie-completion.fish \
+      $out/share/fish/vendor_completions.d/http.fish
 
-    # convert the docs/README.md file
-    pandoc --standalone -f markdown -t man docs/README.md -o docs/http.1
-    installManPage docs/http.1
+    mkdir -p $man/share/man/man1
+
+    docdir=$doc/share/doc/httpie
+    mkdir -p $docdir/html
+
+    cp AUTHORS.rst CHANGELOG.rst CONTRIBUTING.rst $docdir
+
+    # helpfully, the readme has a `no-web` class to exclude
+    # the parts that are not relevant for offline docs
+
+    # this one build link was not marked however
+    sed -e 's/^|build|//g' -i README.rst
+
+    toHtml() {
+      ${docutils}/bin/rst2html5 \
+        --strip-elements-with-class=no-web \
+        --title=http \
+        --no-generator \
+        --no-datestamp \
+        --no-source-link \
+        "$1" \
+        "$2"
+    }
+
+    toHtml README.rst $docdir/html/index.html
+    toHtml CHANGELOG.rst $docdir/html/CHANGELOG.html
+    toHtml CONTRIBUTING.rst $docdir/html/CONTRIBUTING.html
+
+    # change a few links to the local files
+    substituteInPlace $docdir/html/index.html \
+      --replace \
+        'https://github.com/jakubroztocil/httpie/blob/master/CHANGELOG.rst' \
+        "CHANGELOG.html" \
+      --replace \
+        'https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst' \
+        "CONTRIBUTING.html"
+
+    ${docutils}/bin/rst2man \
+      --strip-elements-with-class=no-web \
+      --title=http \
+      --no-generator \
+      --no-datestamp \
+      --no-source-link \
+      README.rst \
+      $man/share/man/man1/http.1
   '';
 
-  pytestFlagsArray = [
-    "httpie"
-    "tests"
-  ];
+  # the tests call rst2pseudoxml.py from docutils
+  preCheck = ''
+    export PATH=${docutils}/bin:$PATH
+  '';
 
-  disabledTests = [
-    "test_chunked"
-    "test_verbose_chunked"
-    "test_multipart_chunked"
-    "test_request_body_from_file_by_path_chunked"
-    # Part of doctest
-    "httpie.encoding.detect_encoding"
-  ];
-
-  pythonImportsCheck = [ "httpie" ];
-
-  meta = with lib; {
+  meta = {
     description = "A command line HTTP client whose goal is to make CLI human-friendly";
     homepage = "https://httpie.org/";
-    license = licenses.bsd3;
-    maintainers = with maintainers; [ antono relrod schneefux SuperSandro2000 ];
+    license = stdenv.lib.licenses.bsd3;
+    maintainers = with stdenv.lib.maintainers; [ antono relrod schneefux ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, cmake, pkg-config, fetchFromGitHub, makeDesktopItem, alsa-lib, speex
+{ stdenv, cmake, pkgconfig, fetchFromGitHub, makeDesktopItem, alsaLib, speex
 , libopus, curl, gsm, libgcrypt, libsigcxx, popt, qtbase, qttools
 , wrapQtAppsHook, rtl-sdr, tcl, doxygen, groff }:
 
@@ -14,13 +14,13 @@ let
 
 in stdenv.mkDerivation rec {
   pname = "svxlink";
-  version = "19.09.2";
+  version = "19.09.1";
 
   src = fetchFromGitHub {
     owner = "sm0svx";
     repo = pname;
     rev = version;
-    sha256 = "sha256-riyFEuEmJ7+jYT3UoTTsMUwFdO3y5mjo4z0fcC3O8gY=";
+    sha256 = "0xmbac821w9kl7imlz0mra19mlhi0rlpbyyay26w1y7h98j4g4yp";
   };
 
   cmakeFlags = [
@@ -29,12 +29,13 @@ in stdenv.mkDerivation rec {
     "-DRTLSDR_INCLUDE_DIRS=${rtl-sdr}/include"
     "../src"
   ];
+  enableParallelBuilding = true;
   dontWrapQtApps = true;
 
-  nativeBuildInputs = [ cmake pkg-config doxygen groff wrapQtAppsHook ];
+  nativeBuildInputs = [ cmake pkgconfig doxygen groff wrapQtAppsHook ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     curl
     gsm
     libgcrypt
@@ -56,7 +57,7 @@ in stdenv.mkDerivation rec {
     wrapQtApp $out/bin/qtel
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Advanced repeater controller and EchoLink software";
     longDescription = ''
       Advanced repeater controller and EchoLink software for Linux including a

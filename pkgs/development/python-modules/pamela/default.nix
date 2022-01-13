@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pkgs
@@ -16,12 +16,12 @@ buildPythonPackage rec {
   postUnpack = ''
     substituteInPlace $sourceRoot/pamela.py --replace \
       'find_library("pam")' \
-      '"${lib.getLib pkgs.pam}/lib/libpam.so"'
+      '"${stdenv.lib.getLib pkgs.pam}/lib/libpam.so"'
   '';
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PAM interface using ctypes";
     homepage = "https://github.com/minrk/pamela";
     license = licenses.mit;

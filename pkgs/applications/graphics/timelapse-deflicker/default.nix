@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, perl, perlPackages }:
+{ stdenv, fetchFromGitHub, makeWrapper, perl, perlPackages }:
 
 stdenv.mkDerivation rec {
   pname = "timelapse-deflicker";
@@ -18,11 +18,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = with perlPackages; [
     makeWrapper perl
-    ImageMagick TermProgressBar ImageExifTool
+    PerlMagick TermProgressBar ImageExifTool
     FileType ClassMethodMaker
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple script to deflicker images taken for timelapses";
     homepage = "https://github.com/cyberang3l/timelapse-deflicker";
     license = licenses.gpl3;

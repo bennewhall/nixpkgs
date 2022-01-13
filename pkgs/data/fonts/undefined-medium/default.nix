@@ -21,6 +21,7 @@ fetchzip rec {
       whatever else you can think of … it’s pretty undefined.
     '';
     license = licenses.ofl;
+    maintainers = [ maintainers.rycee ];
     platforms = platforms.all;
   };
 }

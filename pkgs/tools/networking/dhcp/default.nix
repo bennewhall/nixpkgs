@@ -1,15 +1,15 @@
-{ stdenv, fetchurl, fetchpatch, perl, file, nettools, iputils, iproute2, makeWrapper
+{ stdenv, fetchurl, perl, file, nettools, iputils, iproute, makeWrapper
 , coreutils, gnused, openldap ? null
 , buildPackages, lib
 }:
 
 stdenv.mkDerivation rec {
   pname = "dhcp";
-  version = "4.4.2-P1";
+  version = "4.4.2";
 
   src = fetchurl {
     url = "https://ftp.isc.org/isc/dhcp/${version}/${pname}-${version}.tar.gz";
-    sha256 = "06jsr0cg5rsmyibshrpcb9za0qgwvqccashdma7mlm1rflrh8pmh";
+    sha256 = "08a5003zdxgl41b29zjkxa92h2i40zyjgxg0npvnhpkfl5jcsz0s";
   };
 
   patches =
@@ -18,25 +18,11 @@ stdenv.mkDerivation rec {
       # patch, the hostname doesn't get set properly if the old
       # hostname (i.e. before reboot) is equal to the new hostname.
       ./set-hostname.patch
-
-      (fetchpatch {
-        # upstream build fix against -fno-common compilers like >=gcc-10
-        url = "https://gitlab.isc.org/isc-projects/dhcp/-/commit/6c7e61578b1b449272dbb40dd8b98d03dad8a57a.patch";
-        sha256 = "1g37ix0yf9zza8ri8bg438ygcjviniblfyb20y4gzc8lysy28m8b";
-      })
-
-      # Fix parallel build failure, the patch is pending upstream inclusion:
-      #  https://gitlab.isc.org/isc-projects/dhcp/-/merge_requests/76
-      (fetchpatch {
-        name = "parallel-make.patch";
-        url = "https://gitlab.isc.org/isc-projects/dhcp/-/commit/46d101b97c5a3b19a3f63f7b60e5f88994a64e22.patch";
-        sha256 = "1y3nsmqjzcg4bhp1xmqp47v7rkl3bpcildkx6mlrg255yvxapmdp";
-      })
     ];
 
-  nativeBuildInputs = [ perl makeWrapper ];
+  nativeBuildInputs = [ perl ];
 
-  buildInputs = [ openldap ];
+  buildInputs = [ makeWrapper openldap ];
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
 
@@ -51,15 +37,13 @@ stdenv.mkDerivation rec {
     "--sysconfdir=/etc"
     "--localstatedir=/var"
   ] ++ lib.optional stdenv.isLinux "--with-randomdev=/dev/random"
-    ++ lib.optionals (openldap != null) [ "--with-ldap" "--with-ldapcrypto" ]
-    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "BUILD_CC=$(CC_FOR_BUILD)";
+    ++ stdenv.lib.optionals (openldap != null) [ "--with-ldap" "--with-ldapcrypto" ];
 
   NIX_CFLAGS_COMPILE = builtins.toString [
     "-Wno-error=pointer-compare"
     "-Wno-error=format-truncation"
     "-Wno-error=stringop-truncation"
     "-Wno-error=format-overflow"
-    "-Wno-error=stringop-overflow=8"
   ];
 
   installFlags = [ "DESTDIR=\${out}" ];
@@ -74,7 +58,7 @@ stdenv.mkDerivation rec {
 
       cp client/scripts/linux $out/sbin/dhclient-script
       substituteInPlace $out/sbin/dhclient-script \
-        --replace /sbin/ip ${iproute2}/sbin/ip
+        --replace /sbin/ip ${iproute}/sbin/ip
       wrapProgram "$out/sbin/dhclient-script" --prefix PATH : \
         "${nettools}/bin:${nettools}/sbin:${iputils}/bin:${coreutils}/bin:${gnused}/bin"
     '';
@@ -83,14 +67,12 @@ stdenv.mkDerivation rec {
     ''
       substituteInPlace configure --replace "/usr/bin/file" "${file}/bin/file"
       sed -i "includes/dhcpd.h" \
-          -e "s|^ *#define \+_PATH_DHCLIENT_SCRIPT.*$|#define _PATH_DHCLIENT_SCRIPT \"$out/sbin/dhclient-script\"|g"
+	-"es|^ *#define \+_PATH_DHCLIENT_SCRIPT.*$|#define _PATH_DHCLIENT_SCRIPT \"$out/sbin/dhclient-script\"|g"
 
       export AR='${stdenv.cc.bintools.bintools}/bin/${stdenv.cc.targetPrefix}ar'
     '';
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Dynamic Host Configuration Protocol (DHCP) tools";
 
     longDescription = ''
@@ -101,7 +83,7 @@ stdenv.mkDerivation rec {
    '';
 
     homepage = "https://www.isc.org/dhcp/";
-    license = licenses.mpl20;
+    license = licenses.isc;
     platforms = platforms.unix;
   };
 }

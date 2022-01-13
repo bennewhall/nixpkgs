@@ -1,8 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , ninja
 , vala
@@ -13,7 +13,6 @@
 , gtk3
 , granite
 , libgee
-, libhandy
 , gst_all_1
 , libcanberra
 , clutter-gtk
@@ -25,13 +24,21 @@
 
 stdenv.mkDerivation rec {
   pname = "elementary-camera";
-  version = "6.0.3";
+  version = "1.0.6";
+
+  repoName = "camera";
 
   src = fetchFromGitHub {
     owner = "elementary";
-    repo = "camera";
+    repo = repoName;
     rev = version;
-    sha256 = "sha256-xIv+mOlZV58XD0Z6Vc2wA1EQUxT5BaQ0zhYc9v+ne1w=";
+    sha256 = "sha256-asl5NdSuLItXebxvqGlSEjwWhdButmka12YQAYkQT44=";
+  };
+
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = "pantheon.${pname}";
+    };
   };
 
   nativeBuildInputs = [
@@ -41,7 +48,7 @@ stdenv.mkDerivation rec {
     libxml2
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
     wrapGAppsHook
@@ -54,12 +61,11 @@ stdenv.mkDerivation rec {
     granite
     gst_all_1.gst-plugins-bad
     gst_all_1.gst-plugins-base
-    (gst_all_1.gst-plugins-good.override { gtkSupport = true; })
+    gst_all_1.gst-plugins-good
     gst_all_1.gstreamer
     gtk3
     libcanberra
     libgee
-    libhandy
   ];
 
   postPatch = ''
@@ -67,18 +73,11 @@ stdenv.mkDerivation rec {
     patchShebangs meson/post_install.py
   '';
 
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = "pantheon.${pname}";
-    };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Camera app designed for elementary OS";
     homepage = "https://github.com/elementary/camera";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
-    mainProgram = "io.elementary.camera";
+    maintainers = pantheon.maintainers;
   };
 }

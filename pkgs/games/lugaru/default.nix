@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchFromGitLab, cmake, openal, pkg-config, libogg,
+{ stdenv, fetchFromGitLab, cmake, openal, pkgconfig, libogg,
   libvorbis, SDL2, makeWrapper, libpng, libjpeg_turbo, libGLU }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
 
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     sha256 = "089rblf8xw3c6dq96vnfla6zl8gxcpcbc1bj5jysfpq63hhdpypz";
   };
 
-  nativeBuildInputs = [ makeWrapper cmake pkg-config ];
+  nativeBuildInputs = [ makeWrapper cmake pkgconfig ];
 
   buildInputs = [ libGLU openal SDL2 libogg libvorbis libpng libjpeg_turbo ];
 
@@ -26,6 +26,6 @@ stdenv.mkDerivation rec {
     homepage = "https://osslugaru.gitlab.io";
     maintainers = [ ];
     platforms = platforms.linux;
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

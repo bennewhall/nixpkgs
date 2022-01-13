@@ -1,26 +1,26 @@
-{ lib, stdenv, fetchurl, pkg-config, libxml2, gtk3-x11, libXt, libXpm }:
+{ stdenv, fetchurl, libXt, libXpm, libXext, imake, gccmakedep }:
 
 stdenv.mkDerivation rec {
+
+  version = "1.42";
   pname = "xsnow";
-  version = "3.3.6";
 
   src = fetchurl {
-    url = "https://ratrabbit.nl/downloads/xsnow/xsnow-${version}.tar.gz";
-    sha256 = "sha256-rTJO1btS1VBHatj9Yr2R6vZBUPQtCB1Aa6AD6IzwuLg=";
+    url = "https://janswaal.home.xs4all.nl/Xsnow/${pname}-${version}.tar.gz";
+    sha256 = "06jnbp88wc9i9dbmy7kggplw4hzlx2bhghxijmlhkjlizgqwimyh";
   };
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ gtk3-x11 libxml2 libXt libXpm ];
+  nativeBuildInputs = [ imake gccmakedep ];
+  buildInputs = [
+    libXt libXpm libXext
+  ];
 
-  makeFlags = [ "gamesdir=$(out)/bin" ];
+  makeFlags = [ "BINDIR=$(out)/bin" "MANPATH=$(out)/share/man" ];
 
-  enableParallelBuilding = true;
-
-  meta = with lib; {
+  meta = {
     description = "An X-windows application that will let it snow on the root, in between and on windows";
-    homepage = "https://ratrabbit.nl/ratrabbit/xsnow/";
-    license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ robberer ];
-    platforms = platforms.unix;
+    homepage = "http://janswaal.home.xs4all.nl/Xsnow/";
+    license = stdenv.lib.licenses.unfree;
+    maintainers = [ stdenv.lib.maintainers.robberer ];
   };
 }

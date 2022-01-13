@@ -1,8 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
-, pkg-config
+, pkgconfig
 , wafHook
-, python3
 , asciidoc
 , docbook_xml_dtd_45
 , docbook_xsl
@@ -14,19 +13,18 @@
 
 stdenv.mkDerivation rec {
   pname = "saldl";
-  version = "41";
+  version = "40";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-PAX2MUyBWWU8kGkaeoCJteidgszh7ipwDJbrLXzVsn0=";
+    sha256 = "19ajci5h5gdnrvwf0l7xy5s58z2di68rrvcmqpsmpp4lfr37rk2l";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     wafHook
-    python3
     asciidoc
     docbook_xml_dtd_45
     docbook_xsl
@@ -40,7 +38,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "man" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "CLI downloader optimized for speed and early preview";
     homepage = "https://saldl.github.io";
     license = licenses.agpl3;

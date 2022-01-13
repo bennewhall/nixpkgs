@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, capstone, libbfd, libelf, libiberty, readline }:
+{ stdenv, fetchFromGitHub, capstone, libbfd, libelf, libiberty, readline }:
 
 stdenv.mkDerivation {
   pname = "wcc-unstable";
@@ -41,7 +41,7 @@ stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/endrazine/wcc";
     description = "Witchcraft compiler collection: tools to convert and script ELF files";
     license = licenses.mit;

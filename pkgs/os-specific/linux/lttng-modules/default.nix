@@ -1,12 +1,13 @@
-{ lib, stdenv, fetchurl, kernel }:
+{ stdenv, fetchurl, kernel }:
 
 stdenv.mkDerivation rec {
-  pname = "lttng-modules-${kernel.version}";
-  version = "2.13.0";
+  pname = "lttng-modules-${version}";
+  name = "${pname}-${kernel.version}";
+  version = "2.10.5";
 
   src = fetchurl {
     url = "https://lttng.org/files/lttng-modules/lttng-modules-${version}.tar.bz2";
-    sha256 = "0mikc3fdjd0w6rrcyksjzmv0czvgba6yk8dfmz4a3cr8s4y2pgsy";
+    sha256 = "07rs01zwr4bmjamplix5qz1c6mb6wdawb68vyn0w6wx68ppbpnxq";
   };
 
   buildInputs = kernel.moduleBuildDependencies;
@@ -24,11 +25,14 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Linux kernel modules for LTTng tracing";
     homepage = "https://lttng.org/";
-    license = with licenses; [ lgpl21Only gpl2Only mit ];
+    license = with licenses; [ lgpl21 gpl2 mit ];
     platforms = platforms.linux;
     maintainers = [ maintainers.bjornfor ];
+    broken = builtins.compareVersions kernel.version "3.18" == -1
+      || builtins.compareVersions kernel.version "4.16" == 1;
   };
+
 }

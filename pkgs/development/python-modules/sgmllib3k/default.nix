@@ -1,7 +1,8 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , isPy27
+, lib
 }:
 
 buildPythonPackage rec {

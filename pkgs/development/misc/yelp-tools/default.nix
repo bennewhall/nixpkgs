@@ -1,62 +1,30 @@
-{ lib
-, stdenv
-, fetchurl
-, libxml2
-, libxslt
-, itstool
-, gnome
-, pkg-config
-, meson
-, ninja
-, python3
-}:
+{ stdenv, fetchurl, libxml2, libxslt, itstool, gnome3, pkgconfig }:
 
-python3.pkgs.buildPythonApplication rec {
+stdenv.mkDerivation rec {
   pname = "yelp-tools";
-  version = "41.0";
-
-  format = "other";
+  version = "3.38.0";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/yelp-tools/${lib.versions.major version}/${pname}-${version}.tar.xz";
-    sha256 = "N/GswCvL5ooxuG4HwSmoOb0yduZW3Inrf8CpJ0bv8nI=";
+    url = "mirror://gnome/sources/yelp-tools/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1c045c794sm83rrjan67jmsk20qacrw1m814p4nw85w5xsry8z30";
   };
 
-  nativeBuildInputs = [
-    pkg-config
-    meson
-    ninja
-  ];
-
-  propagatedBuildInputs = [
-    libxml2 # xmllint required by yelp-check.
-    libxslt # xsltproc required by yelp-build and yelp-check.
-  ];
-
-  buildInputs = [
-    itstool # build script checks for its presence but I am not sure if anything uses it
-    gnome.yelp-xsl
-  ];
-
-  pythonPath = [
-    python3.pkgs.lxml
-  ];
-
-  strictDeps = false; # TODO: Meson cannot find xmllint oherwise. Maybe add it to machine file?
-
-  doCheck = true;
-
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
     };
   };
 
-  meta = with lib; {
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ libxml2 libxslt itstool gnome3.yelp-xsl ];
+
+  doCheck = true;
+
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Apps/Yelp/Tools";
     description = "Small programs that help you create, edit, manage, and publish your Mallard or DocBook documentation";
-    maintainers = teams.gnome.members ++ (with maintainers; [ domenkozar ]);
-    license = licenses.gpl2Plus;
-    platforms = platforms.unix;
+    maintainers = with maintainers; [ domenkozar ];
+    license = licenses.gpl2;
+    platforms = platforms.linux;
   };
 }

@@ -2,21 +2,21 @@
 
 buildGoModule rec {
   pname = "cni-plugins";
-  version = "1.0.1";
+  version = "0.8.7";
 
   src = fetchFromGitHub {
     owner = "containernetworking";
     repo = "plugins";
     rev = "v${version}";
-    sha256 = "sha256-zIL9KG1WL+DlgC5c+b9gV1i7mB0Ge8bapcuSV4GNIck=";
+    sha256 = "1sjk0cghldygx1jgx4bqv83qky7shk64n6xkkfxl92f12wyvsq9j";
   };
 
   vendorSha256 = null;
 
   doCheck = false;
 
-  ldflags = [
-    "-X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=v${version}"
+  buildFlagsArray = [
+    "-ldflags=-X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=v${version}"
   ];
 
   subPackages = [
@@ -32,17 +32,17 @@ buildGoModule rec {
     "plugins/main/vlan"
     "plugins/meta/bandwidth"
     "plugins/meta/firewall"
+    "plugins/meta/flannel"
     "plugins/meta/portmap"
     "plugins/meta/sbr"
     "plugins/meta/tuning"
-    "plugins/meta/vrf"
   ];
 
   passthru.tests = { inherit (nixosTests) cri-o podman; };
 
   meta = with lib; {
     description = "Some standard networking plugins, maintained by the CNI team";
-    homepage = "https://www.cni.dev/plugins/";
+    homepage = "https://github.com/containernetworking/plugins";
     license = licenses.asl20;
     platforms = platforms.linux;
     maintainers = with maintainers; [ cstrahan ] ++ teams.podman.members;

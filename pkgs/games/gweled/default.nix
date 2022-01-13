@@ -1,30 +1,26 @@
-{ lib, stdenv, fetchbzr, gettext
-, gtk2, wrapGAppsHook, autoreconfHook, pkg-config
+{ stdenv, fetchbzr, intltool
+, gtk2, wrapGAppsHook, autoreconfHook, pkgconfig
 , libmikmod, librsvg, libcanberra-gtk2, hicolor-icon-theme }:
 
 stdenv.mkDerivation rec {
   pname = "gweled";
-  version = "unstable-2021-02-11";
+  version = "unstable-2018-02-15";
 
   src = fetchbzr {
     url = "lp:gweled";
-    rev = "108";
-    sha256 = "sha256-rM4dgbYfSrVqZwi+xzKuEtmtjK3HVvqeutmni1vleLo=";
+    rev = "94";
+    sha256 = "01c38y4df5a06wqbsmsn8ysxx7hav9yvw6zdwbc9m5m55z7vmdb8";
   };
 
   doCheck = false;
 
-  postPatch = ''
-    substituteInPlace configure.ac --replace "AM_GNU_GETTEXT_VERSION([0.19.8])" "AM_GNU_GETTEXT_VERSION([${gettext.version}])"
-  '';
-
-  nativeBuildInputs = [ wrapGAppsHook gettext autoreconfHook pkg-config ];
+  nativeBuildInputs = [ wrapGAppsHook intltool autoreconfHook pkgconfig ];
 
   buildInputs = [ gtk2 libmikmod librsvg hicolor-icon-theme libcanberra-gtk2 ];
 
   configureFlags = [ "--disable-setgid" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bejeweled clone game";
     homepage = "https://gweled.org";
     license = licenses.gpl2;

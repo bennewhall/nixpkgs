@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fonttosfnt, mkfontscale, libfaketime }:
+{ stdenv, fetchurl, fonttosfnt, mkfontscale, libfaketime }:
 
 stdenv.mkDerivation rec {
   pname = "clearlyU";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     mkfontdir "$fontDir"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Unicode font";
     license = licenses.mit;
     maintainers = [ maintainers.raskin ];

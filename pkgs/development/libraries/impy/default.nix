@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 , pkg-config
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     SDL2
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple library for loading/saving images and animations, written in C";
     homepage = "https://github.com/bcampbell/impy";
     license = licenses.gpl3;

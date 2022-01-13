@@ -1,5 +1,5 @@
 { lib, buildGoPackage, fetchFromGitHub, fetchpatch
-, pkg-config, zlib, geoip }:
+, pkgconfig, zlib, geoip }:
 
 buildGoPackage rec {
   pname = "mirrorbits";
@@ -33,7 +33,7 @@ buildGoPackage rec {
   deleteVendor = true;
   goDeps = ./deps.nix;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ zlib geoip ];
 
   meta = {

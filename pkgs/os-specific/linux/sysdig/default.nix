@@ -1,41 +1,25 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, cmake, kernel, installShellFiles, pkg-config
-, luajit, ncurses, perl, jsoncpp, libb64, openssl, curl, jq, gcc, elfutils, tbb, protobuf, grpc
+{ stdenv, fetchFromGitHub, cmake, kernel, installShellFiles
+, luajit, zlib, ncurses, perl, jsoncpp, libb64, openssl, curl, jq, gcc, elfutils, tbb, c-ares, protobuf, grpc
 }:
 
-with lib;
-let
-  # Compare with https://github.com/draios/sysdig/blob/dev/cmake/modules/falcosecurity-libs.cmake
-  libsRev = "2160111cd088aea9ae2235d3385ecb0b1ab6623c";
-  libsSha256 = "sha256-TOuxXtrxujyAjzAtlX3/eCfM16mwxnmZ6Wg44SG0dTs=";
-in
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "sysdig";
-  version = "0.28.0";
+  version = "0.27.1";
 
   src = fetchFromGitHub {
     owner = "draios";
     repo = "sysdig";
     rev = version;
-    sha256 = "sha256-oE3vCmOw+gcmvGqj7Xk5injpNC/YThckJMNg5XRFhME=";
+    sha256 = "sha256-lYjMvxMIReANNwMr62u881Nugrs9piOaN3EmrvGzRns=";
   };
 
-  nativeBuildInputs = [ cmake perl installShellFiles pkg-config ];
+  nativeBuildInputs = [ cmake perl installShellFiles ];
   buildInputs = [
-    luajit ncurses jsoncpp libb64 openssl curl jq gcc elfutils tbb protobuf grpc
+    zlib luajit ncurses jsoncpp libb64 openssl curl jq gcc elfutils tbb c-ares protobuf grpc
   ] ++ optionals (kernel != null) kernel.moduleBuildDependencies;
 
   hardeningDisable = [ "pic" ];
-
-  postUnpack = ''
-    cp -r ${fetchFromGitHub {
-      owner = "falcosecurity";
-      repo = "libs";
-      rev = libsRev;
-      sha256 = libsSha256;
-    }} libs
-    chmod -R +w libs
-    cmakeFlagsArray+=("-DFALCOSECURITY_LIBS_SOURCE_DIR=$(pwd)/libs")
-  '';
 
   cmakeFlags = [
     "-DUSE_BUNDLED_DEPS=OFF"
@@ -47,9 +31,10 @@ stdenv.mkDerivation rec {
   NIX_CFLAGS_COMPILE = "-DluaL_reg=luaL_Reg -DluaL_getn(L,i)=((int)lua_objlen(L,i))";
 
   preConfigure = ''
-    cmakeFlagsArray+=(-DCMAKE_EXE_LINKER_FLAGS="-ltbb -lcurl -labsl_synchronization")
-  '' + optionalString (kernel != null) ''
+    cmakeFlagsArray+=(-DCMAKE_EXE_LINKER_FLAGS="-ltbb -lcurl")
+
     export INSTALL_MOD_PATH="$out"
+  '' + optionalString (kernel != null) ''
     export KERNELDIR="${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
   '';
 
@@ -66,12 +51,12 @@ stdenv.mkDerivation rec {
       kernel_dev=${kernel.dev}
       kernel_dev=''${kernel_dev#/nix/store/}
       kernel_dev=''${kernel_dev%%-linux*dev*}
-      if test -f "$out/lib/modules/${kernel.modDirVersion}/extra/scap.ko"; then
-          sed -i "s#$kernel_dev#................................#g" $out/lib/modules/${kernel.modDirVersion}/extra/scap.ko
+      if test -f "$out/lib/modules/${kernel.modDirVersion}/extra/sysdig-probe.ko"; then
+          sed -i "s#$kernel_dev#................................#g" $out/lib/modules/${kernel.modDirVersion}/extra/sysdig-probe.ko
       else
-          xz -d $out/lib/modules/${kernel.modDirVersion}/extra/scap.ko.xz
-          sed -i "s#$kernel_dev#................................#g" $out/lib/modules/${kernel.modDirVersion}/extra/scap.ko
-          xz $out/lib/modules/${kernel.modDirVersion}/extra/scap.ko
+          xz -d $out/lib/modules/${kernel.modDirVersion}/extra/sysdig-probe.ko.xz
+          sed -i "s#$kernel_dev#................................#g" $out/lib/modules/${kernel.modDirVersion}/extra/sysdig-probe.ko
+          xz $out/lib/modules/${kernel.modDirVersion}/extra/sysdig-probe.ko
       fi
     '';
 

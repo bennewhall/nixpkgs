@@ -1,23 +1,23 @@
-{ gnustep, lib, fetchFromGitHub , libxml2, openssl
-, openldap, mariadb, libmysqlclient, postgresql }:
+{ gnustep, lib, fetchFromGitHub , libxml2, openssl_1_1
+, openldap, mysql, libmysqlclient, postgresql }:
 with lib;
 
 gnustep.stdenv.mkDerivation rec {
   pname = "sope";
-  version = "5.4.0";
+  version = "5.0.1";
 
   src = fetchFromGitHub {
     owner = "inverse-inc";
     repo = pname;
     rev = "SOPE-${version}";
-    sha256 = "sha256-jOF429Gaf1Qo3bx9mUogBQ0u/tBUxnX7VZxJjxF24Rg=";
+    sha256 = "031m8ydr4jhh29332mfbsw0i5d0cjfqfyfs55jm832dlmv4447gb";
   };
 
   hardeningDisable = [ "format" ];
   nativeBuildInputs = [ gnustep.make ];
-  buildInputs = flatten ([ gnustep.base libxml2 openssl ]
+  buildInputs = flatten ([ gnustep.base libxml2 openssl_1_1 ]
     ++ optional (openldap != null) openldap
-    ++ optionals (mariadb != null) [ libmysqlclient mariadb ]
+    ++ optionals (mysql != null) [ libmysqlclient mysql ]
     ++ optional (postgresql != null) postgresql);
 
   postPatch = ''
@@ -31,7 +31,7 @@ gnustep.stdenv.mkDerivation rec {
 
   configureFlags = [ "--prefix=" "--disable-debug" "--enable-xml" "--with-ssl=ssl" ]
     ++ optional (openldap != null) "--enable-openldap"
-    ++ optional (mariadb != null) "--enable-mysql"
+    ++ optional (mysql != null) "--enable-mysql"
     ++ optional (postgresql != null) "--enable-postgresql";
 
   # Yes, this is ugly.

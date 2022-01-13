@@ -1,10 +1,9 @@
-{lib, stdenv, fetchurl, SDL, libGLU, libGL, zlib, libpng, libvorbis, libmikmod, SDL_sound } :
+{stdenv, fetchurl, SDL, libGLU, libGL, zlib, libpng, libvorbis, libmikmod, SDL_sound } :
 
 stdenv.mkDerivation rec {
-  pname = "gltron";
-  version = "0.70";
+  name = "gltron-0.70";
   src = fetchurl {
-    url = "mirror://sourceforge/gltron/gltron-${version}-source.tar.gz";
+    url = "mirror://sourceforge/gltron/${name}-source.tar.gz";
     sha256 = "e0c8ebb41a18a1f8d7302a9c2cb466f5b1dd63e9a9966c769075e6b6bdad8bb0";
   };
 
@@ -23,8 +22,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.gltron.org/";
     description = "Game based on the movie Tron";
-    license = lib.licenses.gpl2Plus;
-    maintainers = with lib.maintainers; [viric];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.gpl2Plus;
+    maintainers = with stdenv.lib.maintainers; [viric];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

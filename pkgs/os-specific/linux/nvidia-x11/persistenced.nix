@@ -1,7 +1,6 @@
 nvidia_x11: sha256:
 
 { stdenv
-, lib
 , fetchFromGitHub
 , m4
 , libtirpc
@@ -21,8 +20,6 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ m4 ];
   buildInputs = [ libtirpc ];
 
-  inherit (nvidia_x11) makeFlags;
-
   installFlags = [ "PREFIX=$(out)" ];
 
   postFixup = ''
@@ -38,7 +35,7 @@ stdenv.mkDerivation rec {
   NIX_CFLAGS_COMPILE = [ "-I${libtirpc.dev}/include/tirpc" ];
   NIX_LDFLAGS = [ "-ltirpc" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.nvidia.com/object/unix.html";
     description = "Settings application for NVIDIA graphics cards";
     license = licenses.unfreeRedistributable;

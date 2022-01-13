@@ -1,19 +1,20 @@
 { config, stdenv, lib, fetchurl, fetchpatch
 , perl, pkg-config
 , libcap, libtool, libxml2, openssl, libuv
-, enableGSSAPI ? true, libkrb5
-, enablePython ? false, python3
-, enableSeccomp ? false, libseccomp
-, buildPackages, nixosTests
+, enablePython ? config.bind.enablePython or false, python3 ? null
+, enableSeccomp ? false, libseccomp ? null, buildPackages, nixosTests
 }:
+
+assert enableSeccomp -> libseccomp != null;
+assert enablePython -> python3 != null;
 
 stdenv.mkDerivation rec {
   pname = "bind";
-  version = "9.16.16";
+  version = "9.16.8";
 
   src = fetchurl {
     url = "https://downloads.isc.org/isc/bind9/${version}/${pname}-${version}.tar.xz";
-    sha256 = "sha256-bJE5Aq34eOfcXiKc6pT678nUD0R3WjAhPt0Ihg92HXs=";
+    sha256 = "0ccdbqmpvnxlbrxjsx2w8ir4xh961svzcw7n87n8dglj6rb9r6wy";
   };
 
   outputs = [ "out" "lib" "dev" "man" "dnsutils" "host" ];
@@ -21,13 +22,17 @@ stdenv.mkDerivation rec {
   patches = [
     ./dont-keep-configure-flags.patch
     ./remove-mkdir-var.patch
+    # Fix cross-compilation (will be included in next release after 9.16.8)
+    (fetchpatch {
+      url = "https://gitlab.isc.org/isc-projects/bind9/-/commit/35ca6df07277adff4df7472a0b01ea5438cdf1ff.patch";
+      sha256 = "1sj0hcd0wgkam7hrbp2vw2yymmni4azr9ixd9shz1l6ja90bdj9h";
+    })
   ];
 
   nativeBuildInputs = [ perl pkg-config ];
   buildInputs = [ libtool libxml2 openssl libuv ]
     ++ lib.optional stdenv.isLinux libcap
     ++ lib.optional enableSeccomp libseccomp
-    ++ lib.optional enableGSSAPI libkrb5
     ++ lib.optional enablePython (python3.withPackages (ps: with ps; [ ply ]));
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
@@ -39,6 +44,7 @@ stdenv.mkDerivation rec {
     "--without-atf"
     "--without-dlopen"
     "--without-docbook-xsl"
+    "--without-gssapi"
     "--without-idn"
     "--without-idnlib"
     "--without-lmdb"
@@ -52,7 +58,6 @@ stdenv.mkDerivation rec {
     "--with-aes"
   ] ++ lib.optional stdenv.isLinux "--with-libcap=${libcap.dev}"
     ++ lib.optional enableSeccomp "--enable-seccomp"
-    ++ lib.optional enableGSSAPI "--with-gssapi=${libkrb5.dev}"
     ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "BUILD_CC=$(CC_FOR_BUILD)";
 
   postInstall = ''
@@ -74,12 +79,12 @@ stdenv.mkDerivation rec {
 
   passthru.tests = { inherit (nixosTests) bind; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.isc.org/downloads/bind/";
     description = "Domain name server";
     license = licenses.mpl20;
 
-    maintainers = with maintainers; [ globin ];
+    maintainers = with maintainers; [ peti globin ];
     platforms = platforms.unix;
 
     outputsToInstall = [ "out" "dnsutils" "host" ];

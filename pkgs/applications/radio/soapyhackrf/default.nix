@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkg-config
+{ stdenv, fetchFromGitHub, cmake, pkgconfig
 , hackrf, soapysdr
 } :
 
@@ -16,12 +16,12 @@ in stdenv.mkDerivation {
     sha256 = "1awn89z462500gb3fjb7x61b1znkjri9n1d39bqfip1qk4s11pxc";
   };
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ hackrf soapysdr ];
 
   cmakeFlags = [ "-DSoapySDR_DIR=${soapysdr}/share/cmake/SoapySDR/" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/pothosware/SoapyHackRF";
     description = "SoapySDR plugin for HackRF devices";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, pure, readline }:
+{ stdenv, fetchurl, pkgconfig, pure, readline }:
 
 stdenv.mkDerivation rec {
   baseName = "readline";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "db8e6663b1c085466c09662fe86d952b6f4ffdafeecffe805c681ab91c910886";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ pure readline ];
   makeFlags = [ "libdir=$(out)/lib" "prefix=$(out)/" ];
   setupHook = ../generic-setup-hook.sh;
@@ -18,8 +18,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A trivial wrapper around GNU readline, which gives Pure scripts access to the most important facilities of the readline interface";
     homepage = "http://puredocs.bitbucket.org/pure-readline.html";
-    license = lib.licenses.free;
-    platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ asppsa ];
+    license = stdenv.lib.licenses.free;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ asppsa ];
   };
 }

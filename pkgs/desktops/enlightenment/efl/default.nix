@@ -1,10 +1,10 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , ninja
 , pkg-config
 , SDL2
-, alsa-lib
+, alsaLib
 , bullet
 , check
 , curl
@@ -56,11 +56,11 @@
 
 stdenv.mkDerivation rec {
   pname = "efl";
-  version = "1.26.0";
+  version = "1.25.1";
 
   src = fetchurl {
     url = "http://download.enlightenment.org/rel/libs/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "0k10mwpdjn57r2kflbzpybhvwl25yqqa2i2fhx0qazyjbzjbrad4";
+    sha256 = "0svybbrvpf6q955y6fclxh3md64z0dgmh0x54x2j60503hhs071m";
   };
 
   nativeBuildInputs = [
@@ -101,7 +101,7 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [
     SDL2
-    alsa-lib
+    alsaLib
     bullet
     curl
     dbus
@@ -203,7 +203,7 @@ stdenv.mkDerivation rec {
     patchelf --add-needed ${libsndfile.out}/lib/libsndfile.so $out/lib/libecore_audio.so
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Enlightenment foundation libraries";
     homepage = "https://enlightenment.org/";
     license = with licenses; [ bsd2 lgpl2Only licenses.zlib ];

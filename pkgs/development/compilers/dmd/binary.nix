@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, curl, tzdata, autoPatchelfHook, fixDarwinDylibNames, glibc
+{ stdenv, fetchurl, curl, tzdata, autoPatchelfHook, fixDarwinDylibNames, glibc
 , version, hashes }:
-
+with stdenv;
 let
-  inherit (stdenv) hostPlatform;
   OS = if hostPlatform.isDarwin then "osx" else hostPlatform.parsed.kernel.name;
   MODEL = toString hostPlatform.parsed.cpu.bits;
-in stdenv.mkDerivation {
+in mkDerivation {
   pname = "dmd-bootstrap";
   inherit version;
 
@@ -43,6 +42,7 @@ in stdenv.mkDerivation {
   '';
 
   meta = with lib; {
+    inherit version;
     description = "Digital Mars D Compiler Package";
     # As of 2.075 all sources and binaries use the boost license
     license = licenses.boost;

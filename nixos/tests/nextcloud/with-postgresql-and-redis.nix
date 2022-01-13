@@ -1,11 +1,9 @@
-args@{ pkgs, nextcloudVersion ? 22, ... }:
-
-(import ../make-test-python.nix ({ pkgs, ...}: let
+import ../make-test-python.nix ({ pkgs, ...}: let
   adminpass = "hunter2";
   adminuser = "custom-admin-username";
 in {
   name = "nextcloud-with-postgresql-and-redis";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ eqyiel ];
   };
 
@@ -19,7 +17,6 @@ in {
       services.nextcloud = {
         enable = true;
         hostName = "nextcloud";
-        package = pkgs.${"nextcloud" + (toString nextcloudVersion)};
         caching = {
           apcu = false;
           redis = true;
@@ -99,4 +96,4 @@ in {
         "${withRcloneEnv} ${diffSharedFile}"
     )
   '';
-})) args
+})

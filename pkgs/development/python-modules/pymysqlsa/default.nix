@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pymysql
@@ -17,7 +17,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ pymysql sqlalchemy ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PyMySQL dialect for SQL Alchemy";
     homepage = "https://pypi.python.org/pypi/pymysql_sa";
     license = licenses.mit;

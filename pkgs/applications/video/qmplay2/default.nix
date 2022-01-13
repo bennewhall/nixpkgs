@@ -1,9 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , pkg-config
 , cmake
-, alsa-lib
+, alsaLib
 , ffmpeg
 , libass
 , libcddb
@@ -20,27 +19,25 @@
 , vulkan-tools
 , wrapQtAppsHook
 }:
-stdenv.mkDerivation rec {
+
+let
   pname = "qmplay2";
-  version = "21.12.24";
+  version = "20.07.04";
+in stdenv.mkDerivation {
+  inherit pname version;
 
   src = fetchFromGitHub {
     owner = "zaps166";
     repo = "QMPlay2";
     rev = version;
-    sha256 = "sha256-SHReKh+M1rgSIiweYFgVvwMeKWeQD52S4KxEiTsyHrI=";
+    sha256 = "sha256-sUDucxSvsdD2C2FSVrrXeHdNdrjECtJSXVr106OdHzA=";
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [
-    cmake
-    pkg-config
-    wrapQtAppsHook
-  ];
+  nativeBuildInputs = [ cmake pkg-config wrapQtAppsHook ];
   buildInputs = [
-    alsa-lib
+    alsaLib
     ffmpeg
-    libXv
     libass
     libcddb
     libcdio
@@ -48,6 +45,7 @@ stdenv.mkDerivation rec {
     libpulseaudio
     libsidplayfp
     libva
+    libXv
     qtbase
     qttools
     taglib
@@ -60,7 +58,7 @@ stdenv.mkDerivation rec {
     ln -s $out/bin/QMPlay2 $out/bin/qmplay2
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/zaps166/QMPlay2/";
     description = "Qt-based Multimedia player";
     longDescription = ''

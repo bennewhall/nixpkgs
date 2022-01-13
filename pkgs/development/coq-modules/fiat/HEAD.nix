@@ -1,17 +1,17 @@
-{lib, mkCoqDerivation, coq, python27, version ? null }:
+{stdenv, fetchgit, coq, python27}:
 
-with lib; mkCoqDerivation rec {
-  pname = "fiat";
-  owner = "mit-plv";
-  repo = "fiat";
-  displayVersion = { fiat = v: "unstable-${v}"; };
-  inherit version;
-  defaultVersion = if coq.coq-version == "8.5" then "2016-10-24" else null;
-  release."2016-10-24".rev    = "7feb6c64be9ebcc05924ec58fe1463e73ec8206a";
-  release."2016-10-24".sha256 = "0griqc675yylf9rvadlfsabz41qy5f5idya30p5rv6ysiakxya64";
+stdenv.mkDerivation rec {
 
-  mlPlugin = true;
-  extraBuildInputs = [ python27 ];
+  name = "coq-fiat-${coq.coq-version}-unstable-${version}";
+  version = "2016-10-24";
+
+  src = fetchgit {
+    url = "https://github.com/mit-plv/fiat.git";
+    rev = "7feb6c64be9ebcc05924ec58fe1463e73ec8206a";
+    sha256 = "0griqc675yylf9rvadlfsabz41qy5f5idya30p5rv6ysiakxya64";
+  };
+
+  buildInputs = [ coq python27 ] ++ (with coq.ocamlPackages; [ ocaml camlp5 ]);
 
   prePatch = "patchShebangs etc/coq-scripts";
 
@@ -26,9 +26,14 @@ with lib; mkCoqDerivation rec {
     cp -pR src/* $COQLIB/user-contrib/Fiat
   '';
 
-  meta = {
+  meta = with stdenv.lib; {
     homepage = "http://plv.csail.mit.edu/fiat/";
     description = "A library for the Coq proof assistant for synthesizing efficient correct-by-construction programs from declarative specifications";
     maintainers = with maintainers; [ jwiegley ];
+    platforms = coq.meta.platforms;
+  };
+
+  passthru = {
+    compatibleCoqVersions = v: v == "8.5";
   };
 }

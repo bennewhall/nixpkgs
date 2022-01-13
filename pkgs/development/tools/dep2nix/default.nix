@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildGoPackage
+{ stdenv, fetchFromGitHub, buildGoPackage
 , makeWrapper, nix-prefetch-scripts }:
 
 buildGoPackage rec {
@@ -25,7 +25,7 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Convert `Gopkg.lock` files from golang dep into `deps.nix`";
     license = licenses.bsd3;
     homepage = "https://github.com/nixcloud/dep2nix";

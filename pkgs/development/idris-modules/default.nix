@@ -75,6 +75,8 @@
 
     cube = callPackage ./cube.nix {};
 
+    data = callPackage ./data.nix {};
+
     derive = callPackage ./derive.nix {};
 
     descncrunch = callPackage ./descncrunch.nix {};

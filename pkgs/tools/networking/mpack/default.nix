@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "mpack";
-  version = "1.6";
+  name = "mpack-1.6";
 
   src = fetchurl {
-    url = "http://ftp.andrew.cmu.edu/pub/mpack/mpack-${version}.tar.gz";
+    url = "http://ftp.andrew.cmu.edu/pub/mpack/${name}.tar.gz";
     sha256 = "0k590z96509k96zxmhv72gkwhrlf55jkmyqlzi72m61r7axhhh97";
   };
 
@@ -28,7 +27,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Utilities for encoding and decoding binary files in MIME";
     license = licenses.free;
     platforms = platforms.linux;

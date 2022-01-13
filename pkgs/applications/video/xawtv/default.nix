@@ -1,11 +1,10 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchurl
 , ncurses
 , libjpeg
 , libX11
 , libXt
-, alsa-lib
+, alsaLib
 , aalib
 , libXft
 , xorgproto
@@ -20,11 +19,10 @@
 }:
 
 stdenv.mkDerivation rec {
-  pname = "xawtv";
-  version = "3.107";
+  name = "xawtv-3.107";
 
   src = fetchurl {
-    url = "https://linuxtv.org/downloads/xawtv/xawtv-${version}.tar.bz2";
+    url = "https://linuxtv.org/downloads/xawtv/${name}.tar.bz2";
     sha256 = "055p0wia0xsj073l8mg4ifa6m81dmv6p45qyh99brramq5iylfy5";
   };
 
@@ -41,7 +39,7 @@ stdenv.mkDerivation rec {
     xorgproto
     libFS
     perl
-    alsa-lib
+    alsaLib
     aalib
     libXaw
     libXpm
@@ -53,14 +51,14 @@ stdenv.mkDerivation rec {
 
   makeFlags = [
     "SUID_ROOT=" # do not try to setuid
-    "resdir=${placeholder "out"}/share/X11"
+    "resdir=${placeholder ''out''}/share/X11"
   ];
 
   meta = {
     description = "TV application for Linux with apps and tools such as a teletext browser";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     homepage = "https://www.kraxel.org/blog/linux/xawtv/";
-    maintainers = with lib.maintainers; [ domenkozar ];
-    platforms = lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ domenkozar ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

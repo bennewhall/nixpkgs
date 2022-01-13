@@ -1,23 +1,24 @@
-{ lib
+{ stdenv
+, lib
 , buildPythonPackage
 , isPyPy
 , fetchPypi
-, pytestCheckHook
-, setuptools-scm
+, pytest
+, setuptools_scm
 , apipkg
 }:
 
 buildPythonPackage rec {
   pname = "execnet";
-  version = "1.9.0";
+  version = "1.7.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5";
+    sha256 = "cacb9df31c9680ec5f95553976c4da484d407e85e41c83cb812aa014f0eddc50";
   };
 
-  checkInputs = [ pytestCheckHook ];
-  nativeBuildInputs = [ setuptools-scm ];
+  checkInputs = [ pytest ];
+  nativeBuildInputs = [ setuptools_scm ];
   propagatedBuildInputs = [ apipkg ];
 
   # remove vbox tests
@@ -29,15 +30,17 @@ buildPythonPackage rec {
     ${lib.optionalString isPyPy "rm -v testing/test_multi.py"}
   '';
 
-  pythonImportsCheck = [ "execnet" ];
+  checkPhase = ''
+    py.test testing
+  '';
 
   __darwinAllowLocalNetworking = true;
 
-  meta = with lib; {
-    description = "Distributed Python deployment and communication";
-    license = licenses.mit;
+  meta = with stdenv.lib; {
+    description = "Rapid multi-Python deployment";
+    license = licenses.gpl2;
     homepage = "https://execnet.readthedocs.io/";
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ nand0p ];
   };
 
 }

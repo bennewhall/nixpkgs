@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "OCaml native toplevel";
     homepage = "http://benediktmeurer.de/ocamlnat/";
-    license = lib.licenses.qpl;
+    license = stdenv.lib.licenses.qpl;
     longDescription = ''
       The ocamlnat project provides a new native code OCaml toplevel
       ocamlnat, which is mostly compatible to the byte code toplevel ocaml,
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     '';
     platforms = ocaml.meta.platforms or [];
     maintainers = [
-      lib.maintainers.maggesi
+      stdenv.lib.maintainers.maggesi
     ];
   };
 }

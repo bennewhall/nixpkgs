@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , robotframework
@@ -18,7 +18,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ robotframework ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Database Library contains utilities meant for Robot Framework";
     homepage = "https://github.com/franz-see/Robotframework-Database-Library";
     license = licenses.asl20;

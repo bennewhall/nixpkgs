@@ -1,9 +1,9 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , meson
 , nasm
 , ninja
-, pkg-config
+, pkgconfig
 , python3
 , gst-plugins-base
 , orc
@@ -25,13 +25,12 @@
 , libsoup
 , libpulseaudio
 , libintl
-, Cocoa
+, darwin
 , lame
 , mpg123
 , twolame
-, gtkSupport ? false, gtk3
-, qt5Support ? false, qt5
-, raspiCameraSupport ? false, libraspberrypi
+, gtkSupport ? false, gtk3 ? null
+, raspiCameraSupport ? false, libraspberrypi ? null
 , enableJack ? true, libjack2
 , libXdamage
 , libXext
@@ -44,27 +43,31 @@
 , wavpack
 }:
 
-assert raspiCameraSupport -> (stdenv.isLinux && stdenv.isAarch64);
+assert gtkSupport -> gtk3 != null;
+assert raspiCameraSupport -> ((libraspberrypi != null) && stdenv.isLinux && stdenv.isAarch64);
 
+let
+  inherit (stdenv.lib) optionals;
+in
 stdenv.mkDerivation rec {
   pname = "gst-plugins-good";
-  version = "1.18.4";
+  version = "1.18.1";
 
   outputs = [ "out" "dev" ];
 
   src = fetchurl {
-    url = "https://gstreamer.freedesktop.org/src/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "1c1rpq709cy8maaykyn1n0kckj9c6fl3mhvixkk6xmdwkcx0xrdn";
+    url = "${meta.homepage}/src/${pname}/${pname}-${version}.tar.xz";
+    sha256 = "0v329xi4qhlfh9aksfyviryqk9lclm4wj1lxrjnbdv4haldfj472";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     python3
     meson
     ninja
     gettext
     nasm
-  ] ++ lib.optionals stdenv.isLinux [
+  ] ++ optionals stdenv.isLinux [
     wayland-protocols
   ];
 
@@ -94,40 +97,33 @@ stdenv.mkDerivation rec {
     xorg.libXfixes
     xorg.libXdamage
     wavpack
-  ] ++ lib.optionals raspiCameraSupport [
+  ] ++ optionals raspiCameraSupport [
     libraspberrypi
-  ] ++ lib.optionals gtkSupport [
+  ] ++ optionals gtkSupport [
     # for gtksink
     gtk3
-  ] ++ lib.optionals qt5Support (with qt5; [
-    qtbase
-    qtdeclarative
-    qtwayland
-    qtx11extras
-  ]) ++ lib.optionals stdenv.isDarwin [
-    Cocoa
-  ] ++ lib.optionals stdenv.isLinux [
+  ] ++ optionals stdenv.isDarwin [
+    darwin.apple_sdk.frameworks.Cocoa
+  ] ++ optionals stdenv.isLinux [
     libv4l
     libpulseaudio
     libavc1394
     libiec61883
     libgudev
     wayland
-  ] ++ lib.optionals enableJack [
+  ] ++ optionals enableJack [
     libjack2
   ];
 
   mesonFlags = [
     "-Dexamples=disabled" # requires many dependencies and probably not useful for our users
     "-Ddoc=disabled" # `hotdoc` not packaged in nixpkgs as of writing
-    "-Dglib-asserts=disabled" # asserts should be disabled on stable releases
-  ] ++ lib.optionals (!qt5Support) [
-    "-Dqt5=disabled"
-  ] ++ lib.optionals (!gtkSupport) [
+    "-Dqt5=disabled" # not clear as of writing how to correctly pass in the required qt5 deps
+  ] ++ optionals (!gtkSupport) [
     "-Dgtk3=disabled"
-  ] ++ lib.optionals (!enableJack) [
+  ] ++ optionals (!enableJack) [
     "-Djack=disabled"
-  ] ++ lib.optionals (!stdenv.isLinux) [
+  ] ++ optionals (!stdenv.isLinux) [
     "-Ddv1394=disabled" # Linux only
     "-Doss4=disabled" # Linux only
     "-Doss=disabled" # Linux only
@@ -135,7 +131,8 @@ stdenv.mkDerivation rec {
     "-Dv4l2-gudev=disabled" # Linux-only
     "-Dv4l2=disabled" # Linux-only
     "-Dximagesrc=disabled" # Linux-only
-  ] ++ lib.optionals (!raspiCameraSupport) [
+    "-Dpulse=disabled" # TODO check if we can keep this enabled
+  ] ++ optionals (!raspiCameraSupport) [
     "-Drpicamsrc=disabled"
   ];
 
@@ -153,10 +150,7 @@ stdenv.mkDerivation rec {
   # fails 1 tests with "Unexpected critical/warning: g_object_set_is_valid_property: object class 'GstRtpStorage' has no property named ''"
   doCheck = false;
 
-  # must be explicitely set since 5590e365
-  dontWrapQtApps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GStreamer Good Plugins";
     homepage = "https://gstreamer.freedesktop.org";
     longDescription = ''

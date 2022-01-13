@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , six
@@ -35,7 +35,7 @@ buildPythonPackage rec {
   doCheck = false;
   #ZOOKEEPER_PATH = "${pkgs.zookeeper}";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://kazoo.readthedocs.org";
     description = "Higher Level Zookeeper Client";
     license = licenses.asl20;

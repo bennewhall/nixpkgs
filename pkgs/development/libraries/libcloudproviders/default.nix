@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, meson, ninja, pkg-config, gobject-introspection, vala, gtk-doc, docbook_xsl, glib }:
+{ stdenv, fetchurl, meson, ninja, pkgconfig, gobject-introspection, vala, gtk-doc, docbook_xsl, glib }:
 
 # TODO: Add installed tests once https://gitlab.gnome.org/World/libcloudproviders/issues/4 is fixed
 
@@ -17,11 +17,11 @@ stdenv.mkDerivation rec {
     "-Denable-gtk-doc=true"
   ];
 
-  nativeBuildInputs = [ meson ninja pkg-config gobject-introspection vala gtk-doc docbook_xsl ];
+  nativeBuildInputs = [ meson ninja pkgconfig gobject-introspection vala gtk-doc docbook_xsl ];
 
   buildInputs = [ glib ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "DBus API that allows cloud storage sync clients to expose their services";
     homepage = "https://gitlab.gnome.org/World/libcloudproviders";
     license = licenses.lgpl3Plus;

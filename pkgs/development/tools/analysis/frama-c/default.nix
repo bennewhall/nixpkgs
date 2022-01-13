@@ -11,18 +11,11 @@ let
     biniou
     camlzip
     easy-format
-    menhirLib
+    menhir
     mlgmpidl
     num
     ocamlgraph
-    stdlib-shims
     why3
-    re
-    seq
-    sexplib
-    sexplib0
-    parsexp
-    base
     yojson
     zarith
   ];
@@ -31,12 +24,12 @@ in
 
 stdenv.mkDerivation rec {
   pname = "frama-c";
-  version = "24.0";
-  slang   = "Chromium";
+  version = "22.0";
+  slang   = "Titanium";
 
   src = fetchurl {
-    url    = "https://frama-c.com/download/frama-c-${version}-${slang}.tar.gz";
-    sha256 = "sha256:0x1xgip50jdz1phsb9rzwf2ra8lshn1hmd9g967xia402wrg3sjf";
+    url    = "http://frama-c.com/download/frama-c-${version}-${slang}.tar.gz";
+    sha256 = "1mq1fijka95ydrla486yr4w6wdl9l7vmp512s1q00b0p6lmfwmkh";
   };
 
   preConfigure = lib.optionalString stdenv.cc.isClang "configureFlagsArray=(\"--with-cpp=clang -E -C\")";
@@ -44,7 +37,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoconf wrapGAppsHook ];
 
   buildInputs = with ocamlPackages; [
-    ncurses ocaml findlib ltl2ba ocamlgraph ocamlgraph_gtk yojson menhirLib camlzip
+    ncurses ocaml findlib ltl2ba ocamlgraph yojson menhir camlzip
     lablgtk coq graphviz zarith apron why3 mlgmpidl doxygen
     gdk-pixbuf
   ];
@@ -80,8 +73,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "An extensible and collaborative platform dedicated to source-code analysis of C software";
     homepage    = "http://frama-c.com/";
-    license     = lib.licenses.lgpl21;
-    maintainers = with lib.maintainers; [ thoughtpolice amiddelk ];
-    platforms   = lib.platforms.unix;
+    license     = stdenv.lib.licenses.lgpl21;
+    maintainers = with stdenv.lib.maintainers; [ thoughtpolice amiddelk ];
+    platforms   = stdenv.lib.platforms.unix;
   };
 }

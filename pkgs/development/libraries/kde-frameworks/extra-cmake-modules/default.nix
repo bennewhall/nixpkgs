@@ -1,4 +1,4 @@
-{ mkDerivation, lib, cmake, pkg-config }:
+{ mkDerivation, lib, cmake, pkgconfig }:
 
 mkDerivation {
   name = "extra-cmake-modules";
@@ -9,7 +9,7 @@ mkDerivation {
 
   outputs = [ "out" ];  # this package has no runtime components
 
-  propagatedBuildInputs = [ cmake pkg-config ];
+  propagatedBuildInputs = [ cmake pkgconfig ];
 
   setupHook = ./setup-hook.sh;
 
@@ -17,5 +17,6 @@ mkDerivation {
     platforms = platforms.linux ++ platforms.darwin;
     homepage = "http://www.kde.org";
     license = licenses.bsd2;
+    maintainers = [ maintainers.ttuegel ];
   };
 }

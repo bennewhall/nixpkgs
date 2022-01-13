@@ -1,9 +1,9 @@
 { fetchurl, buildDotnetPackage, unzip }:
 
 attrs @
-{ pname
+{ baseName
 , version
-, url ? "https://www.nuget.org/api/v2/package/${pname}/${version}"
+, url ? "https://www.nuget.org/api/v2/package/${baseName}/${version}"
 , sha256 ? ""
 , md5 ? ""
 , ...
@@ -14,12 +14,12 @@ else
   buildDotnetPackage ({
     src = fetchurl {
       inherit url sha256;
-      name = "${pname}.${version}.zip";
+      name = "${baseName}.${version}.zip";
     };
 
     sourceRoot = ".";
 
-    nativeBuildInputs = [ unzip ];
+    buildInputs = [ unzip ];
 
     dontBuild = true;
 

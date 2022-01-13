@@ -1,22 +1,22 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "mtools";
-  version = "4.0.36";
+  version = "4.0.26";
 
   src = fetchurl {
     url = "mirror://gnu/mtools/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-5cDlrfLfu59yZJ06gpn/b7c/Jp+DMKKXXZG8xQVSQPQ=";
+    sha256 = "06pabnjc4r2vv3dzfm6q97g6jbp2k5bhmcdwv2cf25ka8y5ir7sk";
   };
 
-  patches = lib.optional stdenv.isDarwin ./UNUSED-darwin.patch;
+  patches = stdenv.lib.optional stdenv.isDarwin ./UNUSED-darwin.patch;
 
   # fails to find X on darwin
-  configureFlags = lib.optional stdenv.isDarwin "--without-x";
+  configureFlags = stdenv.lib.optional stdenv.isDarwin "--without-x";
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.gnu.org/software/mtools/";
     description = "Utilities to access MS-DOS disks";
     platforms = platforms.unix;

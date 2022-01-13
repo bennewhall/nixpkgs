@@ -1,58 +1,34 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, alsa-lib
-, cmake
-, doxygen
-, libX11
-, libXcursor
-, libXext
-, libXft
-, libXinerama
-, libXrandr
-, pkg-config
-, zlib
-, AGL
-, Cocoa
-, Foundation
+{ stdenv, fetchFromGitHub, pkgconfig, cmake, doxygen
+, alsaLib, libX11, libXft, libXrandr, libXinerama, libXext, libXcursor
+, zlib, AGL, Cocoa, Foundation
 }:
 
+with stdenv.lib;
 stdenv.mkDerivation rec {
   pname = "libopenshot-audio";
-  version = "0.2.2";
+  version = "0.2.0";
 
   src = fetchFromGitHub {
     owner = "OpenShot";
     repo = "libopenshot-audio";
     rev = "v${version}";
-    sha256 = "sha256-XtwTZsj/L/sw/28E7Qr5UyghGlBFFXvbmZLGXBB8vg0=";
+    sha256 = "13if0m5mvlqly8gmbhschzb9papkgp3yqivklhb949dhy16m8zgf";
   };
 
-  nativeBuildInputs = [
-    cmake
-    doxygen
-    pkg-config
-  ];
+  nativeBuildInputs =
+  [ pkgconfig cmake doxygen ];
 
-  buildInputs = lib.optionals stdenv.isLinux [
-    alsa-lib
-  ] ++ (if stdenv.isDarwin then [
-      AGL
-      Cocoa
-      Foundation
-      zlib
-    ] else [
-      libX11
-      libXcursor
-      libXext
-      libXft
-      libXinerama
-      libXrandr
-    ]);
+  buildInputs =
+    optionals stdenv.isLinux [ alsaLib ]
+    ++ (if stdenv.isDarwin then
+          [ zlib AGL Cocoa Foundation ]
+        else
+          [ libX11 libXft libXrandr libXinerama libXext libXcursor ])
+  ;
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = {
     homepage = "http://openshot.org/";
     description = "High-quality sound editing library";
     longDescription = ''

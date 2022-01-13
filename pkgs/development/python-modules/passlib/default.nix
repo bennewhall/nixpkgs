@@ -16,7 +16,6 @@ buildPythonPackage rec {
 
   checkInputs = [ nose ];
   propagatedBuildInputs = [ bcrypt argon2_cffi ];
-  propagatedNativeBuildInputs = [ argon2_cffi ];
 
   meta = {
     description = "A password hashing library for Python";

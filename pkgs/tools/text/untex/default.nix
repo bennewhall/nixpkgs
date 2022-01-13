@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "untex";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin $out/share/man/man1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A utility which removes LaTeX commands from input";
     homepage = "https://www.ctan.org/pkg/untex";
     license = licenses.gpl1;

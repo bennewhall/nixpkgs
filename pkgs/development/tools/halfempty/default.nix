@@ -1,28 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, pkg-config, glib, util-linux, scowl }:
+{ lib, stdenv, fetchFromGitHub, pkgconfig, glib, util-linux, scowl }:
 
 stdenv.mkDerivation rec {
   pname = "halfempty";
-  version = "0.40";
+  version = "0.30";
 
   src = fetchFromGitHub {
     owner = "googleprojectzero";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-YGq6fneAMo2jCpLPrjzRJ0eeOsStKaK5L+lwQfqcfpY=";
+    sha256 = "0838pw0ccjvlxmjygzrnppz1fx1a10vjzdgjbxgb4wgpqjr8v6vc";
   };
 
-  nativeBuildInputs = [ pkg-config util-linux ];
+  nativeBuildInputs = [ pkgconfig util-linux ];
   buildInputs = [ glib ];
 
   enableParallelBuilding = true;
-
-  patches = [
-    (fetchpatch {
-      name = "fix-bash-specific-syntax.patch";
-      url = "https://github.com/googleprojectzero/halfempty/commit/ad15964d0fcaba12e5aca65c8935ebe3f37d7ea3.patch";
-      sha256 = "sha256:0hgdci0wwi5wyw8i57w0545cxjmsmswm1y6g4vhykap0y40zizav";
-    })
-  ];
 
   postPatch = ''
     substituteInPlace test/Makefile \

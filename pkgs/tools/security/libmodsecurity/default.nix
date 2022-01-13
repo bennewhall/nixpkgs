@@ -1,20 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
 , doxygen, perl, valgrind
 , curl, geoip, libxml2, lmdb, lua, pcre, yajl }:
 
 stdenv.mkDerivation rec {
   pname = "libmodsecurity";
-  version = "3.0.4";
+  version = "3.0.3";
 
   src = fetchFromGitHub {
     owner = "SpiderLabs";
     repo = "ModSecurity";
     fetchSubmodules = true;
     rev = "v${version}";
-    sha256 = "07vry10cdll94sp652hwapn0ppjv3mb7n2s781yhy7hssap6f2vp";
+    sha256 = "00g2407g2679zv73q67zd50z0f1g1ij734ssv2pp77z4chn5dzib";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config doxygen ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig doxygen ];
 
   buildInputs = [ perl valgrind curl geoip libxml2 lmdb lua pcre yajl ];
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       ModSecurity v3 library component.
     '';

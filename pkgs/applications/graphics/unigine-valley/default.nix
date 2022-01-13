@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 
 # Build-time dependencies
 , makeWrapper
@@ -38,9 +38,9 @@ in
     sourceRoot = "Unigine_Valley-${version}";
     instPath = "lib/unigine/valley";
 
-    nativeBuildInputs = [file makeWrapper];
+    buildInputs = [file makeWrapper];
 
-    libPath = lib.makeLibraryPath [
+    libPath = stdenv.lib.makeLibraryPath [
       stdenv.cc.cc  # libstdc++.so.6
       fontconfig
       freetype
@@ -108,8 +108,8 @@ in
     meta = {
       description = "The Unigine Valley GPU benchmarking tool";
       homepage = "https://unigine.com/products/benchmarks/valley/";
-      license = lib.licenses.unfree; # see also: $out/$instPath/documentation/License.pdf
-      maintainers = [ lib.maintainers.kierdavis ];
+      license = stdenv.lib.licenses.unfree; # see also: $out/$instPath/documentation/License.pdf
+      maintainers = [ stdenv.lib.maintainers.kierdavis ];
       platforms = ["x86_64-linux" "i686-linux"];
     };
   }

@@ -132,16 +132,6 @@ runTests {
     expected = [ 1 1 0 ];
   };
 
-  testFunctionArgsFunctor = {
-    expr = functionArgs { __functor = self: { a, b }: null; };
-    expected = { a = false; b = false; };
-  };
-
-  testFunctionArgsSetFunctionArgs = {
-    expr = functionArgs (setFunctionArgs (args: args.x) { x = false; });
-    expected = { x = false; };
-  };
-
 # STRINGS
 
   testConcatMapStrings = {
@@ -244,11 +234,6 @@ runTests {
         int = false;
       };
     };
-  };
-
-  testEscapeXML = {
-    expr = escapeXML ''"test" 'test' < & >'';
-    expected = "&quot;test&quot; &apos;test&apos; &lt; &amp; &gt;";
   };
 
 # LISTS
@@ -496,7 +481,7 @@ runTests {
 
   testToPretty =
     let
-      deriv = derivation { name = "test"; builder = "/bin/sh"; system = "aarch64-linux"; };
+      deriv = derivation { name = "test"; builder = "/bin/sh"; system = builtins.currentSystem; };
     in {
     expr = mapAttrs (const (generators.toPretty { multiline = false; })) rec {
       int = 42;
@@ -533,25 +518,6 @@ runTests {
       drv = "<derivation ${deriv.drvPath}>";
     };
   };
-
-  testToPrettyLimit =
-    let
-      a.b = 1;
-      a.c = a;
-    in {
-      expr = generators.toPretty { } (generators.withRecursion { throwOnDepthLimit = false; depthLimit = 2; } a);
-      expected = "{\n  b = 1;\n  c = {\n    b = \"<unevaluated>\";\n    c = {\n      b = \"<unevaluated>\";\n      c = \"<unevaluated>\";\n    };\n  };\n}";
-    };
-
-  testToPrettyLimitThrow =
-    let
-      a.b = 1;
-      a.c = a;
-    in {
-      expr = (builtins.tryEval
-        (generators.toPretty { } (generators.withRecursion { depthLimit = 2; } a))).success;
-      expected = false;
-    };
 
   testToPrettyMultiline = {
     expr = mapAttrs (const (generators.toPretty { })) rec {
@@ -694,71 +660,4 @@ runTests {
     expected = [ [ "foo" ] [ "foo" "<name>" "bar" ] [ "foo" "bar" ] ];
   };
 
-  testCartesianProductOfEmptySet = {
-    expr = cartesianProductOfSets {};
-    expected = [ {} ];
-  };
-
-  testCartesianProductOfOneSet = {
-    expr = cartesianProductOfSets { a = [ 1 2 3 ]; };
-    expected = [ { a = 1; } { a = 2; } { a = 3; } ];
-  };
-
-  testCartesianProductOfTwoSets = {
-    expr = cartesianProductOfSets { a = [ 1 ]; b = [ 10 20 ]; };
-    expected = [
-      { a = 1; b = 10; }
-      { a = 1; b = 20; }
-    ];
-  };
-
-  testCartesianProductOfTwoSetsWithOneEmpty = {
-    expr = cartesianProductOfSets { a = [ ]; b = [ 10 20 ]; };
-    expected = [ ];
-  };
-
-  testCartesianProductOfThreeSets = {
-    expr = cartesianProductOfSets {
-      a = [   1   2   3 ];
-      b = [  10  20  30 ];
-      c = [ 100 200 300 ];
-    };
-    expected = [
-      { a = 1; b = 10; c = 100; }
-      { a = 1; b = 10; c = 200; }
-      { a = 1; b = 10; c = 300; }
-
-      { a = 1; b = 20; c = 100; }
-      { a = 1; b = 20; c = 200; }
-      { a = 1; b = 20; c = 300; }
-
-      { a = 1; b = 30; c = 100; }
-      { a = 1; b = 30; c = 200; }
-      { a = 1; b = 30; c = 300; }
-
-      { a = 2; b = 10; c = 100; }
-      { a = 2; b = 10; c = 200; }
-      { a = 2; b = 10; c = 300; }
-
-      { a = 2; b = 20; c = 100; }
-      { a = 2; b = 20; c = 200; }
-      { a = 2; b = 20; c = 300; }
-
-      { a = 2; b = 30; c = 100; }
-      { a = 2; b = 30; c = 200; }
-      { a = 2; b = 30; c = 300; }
-
-      { a = 3; b = 10; c = 100; }
-      { a = 3; b = 10; c = 200; }
-      { a = 3; b = 10; c = 300; }
-
-      { a = 3; b = 20; c = 100; }
-      { a = 3; b = 20; c = 200; }
-      { a = 3; b = 20; c = 300; }
-
-      { a = 3; b = 30; c = 100; }
-      { a = 3; b = 30; c = 200; }
-      { a = 3; b = 30; c = 300; }
-    ];
-  };
 }

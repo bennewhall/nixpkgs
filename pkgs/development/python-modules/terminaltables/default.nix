@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 }:
@@ -12,7 +12,7 @@ buildPythonPackage rec {
     sha256 = "f3eb0eb92e3833972ac36796293ca0906e998dc3be91fbe1f8615b331b853b81";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Display simple tables in terminals";
     homepage = "https://github.com/Robpol86/terminaltables";
     license = licenses.mit;

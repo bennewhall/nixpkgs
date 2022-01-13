@@ -2,24 +2,17 @@
 , stdenv
 , buildPythonPackage
 , fetchPypi
-, pkg-config
+, pkgconfig
 , which
 , cairo
 , pango
 , python
 , doxygen
 , ncurses
-, libintl
 , wxGTK
-, wxmac
-, IOKit
-, Carbon
-, Cocoa
-, AudioToolbox
-, OpenGL
-, CoreFoundation
-, pillow
 , numpy
+, pillow
+, six
 }:
 
 buildPythonPackage rec {
@@ -33,18 +26,8 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  nativeBuildInputs = [ pkg-config which doxygen ]
-  ++ (if stdenv.isDarwin then [ wxmac ] else [ wxGTK ]);
-
-  buildInputs = [ ncurses libintl ]
-  ++ (if stdenv.isDarwin
-  then
-    [ AudioToolbox Carbon Cocoa CoreFoundation IOKit OpenGL ]
-  else
-    [ wxGTK.gtk ]
-  );
-
-  propagatedBuildInputs = [ pillow numpy ];
+  nativeBuildInputs = [ pkgconfig which doxygen wxGTK ];
+  buildInputs = [ ncurses wxGTK.gtk ];
 
   DOXYGEN = "${doxygen}/bin/doxygen";
 
@@ -67,7 +50,7 @@ buildPythonPackage rec {
     ${python.interpreter} setup.py install --skip-build --prefix=$out
   '';
 
-  passthru = { wxWidgets = if stdenv.isDarwin then wxmac else wxGTK; };
+  passthru = { inherit wxGTK; };
 
 
   meta = {

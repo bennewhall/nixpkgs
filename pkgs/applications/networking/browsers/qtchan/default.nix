@@ -11,6 +11,7 @@ mkDerivation rec {
     sha256 = "1x11m1kwqindzc0dkpfifcglsb362impaxs85kgzx50p898sz9ll";
   };
 
+  enableParallelBuilding = true;
   nativeBuildInputs = [ qmake ];
   buildInputs = [ qtbase ];
   qmakeFlags = [ "CONFIG-=app_bundle" ];

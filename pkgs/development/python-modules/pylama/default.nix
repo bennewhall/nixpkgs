@@ -1,68 +1,34 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, substituteAll
-, git
-, eradicate
-, mccabe
-, mypy
-, pycodestyle
-, pydocstyle
-, pyflakes
-, vulture
-, pytestCheckHook
-}:
+{ lib, buildPythonPackage, fetchPypi
+, eradicate, mccabe, pycodestyle, pydocstyle, pyflakes
+, pytest, ipdb }:
 
 buildPythonPackage rec {
   pname = "pylama";
-  version = "8.3.6";
+  version = "7.7.1";
 
-  format = "setuptools";
-
-  src = fetchFromGitHub {
-    name = "${pname}-${version}-source";
-    owner = "klen";
-    repo = "pylama";
-    rev = version;
-    hash = "sha256-KU/G+2Fm4G/dUuNhhk8xM0Y8+7YOUUgREONM8CQGugw=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "9bae53ef9c1a431371d6a8dca406816a60d547147b60a4934721898f553b7d8f";
   };
-
-  patches = [
-    (substituteAll {
-      src = ./paths.patch;
-      git = "${lib.getBin git}/bin/git";
-    })
-  ];
 
   propagatedBuildInputs = [
     eradicate
     mccabe
-    mypy
     pycodestyle
     pydocstyle
     pyflakes
-    vulture
   ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  checkInputs = [ pytest ipdb ];
 
-  disabledTests = [
-    "test_pylint" # infinite recursion
-    "test_quotes" # FIXME package pylama-quotes
-    "test_radon" # FIXME package radon
-    "test_sort"
-  ];
-
-  pythonImportsCheck = [
-    "pylama.main"
-  ];
+  # tries to mess with the file system
+  doCheck = false;
 
   meta = with lib; {
     description = "Code audit tool for python";
     homepage = "https://github.com/klen/pylama";
-    license = licenses.mit;
+    # ambiguous license declarations: https://github.com/klen/pylama/issues/64
+    license = [ licenses.lgpl3 ];
     maintainers = with maintainers; [ dotlambda ];
   };
 }

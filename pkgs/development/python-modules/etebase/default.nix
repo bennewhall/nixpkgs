@@ -1,61 +1,58 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, buildPythonPackage
+{ stdenv
+, wheel
 , rustPlatform
-, pkg-config
-, rustfmt
+, pipInstallHook
 , setuptools-rust
-, openssl
-, Security
+, python
 , msgpack
+, requests
+, openssl
+, perl
+, rustfmt
+, fetchFromGitHub
+, Security
 }:
 
-buildPythonPackage rec {
+rustPlatform.buildRustPackage rec {
   pname = "etebase";
-  version = "0.31.2";
+  version = "0.31.1";
 
   src = fetchFromGitHub {
     owner = "etesync";
     repo = "etebase-py";
     rev = "v${version}";
-    hash = "sha256-enGmfXW8eV6FgdHfJqXr1orAsGbxDz9xUY6T706sf5U=";
+    sha256 = "163iw64l8lwawf84qswcjsq9p8qddv9ysjrr3dzqpqxb2yb0sy39";
   };
 
-  cargoDeps = rustPlatform.fetchCargoTarball {
-    inherit src;
-    name = "${pname}-${version}";
-    hash = "sha256-4eJvFf6aY+DYkrYgam5Ok9941PX4uQOmtRznEY0+1TE=";
-  };
-
-  format = "pyproject";
+  cargoSha256 = "0w8ypl6kj1mf6ahbdiwbd4jw6ldxdaig47zwk91jjsww5lbyx4lf";
 
   nativeBuildInputs = [
-    pkg-config
     rustfmt
+    perl
+    openssl
+    pipInstallHook
     setuptools-rust
-  ] ++ (with rustPlatform; [
-    cargoSetupHook
-    rust.cargo
-    rust.rustc
-  ]);
+    wheel
+  ];
 
-  buildInputs = [ openssl ] ++ lib.optionals stdenv.isDarwin [ Security ];
+  buildInputs = stdenv.lib.optionals stdenv.isDarwin [ Security ];
 
   propagatedBuildInputs = [
+    python
     msgpack
   ];
 
-  postPatch = ''
-    # Use system OpenSSL, which gets security updates.
-    substituteInPlace Cargo.toml \
-      --replace ', features = ["vendored"]' ""
+  doCheck = true;
+
+  buildPhase = ''
+    ${python.interpreter} setup.py bdist_wheel
   '';
 
-  pythonImportsCheck = [ "etebase" ];
+  installPhase = ''
+    pipInstallPhase
+  '';
 
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.etebase.com/";
     description = "A Python client library for Etebase";
     license = licenses.bsd3;

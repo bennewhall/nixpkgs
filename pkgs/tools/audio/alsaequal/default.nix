@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl
-, alsa-lib, caps
+{ stdenv, fetchurl
+, alsaLib, caps
 }:
 
 stdenv.mkDerivation rec {
-  pname = "alsaequal";
+  name = "alsaequal";
   version = "0.6";
 
   src = fetchurl {
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1w3g9q5z3nrn3mwdhaq6zsg0jila8d102dgwgrhj9vfx58apsvli";
   };
 
-  buildInputs = [ alsa-lib ];
+  buildInputs = [ alsaLib ];
 
   makeFlags = [ "DESTDIR=$(out)" ];
 
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/lib/alsa-lib"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Real-time adjustable equalizer plugin for ALSA";
     homepage = "https://thedigitalmachine.net/alsaequal.html";
     license = licenses.gpl2;

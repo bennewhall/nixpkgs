@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{stdenv, fetchurl}:
 
-stdenv.mkDerivation rec {
-  pname = "pgf";
-  version = "1.18";
+stdenv.mkDerivation {
+  name = "pgf-1.18";
 
   src = fetchurl {
-    url = "mirror://sourceforge/pgf/pgf-${version}.tar.gz";
+    url = "mirror://sourceforge/pgf/pgf-1.18.tar.gz";
     sha256 = "0s6b8rx9yfxcjjg18vx1mphnwbd28fl5lnq0dasjz40pp3ypwdjv";
   };
 
@@ -16,7 +15,7 @@ stdenv.mkDerivation rec {
     cp -prd * $out/share/texmf-nix
   ";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     branch = "1";
     platforms = platforms.unix;
     license = licenses.gpl2;

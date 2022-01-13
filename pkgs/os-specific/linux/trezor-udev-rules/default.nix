@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "trezor-udev-rules";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     cp 51-trezor.rules $out/lib/udev/rules.d/51-trezor.rules
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Udev rules for Trezor";
     license = licenses.gpl3;
     maintainers = with maintainers; [ prusnak ];

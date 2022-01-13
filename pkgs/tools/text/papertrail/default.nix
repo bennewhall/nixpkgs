@@ -1,4 +1,4 @@
-{ lib, stdenv, bundlerEnv, ruby, bundlerUpdateScript }:
+{ stdenv, bundlerEnv, ruby, bundlerUpdateScript }:
 
 let
   papertrail-env = bundlerEnv {
@@ -9,10 +9,9 @@ let
     gemset = ./gemset.nix;
   };
 in stdenv.mkDerivation {
-  pname = "papertrail";
-  version = (import ./gemset.nix).papertrail.version;
+  name = "papertrail-${(import ./gemset.nix).papertrail.version}";
 
-  dontUnpack = true;
+  phases = [ "installPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -21,7 +20,7 @@ in stdenv.mkDerivation {
 
   passthru.updateScript = bundlerUpdateScript "papertrail";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Command-line client for Papertrail log management service";
     homepage    = "https://github.com/papertrail/papertrail-cli/";
     license     = licenses.mit;

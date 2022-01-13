@@ -1,6 +1,6 @@
 import ./make-test-python.nix ({ pkgs, ... }: {
   name = "service-runner";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ roberth ];
   };
 
@@ -24,7 +24,7 @@ import ./make-test-python.nix ({ pkgs, ... }: {
         machine.succeed(
             """
             mkdir -p /run/nginx /var/log/nginx /var/cache/nginx
-            ${nodes.machine.config.systemd.services.nginx.runner} >&2 &
+            ${nodes.machine.config.systemd.services.nginx.runner} &
             echo $!>my-nginx.pid
             """
         )

@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "htmlunit-driver-standalone";

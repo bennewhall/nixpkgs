@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage
+{ stdenv, buildPythonPackage
 , fetchPypi, urllib3 }:
 
 buildPythonPackage rec {
@@ -15,7 +15,7 @@ buildPythonPackage rec {
   # upstream has no tests
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An API towards the Ubiquity Networks UniFi controller";
     homepage    = "https://pypi.python.org/pypi/unifi/";
     license     = licenses.mit;

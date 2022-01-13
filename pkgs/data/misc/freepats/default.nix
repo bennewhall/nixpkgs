@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   name = "freepats-20060219";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''mkdir "$out"; cp -r . "$out"'';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Instrument patches, for MIDI synthesizers";
     longDescription = ''
       Freepats is a project to create a free and open set of instrument

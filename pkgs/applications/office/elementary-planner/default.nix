@@ -1,8 +1,8 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , meson
 , ninja
-, pkg-config
+, pkgconfig
 , desktop-file-utils
 , python3
 , vala
@@ -12,34 +12,29 @@
 , libgee
 , json-glib
 , glib
-, glib-networking
 , sqlite
 , libsoup
-, libgdata
 , gtk3
 , pantheon /* granite, icons, maintainers */
 , webkitgtk
-, libpeas
-, libhandy
-, curl
 }:
 
 stdenv.mkDerivation rec {
   pname = "elementary-planner";
-  version = "2.7";
+  version = "2.5.4";
 
   src = fetchFromGitHub {
     owner = "alainm23";
     repo = "planner";
     rev = version;
-    sha256 = "sha256-3eFPGRcZWhzFYi52TbHmpFNLI0pWYcHbbBI7efqZwYE=";
+    sha256 = "0q5zmjh0d1mapgqb2a38spss280jkkc2n835kc7grzvs9jgq1k1k";
   };
 
   nativeBuildInputs = [
     desktop-file-utils
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
     wrapGAppsHook
@@ -48,20 +43,15 @@ stdenv.mkDerivation rec {
   buildInputs = [
     evolution-data-server
     glib
-    glib-networking
     gtk3
     json-glib
     libgee
     libical
-    libpeas
     libsoup
     pantheon.elementary-icon-theme
     pantheon.granite
     sqlite
     webkitgtk
-    libgdata # required by some dependency transitively
-    libhandy
-    curl
   ];
 
   postPatch = ''
@@ -76,17 +66,11 @@ stdenv.mkDerivation rec {
     )
   '';
 
-  postFixup = ''
-    ln -s $out/bin/com.github.alainm23.planner $out/bin/planner
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Task manager with Todoist support designed for GNU/Linux 🚀️";
     homepage = "https://planner-todo.web.app";
     license = licenses.gpl3;
-    maintainers = with maintainers; [ dtzWill ] ++ teams.pantheon.members;
-    platforms = platforms.linux;
-    mainProgram = "com.github.alainm23.planner";
+    maintainers = with maintainers; [ dtzWill ] ++ pantheon.maintainers;
   };
 }
 

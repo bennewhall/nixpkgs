@@ -1,15 +1,15 @@
-{ lib, fetchurl, file, which, intltool, gobject-introspection,
-  findutils, xdg-utils, dconf, gtk3, python3Packages, xfconf,
+{ stdenv, fetchurl, file, which, intltool, gobject-introspection,
+  findutils, xdg_utils, dconf, gtk3, python3Packages,
   wrapGAppsHook
 }:
 
 python3Packages.buildPythonApplication rec {
   pname = "catfish";
-  version = "4.16.3";
+  version = "1.4.13";
 
   src = fetchurl {
-    url = "https://archive.xfce.org/src/apps/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-6amaYtEJgTkVCN1D88v6LVCmm9a30e7vfTC6TGc9z9o=";
+    url = "https://archive.xfce.org/src/apps/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.bz2";
+    sha256 = "0fg89946z6n8njxn4mv29jksw8yavg8vypsljn9031pjwl3fmh2q";
   };
 
   nativeBuildInputs = [
@@ -34,9 +34,8 @@ python3Packages.buildPythonApplication rec {
     python3Packages.dbus-python
     python3Packages.pygobject3
     python3Packages.pexpect
-    xdg-utils
+    xdg_utils
     findutils
-    xfconf
   ];
 
   # Explicitly set the prefix dir in "setup.py" because setuptools is
@@ -51,7 +50,7 @@ python3Packages.buildPythonApplication rec {
   # Disable check because there is no test in the source distribution
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://docs.xfce.org/apps/catfish/start";
     description = "Handy file search tool";
     longDescription = ''
@@ -62,6 +61,6 @@ python3Packages.buildPythonApplication rec {
     '';
     license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
+    maintainers = [ maintainers.romildo ];
   };
 }

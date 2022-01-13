@@ -1,10 +1,9 @@
-{lib, stdenv, fetchurl, perl }:
+{stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation rec {
-  pname = "redo";
-  version = "1.4";
+  name = "redo-1.4";
   src = fetchurl {
-    url = "https://jdebp.eu./Repository/freebsd/${pname}-${version}.tar.gz";
+    url = "https://jdebp.eu./Repository/freebsd/${name}.tar.gz";
     sha256 = "1c8gr5h77v4fw78zkhbm9z9adqs3kd7xvxwnmci2zvlf4bqqk4jv";
   };
 
@@ -22,8 +21,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://jdebp.eu./Softwares/redo/";
     description = "A system for building target files from source files";
-    license = lib.licenses.bsd2;
-    maintainers = [ lib.maintainers.vrthra ];
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.bsd2;
+    maintainers = [ stdenv.lib.maintainers.vrthra ];
+    platforms = stdenv.lib.platforms.unix;
   };
 }

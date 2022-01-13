@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, curl }:
+{ stdenv, fetchurl, makeWrapper, curl }:
 
 stdenv.mkDerivation {
   pname = "ix";
@@ -9,19 +9,19 @@ stdenv.mkDerivation {
     sha256 =  "0xc2s4s1aq143zz8lgkq5k25dpf049dw253qxiav5k7d7qvzzy57";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
-  dontUnpack = true;
+  phases = [ "installPhase" "fixupPhase" ];
 
   installPhase = ''
     install -Dm +x $src $out/bin/ix
   '';
 
   postFixup = ''
-    wrapProgram $out/bin/ix --prefix PATH : "${lib.makeBinPath [ curl ]}"
+    wrapProgram $out/bin/ix --prefix PATH : "${stdenv.lib.makeBinPath [ curl ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://ix.io";
     description = "Command line pastebin";
     maintainers = with maintainers; [ asymmetric ];

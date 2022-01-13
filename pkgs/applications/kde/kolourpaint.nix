@@ -2,23 +2,15 @@
 , mkDerivation
 , extra-cmake-modules
 , kdoctools
-, kguiaddons
-, kio
-, ktextwidgets
-, kwidgetsaddons
-, kxmlgui
+, kdelibs4support
 , libkexiv2
 }:
 
 mkDerivation {
-  pname = "kolourpaint";
+  name = "kolourpaint";
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
-  buildInputs = [
-    kguiaddons kio ktextwidgets kwidgetsaddons kxmlgui libkexiv2
-  ];
+  buildInputs = [ kdelibs4support libkexiv2 ];
   meta = {
-    homepage = "https://apps.kde.org/kolourpaint/";
-    description = "Paint program";
     maintainers = [ lib.maintainers.fridh ];
     license = with lib.licenses; [ gpl2 ];
   };

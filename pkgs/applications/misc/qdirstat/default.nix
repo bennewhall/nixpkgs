@@ -1,16 +1,16 @@
-{ lib, fetchFromGitHub, qmake
-, coreutils, xdg-utils, bash
+{ stdenv, fetchFromGitHub, qmake
+, coreutils, xdg_utils, bash
 , makeWrapper, perlPackages, mkDerivation }:
 
 let
   pname = "qdirstat";
-  version = "1.8";
+  version = "1.7";
 
   src = fetchFromGitHub {
     owner = "shundhammer";
     repo = pname;
     rev = version;
-    sha256 = "sha256-R/eUqv5AxO5TcLkqOvlAXEkjAzeKGihf8YIQIIevOR0=";
+    sha256 = "163x3fxra0l3vvrzm25mh7jvcwjbmwsqlpppkxx76mkz9a1769fy";
   };
 in
 
@@ -28,7 +28,7 @@ mkDerivation {
     for i in src/SysUtil.cpp src/FileSizeStatsWindow.cpp
     do
       substituteInPlace $i \
-        --replace /usr/bin/xdg-open ${xdg-utils}/bin/xdg-open
+        --replace /usr/bin/xdg-open ${xdg_utils}/bin/xdg-open
     done
     for i in src/Cleanup.cpp src/cleanup-config-page.ui
     do
@@ -47,11 +47,11 @@ mkDerivation {
       --set PERL5LIB "${perlPackages.makePerlPath [ perlPackages.URI ]}"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graphical disk usage analyzer";
     homepage = src.meta.homepage;
-    license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ];
+    license = licenses.gpl2;
+    maintainers = with maintainers; [ gnidorah ];
     platforms = platforms.linux;
   };
 }

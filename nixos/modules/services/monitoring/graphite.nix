@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.graphite;
-  opt = options.services.graphite;
   writeTextOrNull = f: t: mapNullable (pkgs.writeTextDir f) t;
 
   dataDir = cfg.dataDir;
@@ -26,10 +25,10 @@ let
 
   graphiteApiConfig = pkgs.writeText "graphite-api.yaml" ''
     search_index: ${dataDir}/index
-    ${optionalString (config.time.timeZone != null) "time_zone: ${config.time.timeZone}"}
-    ${optionalString (cfg.api.finders != []) "finders:"}
+    ${optionalString (config.time.timeZone != null) ''time_zone: ${config.time.timeZone}''}
+    ${optionalString (cfg.api.finders != []) ''finders:''}
     ${concatMapStringsSep "\n" (f: "  - " + f.moduleName) cfg.api.finders}
-    ${optionalString (cfg.api.functions != []) "functions:"}
+    ${optionalString (cfg.api.functions != []) ''functions:''}
     ${concatMapStringsSep "\n" (f: "  - " + f) cfg.api.functions}
     ${cfg.api.extraConfig}
   '';
@@ -133,7 +132,7 @@ in {
       finders = mkOption {
         description = "List of finder plugins to load.";
         default = [];
-        example = literalExpression "[ pkgs.python3Packages.influxgraph ]";
+        example = literalExample "[ pkgs.python3Packages.influxgraph ]";
         type = types.listOf types.package;
       };
 
@@ -161,7 +160,7 @@ in {
       package = mkOption {
         description = "Package to use for graphite api.";
         default = pkgs.python3Packages.graphite_api;
-        defaultText = literalExpression "pkgs.python3Packages.graphite_api";
+        defaultText = "pkgs.python3Packages.graphite_api";
         type = types.package;
       };
 
@@ -171,13 +170,6 @@ in {
           whisper:
             directories:
                 - ${dataDir}/whisper
-        '';
-        defaultText = literalExpression ''
-          '''
-            whisper:
-              directories:
-                - ''${config.${opt.dataDir}}/whisper
-          '''
         '';
         example = ''
           allowed_origins:
@@ -320,21 +312,18 @@ in {
 
       seyrenUrl = mkOption {
         default = "http://localhost:${toString cfg.seyren.port}/";
-        defaultText = literalExpression ''"http://localhost:''${toString config.${opt.seyren.port}}/"'';
         description = "Host where seyren is accessible.";
         type = types.str;
       };
 
       graphiteUrl = mkOption {
         default = "http://${cfg.web.listenAddress}:${toString cfg.web.port}";
-        defaultText = literalExpression ''"http://''${config.${opt.web.listenAddress}}:''${toString config.${opt.web.port}}"'';
         description = "Host where graphite service runs.";
         type = types.str;
       };
 
       mongoUrl = mkOption {
         default = "mongodb://${config.services.mongodb.bind_ip}:27017/seyren";
-        defaultText = literalExpression ''"mongodb://''${config.services.mongodb.bind_ip}:27017/seyren"'';
         description = "Mongodb connection string.";
         type = types.str;
       };
@@ -346,7 +335,7 @@ in {
           <link xlink:href='https://github.com/scobal/seyren#config' />
         '';
         type = types.attrsOf types.str;
-        example = literalExpression ''
+        example = literalExample ''
           {
             GRAPHITE_USERNAME = "user";
             GRAPHITE_PASSWORD = "pass";
@@ -572,7 +561,6 @@ in {
      ) {
       users.users.graphite = {
         uid = config.ids.uids.graphite;
-        group = "graphite";
         description = "Graphite daemon user";
         home = dataDir;
       };

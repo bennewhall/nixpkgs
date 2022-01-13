@@ -1,17 +1,17 @@
-{ lib, buildPythonPackage, fetchFromGitLab, pkg-config, lxml, libvirt, nose }:
+{ stdenv, buildPythonPackage, fetchFromGitLab, pkgconfig, lxml, libvirt, nose }:
 
 buildPythonPackage rec {
   pname = "libvirt";
-  version = "7.9.0";
+  version = "6.6.0";
 
   src = assert version == libvirt.version; fetchFromGitLab {
     owner = "libvirt";
     repo = "libvirt-python";
     rev = "v${version}";
-    sha256 = "sha256-cfCyQ3KTv0lYTZMriUhm6psBAcJJIcmR/M9V/lrLmVE=";
+    sha256 = "0jj6b2nlx7qldwbvixz74abn3p0sq4lkf6ak74vynrv5xvlycb9v";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libvirt lxml ];
 
   checkInputs = [ nose ];
@@ -19,7 +19,7 @@ buildPythonPackage rec {
     nosetests
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://libvirt.org/python.html";
     description = "libvirt Python bindings";
     license = licenses.lgpl2;

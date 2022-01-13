@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , disabledIf
 , isPy3k
@@ -34,7 +34,7 @@ disabledIf (isPy3k || isPyPy)
           --sipdir $out/share/sip
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "A Python binding to QScintilla, Qt based text editing control";
       license = licenses.lgpl21Plus;
       maintainers = with maintainers; [ danbst ];

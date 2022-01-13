@@ -1,26 +1,26 @@
-{ lib
+{ stdenv
+, lib
 , rustPlatform
 , fetchFromGitHub
 , pkg-config
 , openssl
-, zlib
-, stdenv
 , libiconv
 , Security
+, zlib
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "cargo-edit";
-  version = "0.8.0";
+  version = "0.7.0";
 
   src = fetchFromGitHub {
     owner = "killercup";
     repo = pname;
     rev = "v${version}";
-    hash = "sha256-n9Ei1kpbDqOogNJJVvg9DRAPMVGNChCGGiuCVsuK3/8=";
+    hash = "sha256:0fh1lq793k4ddpqsf2av447hcb74vcq53afkm3g4672k48mjjw1y";
   };
 
-  cargoSha256 = "sha256-6546jD+zDoScrJmpw5xtNdWeIPJ9Ma0bcIdnI1kFmu8=";
+  cargoSha256 = "1h1sy54p7zxijydnhzvkxli90d72biv1inni17licb0vb9dihmnf";
 
   nativeBuildInputs = [ pkg-config ];
 
@@ -34,8 +34,7 @@ rustPlatform.buildRustPackage rec {
   meta = with lib; {
     description = "A utility for managing cargo dependencies from the command line";
     homepage = "https://github.com/killercup/cargo-edit";
-    changelog = "https://github.com/killercup/cargo-edit/blob/v${version}/CHANGELOG.md";
     license = with licenses; [ asl20 /* or */ mit ];
-    maintainers = with maintainers; [ Br1ght0ne figsoda gerschtli jb55 killercup ];
+    maintainers = with maintainers; [ gerschtli jb55 Br1ght0ne killercup ];
   };
 }

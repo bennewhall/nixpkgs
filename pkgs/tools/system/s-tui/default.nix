@@ -1,4 +1,4 @@
-{ lib, python3Packages }:
+{ stdenv, python3Packages }:
 
 python3Packages.buildPythonPackage rec {
   pname = "s-tui";
@@ -16,7 +16,7 @@ python3Packages.buildPythonPackage rec {
 
   LC_ALL = "en_US.UTF-8";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://amanusk.github.io/s-tui/";
     description = "Stress-Terminal UI monitoring tool";
     license = licenses.gpl2;

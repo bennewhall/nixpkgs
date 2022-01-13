@@ -1,17 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, libusb1, libimobiledevice }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, libusb1, libimobiledevice }:
 
 stdenv.mkDerivation rec {
   pname = "usbmuxd";
-  version = "unstable-2021-05-08";
+  version = "1.1.1";
 
   src = fetchFromGitHub {
     owner = "libimobiledevice";
     repo = pname;
-    rev = "5e484e18f1383b5a0bd6c353ab1d668b03e4ffab";
-    sha256 = "sha256-hhbfRmLEhVVuJNnw65PakPnvjSCrN3oSMK6D7Zwnw60=";
+    rev = version;
+    sha256 = "0a2xgrb4b3ndam448z74wh1267nmrz1wcbpx4xz86pwbdc93snab";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   propagatedBuildInputs = [ libimobiledevice libusb1 ];
 
   preConfigure = ''
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     configureFlags="$configureFlags --with-systemdsystemunitdir=$out/lib/systemd/system"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/libimobiledevice/usbmuxd";
     description = "A socket daemon to multiplex connections from and to iOS devices";
     longDescription = ''

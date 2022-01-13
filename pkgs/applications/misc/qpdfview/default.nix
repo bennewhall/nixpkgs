@@ -1,4 +1,4 @@
-{lib, mkDerivation, fetchurl, qmake, qtbase, qtsvg, pkg-config, poppler, djvulibre, libspectre, cups
+{stdenv, mkDerivation, fetchurl, qmake, qtbase, qtsvg, pkgconfig, poppler, djvulibre, libspectre, cups
 , file, ghostscript
 }:
 let
@@ -10,17 +10,15 @@ let
     url="https://launchpad.net/qpdfview/trunk/${version}/+download/qpdfview-${version}.tar.gz";
     sha256 = "0v1rl126hvblajnph2hkansgi0s8vjdc5yxrm4y3faa0lxzjwr6c";
   };
-  nativeBuildInputs = [ qmake pkg-config ];
+  nativeBuildInputs = [ qmake pkgconfig ];
   buildInputs = [
     qtbase qtsvg poppler djvulibre libspectre cups file ghostscript
   ];
-  # apply upstream fix for qt5.15 https://bazaar.launchpad.net/~adamreichold/qpdfview/trunk/revision/2104
-  patches = [ ./qpdfview-qt515-compat.patch ];
 in
 mkDerivation {
   pname = s.baseName;
   inherit (s) version;
-  inherit nativeBuildInputs buildInputs patches;
+  inherit nativeBuildInputs buildInputs;
   src = fetchurl {
     inherit (s) url sha256;
   };
@@ -42,9 +40,9 @@ mkDerivation {
   meta = {
     inherit (s) version;
     description = "A tabbed document viewer";
-    license = lib.licenses.gpl2Plus;
-    maintainers = [lib.maintainers.raskin];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
     homepage = "https://launchpad.net/qpdfview";
     updateWalker = true;
   };

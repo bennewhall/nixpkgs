@@ -1,38 +1,25 @@
-{ stdenv, lib, fetchFromGitHub
-, cmake, libedit, gmpxx, bison, flex
-, enableReadline ? false, readline
-, gtest
+{ stdenv, fetchurl, automake, libtool, autoconf, intltool, perl
+, gmpxx, flex, bison
 }:
 
 stdenv.mkDerivation rec {
   pname = "opensmt";
-  version = "2.2.0";
+  version = "20101017";
 
-  src = fetchFromGitHub {
-    owner = "usi-verification-and-security";
-    repo = "opensmt";
-    rev = "v${version}";
-    sha256 = "sha256-6VkBGDzqG3mplpvFh5DIR0I1I2/J0Pi7xYk/yVn04Kg=";
+  src = fetchurl {
+    url = "http://opensmt.googlecode.com/files/opensmt_src_${version}.tgz";
+    sha256 = "0xrky7ixjaby5x026v7hn72xh7d401w9jhccxjn0khhn1x87p2w1";
   };
 
-  nativeBuildInputs = [ cmake bison flex ];
-  buildInputs = [ libedit gmpxx ]
-    ++ lib.optional enableReadline readline;
+  buildInputs = [ automake libtool autoconf intltool perl gmpxx flex bison ];
 
-  preConfigure = ''
-    substituteInPlace test/CMakeLists.txt \
-      --replace 'FetchContent_Populate' '#FetchContent_Populate'
-  '';
-  cmakeFlags = [
-    "-Dgoogletest_SOURCE_DIR=${gtest.src}"
-    "-Dgoogletest_BINARY_DIR=./gtest-build"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A satisfiability modulo theory (SMT) solver";
     maintainers = [ maintainers.raskin ];
     platforms = platforms.linux;
-    license = if enableReadline then licenses.gpl2Plus else licenses.mit;
-    homepage = "https://github.com/usi-verification-and-security/opensmt";
+    license = licenses.gpl3;
+    homepage = "http://code.google.com/p/opensmt/";
+    broken = true;
+    downloadPage = "http://code.google.com/p/opensmt/downloads/list";
   };
 }

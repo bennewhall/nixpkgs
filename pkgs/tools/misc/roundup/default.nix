@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ronn, shocco }:
+{ stdenv, fetchFromGitHub, ronn, shocco }:
 
 stdenv.mkDerivation rec {
   pname = "roundup";
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A unit testing tool for running test plans which are written in any POSIX shell";
     homepage = "http://bmizerany.github.io/roundup/";
     license = licenses.mit;

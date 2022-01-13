@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl, substituteAll
-, pkg-config
+{ stdenv, fetchurl, substituteAll
+, pkgconfig
 , cups, zlib, libjpeg, libusb1, python3Packages, sane-backends
 , dbus, file, ghostscript, usbutils
-, net-snmp, openssl, perl, nettools, avahi
-, bash, util-linux
+, net-snmp, openssl, perl, nettools
+, bash, coreutils, util-linux
 # To remove references to gcc-unwrapped
 , removeReferencesTo, qt5
 , withQt5 ? true
@@ -13,17 +13,17 @@
 
 let
 
-  pname = "hplip";
-  version = "3.20.11";
+  name = "hplip-${version}";
+  version = "3.20.5";
 
   src = fetchurl {
-    url = "mirror://sourceforge/hplip/${pname}-${version}.tar.gz";
-    sha256 = "CxZ1s9jnCaEyX+hj9arOO9NxB3mnPq6Gj3su6aVv2xE=";
+    url = "mirror://sourceforge/hplip/${name}.tar.gz";
+    sha256 = "004bbd78487b7803cdcf2a96b00de938797227068c4de43ee7ad7d174c4e475a";
   };
 
   plugin = fetchurl {
-    url = "https://developers.hp.com/sites/default/files/${pname}-${version}-plugin.run";
-    sha256 = "r8PoQQFfjdHKySPCFwtDR8Tl6v5Eag9gXpBAp6sCF9Q=";
+    url = "https://developers.hp.com/sites/default/files/${name}-plugin.run";
+    sha256 = "ff3dedda3158be64b985efbf636890ddda5b271ae1f1fbd788219e1344a9c2e7";
   };
 
   hplipState = substituteAll {
@@ -36,13 +36,13 @@ let
     x86_64-linux = "x86_64";
     armv6l-linux = "arm32";
     armv7l-linux = "arm32";
-    aarch64-linux = "arm64";
+    aarch64-linux = "aarch64";
   };
 
   hplipArch = hplipPlatforms.${stdenv.hostPlatform.system}
     or (throw "HPLIP not supported on ${stdenv.hostPlatform.system}");
 
-  pluginArches = [ "x86_32" "x86_64" "arm32" "arm64" ];
+  pluginArches = [ "x86_32" "x86_64" "arm32" "aarch64" ];
 
 in
 
@@ -50,7 +50,7 @@ assert withPlugin -> builtins.elem hplipArch pluginArches
   || throw "HPLIP plugin not supported on ${stdenv.hostPlatform.system}";
 
 python3Packages.buildPythonApplication {
-  inherit pname version src;
+  inherit name src;
   format = "other";
 
   buildInputs = [
@@ -65,13 +65,12 @@ python3Packages.buildPythonApplication {
     openssl
     perl
     zlib
-    avahi
   ];
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     removeReferencesTo
-  ] ++ lib.optional withQt5 qt5.wrapQtAppsHook;
+  ] ++ stdenv.lib.optional withQt5 qt5.wrapQtAppsHook;
 
   pythonPath = with python3Packages; [
     dbus
@@ -79,9 +78,9 @@ python3Packages.buildPythonApplication {
     pygobject3
     reportlab
     usbutils
-    sip_4
+    sip
     dbus-python
-  ] ++ lib.optionals withQt5 [
+  ] ++ stdenv.lib.optionals withQt5 [
     pyqt5
     enum-compat
   ];
@@ -93,20 +92,9 @@ python3Packages.buildPythonApplication {
     # https://bugs.launchpad.net/hplip/+bug/1788706
     # https://bugs.launchpad.net/hplip/+bug/1787289
     ./image-processor.patch
-
-    # HPLIP's getSystemPPDs() function relies on searching for PPDs below common FHS
-    # paths, and hp-setup crashes if none of these paths actually exist (which they
-    # don't on NixOS).  Add the equivalent NixOS path, /var/lib/cups/path/share.
-    # See: https://github.com/NixOS/nixpkgs/issues/21796
-    ./hplip-3.20.11-nixos-cups-ppd-search-path.patch
   ];
 
-  postPatch = ''
-    # https://github.com/NixOS/nixpkgs/issues/44230
-    substituteInPlace createPPD.sh \
-      --replace ppdc "${cups}/bin/ppdc" \
-      --replace "gzip -c" "gzip -cn"
-
+  prePatch = ''
     # HPLIP hardcodes absolute paths everywhere. Nuke from orbit.
     find . -type f -exec sed -i \
       -e s,/etc/hp,$out/etc/hp,g \
@@ -123,40 +111,35 @@ python3Packages.buildPythonApplication {
       {} +
   '';
 
-  configureFlags = let out = placeholder "out"; in [
-    "--with-hpppddir=${out}/share/cups/model/HP"
-    "--with-cupsfilterdir=${out}/lib/cups/filter"
-    "--with-cupsbackenddir=${out}/lib/cups/backend"
-    "--with-icondir=${out}/share/applications"
-    "--with-systraydir=${out}/xdg/autostart"
-    "--with-mimedir=${out}/etc/cups"
-    "--enable-policykit"
-    "--disable-qt4"
-  ]
-    ++ lib.optional withStaticPPDInstall "--enable-cups-ppd-install"
-    ++ lib.optional withQt5 "--enable-qt5"
-    ;
+  preConfigure = ''
+    export configureFlags="$configureFlags
+      --with-hpppddir=$out/share/cups/model/HP
+      --with-cupsfilterdir=$out/lib/cups/filter
+      --with-cupsbackenddir=$out/lib/cups/backend
+      --with-icondir=$out/share/applications
+      --with-systraydir=$out/xdg/autostart
+      --with-mimedir=$out/etc/cups
+      --enable-policykit
+      ${stdenv.lib.optionalString withStaticPPDInstall "--enable-cups-ppd-install"}
+      --disable-qt4
+      ${stdenv.lib.optionalString withQt5 "--enable-qt5"}
+    "
 
-  # Prevent 'ppdc: Unable to find include file "<font.defs>"' which prevent
-  # generation of '*.ppd' files.
-  # This seems to be a 'ppdc' issue when the tool is run in a hermetic sandbox.
-  # Could not find how to fix the problem in 'ppdc' so this is a workaround.
-  CUPS_DATADIR = "${cups}/share/cups";
+    export makeFlags="
+      halpredir=$out/share/hal/fdi/preprobe/10osvendor
+      rulesdir=$out/etc/udev/rules.d
+      policykit_dir=$out/share/polkit-1/actions
+      policykit_dbus_etcdir=$out/etc/dbus-1/system.d
+      policykit_dbus_sharedir=$out/share/dbus-1/system-services
+      hplip_confdir=$out/etc/hp
+      hplip_statedir=$out/var/lib/hp
+    "
 
-  makeFlags = let out = placeholder "out"; in [
-    "halpredir=${out}/share/hal/fdi/preprobe/10osvendor"
-    "rulesdir=${out}/etc/udev/rules.d"
-    "policykit_dir=${out}/share/polkit-1/actions"
-    "policykit_dbus_etcdir=${out}/etc/dbus-1/system.d"
-    "policykit_dbus_sharedir=${out}/share/dbus-1/system-services"
-    "hplip_confdir=${out}/etc/hp"
-    "hplip_statedir=${out}/var/lib/hp"
-  ];
-
-  postConfigure = ''
-    # don't save timestamp, in order to improve reproducibility
-    substituteInPlace Makefile \
-      --replace "GZIP_ENV = --best" "GZIP_ENV = --best -n"
+    # Prevent 'ppdc: Unable to find include file "<font.defs>"' which prevent
+    # generation of '*.ppd' files.
+    # This seems to be a 'ppdc' issue when the tool is run in a hermetic sandbox.
+    # Could not find how to fix the problem in 'ppdc' so this is a workaround.
+    export CUPS_DATADIR="${cups}/share/cups"
   '';
 
   enableParallelBuilding = true;
@@ -165,7 +148,7 @@ python3Packages.buildPythonApplication {
   # Running `hp-diagnose_plugin -g` can be used to diagnose
   # issues with plugins.
   #
-  postInstall = lib.optionalString withPlugin ''
+  postInstall = stdenv.lib.optionalString withPlugin ''
     sh ${plugin} --noexec --keep
     cd plugin_tmp
 
@@ -239,7 +222,7 @@ python3Packages.buildPythonApplication {
       --replace {,${util-linux}/bin/}logger \
       --replace {/usr,$out}/bin
     remove-references-to -t ${stdenv.cc.cc} $(readlink -f $out/lib/*.so)
-  '' + lib.optionalString withQt5 ''
+  '' + stdenv.lib.optionalString withQt5 ''
     for f in $out/bin/hp-*;do
       wrapQtApp $f
     done
@@ -250,7 +233,7 @@ python3Packages.buildPythonApplication {
     "share/hplip" "lib/cups/backend" "lib/cups/filter" python3Packages.python.sitePackages "lib/sane"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Print, scan and fax HP drivers for Linux";
     homepage = "https://developers.hp.com/hp-linux-imaging-and-printing";
     downloadPage = "https://sourceforge.net/projects/hplip/files/hplip/";

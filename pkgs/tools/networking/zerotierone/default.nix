@@ -1,28 +1,28 @@
-{ lib, stdenv, buildPackages, fetchFromGitHub, openssl, lzo, zlib, iproute2, ronn }:
+{ stdenv, buildPackages, fetchFromGitHub, openssl, lzo, zlib, iproute, ronn }:
 
 stdenv.mkDerivation rec {
   pname = "zerotierone";
-  version = "1.8.4";
+  version = "1.6.2";
 
   src = fetchFromGitHub {
     owner = "zerotier";
     repo = "ZeroTierOne";
     rev = version;
-    sha256 = "sha256-aM0FkcrSd5dEJVdJryIGuyWNFwvKH0SBfOuy4dIMK4A=";
+    sha256 = "0lky68fjrqjsd62g97jkn5a9hzj53g8wb6d2ncx8s21rknpncdar";
   };
 
   preConfigure = ''
-    patchShebangs ./doc/build.sh
-    substituteInPlace ./doc/build.sh \
-      --replace '/usr/bin/ronn' '${buildPackages.ronn}/bin/ronn' \
+      patchShebangs ./doc/build.sh
+      substituteInPlace ./doc/build.sh \
+        --replace '/usr/bin/ronn' '${buildPackages.ronn}/bin/ronn' \
 
-    substituteInPlace ./make-linux.mk \
-      --replace 'armv5' 'armv6'
+      substituteInPlace ./make-linux.mk \
+        --replace 'armv5' 'armv6'
   '';
 
 
   nativeBuildInputs = [ ronn ];
-  buildInputs = [ openssl lzo zlib iproute2 ];
+  buildInputs = [ openssl lzo zlib iproute ];
 
   enableParallelBuilding = true;
 
@@ -46,7 +46,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "man" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Create flat virtual Ethernet networks of almost unlimited size";
     homepage = "https://www.zerotier.com";
     license = licenses.bsl11;

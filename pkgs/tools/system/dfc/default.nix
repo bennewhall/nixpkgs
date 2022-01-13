@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, cmake, gettext}:
+{stdenv, fetchurl, cmake, gettext}:
 
 stdenv.mkDerivation rec {
   pname = "dfc";
@@ -14,8 +14,8 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://projects.gw-computing.net/projects/dfc";
     description = "Displays file system space usage using graphs and colors";
-    license = lib.licenses.bsd3;
-    maintainers = with lib.maintainers; [qknight];
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.bsd3;
+    maintainers = with stdenv.lib.maintainers; [qknight];
+    platforms = stdenv.lib.platforms.all;
   };
 }

@@ -1,14 +1,17 @@
-{ fetchurl, lib, stdenv, unzip, ant, javac, jvm }:
+{ fetchurl, stdenv, unzip, ant, javac, jvm }:
 
 let
+  version = "1.7R2";
+
   xbeans  = fetchurl {
     url = "http://archive.apache.org/dist/xmlbeans/binaries/xmlbeans-2.2.0.zip";
     sha256 = "1pb08d9j81d0wz5wj31idz198iwhqb7mch872n08jh1354rjlqwk";
   };
 in
-stdenv.mkDerivation rec {
+
+stdenv.mkDerivation {
   pname = "rhino";
-  version = "1.7R2";
+  inherit version;
 
   src = fetchurl {
     url = "mirror://mozilla/js/rhino1_7R2.zip";
@@ -28,8 +31,7 @@ stdenv.mkDerivation rec {
       ln -sv "${xbeans}" "build/tmp-xbean/xbean.zip"
     '';
 
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [ ant javac jvm ];
+  buildInputs = [ unzip ant javac jvm ];
 
   buildPhase = "ant jar";
   doCheck    = false;
@@ -41,7 +43,7 @@ stdenv.mkDerivation rec {
       cp -v *.jar "$out/share/java"
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An implementation of JavaScript written in Java";
 
     longDescription =

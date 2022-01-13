@@ -4,12 +4,12 @@
 , imagecorruptions
 , numpy
 , opencv3
-, pytestCheckHook
+, pytest
 , scikitimage
 , scipy
 , shapely
 , six
-, lib
+, stdenv
 }:
 
 buildPythonPackage rec {
@@ -43,35 +43,13 @@ buildPythonPackage rec {
     six
   ];
 
-  checkInputs = [
-    opencv3
-    pytestCheckHook
-  ];
+  checkPhase = ''
+     pytest ./test
+  '';
 
-  disabledTests = [
-    # Tests are outdated
-    "test_quokka_segmentation_map"
-    "test_pool"
-    "test_avg_pool"
-    "test_max_pool"
-    "test_min_pool"
-    "est_median_pool"
-    "test_alpha_is_080"
-    "test_face_and_lines_at_half_visibility"
-    "test_polygon_fully_inside_image__no_rectangular_shape"
-    # flaky due to timing-based assertions
-    "test_imap_batches_output_buffer_size"
-    "test_imap_batches_unordered_output_buffer_size"
-  ];
+  checkInputs = [ opencv3 pytest ];
 
-  disabledTestPaths = [
-    # TypeError:  int() argument must be a string, a bytes-like object or a number, not 'NoneType'
-    "test/augmenters/test_pooling.py"
-  ];
-
-  pythonImportsCheck = [ "imgaug" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/aleju/imgaug";
     description = "Image augmentation for machine learning experiments";
     license = licenses.mit;

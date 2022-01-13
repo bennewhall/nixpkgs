@@ -1,35 +1,26 @@
-{ lib, stdenv, fetchurl, python3, makeWrapper, libxml2 }:
+{stdenv, fetchurl, python}:
 
-stdenv.mkDerivation rec {
-  pname = "doclifter";
-  version = "2.20";
+stdenv.mkDerivation {
+  name = "doclifter-2.19";
   src = fetchurl {
-    url = "http://www.catb.org/~esr/${pname}/${pname}-${version}.tar.gz";
-    sha256 = "sha256-BEuMbICJ8TD3+VjUr8rmhss7XlPNjxSy1P0SkmKLPsc=";
+    url = "http://www.catb.org/~esr/doclifter/doclifter-2.19.tar.gz";
+    sha256 = "1as6z7mdjrrkw2kism41q5ybvyzvwcmj9qzla2fz98v9f4jbj2s2";
   };
-  buildInputs = [ python3 ];
-  nativeBuildInputs = [ python3 makeWrapper ];
-
-  strictDeps = true;
-
+  buildInputs = [ python ];
+  
   makeFlags = [ "PREFIX=$(out)" ];
-
+  
   preInstall = ''
     mkdir -p $out/bin
     mkdir -p $out/share/man/man1
-    substituteInPlace manlifter \
-      --replace '/usr/bin/env python2' '/usr/bin/env python3'
-    2to3 -w manlifter
     cp manlifter $out/bin
-    wrapProgram "$out/bin/manlifter" \
-        --prefix PATH : "${libxml2}/bin:$out/bin"
     cp manlifter.1 $out/share/man/man1
   '';
-
+  
   meta = {
     description = "Lift documents in nroff markups to XML-DocBook";
     homepage = "http://www.catb.org/esr/doclifter";
     license = "BSD";
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

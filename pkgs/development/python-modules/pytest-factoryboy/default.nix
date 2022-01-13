@@ -1,45 +1,41 @@
-{ lib
-, buildPythonPackage
-, factory_boy
+{ stdenv
 , fetchFromGitHub
-, inflection
-, mock
-, pytest
-, pytestcache
+, buildPythonPackage
 , pytestCheckHook
-, pytest-cov
+, pytest
+, inflection
+, factory_boy
+, pytestcache
+, pytestcov
+, pytestpep8
+, mock
 }:
 
 buildPythonPackage rec {
   pname = "pytest-factoryboy";
-  version = "2.1.0";
+  version = "2.0.3";
 
   src = fetchFromGitHub {
     owner = "pytest-dev";
     repo = "pytest-factoryboy";
     rev = version;
-    sha256 = "0v6b4ly0p8nknpnp3f4dbslfsifzzjx2vv27rfylx04kzdhg4m9p";
+    sha256 = "0m1snyybq2k51khlydhisq300vzys897vdbsicph628iran950hn";
   };
 
-  buildInputs = [ pytest ];
+  propagatedBuildInputs = [ factory_boy inflection pytest ];
 
-  propagatedBuildInputs = [
-    factory_boy
-    inflection
-  ];
-
+  # The project uses tox, which we can't. So we simply run pytest manually.
   checkInputs = [
     mock
     pytestCheckHook
     pytestcache
-    pytest-cov
+    pytestcov
+    pytestpep8
   ];
-
   pytestFlagsArray = [ "--ignore=docs" ];
-  pythonImportsCheck = [ "pytest_factoryboy" ];
 
-  meta = with lib; {
-    description = "Integration of factory_boy into the pytest runner";
+  meta = with stdenv.lib; {
+    description = "Integration of factory_boy into the pytest runner.";
     homepage = "https://pytest-factoryboy.readthedocs.io/en/latest/";
     maintainers = with maintainers; [ winpat ];
     license = licenses.mit;

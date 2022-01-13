@@ -16,8 +16,10 @@ python3Packages.buildPythonApplication rec {
     six
   ];
 
-  # no tests
-  doCheck = false;
+  # Prevent tests from trying to create configuration in /homeless-shelter.
+  preCheck = ''
+    export HOME=$PWD/test-home
+  '';
 
   meta = with lib; {
     homepage = "https://github.com/frostming/legit";

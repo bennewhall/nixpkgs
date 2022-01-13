@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "gopkgs";
@@ -20,7 +20,7 @@ buildGoModule rec {
   meta = {
     description = "Tool to get list available Go packages";
     homepage = "https://github.com/uudashr/gopkgs";
-    maintainers = with lib.maintainers; [ vdemeester ];
-    license = lib.licenses.mit;
+    maintainers = with stdenv.lib.maintainers; [ vdemeester ];
+    license = stdenv.lib.licenses.mit;
   };
 }

@@ -1,26 +1,30 @@
-{ lib, fetchFromGitHub, crystal, coreutils, makeWrapper }:
+{ lib, fetchFromGitHub, crystal_0_31, coreutils, shards, makeWrapper, which }:
 
-crystal.buildCrystalPackage rec {
+let crystal = crystal_0_31;
+
+in crystal.buildCrystalPackage rec {
   pname = "scry";
-  version = "0.9.1";
+  version = "0.8.1";
 
   src = fetchFromGitHub {
     owner = "crystal-lang-tools";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-hqyG1aKY3M8q8lZEKzpUUKl9jS7NF+VMsma6+C0sCbg=";
+    sha256 = "0ii4k9l3dgm1c9lllc8ni9dar59lrxik0v9iz7gk3d6v62wwnq79";
   };
 
-  # a bunch of tests fail when built in the sandbox while perfectly fine outside
+  # we are already testing for this, so we can ignore the failures
   postPatch = ''
-    rm spec/scry/{client,completion_provider,context,executable}_spec.cr
+    rm spec/scry/executable_spec.cr
   '';
 
-  format = "shards";
+  format = "crystal";
 
   nativeBuildInputs = [ makeWrapper ];
 
   shardsFile = ./shards.nix;
+
+  crystalBinaries.scry.src = "src/scry.cr";
 
   postFixup = ''
     wrapProgram $out/bin/scry \

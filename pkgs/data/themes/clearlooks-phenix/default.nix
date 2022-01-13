@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip }:
+{ stdenv, fetchzip }:
 
 stdenv.mkDerivation rec {
   version = "7.0.1";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
 
   preferLocalBuild = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GTK3 port of the Clearlooks theme";
     longDescription = ''
       The Clearlooks-Phénix project aims at creating a GTK3 port of Clearlooks,

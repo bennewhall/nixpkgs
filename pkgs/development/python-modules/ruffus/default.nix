@@ -3,7 +3,8 @@
 , fetchFromGitHub
 , hostname
 , pytest
-, lib, stdenv
+, python
+, stdenv
 }:
 
 buildPythonPackage rec {
@@ -37,7 +38,7 @@ buildPythonPackage rec {
   '';
   pythonImportsCheck = [ "ruffus" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Light-weight Python Computational Pipeline Management";
     homepage = "http://www.ruffus.org.uk";
     license = licenses.mit;

@@ -8,13 +8,13 @@
 
 buildPythonPackage rec {
   pname = "bashlex";
-  version = "0.15";
+  version = "0.14";
 
   src = fetchFromGitHub {
     owner = "idank";
     repo = pname;
     rev = version;
-    sha256 = "sha256-kKVorAIKlyC9vUzLOlaZ/JrG1kBBRIvLwBmHNj9nx84=";
+    sha256 = "070spmbf53y18miky5chgky4x5h8kp9czkp7dm173klv9pi2cn0k";
   };
 
   checkInputs = [ nose ];
@@ -29,11 +29,9 @@ buildPythonPackage rec {
     ${python.interpreter} -m nose --with-doctest
   '';
 
-  pythonImportsCheck = [ "bashlex" ];
-
   meta = with lib; {
     description = "Python parser for bash";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     homepage = "https://github.com/idank/bashlex";
     maintainers = with maintainers; [ multun ];
   };

@@ -1,34 +1,28 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, autoreconfHook
-}:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   pname = "sedutil";
-  version = "1.20.0";
+  version = "1.15.1";
 
   src = fetchFromGitHub {
-    owner = "Drive-Trust-Alliance";
-    repo = "sedutil";
-    rev = version;
-    sha256 = "sha256-NG/7aqe48ShHWW5hW8axYWV4+zX0dBE7Wy9q58l0S3E=";
+    owner  = "Drive-Trust-Alliance";
+    repo   = "sedutil";
+    rev    = version;
+    sha256 = "0zg5v27vbrzzl2vqzks91zj48z30qgcshkqkm1g8ycnhi145l0mf";
   };
 
   postPatch = ''
     patchShebangs .
   '';
 
-  nativeBuildInputs = [
-    autoreconfHook
-  ];
+  nativeBuildInputs = [ autoreconfHook ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "DTA sedutil Self encrypting drive software";
-    homepage = "https://www.drivetrust.com";
-    license = licenses.gpl3Plus;
-    platforms = platforms.linux;
+    homepage    = "https://www.drivetrust.com";
+    license     = licenses.gpl3;
+    platforms   = platforms.linux;
   };
 }

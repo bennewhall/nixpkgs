@@ -1,20 +1,20 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, nix-update-script, fetchpatch }:
+{ stdenv, fetchFromGitHub, autoreconfHook, fetchpatch }:
 
 stdenv.mkDerivation rec {
   pname = "editline";
-  version = "1.17.1";
+  version = "1.17.0";
   src = fetchFromGitHub {
     owner = "troglobit";
     repo = "editline";
     rev = version;
-    sha256 = "sha256-0FeDUVCUahbweH24nfaZwa7j7lSfZh1TnQK7KYqO+3g=";
+    sha256 = "0vjm42y6zjmi6hdcng0l7wkksw7s50agbmk5dxsc3292q8mvq8v6";
   };
 
   patches = [
     (fetchpatch {
-      name = "fix-for-home-end-in-tmux.patch";
-      url = "https://github.com/troglobit/editline/commit/265c1fb6a0b99bedb157dc7c320f2c9629136518.patch";
-      sha256 = "sha256-9fhQH0hT8BcykGzOUoT18HBtWjjoXnePSGDJQp8GH30=";
+      name = "fix-for-multiline-as-one-line.patch";
+      url = "https://github.com/troglobit/editline/commit/ceee039cfc819c8e09eebbfca192091b0cf8df75.patch";
+      sha256 = "149fmfva05ghzwkd0bq1sahdbkys3qyyky28ssqb5jq7q9hw3ddm";
     })
   ];
 
@@ -22,15 +22,11 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" "man" "doc" ];
 
-  passthru.updateScript = nix-update-script {
-    attrPath = pname;
-  };
-
-  meta = with lib; {
-    homepage = "https://troglobit.com/projects/editline/";
+  meta = with stdenv.lib; {
+    homepage = "https://troglobit.com/editline.html";
     description = "A readline() replacement for UNIX without termcap (ncurses)";
     license = licenses.bsdOriginal;
-    maintainers = with maintainers; [ dtzWill oxalica ];
+    maintainers = with maintainers; [ dtzWill ];
     platforms = platforms.all;
   };
 }

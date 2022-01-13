@@ -1,13 +1,16 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , pkg-config
 , autoreconfHook
 , pcre
+, nixosTests
 }:
 
-stdenv.mkDerivation rec {
+let
   pname = "ucg";
-  version = "0.3.3+date=2019-02-25";
+  version = "20190225";
+in stdenv.mkDerivation {
+  inherit pname version;
 
   src = fetchFromGitHub {
     owner = "gvansickle";
@@ -16,31 +19,10 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-/wU1PmI4ejlv7gZzZNasgROYXFiDiIxE9BFoCo6+G5Y=";
   };
 
-  nativeBuildInputs = [
-    autoreconfHook
-    pkg-config
-  ];
+  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  buildInputs = [ pcre ];
 
-  buildInputs = [
-    pcre
-  ];
-
-  doInstallCheck = true;
-  installCheckPhase = ''
-    runHook preInstallCheck
-
-    testFile=$(mktemp /tmp/ucg-test.XXXX)
-    echo -ne 'Lorem ipsum dolor sit amet\n2.7182818284590' > $testFile
-    $out/bin/ucg 'dolor' $testFile || { rm $testFile; exit -1; }
-    $out/bin/ucg --ignore-case 'lorem' $testFile || { rm $testFile; exit -1; }
-    $out/bin/ucg --word-regexp '2718' $testFile && { rm $testFile; exit -1; }
-    $out/bin/ucg 'pisum' $testFile && { rm $testFile; exit -1; }
-    rm $testFile
-
-    runHook postInstallCheck
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/gvansickle/ucg/";
     description = "Grep-like tool for searching large bodies of source code";
     longDescription = ''
@@ -52,7 +34,7 @@ stdenv.mkDerivation rec {
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ AndersonTorres ];
     platforms = with platforms; unix;
-    broken = stdenv.isAarch64; # cpuid.h: no such file or directory
   };
+
+  passthru.tests = { inherit (nixosTests) ucg; };
 }
-# TODO: report upstream

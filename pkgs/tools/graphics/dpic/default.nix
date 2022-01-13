@@ -1,18 +1,18 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "dpic";
-  version = "2021.01.01";
+  version = "2020.09.15";
 
   src = fetchurl {
     url = "https://ece.uwaterloo.ca/~aplevich/dpic/${pname}-${version}.tar.gz";
-    sha256 = "sha256-vrBiTQqdaIslDd/WWMbdgornRkZmC2m+RF2J78F5Pm8=";
+    sha256 = "0gmmp4dlir3bn892nm55a3q8cfsj8yg7fp1dixmhsdhsrgmg1b83";
   };
 
   # The prefix passed to configure is not used.
   makeFlags = [ "DESTDIR=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An implementation of the pic little language for creating drawings";
     homepage = "https://ece.uwaterloo.ca/~aplevich/dpic/";
     license = licenses.bsd2;

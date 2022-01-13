@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , libX11
 , zlib
@@ -18,9 +18,9 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ libX11 zlib xorgproto ]
-    ++ lib.optional (libGL != null) libGL
-    ++ lib.optional (libGLU != null) libGLU
-    ++ lib.optional (freeglut != null) freeglut;
+    ++ stdenv.lib.optional (libGL != null) libGL
+    ++ stdenv.lib.optional (libGLU != null) libGLU
+    ++ stdenv.lib.optional (freeglut != null) freeglut;
 
   preConfigure = ''
     substituteInPlace src/Makefile.in \
@@ -30,6 +30,6 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Masses and springs simulation game";
     homepage = "http://fs.fsf.org/construo/";
-    license = lib.licenses.gpl3;
+    license = stdenv.lib.licenses.gpl3;
   };
 }

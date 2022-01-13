@@ -23,26 +23,19 @@ in {
         default = null;
         description = "the thermald manual configuration file.";
       };
-
-      package = mkOption {
-        type = types.package;
-        default = pkgs.thermald;
-        defaultText = literalExpression "pkgs.thermald";
-        description = "Which thermald package to use.";
-      };
     };
   };
 
   ###### implementation
   config = mkIf cfg.enable {
-    services.dbus.packages = [ cfg.package ];
+    services.dbus.packages = [ pkgs.thermald ];
 
     systemd.services.thermald = {
       description = "Thermal Daemon Service";
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         ExecStart = ''
-          ${cfg.package}/sbin/thermald \
+          ${pkgs.thermald}/sbin/thermald \
             --no-daemon \
             ${optionalString cfg.debug "--loglevel=debug"} \
             ${optionalString (cfg.configFile != null) "--config-file ${cfg.configFile}"} \

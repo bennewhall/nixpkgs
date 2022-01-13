@@ -23,7 +23,7 @@ in
 
     boot.kernel.features = mkOption {
       default = {};
-      example = literalExpression "{ debug = true; }";
+      example = literalExample "{ debug = true; }";
       internal = true;
       description = ''
         This option allows to enable or disable certain kernel features.
@@ -38,16 +38,16 @@ in
       default = pkgs.linuxPackages;
       type = types.unspecified // { merge = mergeEqualOption; };
       apply = kernelPackages: kernelPackages.extend (self: super: {
-        kernel = super.kernel.override (originalArgs: {
+        kernel = super.kernel.override {
           inherit randstructSeed;
-          kernelPatches = (originalArgs.kernelPatches or []) ++ kernelPatches;
+          kernelPatches = super.kernel.kernelPatches ++ kernelPatches;
           features = lib.recursiveUpdate super.kernel.features features;
-        });
+        };
       });
       # We don't want to evaluate all of linuxPackages for the manual
       # - some of it might not even evaluate correctly.
-      defaultText = literalExpression "pkgs.linuxPackages";
-      example = literalExpression "pkgs.linuxKernel.packages.linux_5_10";
+      defaultText = "pkgs.linuxPackages";
+      example = literalExample "pkgs.linuxPackages_2_6_25";
       description = ''
         This option allows you to override the Linux kernel used by
         NixOS.  Since things like external kernel module packages are
@@ -65,7 +65,7 @@ in
     boot.kernelPatches = mkOption {
       type = types.listOf types.attrs;
       default = [];
-      example = literalExpression "[ pkgs.kernelPatches.ubuntu_fan_4_4 ]";
+      example = literalExample "[ pkgs.kernelPatches.ubuntu_fan_4_4 ]";
       description = "A list of additional patches to apply to the kernel.";
     };
 
@@ -83,10 +83,7 @@ in
     };
 
     boot.kernelParams = mkOption {
-      type = types.listOf (types.strMatching ''([^"[:space:]]|"[^"]*")+'' // {
-        name = "kernelParam";
-        description = "string, with spaces inside double quotes";
-      });
+      type = types.listOf types.str;
       default = [ ];
       description = "Parameters added to the kernel command line.";
     };
@@ -116,7 +113,7 @@ in
     boot.extraModulePackages = mkOption {
       type = types.listOf types.package;
       default = [];
-      example = literalExpression "[ config.boot.kernelPackages.nvidia_x11 ]";
+      example = literalExample "[ config.boot.kernelPackages.nvidia_x11 ]";
       description = "A list of additional packages supplying kernel modules.";
     };
 
@@ -159,16 +156,6 @@ in
       description = "List of modules that are always loaded by the initrd.";
     };
 
-    boot.initrd.includeDefaultModules = mkOption {
-      type = types.bool;
-      default = true;
-      description = ''
-        This option, if set, adds a collection of default kernel modules
-        to <option>boot.initrd.availableKernelModules</option> and
-        <option>boot.initrd.kernelModules</option>.
-      '';
-    };
-
     system.modulesTree = mkOption {
       type = types.listOf types.path;
       internal = true;
@@ -184,7 +171,7 @@ in
 
     system.requiredKernelConfig = mkOption {
       default = [];
-      example = literalExpression ''
+      example = literalExample ''
         with config.lib.kernelConfig; [
           (isYes "MODULES")
           (isEnabled "FB_CON_DECOR")
@@ -208,8 +195,7 @@ in
   config = mkMerge
     [ (mkIf config.boot.initrd.enable {
         boot.initrd.availableKernelModules =
-          optionals config.boot.initrd.includeDefaultModules ([
-            # Note: most of these (especially the SATA/PATA modules)
+          [ # Note: most of these (especially the SATA/PATA modules)
             # shouldn't be included by default since nixos-generate-config
             # detects them, but I'm keeping them for now for backwards
             # compatibility.
@@ -243,17 +229,16 @@ in
             "hid_generic" "hid_lenovo" "hid_apple" "hid_roccat"
             "hid_logitech_hidpp" "hid_logitech_dj" "hid_microsoft"
 
-          ] ++ optionals pkgs.stdenv.hostPlatform.isx86 [
+          ] ++ optionals (pkgs.stdenv.isi686 || pkgs.stdenv.isx86_64) [
             # Misc. x86 keyboard stuff.
             "pcips2" "atkbd" "i8042"
 
             # x86 RTC needed by the stage 2 init script.
             "rtc_cmos"
-          ]);
+          ];
 
         boot.initrd.kernelModules =
-          optionals config.boot.initrd.includeDefaultModules [
-            # For LVM.
+          [ # For LVM.
             "dm_mod"
           ];
       })

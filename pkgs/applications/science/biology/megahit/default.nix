@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, zlib }:
+{ stdenv, fetchFromGitHub, cmake, zlib }:
 
 stdenv.mkDerivation rec {
   pname    = "megahit";
@@ -14,7 +14,9 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
   buildInputs = [ zlib ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "An ultra-fast single-node solution for large and complex metagenomics assembly via succinct de Bruijn graph";
     license     = licenses.gpl3;
     homepage    = "https://github.com/voutcn/megahit";

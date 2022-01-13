@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, unzip, patchelf, xorg, openal }:
+{ stdenv, fetchurl, unzip, patchelf, xorg, openal }:
 
 let
   urls = file:
@@ -14,9 +14,9 @@ let
 
       nativeBuildInputs = [ unzip patchelf ];
 
-      rtdeps = lib.makeLibraryPath
+      rtdeps = stdenv.lib.makeLibraryPath
         [ xorg.libXxf86vm xorg.libXext openal ]
-        + ":" + lib.makeSearchPathOutput "lib" "lib64" [ stdenv.cc.cc ];
+        + ":" + stdenv.lib.makeSearchPathOutput "lib" "lib64" [ stdenv.cc.cc ];
 
       buildCommand =
       ''
@@ -52,7 +52,7 @@ let
         description = "Unreal Engine 4 Linux demos";
         homepage = "https://wiki.unrealengine.com/Linux_Demos";
         platforms = [ "x86_64-linux" ];
-        license = lib.licenses.unfree;
+        license = stdenv.lib.licenses.unfree;
       };
     };
 

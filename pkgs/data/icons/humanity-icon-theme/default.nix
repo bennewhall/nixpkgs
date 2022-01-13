@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gtk3, gnome, hicolor-icon-theme }:
+{ stdenv, fetchurl, gtk3, gnome3, hicolor-icon-theme }:
 
 stdenv.mkDerivation rec {
   pname = "humanity-icon-theme";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   ];
 
   propagatedBuildInputs = [
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
     hicolor-icon-theme
   ];
 
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Humanity icons from Ubuntu";
     homepage = "https://launchpad.net/humanity/";
     license = licenses.gpl2;

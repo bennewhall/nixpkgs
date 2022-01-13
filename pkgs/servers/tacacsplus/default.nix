@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, tcp_wrappers, flex, bison, perl, libnsl }:
+{ stdenv, fetchurl, tcp_wrappers, flex, bison, perl, libnsl }:
 
 stdenv.mkDerivation rec {
   pname = "tacacsplus";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ flex bison ];
   buildInputs = [ tcp_wrappers perl libnsl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A protocol for authentication, authorization and accounting (AAA) services for routers and network devices";
     homepage = "http://www.shrubbery.net/tac_plus/";
     license = licenses.free;

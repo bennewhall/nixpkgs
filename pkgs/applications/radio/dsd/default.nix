@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake
+{ stdenv, fetchFromGitHub, cmake
 , mbelib, libsndfile, itpp
 , portaudioSupport ? true, portaudio ? null
 }:
@@ -19,7 +19,9 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
   buildInputs = [
     mbelib libsndfile itpp
-  ] ++ lib.optionals portaudioSupport [ portaudio ];
+  ] ++ stdenv.lib.optionals portaudioSupport [ portaudio ];
+
+  enableParallelBuilding = true;
 
   doCheck = true;
   preCheck = ''
@@ -27,14 +29,14 @@ stdenv.mkDerivation rec {
     export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH''${DYLD_LIBRARY_PATH:+:}$PWD
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Digital Speech Decoder";
     longDescription = ''
       DSD is able to decode several digital voice formats from discriminator
       tap audio and synthesize the decoded speech. Speech synthesis requires
       mbelib, which is a separate package.
     '';
-    homepage = "https://github.com/szechyjs/dsd";
+    homepage = https://github.com/szechyjs/dsd;
     license = licenses.gpl2;
     platforms = platforms.unix;
     maintainers = with maintainers; [ andrew-d ];

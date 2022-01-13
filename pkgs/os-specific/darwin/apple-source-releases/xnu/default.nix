@@ -1,12 +1,8 @@
-{ appleDerivation', lib, stdenv, stdenvNoCC, buildPackages
-, bootstrap_cmds, bison, flex
+{ appleDerivation, lib, bootstrap_cmds, bison, flex
 , gnum4, unifdef, perl, python3
-, headersOnly ? true
-}:
+, headersOnly ? true }:
 
-appleDerivation' (if headersOnly then stdenvNoCC else stdenv) ({
-  depsBuildBuild = [ buildPackages.stdenv.cc ];
-
+appleDerivation ({
   nativeBuildInputs = [ bootstrap_cmds bison flex gnum4 unifdef perl python3 ];
 
   patches = [ ./python3.patch ];
@@ -48,16 +44,16 @@ appleDerivation' (if headersOnly then stdenvNoCC else stdenv) ({
 
   PLATFORM = "MacOSX";
   SDKVERSION = "10.11";
-  CC = "${stdenv.cc.targetPrefix or ""}cc";
-  CXX = "${stdenv.cc.targetPrefix or ""}c++";
+  CC = "cc";
+  CXX = "c++";
   MIG = "mig";
   MIGCOM = "migcom";
-  STRIP = "${stdenv.cc.bintools.targetPrefix or ""}strip";
-  NM = "${stdenv.cc.bintools.targetPrefix or ""}nm";
+  STRIP = "strip";
+  NM = "nm";
   UNIFDEF = "unifdef";
   DSYMUTIL = "dsymutil";
   HOST_OS_VERSION = "10.10";
-  HOST_CC = "${buildPackages.stdenv.cc.targetPrefix or ""}cc";
+  HOST_CC = "cc";
   HOST_FLEX = "flex";
   HOST_BISON = "bison";
   HOST_GM4 = "m4";
@@ -131,8 +127,6 @@ appleDerivation' (if headersOnly then stdenvNoCC else stdenv) ({
     mkdir $out/Library/PrivateFrameworks
     mv $out/Library/Frameworks/IOKit.framework $out/Library/PrivateFrameworks
   '';
-
-  appleHeaders = builtins.readFile ./headers.txt;
 } // lib.optionalAttrs headersOnly {
   HOST_CODESIGN = "echo";
   HOST_CODESIGN_ALLOCATE = "echo";

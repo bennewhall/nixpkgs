@@ -1,9 +1,9 @@
-{ lib, qtModule, qtbase }:
+{ stdenv, qtModule, qtbase }:
 
 qtModule {
-  pname = "qtmacextras";
+  name = "qtmacextras";
   qtInputs = [ qtbase ];
-  meta = with lib; {
+  meta = with stdenv.lib; {
     maintainers = with maintainers; [ periklis ];
     platforms = platforms.darwin;
   };

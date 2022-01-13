@@ -1,41 +1,31 @@
-{ lib
-, stdenv
-, fetchurl
-, ncurses
-, gpm
-}:
+{ stdenv, fetchurl, ncurses, gpm }:
 
 stdenv.mkDerivation rec {
+
   pname = "jupp";
-  version = "40";
+  version = "39";
   srcName = "joe-3.1${pname}${version}";
 
   src = fetchurl {
     urls = [
       "https://www.mirbsd.org/MirOS/dist/jupp/${srcName}.tgz"
-      "https://pub.allbsd.org/MirOS/dist/jupp/${srcName}.tgz"
-    ];
-    sha256 = "S+1DnN5/K+KU6W5J7z6RPqkPvl6RTbiIQD46J+gDWxo=";
+      "https://pub.allbsd.org/MirOS/dist/jupp/${srcName}.tgz" ];
+    sha256 = "14gys92dy3kq9ikigry7q2x4w5v2z76d97vp212bddrxiqy5np8d";
   };
 
   preConfigure = "chmod +x ./configure";
 
-  buildInputs = [
-    gpm
-    ncurses
-  ];
+  buildInputs = [ ncurses gpm ];
 
   configureFlags = [
     "--enable-curses"
-    "--enable-getpwnam"
-    "--enable-largefile"
     "--enable-termcap"
     "--enable-termidx"
+    "--enable-getpwnam"
+    "--enable-largefile"
   ];
 
-  meta = with lib; {
-    homepage = "http://www.mirbsd.org/jupp.htm";
-    downloadPage = "https://www.mirbsd.org/MirOS/dist/jupp/";
+  meta = with stdenv.lib; {
     description = "A portable fork of Joe's editor";
     longDescription = ''
       This is the portable version of JOE's Own Editor, which is currently
@@ -45,8 +35,8 @@ stdenv.mkDerivation rec {
       and has a lot of bugs fixed. It is based upon an older version of joe
       because these behave better overall.
     '';
-    license = licenses.gpl1Only;
+    homepage = "http://www.mirbsd.org/jupp.htm";
+    license = licenses.gpl1;
     maintainers = with maintainers; [ AndersonTorres ];
-    platforms = with platforms; unix;
   };
 }

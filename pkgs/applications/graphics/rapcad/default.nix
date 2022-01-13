@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchurl, cgal, boost, gmp, mpfr, flex, bison, dxflib, readline
+{ stdenv, fetchFromGitHub, fetchurl, cgal, boost, gmp, mpfr, flex, bison, dxflib, readline
 , qtbase, qmake, libGLU
 }:
 
@@ -24,11 +24,11 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ qmake ];
   buildInputs = [ qtbase cgal boost gmp mpfr flex bison dxflib readline libGLU ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.gpl3;
     maintainers = [ maintainers.raskin ];
     platforms = platforms.linux;
-    description = "Constructive solid geometry package";
+    description = ''Constructive solid geometry package'';
     broken = true; # 2018-04-11
   };
 }

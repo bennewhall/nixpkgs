@@ -2,7 +2,7 @@
 
 import ./make-test-python.nix ({ pkgs, ...} : {
   name = "gvisor";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ andrew-d ];
   };
 

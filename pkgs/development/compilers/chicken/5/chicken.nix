@@ -1,22 +1,24 @@
-{ lib, stdenv, fetchurl, makeWrapper, darwin, bootstrap-chicken ? null }:
+{ stdenv, fetchurl, makeWrapper, darwin, bootstrap-chicken ? null }:
 
 let
+  version = "5.2.0";
   platform = with stdenv;
     if isDarwin then "macosx"
     else if isCygwin then "cygwin"
     else if (isFreeBSD || isOpenBSD) then "bsd"
     else if isSunOS then "solaris"
     else "linux"; # Should be a sane default
+  lib = stdenv.lib;
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "chicken";
-  version = "5.3.0";
+  inherit version;
 
   binaryVersion = 11;
 
   src = fetchurl {
     url = "https://code.call-cc.org/releases/${version}/chicken-${version}.tar.gz";
-    sha256 = "sha256-w62Z2PnhftgQkS75gaw7DC4vRvsOzAM7XDttyhvbDXY=";
+    sha256 = "1yl0hxm9cirgcp8jgxp6vv29lpswfvaw3zfkh6rsj0vkrv44k4c1";
   };
 
   setupHook = lib.optional (bootstrap-chicken != null) ./setup-hook.sh;
@@ -41,21 +43,17 @@ stdenv.mkDerivation rec {
     for f in $out/bin/*
     do
       wrapProgram $f \
-        --prefix PATH : ${lib.makeBinPath [ stdenv.cc ]}
+        --prefix PATH : ${stdenv.cc}/bin
     done
   '';
 
-  doCheck = true;
-  postCheck = ''
-    ./csi -R chicken.pathname -R chicken.platform \
-       -p "(assert (equal? \"${toString binaryVersion}\" (pathname-file (car (repository-path)))))"
-  '';
+  # TODO: Assert csi -R files -p '(pathname-file (repository-path))' == binaryVersion
 
   meta = {
-    homepage = "https://call-cc.org/";
-    license = lib.licenses.bsd3;
-    maintainers = with lib.maintainers; [ corngood ];
-    platforms = lib.platforms.unix;
+    homepage = "http://www.call-cc.org/";
+    license = stdenv.lib.licenses.bsd3;
+    maintainers = with stdenv.lib.maintainers; [ corngood ];
+    platforms = stdenv.lib.platforms.linux ++ stdenv.lib.platforms.darwin; # Maybe other Unix
     description = "A portable compiler for the Scheme programming language";
     longDescription = ''
       CHICKEN is a compiler for the Scheme programming language.

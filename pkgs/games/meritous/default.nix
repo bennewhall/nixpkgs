@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, SDL, SDL_image, SDL_mixer, zlib }:
+{ stdenv, fetchFromGitLab, SDL, SDL_image, SDL_mixer, zlib }:
 
 stdenv.mkDerivation {
   pname = "meritous";
@@ -29,7 +29,7 @@ stdenv.mkDerivation {
 
   hardeningDisable = [ "stackprotector" "fortify" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Action-adventure dungeon crawl game";
     homepage = "http://www.asceai.net/meritous/";
     license = licenses.gpl3;

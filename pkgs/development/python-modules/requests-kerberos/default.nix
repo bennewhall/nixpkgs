@@ -1,52 +1,27 @@
-{ lib
-, fetchFromGitHub
-, buildPythonPackage
-, cryptography
-, requests
-, pykerberos
-, pyspnego
-, pytestCheckHook
-, pytest-mock
-, mock
-}:
+{ stdenv, fetchFromGitHub, buildPythonPackage, requests, pykerberos, mock }:
 
 buildPythonPackage rec {
   pname = "requests-kerberos";
-  version = "0.13.0";
+  version = "0.12.0";
 
   # tests are not present in the PyPI version
   src = fetchFromGitHub {
     owner = "requests";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0yvfg2cj3d10l8fd8kyal4hmpd7fd1c3bca13cj9ril5l573in76";
+    sha256 = "1qw96aw84nljh9cip372mfv50p1yyirfgigavvavgpc3c5g278s6";
   };
 
-  # avoid needing to package krb5
-  postPatch = ''
-    substituteInPlace setup.py \
-    --replace "pyspnego[kerberos]" "pyspnego"
-  '';
+  checkInputs = [ mock ];
+  propagatedBuildInputs = [ requests pykerberos ];
 
-  propagatedBuildInputs = [
-    cryptography
-    requests
-    pykerberos
-    pyspnego
-  ];
+  # they have a setup.py which mentions a test suite that doesn't exist...
+  patches = [ ./fix_setup.patch ];
 
-  checkInputs = [
-    mock
-    pytestCheckHook
-    pytest-mock
-  ];
-
-  pythonImportsCheck = [ "requests_kerberos" ];
-
-  meta = with lib; {
-    description = "An authentication handler for using Kerberos with Python Requests";
-    homepage = "https://github.com/requests/requests-kerberos";
-    license = licenses.isc;
+  meta = with stdenv.lib; {
+    description = "An authentication handler for using Kerberos with Python Requests.";
+    homepage    = "https://github.com/requests/requests-kerberos";
+    license     = licenses.isc;
     maintainers = with maintainers; [ catern ];
   };
 }

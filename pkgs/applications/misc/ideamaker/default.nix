@@ -9,7 +9,7 @@
 , libcork
 , makeDesktopItem
 , qt5
-, quazip
+, quazip_qt4
 , zlib
 }:
 stdenv.mkDerivation rec {
@@ -35,7 +35,7 @@ stdenv.mkDerivation rec {
     libcork
     qt5.qtbase
     qt5.qtserialport
-    quazip
+    quazip_qt4
     zlib
   ];
 
@@ -73,6 +73,5 @@ stdenv.mkDerivation rec {
     license = licenses.unfree;
     platforms = [ "x86_64-linux" ];
     maintainers = with maintainers; [ lovesegfault ];
-    broken = true;  # Segfaults on startup.
   };
 }

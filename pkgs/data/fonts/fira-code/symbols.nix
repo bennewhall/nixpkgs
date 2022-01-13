@@ -1,4 +1,4 @@
-{ lib, fetchzip }:
+{ stdenv, fetchzip }:
 
 fetchzip {
   name = "fira-code-symbols-20160811";
@@ -12,7 +12,7 @@ fetchzip {
 
   sha256 = "19krsp22rin74ix0i19v4bh1c965g18xkmz1n55h6n6qimisnbkm";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "FiraCode unicode ligature glyphs in private use area";
     longDescription = ''
       FiraCode uses ligatures, which some editors don’t support.

@@ -1,37 +1,22 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, pythonPackages }:
 
-python3Packages.buildPythonApplication rec {
+pythonPackages.buildPythonApplication rec {
   pname = "rpl";
-  version = "1.10";
+  version = "1.5.7";
 
   # Tests not included in pip package.
   doCheck = false;
 
-
   src = fetchFromGitHub {
-    owner = "rrthomas";
-    repo = "rpl";
-    rev = "4467bd46a7a798f738247a7f090c1505176bd597";
-    sha256 = "0yf3pc3fws4nnh4nd8d3jpglmsyi69d17qqgpcnkpqca5l4cd25w";
+    owner  = "kcoyner";
+    repo   = "rpl";
+    rev    = "v${version}";
+    sha256 = "1xhpgcmq91ivy9ijfyz5ilg51m7fz8ar2077r7gq246j8gbf8ggr";
   };
 
-  patches = [
-    ./remove-argparse-manpage.diff # quickfix for ImportError: No module named build_manpages.build_manpages
-  ];
-
-  buildInputs = [
-    #python3Packages.argparse-manpage # TODO
-    python3Packages.chardet
-  ];
-
-  installPhase = ''
-    mkdir -p $out/bin
-    mv rpl $out/bin
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Replace strings in files";
-    homepage    = "https://github.com/rrthomas/rpl";
+    homepage    = "https://github.com/kcoyner/rpl";
     license     = licenses.gpl2;
     maintainers = with maintainers; [ teto ];
   };

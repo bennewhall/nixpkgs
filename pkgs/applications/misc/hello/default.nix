@@ -1,9 +1,4 @@
-{ lib
-, stdenv
-, fetchurl
-, testVersion
-, hello
-}:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "hello";
@@ -16,10 +11,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  passthru.tests.version =
-    testVersion { package = hello; };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A program that produces a familiar, friendly greeting";
     longDescription = ''
       GNU Hello is a program that prints "Hello, world!" when you run it.

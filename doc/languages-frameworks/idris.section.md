@@ -1,11 +1,14 @@
-# Idris {#idris}
+# Idris
 
-## Installing Idris {#installing-idris}
+## Installing Idris
 
 The easiest way to get a working idris version is to install the `idris` attribute:
 
-```ShellSession
-$ nix-env -f "<nixpkgs>" -iA idris
+```
+$ # On NixOS
+$ nix-env -i nixos.idris
+$ # On non-NixOS
+$ nix-env -i nixpkgs.idris
 ```
 
 This however only provides the `prelude` and `base` libraries. To install idris with additional libraries, you can use the `idrisPackages.with-packages` function, e.g. in an overlay in `~/.config/nixpkgs/overlays/my-idris.nix`:
@@ -18,7 +21,7 @@ self: super: {
 
 And then:
 
-```ShellSession
+```
 $ # On NixOS
 $ nix-env -iA nixos.myIdris
 $ # On non-NixOS
@@ -26,8 +29,7 @@ $ nix-env -iA nixpkgs.myIdris
 ```
 
 To see all available Idris packages:
-
-```ShellSession
+```
 $ # On NixOS
 $ nix-env -qaPA nixos.idrisPackages
 $ # On non-NixOS
@@ -35,23 +37,22 @@ $ nix-env -qaPA nixpkgs.idrisPackages
 ```
 
 Similarly, entering a `nix-shell`:
-
-```ShellSession
+```
 $ nix-shell -p 'idrisPackages.with-packages (with idrisPackages; [ contrib pruviloj ])'
 ```
 
-## Starting Idris with library support {#starting-idris-with-library-support}
+## Starting Idris with library support
 
 To have access to these libraries in idris, call it with an argument `-p <library name>` for each library:
 
-```ShellSession
+```
 $ nix-shell -p 'idrisPackages.with-packages (with idrisPackages; [ contrib pruviloj ])'
 [nix-shell:~]$ idris -p contrib -p pruviloj
 ```
 
 A listing of all available packages the Idris binary has access to is available via `--listlibs`:
 
-```ShellSession
+```
 $ idris --listlibs
 00prelude-idx.ibc
 pruviloj
@@ -63,16 +64,16 @@ prelude
 00contrib-idx.ibc
 ```
 
-## Building an Idris project with Nix {#building-an-idris-project-with-nix}
+## Building an Idris project with Nix
 
 As an example of how a Nix expression for an Idris package can be created, here is the one for `idrisPackages.yaml`:
 
 ```nix
-{ lib
-, build-idris-package
+{ build-idris-package
 , fetchFromGitHub
 , contrib
 , lightyear
+, lib
 }:
 build-idris-package  {
   name = "yaml";
@@ -93,18 +94,18 @@ build-idris-package  {
     sha256 = "1g4pi0swmg214kndj85hj50ccmckni7piprsxfdzdfhg87s0avw7";
   };
 
-  meta = with lib; {
+  meta = {
     description = "Idris YAML lib";
     homepage = "https://github.com/Heather/Idris.Yaml";
-    license = licenses.mit;
-    maintainers = [ maintainers.brainrape ];
+    license = lib.licenses.mit;
+    maintainers = [ lib.maintainers.brainrape ];
   };
 }
 ```
 
 Assuming this file is saved as `yaml.nix`, it's buildable using
 
-```ShellSession
+```
 $ nix-build -E '(import <nixpkgs> {}).idrisPackages.callPackage ./yaml.nix {}'
 ```
 
@@ -120,11 +121,11 @@ with import <nixpkgs> {};
 
 in another file (say `default.nix`) to be able to build it with
 
-```ShellSession
+```
 $ nix-build -A yaml
 ```
 
-## Passing options to `idris` commands {#passing-options-to-idris-commands}
+## Passing options to `idris` commands
 
 The `build-idris-package` function provides also optional input values to set additional options for the used `idris` commands.
 
@@ -132,7 +133,7 @@ Specifically, you can set `idrisBuildOptions`, `idrisTestOptions`, `idrisInstall
 
 For example you could set
 
-```nix
+```
 build-idris-package {
   idrisBuildOptions = [ "--log" "1" "--verbose" ]
 

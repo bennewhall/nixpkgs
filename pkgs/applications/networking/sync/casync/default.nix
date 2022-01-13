@@ -1,41 +1,28 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, meson
-, ninja
-, pkg-config
-, python3
-, sphinx
-, acl
-, curl
-, fuse
-, libselinux
-, udev
-, xz
-, zstd
+{ stdenv, fetchFromGitHub
+, meson, ninja, pkgconfig, python3, sphinx
+, acl, curl, fuse, libselinux, udev, xz, zstd
 , fuseSupport ? true
 , selinuxSupport ? true
 , udevSupport ? true
-, glibcLocales
-, rsync
+, glibcLocales, rsync
 }:
 
 stdenv.mkDerivation {
   pname = "casync";
-  version = "2-226-gbd8898e";
+  version = "2-219-ga8f6c84";
 
   src = fetchFromGitHub {
-    owner = "systemd";
-    repo = "casync";
-    rev = "bd8898ed92685e12022dd33a04c87786b5262344";
-    sha256 = "04ibglizjzyd7ih13q6m7ic78n0mzw9nfmb3zd1fcm9j62qlq11i";
+    owner  = "systemd";
+    repo   = "casync";
+    rev    = "a8f6c841ccfe59ca8c68aad64df170b64042dce8";
+    sha256 = "1i3c9wmpabpmx2wfbcyabmwfa66vz92iq5dlbm89v5mvgavz7bws";
   };
 
   buildInputs = [ acl curl xz zstd ]
-    ++ lib.optionals (fuseSupport) [ fuse ]
-    ++ lib.optionals (selinuxSupport) [ libselinux ]
-    ++ lib.optionals (udevSupport) [ udev ];
-  nativeBuildInputs = [ meson ninja pkg-config python3 sphinx ];
+                ++ stdenv.lib.optionals (fuseSupport) [ fuse ]
+                ++ stdenv.lib.optionals (selinuxSupport) [ libselinux ]
+                ++ stdenv.lib.optionals (udevSupport) [ udev ];
+  nativeBuildInputs = [ meson ninja pkgconfig python3 sphinx ];
   checkInputs = [ glibcLocales rsync ];
 
   postPatch = ''
@@ -46,20 +33,20 @@ stdenv.mkDerivation {
   '';
 
   PKG_CONFIG_UDEV_UDEVDIR = "lib/udev";
-  mesonFlags = lib.optionals (!fuseSupport) [ "-Dfuse=false" ]
-    ++ lib.optionals (!udevSupport) [ "-Dudev=false" ]
-    ++ lib.optionals (!selinuxSupport) [ "-Dselinux=false" ];
+  mesonFlags = stdenv.lib.optionals (!fuseSupport) [ "-Dfuse=false" ]
+               ++ stdenv.lib.optionals (!udevSupport) [ "-Dudev=false" ]
+               ++ stdenv.lib.optionals (!selinuxSupport) [ "-Dselinux=false" ];
 
   doCheck = true;
   preCheck = ''
     export LC_ALL="en_US.utf-8"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Content-Addressable Data Synchronizer";
-    homepage = "https://github.com/systemd/casync";
-    license = licenses.lgpl21Plus;
-    platforms = platforms.linux;
+    homepage    = "https://github.com/systemd/casync";
+    license     = licenses.lgpl21;
+    platforms   = platforms.linux;
     maintainers = with maintainers; [ flokli ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake }:
 
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://unqlite.org/";
     description = "Self-contained, serverless, zero-conf, transactional NoSQL DB library";
     longDescription = ''

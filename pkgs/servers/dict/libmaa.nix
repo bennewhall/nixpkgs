@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libtool }:
+{ stdenv, fetchurl, libtool }:
 
 stdenv.mkDerivation rec {
   version = "1.3.2";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-Wno-error=format-truncation";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Dict protocol server and client";
     maintainers = [ ];
     platforms = platforms.linux;

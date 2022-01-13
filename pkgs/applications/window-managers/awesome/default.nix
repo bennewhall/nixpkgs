@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, lua, cairo, librsvg, cmake, imagemagick, pkg-config, gdk-pixbuf
+{ stdenv, fetchFromGitHub, luaPackages, cairo, librsvg, cmake, imagemagick, pkgconfig, gdk-pixbuf
 , xorg, libstartup_notification, libxdg_basedir, libpthreadstubs
 , xcb-util-cursor, makeWrapper, pango, gobject-introspection
 , which, dbus, nettools, git, doxygen
@@ -12,11 +12,10 @@
 # needed for beautiful.gtk to work
 assert gtk3Support -> gtk3 != null;
 
-let
-  luaEnv = lua.withPackages(ps: [ ps.lgi ps.ldoc ]);
-in
-
 stdenv.mkDerivation rec {
+  lgi = luaPackages.lgi;
+  lua = luaPackages.lua;
+  ldoc = luaPackages.ldoc;
   pname = "awesome";
   version = "4.3";
 
@@ -32,10 +31,11 @@ stdenv.mkDerivation rec {
     doxygen
     imagemagick
     makeWrapper
-    pkg-config
+    pkgconfig
     xmlto docbook_xml_dtd_45
     docbook_xsl findXMLCatalogs
     asciidoctor
+    ldoc
   ];
 
   outputs = [ "out" "doc" ];
@@ -44,25 +44,25 @@ stdenv.mkDerivation rec {
 
   propagatedUserEnvPkgs = [ hicolor-icon-theme ];
   buildInputs = [ cairo librsvg dbus gdk-pixbuf gobject-introspection
-                  git luaEnv libpthreadstubs libstartup_notification
+                  git lgi libpthreadstubs libstartup_notification
                   libxdg_basedir lua nettools pango xcb-util-cursor
                   xorg.libXau xorg.libXdmcp xorg.libxcb xorg.libxshmfence
                   xorg.xcbutil xorg.xcbutilimage xorg.xcbutilkeysyms
                   xorg.xcbutilrenderutil xorg.xcbutilwm libxkbcommon
                   xcbutilxrm ]
-                  ++ lib.optional gtk3Support gtk3;
+                  ++ stdenv.lib.optional gtk3Support gtk3;
 
   cmakeFlags = [
     #"-DGENERATE_MANPAGES=ON"
     "-DOVERRIDE_VERSION=${version}"
-  ] ++ lib.optional lua.pkgs.isLuaJIT "-DLUA_LIBRARY=${lua}/lib/libluajit-5.1.so"
+  ] ++ stdenv.lib.optional luaPackages.isLuaJIT "-DLUA_LIBRARY=${lua}/lib/libluajit-5.1.so"
   ;
 
   GI_TYPELIB_PATH = "${pango.out}/lib/girepository-1.0";
   # LUA_CPATH and LUA_PATH are used only for *building*, see the --search flags
   # below for how awesome finds the libraries it needs at runtime.
-  LUA_CPATH = "${luaEnv}/lib/lua/${lua.luaversion}/?.so";
-  LUA_PATH  = "${luaEnv}/share/lua/${lua.luaversion}/?.lua;;";
+  LUA_CPATH = "${lgi}/lib/lua/${lua.luaversion}/?.so";
+  LUA_PATH  = "${lgi}/share/lua/${lua.luaversion}/?.lua;;";
 
   postInstall = ''
     # Don't use wrapProgram or the wrapper will duplicate the --search
@@ -70,8 +70,8 @@ stdenv.mkDerivation rec {
     mv "$out/bin/awesome" "$out/bin/.awesome-wrapped"
     makeWrapper "$out/bin/.awesome-wrapped" "$out/bin/awesome" \
       --set GDK_PIXBUF_MODULE_FILE "$GDK_PIXBUF_MODULE_FILE" \
-      --add-flags '--search ${luaEnv}/lib/lua/${lua.luaversion}' \
-      --add-flags '--search ${luaEnv}/share/lua/${lua.luaversion}' \
+      --add-flags '--search ${lgi}/lib/lua/${lua.luaversion}' \
+      --add-flags '--search ${lgi}/share/lua/${lua.luaversion}' \
       --prefix GI_TYPELIB_PATH : "$GI_TYPELIB_PATH"
 
     wrapProgram $out/bin/awesome-client \
@@ -82,7 +82,7 @@ stdenv.mkDerivation rec {
     inherit lua;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Highly configurable, dynamic window manager for X";
     homepage    = "https://awesomewm.org/";
     license     = licenses.gpl2Plus;

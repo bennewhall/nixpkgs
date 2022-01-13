@@ -1,37 +1,18 @@
-{ lib
-, stdenv
-, fetchurl
-, xlibsWrapper
-, makeWrapper
-, libXpm
-, libXmu
-, libXi
-, libXp
-, Xaw3d
-, libXaw
-, fig2dev
+{ stdenv, fetchurl, xlibsWrapper, makeWrapper, libXpm
+, libXmu, libXi, libXp, Xaw3d, fig2dev
 }:
 
-stdenv.mkDerivation rec {
+let
+  version = "3.2.7a";
+
+in stdenv.mkDerivation {
   pname = "xfig";
-  version = "3.2.8b";
+  inherit version;
 
   src = fetchurl {
     url = "mirror://sourceforge/mcj/xfig-${version}.tar.xz";
-    sha256 = "0fndgbm1mkqb1sn2v2kj3nx9mxj70jbp31y2bjvzcmmkry0q3k5j";
+    sha256 = "096zgp0bqnxhgxbrv2jjylrjz3pr4da0xxznlk2z7ffxr5pri2fa";
   };
-
-  nativeBuildInputs = [ makeWrapper ];
-
-  buildInputs = [
-    xlibsWrapper
-    libXpm
-    libXmu
-    libXi
-    libXp
-    Xaw3d
-    libXaw
-  ];
 
   postPatch = ''
     sed -i 's:"fig2dev":"${fig2dev}/bin/fig2dev":' src/main.c
@@ -47,12 +28,16 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  nativeBuildInputs = [ makeWrapper ];
+
+  buildInputs = [ xlibsWrapper libXpm libXmu libXi libXp Xaw3d ];
+
+  meta = with stdenv.lib; {
     description = "An interactive drawing tool for X11";
     longDescription = ''
       Note that you need to have the <literal>netpbm</literal> tools
       in your path to export bitmaps.
     '';
-    inherit (fig2dev.meta) license homepage platforms maintainers;
+    inherit (fig2dev.meta) license homepage platforms;
   };
 }

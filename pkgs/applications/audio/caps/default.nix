@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 stdenv.mkDerivation rec {
   pname = "caps";
   version = "0.9.26";
@@ -23,8 +23,8 @@ stdenv.mkDerivation rec {
       resource demands and meaningful control interfaces.
     '';
     homepage = "http://www.quitte.de/dsp/caps.html";
-    license = lib.licenses.gpl3;
-    maintainers = [ lib.maintainers.astsmtl ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl3;
+    maintainers = [ stdenv.lib.maintainers.astsmtl ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

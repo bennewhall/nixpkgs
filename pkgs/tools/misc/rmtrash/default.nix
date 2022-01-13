@@ -1,7 +1,7 @@
-{ lib, stdenvNoCC, fetchFromGitHub, makeWrapper
+{ lib, stdenv, fetchFromGitHub, makeWrapper
 , trash-cli, coreutils, which, getopt }:
 
-stdenvNoCC.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "rmtrash";
   version = "1.14";
 
@@ -11,6 +11,9 @@ stdenvNoCC.mkDerivation rec {
     rev = "v${version}";
     sha256 = "0wfb2ykzlsxyqn9krfsis9jxhaxy3pxl71a4f15an1ngfndai694";
   };
+
+  dontConfigure = true;
+  dontBuild = true;
 
   nativeBuildInputs = [ makeWrapper ];
 
@@ -32,6 +35,5 @@ stdenvNoCC.mkDerivation rec {
     '';
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ peelz ];
-    platforms = platforms.all;
   };
 }

@@ -1,38 +1,25 @@
-{ lib
-, fetchurl
-, stdenv
-, gettext
-, pkg-config
-, glib
-, gtk2
-, libX11
-, libSM
-, libICE
-, which
-, IOKit
-, copyDesktopItems
-, makeDesktopItem
-, wrapGAppsHook
-}:
+{ fetchurl, stdenv, gettext, pkgconfig, glib, gtk2, libX11, libSM, libICE, which
+, IOKit ? null }:
+
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
-  pname = "gkrellm";
-  version = "2.3.11";
+  name = "gkrellm-2.3.11";
 
   src = fetchurl {
-    url = "http://gkrellm.srcbox.net/releases/gkrellm-${version}.tar.bz2";
+    url = "http://gkrellm.srcbox.net/releases/${name}.tar.bz2";
     sha256 = "01lccz4fga40isv09j8rjgr0qy10rff9vj042n6gi6gdv4z69q0y";
   };
 
-  nativeBuildInputs = [ copyDesktopItems pkg-config which wrapGAppsHook ];
-  buildInputs = [ gettext glib gtk2 libX11 libSM libICE ]
-    ++ lib.optionals stdenv.isDarwin [ IOKit ];
+  nativeBuildInputs = [ pkgconfig which ];
+  buildInputs = [gettext glib gtk2 libX11 libSM libICE]
+    ++ optionals stdenv.isDarwin [ IOKit ];
 
   hardeningDisable = [ "format" ];
 
   # Makefiles are patched to fix references to `/usr/X11R6' and to add
   # `-lX11' to make sure libX11's store path is in the RPATH.
-  postPatch = ''
+  patchPhase = ''
     echo "patching makefiles..."
     for i in Makefile src/Makefile server/Makefile
     do
@@ -43,24 +30,7 @@ stdenv.mkDerivation rec {
   makeFlags = [ "STRIP=-s" ];
   installFlags = [ "DESTDIR=$(out)" ];
 
-  # This icon is used by the desktop file.
-  postInstall = ''
-    install -Dm444 -T src/icon.xpm $out/share/pixmaps/gkrellm.xpm
-  '';
-
-  desktopItems = [
-    (makeDesktopItem {
-      name = "gkrellm";
-      exec = "gkrellm";
-      icon = "gkrellm";
-      desktopName = "GKrellM";
-      genericName = "System monitor";
-      comment = "The GNU Krell Monitors";
-      categories = "System;Monitor;";
-    })
-  ];
-
-  meta = with lib; {
+  meta = {
     description = "Themeable process stack of system monitors";
     longDescription = ''
       GKrellM is a single process stack of system monitors which
@@ -70,7 +40,7 @@ stdenv.mkDerivation rec {
 
     homepage = "http://gkrellm.srcbox.net";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ khumba ];
+    maintainers = [ ];
     platforms = platforms.linux;
   };
 }

@@ -1,79 +1,42 @@
-{ stdenv
-, lib
-, fetchFromGitHub
-, rustPlatform
-, pkg-config
-, llvmPackages
-, openssl
-, protobuf
-, rdkafka
-, oniguruma
-, zstd
-, Security
-, libiconv
+{ stdenv, lib, fetchFromGitHub, rustPlatform
+, openssl, pkg-config, protobuf
+, Security, libiconv, rdkafka
+, tzdata
+
+, features ?
+    ((if stdenv.isAarch64
+     then [ "jemallocator" "rdkafka" "rdkafka/dynamic_linking" ]
+     else [ "leveldb" "leveldb/leveldb-sys-2" "jemallocator" "rdkafka" "rdkafka/dynamic_linking" ])
+     ++
+     (lib.optional stdenv.targetPlatform.isUnix "unix")
+     ++
+     [ "sinks" "sources" "transforms" ])
 , coreutils
 , CoreServices
-, tzdata
-, cmake
-  # kafka is optional but one of the most used features
-, enableKafka ? true
-  # TODO investigate adding "api" "api-client" "vrl-cli" and various "vendor-*"
-  # "disk-buffer" is using leveldb TODO: investigate how useful
-  # it would be, perhaps only for massive scale?
-, features ? ([ "sinks" "sources" "transforms" ]
-    # the second feature flag is passed to the rdkafka dependency
-    # building on linux fails without this feature flag (both x86_64 and AArch64)
-    ++ lib.optionals enableKafka [ "rdkafka-plain" "rdkafka/dynamic_linking" ]
-    ++ lib.optional stdenv.targetPlatform.isUnix "unix")
 }:
 
-let
+rustPlatform.buildRustPackage rec {
   pname = "vector";
-  version = "0.19.0";
-in
-rustPlatform.buildRustPackage {
-  inherit pname version;
+  version = "0.10.0";
 
   src = fetchFromGitHub {
-    owner = "timberio";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-A+Ok/BNEs0V00B8P6ghSHZ2pQ8tumfpkurplnvjpWZ8=";
+    owner  = "timberio";
+    repo   = pname;
+    rev    = "v${version}";
+    sha256 = "0q6x3fvwwh18iyznqlr09n3zppzgw9jaz973s8haz54hnxj16wx0";
   };
 
-  cargoSha256 = "sha256-B9z+8TqAl0yFaou1LfNcFsDJjw7qGti6MakDPhz49tc=";
-  nativeBuildInputs = [ pkg-config cmake ];
-  buildInputs = [ oniguruma openssl protobuf rdkafka zstd ]
-    ++ lib.optionals stdenv.isDarwin [ Security libiconv coreutils CoreServices ];
+  cargoSha256 = "Y/vDYXWQ65zZ86vTwP4aCZYCMZuqbz6tpfv4uRkFAzc=";
+  nativeBuildInputs = [ pkg-config ];
+  buildInputs = [ openssl protobuf rdkafka ]
+                ++ stdenv.lib.optional stdenv.isDarwin [ Security libiconv coreutils CoreServices ];
 
   # needed for internal protobuf c wrapper library
-  PROTOC = "${protobuf}/bin/protoc";
-  PROTOC_INCLUDE = "${protobuf}/include";
-  RUSTONIG_SYSTEM_LIBONIG = true;
-  LIBCLANG_PATH = "${llvmPackages.libclang.lib}/lib";
+  PROTOC="${protobuf}/bin/protoc";
+  PROTOC_INCLUDE="${protobuf}/include";
 
-  TZDIR = "${tzdata}/share/zoneinfo";
-
-  buildNoDefaultFeatures = true;
-  buildFeatures = features;
-
-  # TODO investigate compilation failure for tests
-  # dev dependency includes httpmock which depends on iashc which depends on curl-sys with http2 feature enabled
-  # compilation fails because of a missing http2 include
-  doCheck = !stdenv.isDarwin;
-
-  checkFlags = [
-    # tries to make a network access
-    "--skip=sinks::loki::tests::healthcheck_grafana_cloud"
-
-    # flaky on linux-aarch64
-    "--skip=kubernetes::api_watcher::tests::test_stream_errors"
-
-    # flaky on linux-x86_64
-    "--skip=sources::socket::test::tcp_with_tls_intermediate_ca"
-
-    "--skip=sources::host_metrics::cgroups::tests::generates_cgroups_metrics"
-  ];
+  cargoBuildFlags = [ "--no-default-features" "--features" "${lib.concatStringsSep "," features}" ];
+  checkPhase = "TZDIR=${tzdata}/share/zoneinfo cargo test --no-default-features --features ${lib.concatStringsSep "," features} -- --test-threads 1";
 
   # recent overhauls of DNS support in 0.9 mean that we try to resolve
   # vector.dev during the checkPhase, which obviously isn't going to work.
@@ -86,21 +49,19 @@ rustPlatform.buildRustPackage {
   # nor do I know why it depends on rustc.
   # However, in order for the closure size to stay at a reasonable level,
   # transforms-geoip is patched out of Cargo.toml for now - unless explicitly asked for.
-  postPatch = ''
+  patchPhase = ''
     substituteInPlace ./src/dns.rs \
-      --replace "#[tokio::test]" ""
+      --replace "#[test]" ""
 
     ${lib.optionalString (!builtins.elem "transforms-geoip" features) ''
         substituteInPlace ./Cargo.toml --replace '"transforms-geoip",' ""
     ''}
   '';
 
-  passthru = { inherit features; };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A high-performance logs, metrics, and events router";
-    homepage = "https://github.com/timberio/vector";
-    license = with licenses; [ asl20 ];
+    homepage    = "https://github.com/timberio/vector";
+    license     = with licenses; [ asl20 ];
     maintainers = with maintainers; [ thoughtpolice happysalada ];
   };
 }

@@ -1,11 +1,10 @@
-{ fetchurl, lib, stdenv, ppl, autoreconfHook }:
+{ fetchurl, stdenv, ppl, autoreconfHook }:
 
 stdenv.mkDerivation rec {
-  pname = "cloog-ppl";
-  version = "0.15.11";
+  name = "cloog-ppl-0.15.11";
 
   src = fetchurl {
-    url = "mirror://gcc/infrastructure/${pname}-${version}.tar.gz";
+    url = "mirror://gcc/infrastructure/${name}.tar.gz";
     sha256 = "0psdm0bn5gx60glfh955x5b3b23zqrd92idmjr0b00dlnb839mkw";
   };
 
@@ -43,7 +42,7 @@ stdenv.mkDerivation rec {
     # CLooG-PPL is actually a port of GLooG from PolyLib to PPL.
     homepage = "http://www.cloog.org/";
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
     maintainers = [ ];
 
@@ -66,6 +65,6 @@ stdenv.mkDerivation rec {
        make[3]: *** [Box.lo] Error 1
 
     */
-    platforms = lib.platforms.unix; # Once had cygwin problems
+    platforms = stdenv.lib.platforms.unix; # Once had cygwin problems
   };
 }

@@ -1,27 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, openssl, lua, pcre2 }:
+{ stdenv, fetchFromGitHub, openssl, lua, pcre }:
 
 stdenv.mkDerivation rec {
   pname = "imapfilter";
-  version = "2.7.5";
+  version = "2.6.16";
 
   src = fetchFromGitHub {
     owner = "lefcha";
     repo = "imapfilter";
     rev = "v${version}";
-    sha256 = "nbVwbPkNbJz4GHhvOp+QVgiBqKA/HR34p4x3NXJB7ig=";
+    sha256 = "0f65sg6hhv6778fxwsz4hvarbm97dsb8jj0mg7a9qs273r35pqck";
   };
   makeFlags = [
     "SSLCAFILE=/etc/ssl/certs/ca-bundle.crt"
     "PREFIX=$(out)"
   ];
 
-  buildInputs = [ openssl pcre2 lua ];
+  propagatedBuildInputs = [ openssl pcre lua ];
 
   meta = {
     homepage = "https://github.com/lefcha/imapfilter";
     description = "Mail filtering utility";
-    license = lib.licenses.mit;
-    platforms = lib.platforms.unix;
-    maintainers = with lib.maintainers; [ doronbehar ];
+    license = stdenv.lib.licenses.mit;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = with stdenv.lib.maintainers; [ ];
   };
 }

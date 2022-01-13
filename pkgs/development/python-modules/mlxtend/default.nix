@@ -1,11 +1,11 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 , isPy27
 , pytestCheckHook
 , scipy
 , numpy
-, scikit-learn
+, scikitlearn
 , pandas
 , matplotlib
 , joblib
@@ -33,19 +33,17 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     scipy
     numpy
-    scikit-learn
+    scikitlearn
     pandas
     matplotlib
     joblib
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library of Python tools and extensions for data science";
     homepage = "https://github.com/rasbt/mlxtend";
     license= licenses.bsd3;
     maintainers = with maintainers; [ evax ];
     platforms = platforms.unix;
-    # incompatible with nixpkgs scikit-learn version
-    broken = true;
   };
 }

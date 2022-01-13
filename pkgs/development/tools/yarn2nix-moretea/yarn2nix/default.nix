@@ -1,23 +1,14 @@
 { pkgs ? import <nixpkgs> {}
 , nodejs ? pkgs.nodejs
 , yarn ? pkgs.yarn
-, allowAliases ? pkgs.config.allowAliases or true
 }:
 
 let
-  inherit (pkgs) stdenv lib fetchurl linkFarm callPackage git rsync makeWrapper runCommandLocal;
+  inherit (pkgs) stdenv lib fetchurl linkFarm callPackage git rsync makeWrapper;
 
   compose = f: g: x: f (g x);
   id = x: x;
   composeAll = builtins.foldl' compose id;
-
-  # https://docs.npmjs.com/files/package.json#license
-  # TODO: support expression syntax (OR, AND, etc)
-  getLicenseFromSpdxId = licstr:
-    if licstr == "UNLICENSED" then
-      lib.licenses.unfree
-    else
-      lib.getLicenseFromSpdxId licstr;
 in rec {
   # Export yarn again to make it easier to find out which yarn was used.
   inherit yarn;
@@ -39,7 +30,16 @@ in rec {
       non-null = builtins.filter (x: x != null) parts;
     in builtins.concatStringsSep "-" non-null;
 
-  inherit getLicenseFromSpdxId;
+  # https://docs.npmjs.com/files/package.json#license
+  # TODO: support expression syntax (OR, AND, etc)
+  spdxLicense = licstr:
+    if licstr == "UNLICENSED" then
+      lib.licenses.unfree
+    else
+      lib.findFirst
+        (l: l ? spdxId && l.spdxId == licstr)
+        { shortName = licstr; }
+        (builtins.attrValues lib.licenses);
 
   # Generates the yarn.nix from the yarn.lock file
   mkYarnNix = { yarnLock, flags ? [] }:
@@ -62,13 +62,12 @@ in rec {
   ];
 
   mkYarnModules = {
-    name ? "${pname}-${version}", # safe name and version, e.g. testcompany-one-modules-1.0.0
+    name, # safe name and version, e.g. testcompany-one-modules-1.0.0
     pname, # original name, e.g @testcompany/one
     version,
     packageJSON,
     yarnLock,
     yarnNix ? mkYarnNix { inherit yarnLock; },
-    offlineCache ? importOfflineCache yarnNix,
     yarnFlags ? defaultYarnFlags,
     pkgConfig ? {},
     preBuild ? "",
@@ -76,6 +75,8 @@ in rec {
     workspaceDependencies ? [], # List of yarn packages
   }:
     let
+      offlineCache = importOfflineCache yarnNix;
+
       extraBuildInputs = (lib.flatten (builtins.map (key:
         pkgConfig.${key}.buildInputs or []
       ) (builtins.attrNames pkgConfig)));
@@ -104,16 +105,10 @@ in rec {
 
     in stdenv.mkDerivation {
       inherit preBuild postBuild name;
-      dontUnpack = true;
-      dontInstall = true;
+      phases = ["configurePhase" "buildPhase"];
       buildInputs = [ yarn nodejs git ] ++ extraBuildInputs;
 
-      configurePhase = lib.optionalString (offlineCache ? outputHash) ''
-        if ! cmp -s ${yarnLock} ${offlineCache}/yarn.lock; then
-          echo "yarn.lock changed, you need to update the fetchYarnDeps hash"
-          exit 1
-        fi
-      '' + ''
+      configurePhase = ''
         # Yarn writes cache directories etc to $HOME.
         export HOME=$PWD/yarn_home
       '';
@@ -231,10 +226,8 @@ in rec {
     packageJSON ? src + "/package.json",
     yarnLock ? src + "/yarn.lock",
     yarnNix ? mkYarnNix { inherit yarnLock; },
-    offlineCache ? importOfflineCache yarnNix,
     yarnFlags ? defaultYarnFlags,
     yarnPreBuild ? "",
-    yarnPostBuild ? "",
     pkgConfig ? {},
     extraBuildInputs ? [],
     publishBinsFor ? null,
@@ -245,7 +238,7 @@ in rec {
       package = lib.importJSON packageJSON;
       pname = package.name;
       safeName = reformatPackageName pname;
-      version = attrs.version or package.version;
+      version = package.version or attrs.version;
       baseName = unlessNull name "${safeName}-${version}";
 
       workspaceDependenciesTransitive = lib.unique (
@@ -256,9 +249,8 @@ in rec {
       deps = mkYarnModules {
         name = "${safeName}-modules-${version}";
         preBuild = yarnPreBuild;
-        postBuild = yarnPostBuild;
         workspaceDependencies = workspaceDependenciesTransitive;
-        inherit packageJSON pname version yarnLock offlineCache yarnFlags pkgConfig;
+        inherit packageJSON pname version yarnLock yarnNix yarnFlags pkgConfig;
       };
 
       publishBinsFor_ = unlessNull publishBinsFor [pname];
@@ -369,7 +361,7 @@ in rec {
         description = packageJSON.description or "";
         homepage = packageJSON.homepage or "";
         version = packageJSON.version or "";
-        license = if packageJSON ? license then getLicenseFromSpdxId packageJSON.license else "";
+        license = if packageJSON ? license then spdxLicense packageJSON.license else "";
       } // (attrs.meta or {});
     });
 
@@ -405,8 +397,6 @@ in rec {
 
     yarnFlags = defaultYarnFlags ++ ["--production=true"];
 
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-
     buildPhase = ''
       source ${./nix/expectShFunctions.sh}
 
@@ -419,25 +409,23 @@ in rec {
       expectFileOrDirAbsent ./node_modules/.bin/eslint
       expectFileOrDirAbsent ./node_modules/eslint/package.json
     '';
-
-    postInstall = ''
-      wrapProgram $out/bin/yarn2nix --prefix PATH : "${pkgs.nix-prefetch-git}/bin"
-    '';
   };
 
-  fixup_yarn_lock = runCommandLocal "fixup_yarn_lock"
-    {
-      buildInputs = [ nodejs ];
-    } ''
-    mkdir -p $out/lib
-    mkdir -p $out/bin
+  fixup_yarn_lock = stdenv.mkDerivation {
+    name = "fixup_yarn_lock";
 
-    cp ${./lib/urlToName.js} $out/lib/urlToName.js
-    cp ${./internal/fixup_yarn_lock.js} $out/bin/fixup_yarn_lock
+    buildInputs = [ nodejs ];
 
-    patchShebangs $out
-  '';
-} // lib.optionalAttrs allowAliases {
-  # Aliases
-  spdxLicense = getLicenseFromSpdxId; # added 2021-12-01
+    phases = [ "installPhase" ];
+
+    installPhase = ''
+      mkdir -p $out/lib
+      mkdir -p $out/bin
+
+      cp ${./lib/urlToName.js} $out/lib/urlToName.js
+      cp ${./internal/fixup_yarn_lock.js} $out/bin/fixup_yarn_lock
+
+      patchShebangs $out
+    '';
+  };
 }

@@ -2,7 +2,7 @@
 , fetchPypi
 , mock
 , zope_testing
-, lib
+, stdenv
 }:
 
 buildPythonPackage rec {
@@ -17,7 +17,7 @@ buildPythonPackage rec {
   buildInputs = [ mock ];
   propagatedBuildInputs = [ zope_testing ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Inter-process locks";
     homepage =  "https://www.python.org/pypi/zc.lockfile";
     license = licenses.zpl20;

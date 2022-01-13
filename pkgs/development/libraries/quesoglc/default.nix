@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libGLU, libGL, glew, freetype, fontconfig, fribidi, libX11 }:
+{ stdenv, fetchurl, libGLU, libGL, glew, freetype, fontconfig, fribidi, libX11 }:
 stdenv.mkDerivation rec {
   pname = "quesoglc";
   version = "0.7.2";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
   };
   buildInputs = [ libGLU libGL glew freetype fontconfig fribidi libX11 ];
   # FIXME: Configure fails to use system glew.
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A free implementation of the OpenGL Character Renderer";
     longDescription = ''
       QuesoGLC is a free (as in free speech) implementation of the OpenGL

@@ -1,4 +1,4 @@
-{ lib, appleDerivation, xcbuildHook
+{ stdenv, appleDerivation, xcbuildHook
 , Libc, xnu, libutil }:
 
 appleDerivation {
@@ -32,7 +32,7 @@ appleDerivation {
   '';
 
   meta = {
-    platforms = lib.platforms.darwin;
-    maintainers = with lib.maintainers; [ matthewbauer ];
+    platforms = stdenv.lib.platforms.darwin;
+    maintainers = with stdenv.lib.maintainers; [ matthewbauer ];
   };
 }

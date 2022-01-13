@@ -1,5 +1,7 @@
-import ./make-test-python.nix ({ pkgs, lib, testPackage ? pkgs.cassandra, ... }:
+import ./make-test-python.nix ({ pkgs, lib, ... }:
 let
+  # Change this to test a different version of Cassandra:
+  testPackage = pkgs.cassandra;
   clusterName = "NixOS Automated-Test Cluster";
 
   testRemoteAuth = lib.versionAtLeast testPackage.version "3.11";
@@ -41,10 +43,11 @@ let
       ];
     };
     services.cassandra = cassandraCfg ipAddress // extra;
+    virtualisation.memorySize = 1024;
   };
 in
 {
-  name = "cassandra-${testPackage.version}";
+  name = "cassandra";
   meta = {
     maintainers = with lib.maintainers; [ johnazoidberg ];
   };
@@ -125,8 +128,4 @@ in
             "nodetool status -p ${jmxPortStr} --resolve-ip | egrep '^UN[[:space:]]+cass2'"
         )
   '';
-
-  passthru = {
-    inherit testPackage;
-  };
 })

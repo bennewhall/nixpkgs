@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , flask, elasticsearch }:
 
 buildPythonPackage rec {
@@ -13,7 +13,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ flask elasticsearch ];
   doCheck = false; # no tests
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Integrates official client for Elasticsearch into Flask";
     license = licenses.bsd3;
     maintainers = [ maintainers.mic92 ];

@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , # required for both
   unzip, zlib, curl, libjpeg, libpng, libvorbis, libtheora
 , libogg, libmodplug
 , # glx
-  libX11, libGLU, libGL, libXpm, libXext, libXxf86vm, libXxf86dga, alsa-lib
+  libX11, libGLU, libGL, libXpm, libXext, libXxf86vm, libXxf86dga, alsaLib
 , # sdl
   SDL
 }:
@@ -11,7 +11,7 @@
 let
   version = "2.5.2";
 
-  version_short = lib.replaceChars [ "." ] [ "" ] version;
+  version_short = stdenv.lib.replaceChars [ "." ] [ "" ] version;
 in stdenv.mkDerivation {
   pname = "nexuiz";
   inherit version;
@@ -21,10 +21,11 @@ in stdenv.mkDerivation {
     sha256 = "0010jrxc68qqinkvdh1qn2b8z3sa5v1kcd8d1m4llp3pr6y7xqm5";
   };
 
-  nativeBuildInputs = [ unzip ];
   buildInputs = [
+    # required for both
+    unzip
     # glx
-    libX11 libGLU libGL libXpm libXext libXxf86vm libXxf86dga alsa-lib
+    libX11 libGLU libGL libXpm libXext libXxf86vm libXxf86dga alsaLib
     # sdl
     SDL
   ];
@@ -70,7 +71,7 @@ in stdenv.mkDerivation {
   meta = {
     description = "A free fast-paced first-person shooter";
     homepage = "http://www.alientrap.org/games/nexuiz";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

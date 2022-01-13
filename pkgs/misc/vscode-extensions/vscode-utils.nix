@@ -6,14 +6,8 @@ let
     # Same as "Unique Identifier" on the extension's web page.
     # For the moment, only serve as unique extension dir.
     vscodeExtUniqueId,
-    configurePhase ? ''
-      runHook preConfigure
-      runHook postConfigure
-    '',
-    buildPhase ?''
-      runHook preBuild
-      runHook postBuild
-    '',
+    configurePhase ? ":",
+    buildPhase ? ":",
     dontPatchELF ? true,
     dontStrip ? true,
     buildInputs ? [],

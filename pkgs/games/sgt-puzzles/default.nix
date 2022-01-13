@@ -1,10 +1,10 @@
-{ lib, stdenv, fetchurl, desktop-file-utils
+{ stdenv, fetchurl, desktop-file-utils
 , gtk3, libX11
-, makeWrapper, pkg-config, perl, autoreconfHook, wrapGAppsHook
+, makeWrapper, pkgconfig, perl, autoreconfHook, wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {
-  pname = "sgt-puzzles";
+  name = "sgt-puzzles-r${version}";
   version = "20200610.9aa7b7c";
 
   src = fetchurl {
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ autoreconfHook desktop-file-utils makeWrapper
-    pkg-config perl wrapGAppsHook ];
+    pkgconfig perl wrapGAppsHook ];
 
   buildInputs = [ gtk3 libX11 ];
 
@@ -63,7 +63,7 @@ stdenv.mkDerivation rec {
     export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -Wno-error"
     cp Makefile.gtk Makefile
   '';
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simon Tatham's portable puzzle collection";
     license = licenses.mit;
     maintainers = [ maintainers.raskin ];

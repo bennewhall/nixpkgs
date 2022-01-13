@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPyPy
+{ stdenv, buildPythonPackage, fetchPypi, isPyPy
 , dnspython
 , geoip2
 , ipython
@@ -6,6 +6,7 @@
 , pyenchant
 , pygeoip
 , pytestCheckHook
+, python
 , pytz
 , sqlalchemy
 , xmltodict
@@ -13,12 +14,12 @@
 
 buildPythonPackage rec {
   pname = "sopel";
-  version = "7.1.6";
+  version = "7.0.7";
   disabled = isPyPy;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "ebd3b2aa9230835f8a68ea7f5a10324ddf35d70d89a9c92c8cba81c558565efb";
+    sha256 = "84d42708d176aecfb7b95299af0e484896f5f80df61f43c92d8e7a53de0b2099";
   };
 
   propagatedBuildInputs = [
@@ -36,8 +37,7 @@ buildPythonPackage rec {
   # remove once https://github.com/sopel-irc/sopel/pull/1653 lands
   postPatch = ''
     substituteInPlace requirements.txt \
-      --replace "praw>=4.0.0,<6.0.0" "praw" \
-      --replace "sqlalchemy<1.4" "sqlalchemy"
+      --replace "praw>=4.0.0,<6.0.0" "praw"
   '';
 
   checkInputs = [ pytestCheckHook ];
@@ -52,11 +52,9 @@ buildPythonPackage rec {
     popd
   '';
 
-  pythonImportsCheck = [ "sopel" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple and extensible IRC bot";
-    homepage = "https://sopel.chat";
+    homepage = "http://sopel.chat";
     license = licenses.efl20;
     maintainers = with maintainers; [ mog ];
   };

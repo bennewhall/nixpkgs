@@ -38,8 +38,8 @@ let
     else "haddock-ghcjs";
   ghcDocLibDir =
     if !isGhcjs
-    then ghc.doc + "/share/doc/ghc*/html/libraries"
-    else ghc     + "/doc/lib";
+    then ghc.doc + ''/share/doc/ghc*/html/libraries''
+    else ghc     + ''/doc/lib'';
   # On GHCJS, use a stripped down version of GHC's prologue.txt
   prologue =
     if !isGhcjs
@@ -63,13 +63,10 @@ buildPackages.stdenv.mkDerivation {
   passAsFile = ["buildCommand"];
 
   buildCommand = ''
-    ${let # Filter out nulls here to work around https://github.com/NixOS/nixpkgs/issues/82245
-          # If we don't then grabbing `p.name` here will fail.
-          packages' = lib.filter (p: p != null) packages;
-      in lib.optionalString (packages' != [] -> docPackages == [])
+    ${lib.optionalString (packages != [] -> docPackages == [])
        ("echo WARNING: localHoogle package list empty, even though"
        + " the following were specified: "
-       + lib.concatMapStringsSep ", " (p: p.name) packages')}
+       + lib.concatMapStringsSep ", " (p: p.name) packages)}
     mkdir -p $out/share/doc/hoogle
 
     echo importing builtin packages
@@ -123,7 +120,7 @@ buildPackages.stdenv.mkDerivation {
   meta = {
     description = "A local Hoogle database";
     platforms = ghc.meta.platforms;
-    hydraPlatforms = with lib.platforms; none;
-    maintainers = with lib.maintainers; [ ttuegel ];
+    hydraPlatforms = with stdenv.lib.platforms; none;
+    maintainers = with stdenv.lib.maintainers; [ ttuegel ];
   };
 }

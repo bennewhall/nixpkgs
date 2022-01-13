@@ -1,30 +1,24 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pythonOlder, pytestCheckHook
-, importlib-resources, omegaconf, jre_headless, antlr4-python3-runtime }:
+{ lib, buildPythonPackage, fetchFromGitHub, isPy27, pytest, omegaconf, pathlib2 }:
 
 buildPythonPackage rec {
   pname = "hydra";
-  version = "1.1.1";
-
-  disabled = pythonOlder "3.6";
+  version = "0.11.3";
 
   src = fetchFromGitHub {
     owner = "facebookresearch";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256:1svzysrjg47gb6lxx66fzd8wbhpbbsppprpbqssf5aqvhxgay3qk";
+    rev = version;
+    sha256 = "0plbls65qfrvvigza3qvy0pwjzgkz8ylpgb1im14k3b125ny41ad";
   };
 
-  nativeBuildInputs = [ jre_headless ];
-  checkInputs = [ pytestCheckHook ];
-  propagatedBuildInputs = [ omegaconf antlr4-python3-runtime ]
-    ++ lib.optionals (pythonOlder "3.9") [ importlib-resources ];
+  checkInputs = [ pytest ];
+  propagatedBuildInputs = [ omegaconf ] ++ lib.optional isPy27 pathlib2;
 
-  # test environment setup broken under Nix for a few tests:
-  disabledTests = [
-    "test_bash_completion_with_dot_in_path"
-    "test_install_uninstall"
-  ];
-  disabledTestPaths = [ "tests/test_hydra.py" ];
+  checkPhase = ''
+    runHook preCheck
+    pytest tests/
+    runHook postCheck
+  '';
 
   meta = with lib; {
     description = "A framework for configuring complex applications";

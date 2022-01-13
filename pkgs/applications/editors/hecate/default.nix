@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   version = "0.0.1";
@@ -15,11 +15,12 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "terminal hex editor";
     longDescription = "The Hex Editor From Hell!";
     license = with licenses; [ mit ];
     maintainers = with maintainers; [ ramkromberg ];
+    platforms = with platforms; linux;
   };
 }

@@ -1,10 +1,14 @@
-{ lib, stdenv, fetchurl, xlibsWrapper, libpng, libjpeg, libtiff, zlib, bzip2, libXcursor
+{ stdenv, fetchurl, xlibsWrapper, libpng, libjpeg, libtiff, zlib, bzip2, libXcursor
 , libXrandr, libGLU, libGL, libXft, libXfixes, xinput
 , CoreServices }:
 
+let
+  version = "1.6.57";
+in
+
 stdenv.mkDerivation rec {
   pname = "fox";
-  version = "1.6.57";
+  inherit version;
 
   src = fetchurl {
     url = "ftp://ftp.fox-toolkit.org/pub/${pname}-${version}.tar.gz";
@@ -14,7 +18,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     xlibsWrapper libpng libjpeg libtiff zlib bzip2 libXcursor libXrandr
     libXft libGLU libGL libXfixes xinput
-  ] ++ lib.optional stdenv.isDarwin CoreServices;
+  ] ++ stdenv.lib.optional stdenv.isDarwin CoreServices;
 
   doCheck = true;
 
@@ -32,8 +36,8 @@ stdenv.mkDerivation rec {
         Current aims are to make FOX completely platform independent, and thus programs written against the FOX library will be only a compile away from running on a variety of platforms.
       '';
     homepage = "http://fox-toolkit.org";
-    license = lib.licenses.lgpl3;
+    license = stdenv.lib.licenses.lgpl3;
     maintainers = [];
-    platforms = lib.platforms.mesaPlatforms;
+    platforms = stdenv.lib.platforms.mesaPlatforms;
   };
 }

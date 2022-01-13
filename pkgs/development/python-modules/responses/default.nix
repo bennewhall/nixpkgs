@@ -1,46 +1,16 @@
-{ lib
-, buildPythonPackage
-, cookies
-, fetchPypi
-, mock
-, pytest-localserver
-, pytestCheckHook
-, pythonOlder
-, requests
-, six
-, urllib3
-}:
+{ buildPythonPackage, fetchPypi
+, cookies, mock, requests, six }:
 
 buildPythonPackage rec {
   pname = "responses";
-  version = "0.16.0";
+  version = "0.12.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-ouOsoqgnfmElfNOxwVSx3Q14Kxrj04t/o3y+P+tTF5E=";
+    sha256 = "2e5764325c6b624e42b428688f2111fea166af46623cb0127c05f6afb14d3457";
   };
 
-  propagatedBuildInputs = [
-    requests
-    urllib3
-    six
-  ] ++ lib.optionals (pythonOlder "3.4") [
-    cookies
-  ] ++ lib.optionals (pythonOlder "3.3") [
-    mock
-  ];
+  propagatedBuildInputs = [ cookies mock requests six ];
 
-  checkInputs = [
-    pytest-localserver
-    pytestCheckHook
-  ];
-
-  pythonImportsCheck = [ "responses" ];
-
-  meta = with lib; {
-    description = "Python module for mocking out the requests Python library";
-    homepage = "https://github.com/getsentry/responses";
-    license = licenses.asl20;
-    maintainers = with maintainers; [ fab ];
-  };
+  doCheck = false;
 }

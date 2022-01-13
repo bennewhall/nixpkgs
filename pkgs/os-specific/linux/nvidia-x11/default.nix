@@ -1,72 +1,55 @@
-{ lib, callPackage, fetchpatch, fetchurl, stdenv, pkgsi686Linux }:
+{ lib, callPackage, fetchpatch, fetchurl, stdenv }:
 
 let
-  generic = args: let
-    imported = import ./generic.nix args;
-  in if ((!lib.versionOlder args.version "391")
-    && stdenv.hostPlatform.system != "x86_64-linux") then null
-  else callPackage imported {
-    lib32 = (pkgsi686Linux.callPackage imported {
-      libsOnly = true;
-      kernel = null;
-    }).out;
-  };
 
+generic = args:
+if ((!lib.versionOlder args.version "391")
+    && stdenv.hostPlatform.system != "x86_64-linux") then null
+  else callPackage (import ./generic.nix args) { };
   kernel = callPackage # a hacky way of extracting parameters from callPackage
     ({ kernel, libsOnly ? false }: if libsOnly then { } else kernel) { };
+
+  maybePatch_drm_legacy =
+    lib.optional (lib.versionOlder "4.14" (kernel.version or "0"))
+      (fetchurl {
+        url = "https://raw.githubusercontent.com/MilhouseVH/LibreELEC.tv/b5d2d6a1"
+            + "/packages/x11/driver/xf86-video-nvidia-legacy/patches/"
+            + "xf86-video-nvidia-legacy-0010-kernel-4.14.patch";
+        sha256 = "18clfpw03g8dxm61bmdkmccyaxir3gnq451z6xqa2ilm3j820aa5";
+      });
 in
 rec {
   # Policy: use the highest stable version as the default (on our master).
   stable = if stdenv.hostPlatform.system == "x86_64-linux"
     then generic {
-      version = "495.46";
-      sha256_64bit = "2Dt30X2gxUZnqlsT1uqVpcUTBCV7Hs8vjUo7WuMcYvU=";
-      settingsSha256 = "vbcZYn+UBBGwjfrJ6SyXt3+JLBeNcXK4h8mjj7qxZPk=";
-      persistencedSha256 = "ieYqkVxe26cLw1LUgBsFSSowAyfZkTcItIzQCestCXI=";
+      version = "455.45.01";
+      sha256_64bit = "6tyMfggvZVQPp/aiSdgwn7VG/mIGb0lUcnAdyMEDoVM=";
+      settingsSha256 = "70ABqnO/heCp/5IztpU0Lo7eZd4n4wUoTlp1xIQ3aCc=";
+      persistencedSha256 = "36sM+djZvm77Gle7dcZ5tppgzQkD4IA0FJgCGsdZRI8=";
     }
     else legacy_390;
 
-  # see https://www.nvidia.com/en-us/drivers/unix/ "Production branch"
-  production = legacy_470;
-
-  beta = generic {
-    version = "495.29.05";
-    sha256_64bit = "sha256-9yVLl9QAxpJQR5ZJb059j2TpOx4xxCeGCk8hmhhvEl4=";
-    settingsSha256 = "sha256-dcEI+3bxSTwVbHcR6IgvIUFt4vWtK5T4NMGVhmmeVJ0=";
-    persistencedSha256 = "sha256-OT/hOXEPatc6pAKrxDe0jsmaDFCtVXAbdW4elKe6xE8=";
-  };
+  # No active beta right now
+  beta = stable;
 
   # Vulkan developer beta driver
-  # See here for more information: https://developer.nvidia.com/vulkan-driver
-  vulkan_beta = generic rec {
-    version = "455.46.04";
-    persistencedVersion = "455.45.01";
-    settingsVersion = "455.45.01";
-    sha256_64bit = "1iv42w3x1vc00bgn6y4w1hnfsvnh6bvj3vcrq8hw47760sqwa4xa";
-    settingsSha256 = "09v86y2c8xas9ql0bqr7vrjxx3if6javccwjzyly11dzffm02h7g";
-    persistencedSha256 = "13s4b73il0lq2hs81q03176n16mng737bfsp3bxnxgnrv3whrayz";
-    url = "https://developer.nvidia.com/vulkan-beta-${lib.concatStrings (lib.splitString "." version)}-linux";
-  };
-
-  # Update note:
-  # If you add a legacy driver here, also update `top-level/linux-kernels.nix`,
-  # adding to the `nvidia_x11_legacy*` entries.
-
-  # Last one supporting Kepler architecture
-  legacy_470 = generic {
-      version = "470.94";
-      sha256_64bit = "lYWqKTMOutm98izjyiusICbIWpoy8D18WfcUp3mFAOs=";
-      settingsSha256 = "blJNKuFu/Th/ceexkKhTH/eYk8miUlTT+ESrcIyJNn0=";
-      persistencedSha256 = "xnccQ/EgafwnReBlk5Y7iClAj4hwXyFq9gUmwqyEuwE=";
+  vulkan_beta = generic {
+    version = "450.56.11";
+    persistencedVersion = "450.57";
+    settingsVersion = "450.57";
+    sha256_64bit = "1k64h8sp4rf6kc7liypznjgkmxi67njy1s8xy2r341fhl62pl010";
+    settingsSha256 = "1clbj9a3kv3j8jg35c197gd7b3f9f9f4h9ll5hlax95hdg12lgan";
+    persistencedSha256 = "17747z1fsbiznfsmahxmz8kmhwwcjanpfih60v5mwzk63gy4i3d5";
+    url = "https://developer.nvidia.com/vulkan-beta-4505611-linux";
   };
 
   # Last one supporting x86
   legacy_390 = generic {
-    version = "390.143";
-    sha256_32bit = "AelrdTTeo/3+ZdXK0iniZDB8gJUkeZQtNoRm25z+bQY=";
-    sha256_64bit = "tyKqcPM71ErK8ZZHLPtxmgrWzv6tfEmxBRveCSwTlO8=";
-    settingsSha256 = "EJPXZbxZS1CMENAYk9dCAIsHsRTXJpj473+JLuhGkWI=";
-    persistencedSha256 = "FtlPF3jCNr18NnImTmr8zJsaK9wbj/aWZ9LwoLr5SeE=";
+    version = "390.138";
+    sha256_32bit = "0y3qjygl0kfz9qs0rp9scn1k3l8ym9dib7wpkyh5gs4klcip7xkv";
+    sha256_64bit = "0rnnb5l4i8s76vlg6yvlrxhm2x9wdqw7k5hgf4fyaa3cr3k1kysz";
+    settingsSha256 = "0ad6hwl56nvbdv9g85lw7ywadqvc2gaq9x6d2vjcia9kg4vrmfqx";
+    persistencedSha256 = "15jciyq6i3pz1g67xzqlwmc62v3xswzhjcqmfcdndvlvhcibsimr";
   };
 
   legacy_340 = generic {
@@ -78,5 +61,33 @@ rec {
     useGLVND = false;
 
     patches = [ ./vm_operations_struct-fault.patch ];
+  };
+
+  legacy_304 = generic {
+    version = "304.137";
+    sha256_32bit = "1y34c2gvmmacxk2c72d4hsysszncgfndc4s1nzldy2q9qagkg66a";
+    sha256_64bit = "1qp3jv6279k83k3z96p6vg3dd35y9bhmlyyyrkii7sib7bdmc7zb";
+    settingsSha256 = "129f0j0hxzjd7g67qwxn463rxp295fsq8lycwm6272qykmab46cj";
+    persistencedSha256 = null;
+    useGLVND = false;
+    useProfiles = false;
+    settings32Bit = true;
+
+    prePatch = let
+      debPatches = fetchurl {
+        url = "mirror://debian/pool/non-free/n/nvidia-graphics-drivers-legacy-304xx/"
+            + "nvidia-graphics-drivers-legacy-304xx_304.137-5.debian.tar.xz";
+        sha256 = "0n8512mfcnvklfbg8gv4lzbkm3z6nncwj6ix2b8ngdkmc04f3b6l";
+      };
+      prefix = "debian/module/debian/patches";
+      applyPatches = pnames: if pnames == [] then null else
+        ''
+          tar xf '${debPatches}'
+          sed 's|^\([+-]\{3\} [ab]\)/|\1/kernel/|' -i ${prefix}/*.patch
+          patches="$patches ${lib.concatMapStringsSep " " (pname: "${prefix}/${pname}.patch") pnames}"
+        '';
+    in applyPatches [ "fix-typos" ];
+    patches = maybePatch_drm_legacy;
+    broken = stdenv.lib.versionAtLeast kernel.version "4.18";
   };
 }

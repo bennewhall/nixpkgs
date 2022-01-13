@@ -1,14 +1,14 @@
-{ lib, stdenv, kernel, fetchFromGitHub }:
+{ stdenv, kernel, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "anbox-modules";
-  version = "2020-06-14-${kernel.version}";
+  version = "2019-11-15-" + kernel.version;
 
   src = fetchFromGitHub {
     owner = "anbox";
     repo = "anbox-modules";
-    rev = "98f0f3b3b1eeb5a6954ca15ec43e150b76369086";
-    sha256 = "sha256-6xDJQ4YItdbYqle/9VNfOc7D80yFGd9cFyF+CuABaF0=";
+    rev = "e0a237e571989987806b32881044c539db25e3e1";
+    sha256 = "1km1nslp4f5znwskh4bb1b61r1inw1dlbwiyyq3rrh0f0agf8d0v";
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
@@ -31,12 +31,13 @@ stdenv.mkDerivation {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Anbox ashmem and binder drivers.";
     homepage = "https://github.com/anbox/anbox-modules";
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
     platforms = platforms.linux;
-    broken = kernel.kernelOlder "4.4" || kernel.kernelAtLeast "5.5";
+    broken = (versionOlder kernel.version "4.4") || (kernel.features.grsecurity or false);
     maintainers = with maintainers; [ edwtjo ];
   };
+
 }

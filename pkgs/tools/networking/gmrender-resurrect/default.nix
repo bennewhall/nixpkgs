@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, makeWrapper, gstreamer
+{ stdenv, fetchFromGitHub, fetchpatch, autoreconfHook, pkgconfig, makeWrapper, gstreamer
 , gst-plugins-base, gst-plugins-good, gst-plugins-bad, gst-plugins-ugly, gst-libav, libupnp }:
 
 let
-  version = "0.0.9";
+  version = "0.0.8";
 
   makePluginPath = plugins: builtins.concatStringsSep ":" (map (p: p + "/lib/gstreamer-1.0") plugins);
 
@@ -16,11 +16,19 @@ in
       owner = "hzeller";
       repo = "gmrender-resurrect";
       rev = "v${version}";
-      sha256 = "0byxd28hnhkhf3lqsad43n6czfajvc1ksg9zikxb95wwk4ljqv1q";
+      sha256 = "14i5jrry6qiap5l2x2jqj7arymllajl3wgnk29ccvr8d45zp4jn1";
     };
 
+    patches = [
+      (fetchpatch {
+        url = "https://github.com/hzeller/gmrender-resurrect/commit/dc8c4d4dc234311b3099e7f1efadf5d9733c81e9.patch";
+        sha256 = "0fqi58viaq9jg5h5j1725qrach4c3wmfmh0q43q4r8az2pn7dszw";
+        name = "libupnp.patch";
+      })
+    ];
+
     buildInputs = [ gstreamer libupnp ];
-    nativeBuildInputs = [ autoreconfHook pkg-config makeWrapper ];
+    nativeBuildInputs = [ autoreconfHook pkgconfig makeWrapper ];
 
     postInstall = ''
       for prog in "$out/bin/"*; do
@@ -28,11 +36,11 @@ in
       done
     '';
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "Resource efficient UPnP/DLNA renderer, optimal for Raspberry Pi, CuBox or a general MediaServer";
       homepage = "https://github.com/hzeller/gmrender-resurrect";
-      license = licenses.gpl2Plus;
+      license = licenses.gpl2;
       platforms = platforms.linux;
-      maintainers = with maintainers; [ koral hzeller ];
+      maintainers = with maintainers; [ koral ashkitten ];
     };
   }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "traceroute";
@@ -15,10 +15,10 @@ stdenv.mkDerivation rec {
     sed -i 's@LIBS := \(.*\) -lm \(.*\)@LIBS := \1 \2@' Make.rules
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://traceroute.sourceforge.net/";
     description = "Tracks the route taken by packets over an IP network";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
     maintainers = [ maintainers.koral ];
     platforms = platforms.linux;
   };

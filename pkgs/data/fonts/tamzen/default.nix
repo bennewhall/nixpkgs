@@ -1,4 +1,4 @@
-{ fetchFromGitHub, mkfontscale, lib, stdenv }:
+{ fetchFromGitHub, mkfontscale, stdenv }:
 
 stdenv.mkDerivation rec {
   pname = "tamzen-font";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     mkfontdir "$out/share/fonts/misc"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Bitmapped programming font based on Tamsyn";
     longDescription = ''
     Tamzen is a monospace bitmap font. It is programatically forked

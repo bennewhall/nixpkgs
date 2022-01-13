@@ -1,4 +1,4 @@
-{ buildGoModule, cdrtools, fetchFromGitHub, lib, libvirt, makeWrapper, pkg-config }:
+{ stdenv, buildGoPackage, fetchFromGitHub, libvirt, pkgconfig, makeWrapper, cdrtools }:
 
 # USAGE:
 # install the following package globally or in nix-shell:
@@ -9,28 +9,28 @@
 #
 #   virtualisation.libvirtd.enable = true;
 #
+# terraform-provider-libvirt does not manage pools at the moment:
+#
+#   $ virsh --connect "qemu:///system" pool-define-as default dir - - - - /var/lib/libvirt/images
+#   $ virsh --connect "qemu:///system" pool-start default
+#
 # pick an example from (i.e ubuntu):
-# https://github.com/dmacvicar/terraform-provider-libvirt/tree/main/examples
+# https://github.com/dmacvicar/terraform-provider-libvirt/tree/master/examples
 
-let
-  sha256 = "sha256-1l+ARrXHxtSdnQfYV/6gw3BYHVH8NN4pi+Ttk1nwF88=";
-  vendorSha256 = "sha256-OJa8pQgf5PlECZZkFV9fyCOdh6CrregY1BWycx7JPFE=";
-  version = "0.6.12";
-in buildGoModule {
-  inherit version;
-  inherit vendorSha256;
-
+buildGoPackage rec {
   pname = "terraform-provider-libvirt";
+  version = "0.6.3";
+
+  goPackagePath = "github.com/dmacvicar/terraform-provider-libvirt";
 
   src = fetchFromGitHub {
-    inherit sha256;
-
     owner = "dmacvicar";
     repo = "terraform-provider-libvirt";
     rev = "v${version}";
+    sha256 = "0ak2lpnv6h0i7lzfcggd90jpfhvsasdr6nflkflk2drlcpalggj9";
   };
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
 
   buildInputs = [ libvirt ];
 
@@ -40,16 +40,12 @@ in buildGoModule {
 
   # Terraform allow checking the provider versions, but this breaks
   # if the versions are not provided via file paths.
-  postBuild = "mv $GOPATH/bin/terraform-provider-libvirt{,_v${version}}";
+  postBuild = "mv go/bin/terraform-provider-libvirt{,_v${version}}";
 
-  ldflags = [ "-X main.version=${version}" ];
-  passthru.provider-source-address = "registry.terraform.io/dmacvicar/libvirt";
-
-  doCheck = false;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/dmacvicar/terraform-provider-libvirt";
     description = "Terraform provider for libvirt";
+    platforms = platforms.linux;
     license = licenses.asl20;
     maintainers = with maintainers; [ mic92 ];
   };

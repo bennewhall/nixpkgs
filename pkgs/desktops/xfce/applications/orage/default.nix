@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, fetchpatch, pkg-config, intltool, dbus-glib, gtk2, libical, libnotify, tzdata
-, popt, libxfce4ui, xfce4-panel, withPanelPlugin ? true, wrapGAppsHook, xfce }:
+{ lib, fetchpatch, mkXfceDerivation, dbus-glib, gtk2, libical, libnotify, tzdata
+, popt, libxfce4ui, xfce4-panel, withPanelPlugin ? true }:
 
 assert withPanelPlugin -> libxfce4ui != null && xfce4-panel != null;
 
@@ -7,17 +7,12 @@ let
   inherit (lib) optionals;
 in
 
-stdenv.mkDerivation rec {
+mkXfceDerivation {
+  category = "archive";
   pname = "orage";
   version = "4.12.1";
 
-  src = fetchurl {
-    url = "https://archive.xfce.org/src/apps/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-PPmqRBroPIaIhl+CIXAlzfPrqhUszkVxd3uMKqjdkGI=";
-  };
-
-  nativeBuildInputs = [ pkg-config intltool wrapGAppsHook ];
-
+  sha256 = "04z6y1vfaz1im1zq1zr7cf8pjibjhj9zkyanbp7vn30q520yxa0m";
   buildInputs = [ dbus-glib gtk2 libical libnotify popt ]
     ++ optionals withPanelPlugin [ libxfce4ui xfce4-panel ];
 
@@ -33,22 +28,12 @@ stdenv.mkDerivation rec {
     # Fix build with libical 3.0
     (fetchpatch {
       name = "fix-libical3.patch";
-      url = "https://aur.archlinux.org/cgit/aur.git/plain/libical3.patch?h=orage-4.10";
-      sha256 = "sha256-bsnQMGmeo4mRNGM/7UYXez2bNopXMHRFX7VFVg0IGtE=";
+      url = "https://git.archlinux.org/svntogit/packages.git/plain/trunk/libical3.patch?h=packages/orage&id=7b1b06c42dda034d538977b9f3550b28e370057f";
+      sha256 = "1l8s106mcidmbx2p8c2pi8v9ngbv2x3fsgv36j8qk8wyd4qd1jbf";
     })
   ];
 
-  passthru.updateScript = xfce.updateScript {
-    inherit pname version;
-    attrPath = "xfce.${pname}";
-    versionLister = xfce.archiveLister "apps" pname;
-  };
-
-  meta = with lib; {
-    description = "Simple calendar application with reminders";
-    homepage = "https://git.xfce.org/archive/orage/";
-    license = licenses.gpl2Plus;
-    platforms = platforms.linux;
-    maintainers = with maintainers; [ ] ++ teams.xfce.members;
+  meta = {
+    description = "A simple calendar application with reminders";
   };
 }

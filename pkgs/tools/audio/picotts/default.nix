@@ -1,9 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, autoconf, automake, libtool, popt }:
+{ stdenv, fetchFromGitHub, autoconf, automake, libtool, popt }:
 
 stdenv.mkDerivation {
-  pname = "picotts";
-  version = "unstable-2018-10-19";
-
+  name = "picotts-unstable-2018-10-19";
   src = fetchFromGitHub {
     repo = "picotts";
     owner = "naggety";
@@ -17,9 +15,9 @@ stdenv.mkDerivation {
   meta = {
     description = "Text to speech voice sinthesizer from SVox";
     homepage = "https://github.com/naggety/picotts";
-    license = lib.licenses.asl20;
-    maintainers = [ lib.maintainers.canndrew ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.asl20;
+    maintainers = [ stdenv.lib.maintainers.canndrew ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }
 

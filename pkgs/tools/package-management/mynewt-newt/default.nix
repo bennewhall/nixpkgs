@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub, fetchpatch }:
+{ stdenv, buildGoModule, fetchFromGitHub, fetchpatch }:
 
 buildGoModule rec {
   pname = "mynewt-newt";
@@ -26,7 +26,7 @@ buildGoModule rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://mynewt.apache.org/";
     description = "Build and package management tool for embedded development";
     longDescription = ''

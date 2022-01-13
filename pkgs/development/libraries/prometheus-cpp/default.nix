@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , cmake
 , gbenchmark
@@ -33,15 +33,10 @@ stdenv.mkDerivation rec {
 
   NIX_LDFLAGS = "-ldl";
 
-  postInstall = ''
-    mkdir -p $out/lib/pkgconfig
-    substituteAll ${./prometheus-cpp.pc.in} $out/lib/pkgconfig/prometheus-cpp.pc
-  '';
-
   meta = {
     description = "Prometheus Client Library for Modern C++";
     homepage = "https://github.com/jupp0r/prometheus-cpp";
-    license = [ lib.licenses.mit ];
+    license = [ stdenv.lib.licenses.mit ];
   };
 
 }

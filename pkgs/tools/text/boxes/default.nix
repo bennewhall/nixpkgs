@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, bison, flex }:
+{ stdenv, fetchFromGitHub, bison, flex }:
 
 stdenv.mkDerivation rec {
   pname = "boxes";
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
                 "GLOBALCONF=${placeholder "out"}/share/boxes/boxes-config"
   '';
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = stdenv.lib.optionals stdenv.isDarwin [ "CC=cc" ];
 
   installPhase = ''
     install -Dm755 -t $out/bin src/boxes
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     install -Dm644 -t $out/share/man/man1 doc/boxes.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Command line ASCII boxes unlimited!";
     longDescription = ''
       Boxes is a command line filter program that draws ASCII art boxes around

@@ -1,27 +1,26 @@
-{ fetchFromGitHub, lib, stdenv, cmake }:
+{ fetchFromGitHub, stdenv, cmake }:
+
 
 stdenv.mkDerivation rec {
   pname = "scas";
-  version = "0.5.5";
+
+  version = "0.4.6";
 
   src = fetchFromGitHub {
     owner = "KnightOS";
     repo = "scas";
     rev = version;
-    sha256 = "sha256-JGQE+orVDKKJsTt8sIjPX+3yhpZkujISroQ6g19+MzU=";
+    sha256 = "1c6s9nivbwgv0f8n7j73h54ydgqw5dcpq8l752dfrnqg3kv3nn0h";
   };
-
-  cmakeFlags = [ "-DSCAS_LIBRARY=1" ];
-
-  strictDeps = true;
 
   nativeBuildInputs = [ cmake ];
 
-  meta = with lib; {
+  hardeningDisable = [ "format" ];
+
+  meta = with stdenv.lib; {
     homepage    = "https://knightos.org/";
     description = "Assembler and linker for the Z80";
     license     = licenses.mit;
     maintainers = with maintainers; [ siraben ];
-    platforms   = platforms.all;
   };
 }

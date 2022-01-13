@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, perl, php, gd, libpng, zlib, unzip, nixosTests }:
+{ stdenv, fetchurl, perl, php, gd, libpng, zlib, unzip, nixosTests }:
 
 stdenv.mkDerivation rec {
   pname = "nagios";
@@ -10,8 +10,7 @@ stdenv.mkDerivation rec {
   };
 
   patches = [ ./nagios.patch ];
-  nativeBuildInputs = [ unzip ];
-  buildInputs = [ php perl gd libpng zlib ];
+  buildInputs = [ php perl gd libpng zlib unzip ];
 
   configureFlags = [ "--localstatedir=/var/lib/nagios" ];
   buildFlags = [ "all" ];
@@ -36,8 +35,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A host, service and network monitoring program";
     homepage    = "https://www.nagios.org/";
-    license     = lib.licenses.gpl2;
-    platforms   = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ immae thoughtpolice relrod ];
+    license     = stdenv.lib.licenses.gpl2;
+    platforms   = stdenv.lib.platforms.linux;
+    maintainers = with stdenv.lib.maintainers; [ immae thoughtpolice relrod ];
   };
 }

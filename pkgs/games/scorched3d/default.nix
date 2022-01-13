@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libGLU, libGL, glew, pkg-config, openalSoft, freealut, wxGTK, libogg
+{ stdenv, fetchurl, libGLU, libGL, glew, pkgconfig, openalSoft, freealut, wxGTK, libogg
 , freetype, libvorbis, fftwSinglePrec, SDL, SDL_net, expat, libjpeg, libpng }:
 
 stdenv.mkDerivation rec {
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
       SDL SDL_net expat libjpeg libpng fftwSinglePrec
     ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   patches = [
     ./file-existence.patch
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
 
   NIX_LDFLAGS = "-lopenal";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://scorched3d.co.uk/";
     description = "3D Clone of the classic Scorched Earth";
     license = licenses.gpl2Plus;

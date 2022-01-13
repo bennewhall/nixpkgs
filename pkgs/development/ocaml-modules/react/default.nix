@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, ocaml, findlib, topkg, ocamlbuild }:
+{ stdenv, fetchurl, ocaml, findlib, topkg, ocamlbuild }:
 
-stdenv.mkDerivation rec {
-  pname = "ocaml-react";
-  version = "1.2.1";
+stdenv.mkDerivation {
+  name = "ocaml-react-1.2.1";
 
   src = fetchurl {
-    url = "https://erratique.ch/software/react/releases/react-${version}.tbz";
+    url = "https://erratique.ch/software/react/releases/react-1.2.1.tbz";
     sha256 = "1aj8w79gdd9xnrbz7s5p8glcb4pmimi8jp9f439dqnf6ih3mqb3v";
   };
 
@@ -13,11 +12,11 @@ stdenv.mkDerivation rec {
 
   inherit (topkg) buildPhase installPhase;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://erratique.ch/software/react";
     description = "Applicative events and signals for OCaml";
     license = licenses.bsd3;
-    platforms = ocaml.meta.platforms or [ ];
-    maintainers = with maintainers; [ maggesi vbmithr gal_bolle ];
+    platforms = ocaml.meta.platforms or [];
+    maintainers = with maintainers; [ maggesi vbmithr gal_bolle];
   };
 }

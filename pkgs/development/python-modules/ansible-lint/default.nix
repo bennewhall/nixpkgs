@@ -1,93 +1,55 @@
 { lib
+, fetchPypi
 , buildPythonPackage
 , isPy27
-, fetchPypi
-, setuptools-scm
-, ansible-base
-, enrich
-, flaky
+, ansible
 , pyyaml
+, setuptools_scm
+, ruamel_yaml
 , rich
-, ruamel-yaml
-, tenacity
-, wcmatch
-, yamllint
-, pytest-xdist
 , pytestCheckHook
+, pytestcov
+, pytest_xdist
+, git
 }:
 
 buildPythonPackage rec {
   pname = "ansible-lint";
-  version = "5.3.1";
+  version = "4.3.7";
+  # pip is not able to import version info on raumel.yaml
   disabled = isPy27;
-  format = "pyproject";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-fXvHS5uQxZgr5cJ0wq/LpbgHPsiMznk/q0Y/5kGKJfY=";
+    sha256 = "0kwwv9dv9rgsqvp15r2vma7hii9lkkqn0n2irvp5h32cbhzzq4hh";
   };
 
-  nativeBuildInputs = [
-    setuptools-scm
-  ];
+  format = "pyproject";
 
-  propagatedBuildInputs = [
-    ansible-base
-    enrich
-    flaky
-    pyyaml
-    rich
-    ruamel-yaml
-    tenacity
-    wcmatch
-    yamllint
-  ];
+  nativeBuildInputs = [ setuptools_scm ];
+  propagatedBuildInputs = [ pyyaml ansible ruamel_yaml rich ];
+  checkInputs = [ pytestCheckHook pytestcov pytest_xdist git ];
 
-  checkInputs = [
-    pytest-xdist
-    pytestCheckHook
-  ];
-
-  pytestFlagsArray = [
-    "--numprocesses" "$NIX_BUILD_CORES"
-  ];
-
-  preCheck = ''
-    # ansible wants to write to $HOME and crashes if it can't
-    export HOME=$(mktemp -d)
-    export PATH=$PATH:${lib.makeBinPath [ ansible-base ]}
-
-    # create a working ansible-lint executable
-    export PATH=$PATH:$PWD/src/ansiblelint
-    ln -rs src/ansiblelint/__main__.py src/ansiblelint/ansible-lint
-    patchShebangs src/ansiblelint/__main__.py
-
-    # create symlink like in the git repo so test_included_tasks does not fail
-    ln -s ../roles examples/playbooks/roles
+  postPatch = ''
+    patchShebangs bin/ansible-lint
+    substituteInPlace setup.cfg \
+      --replace "setuptools_scm_git_archive>=1.0" ""
   '';
 
-  disabledTests = [
-    # requires network
-    "test_cli_auto_detect"
-    "test_install_collection"
-    "test_prerun_reqs_v1"
-    "test_prerun_reqs_v2"
-    "test_require_collection_wrong_version"
-    # re-execs ansible-lint which does not works correct
-    "test_custom_kinds"
-    "test_run_inside_role_dir"
-    "test_run_multiple_role_path_no_trailing_slash"
-    "test_runner_exclude_globs"
+  # give a hint to setuptools_scm on package version
+  preBuild = ''
+    export SETUPTOOLS_SCM_PRETEND_VERSION="v${version}"
+    export HOME=$(mktemp -d)
+  '';
 
-    "test_discover_lintables_umlaut"
-  ];
-
-  makeWrapperArgs = [ "--prefix PATH : ${lib.makeBinPath [ ansible-base ]}" ];
+  checkPhase = ''
+    pytest -k 'not test_run_playbook_github and not test_run_single_role_path_no_trailing_slash_script'
+  '';
 
   meta = with lib; {
-    homepage = "https://github.com/ansible-community/ansible-lint";
+    homepage = "https://github.com/ansible/ansible-lint";
     description = "Best practices checker for Ansible";
     license = licenses.mit;
-    maintainers = with maintainers; [ sengaya SuperSandro2000 ];
+    maintainers = [ maintainers.sengaya ];
   };
 }

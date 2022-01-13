@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip, jdk, makeWrapper }:
+{ stdenv, fetchzip, jdk, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "asciidoctorj";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
       --prefix JAVA_HOME : ${jdk}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Official library for running Asciidoctor on the JVM";
     longDescription = ''
       AsciidoctorJ is the official library for running Asciidoctor on the JVM.

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, qmake, qtbase, qttools, subversion, apr }:
+{ stdenv, fetchFromGitHub, qmake, qtbase, qttools, subversion, apr }:
 
 let
   version = "1.0.18";
@@ -25,9 +25,7 @@ stdenv.mkDerivation {
 
   NIX_LDFLAGS = "-lsvn_fs-1";
 
-  dontWrapQtApps = true;
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/svn-all-fast-export/svn2git";
     description = "A fast-import based converter for an svn repo to git repos";
     license = licenses.gpl3;

@@ -1,18 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, rakudo, makeWrapper }:
+{ stdenv, fetchFromGitHub, rakudo, makeWrapper }:
 
 stdenv.mkDerivation rec {
   pname = "zef";
-  version = "0.13.4";
+  version = "0.9.4";
 
   src = fetchFromGitHub {
     owner = "ugexe";
     repo = "zef";
     rev = "v${version}";
-    sha256 = "sha256-zTgXMICuLn612bmL5e6GP5aBQ4uOcSLfce0PCRYGob0=";
+    sha256 = "0h3lbznzxqmsv2816vr6y244sfdchj13yhbav86zy2m79p8b5lgq";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ rakudo ];
+  buildInputs = [ rakudo makeWrapper ];
 
   installPhase = ''
     mkdir -p "$out"
@@ -25,7 +24,7 @@ stdenv.mkDerivation rec {
     wrapProgram $out/bin/zef --prefix RAKUDOLIB , "inst#$out"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Raku / Perl6 Module Management";
     homepage    = "https://github.com/ugexe/zef";
     license     = licenses.artistic2;

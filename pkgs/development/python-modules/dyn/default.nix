@@ -1,5 +1,5 @@
-{ lib, buildPythonPackage, fetchPypi, pytest, pytest-cov, mock
-, pytest-xdist, covCore, glibcLocales }:
+{ stdenv, buildPythonPackage, fetchPypi, pytest, pytestcov, mock, pytestpep8
+, pytest_xdist, covCore, glibcLocales }:
 
 buildPythonPackage rec {
   pname = "dyn";
@@ -14,9 +14,10 @@ buildPythonPackage rec {
 
   checkInputs = [
     pytest
-    pytest-cov
+    pytestcov
     mock
-    pytest-xdist
+    pytestpep8
+    pytest_xdist
     covCore
   ];
   # Disable checks because they are not stateless and require internet access.
@@ -24,7 +25,7 @@ buildPythonPackage rec {
 
   LC_ALL="en_US.UTF-8";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Dynect dns lib";
     homepage = "https://dyn.readthedocs.org/en/latest/intro.html";
     license = licenses.bsd3;

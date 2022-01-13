@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv
+{ fetchurl, stdenv
 , IOKit ? null }:
 
 stdenv.mkDerivation rec {
@@ -13,11 +13,12 @@ stdenv.mkDerivation rec {
   installFlags = [ "PREFIX=$(out)" "INSTALL=install" ];
 
   buildInputs = []
-    ++ lib.optional stdenv.isDarwin IOKit;
+    ++ stdenv.lib.optional stdenv.isDarwin IOKit;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://linukz.org/cd-discid.shtml";
     license = licenses.gpl2Plus;
+    maintainers = [ maintainers.rycee ];
     platforms = platforms.unix;
     description = "Command-line utility to get CDDB discid information from a CD-ROM disc";
 

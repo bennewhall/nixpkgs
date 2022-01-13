@@ -1,4 +1,4 @@
-{ fetchFromGitHub, git, gnupg, makeWrapper, openssl, lib, stdenv
+{ fetchFromGitHub, git, gnupg, makeWrapper, openssl, stdenv
 , libxslt, docbook_xsl
 }:
 
@@ -13,9 +13,9 @@ stdenv.mkDerivation rec {
     sha256 = "13m9y0m6gc3mlw3pqv9x4i0him2ycbysizigdvdanhh514kga602";
   };
 
-  nativeBuildInputs = [ libxslt makeWrapper ];
+  nativeBuildInputs = [ libxslt ];
 
-  buildInputs = [ openssl ];
+  buildInputs = [ openssl makeWrapper ];
 
   patchPhase = ''
     substituteInPlace commands.cpp \
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     wrapProgram $out/bin/git-crypt --prefix PATH : $out/bin:${git}/bin:${gnupg}/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.agwa.name/projects/git-crypt";
     description = "Transparent file encryption in git";
     longDescription = ''

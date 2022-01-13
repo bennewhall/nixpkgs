@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, git, glibc }:
+{ stdenv, fetchFromGitHub, cmake, git, glibc }:
 
 stdenv.mkDerivation rec {
   version = "2019-08-20";
@@ -12,9 +12,9 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ cmake git ];
-  buildInputs = lib.optionals stdenv.isLinux [ glibc.static ];
+  buildInputs = stdenv.lib.optionals stdenv.isLinux [ glibc.static ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/dropbox/lepton";
     description = "A tool to losslessly compress JPEGs";
     license = licenses.asl20;

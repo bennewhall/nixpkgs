@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, makeWrapper, autoPatchelfHook }:
+{ stdenv, fetchurl, makeWrapper, autoPatchelfHook }:
 
 stdenv.mkDerivation rec {
   pname = "insync";
@@ -12,7 +12,9 @@ stdenv.mkDerivation rec {
     else
       throw "${pname}-${version} is not supported on ${stdenv.hostPlatform.system}";
 
-  nativeBuildInputs = [ makeWrapper autoPatchelfHook ];
+  buildInputs = [ makeWrapper ];
+
+  nativeBuildInputs = [ autoPatchelfHook ];
 
   postPatch = ''
     patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" client/insync-portable
@@ -26,8 +28,8 @@ stdenv.mkDerivation rec {
 
   meta = {
     platforms = ["x86_64-linux"];
-    license = lib.licenses.unfree;
-    maintainers = [ lib.maintainers.benley ];
+    license = stdenv.lib.licenses.unfree;
+    maintainers = [ stdenv.lib.maintainers.benley ];
     homepage = "https://www.insynchq.com";
     description = "Google Drive sync and backup with multiple account support";
     longDescription = ''

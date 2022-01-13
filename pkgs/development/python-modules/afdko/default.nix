@@ -1,48 +1,33 @@
-{ lib, stdenv, buildPythonPackage, fetchPypi, pythonOlder
+{ stdenv, buildPythonPackage, fetchPypi, fetchpatch, pythonOlder, python
 , fonttools, defcon, lxml, fs, unicodedata2, zopfli, brotlipy, fontpens
 , brotli, fontmath, mutatormath, booleanoperations
 , ufoprocessor, ufonormalizer, psautohint, tqdm
-, setuptools-scm, scikit-build
-, cmake
-, antlr4_9
-, pytestCheckHook
-# Enables some expensive tests, useful for verifying an update
-, runAllTests ? false
-, afdko
+, setuptools_scm
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "afdko";
-  version = "3.7.1";
+  version = "3.5.1";
 
   disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "05hj2mw3ppfjaig5zdk5db9vfrbbq5gmv5rzggmvvrj0yyfpr0pd";
+    sha256 = "1qg7dgl81yq0sp50pkhgvmf8az1svx20zmpkfa68ka9d0ssh1wjw";
   };
 
-  format = "pyproject";
-
-  nativeBuildInputs = [
-    setuptools-scm
-    scikit-build
-    cmake
-  ];
-
-  buildInputs = [
-    antlr4_9.runtime.cpp
-  ];
-
+  # Skip date-dependent test. See
+  # https://github.com/adobe-type-tools/afdko/pull/1232
+  # https://github.com/NixOS/nixpkgs/pull/98158#issuecomment-704321117
   patches = [
-    # Don't try to install cmake and ninja using pip
-    ./no-pypi-build-tools.patch
-    # Use antlr4 runtime from nixpkgs and link it dynamically
-    ./use-dynamic-system-antlr4-runtime.patch
+    (fetchpatch {
+      url = "https://github.com/adobe-type-tools/afdko/commit/2c36ad10f9d964759f643e8ed7b0972a27aa26bd.patch";
+      sha256 = "0p6a485mmzrbfldfbhgfghsypfiad3cabcw7qlw2rh993ivpnibf";
+    })
   ];
 
-  # setup.py will always (re-)execute cmake in buildPhase
-  dontConfigure = true;
+  nativeBuildInputs = [ setuptools_scm ];
 
   propagatedBuildInputs = [
     booleanoperations
@@ -63,34 +48,16 @@ buildPythonPackage rec {
     tqdm
   ];
 
-  checkInputs = [ pytestCheckHook ];
-  preCheck = ''
-    export PATH=$PATH:$out/bin
-
-    # Update tests to match ufinormalizer-0.6.1 expectations:
-    #   https://github.com/adobe-type-tools/afdko/issues/1418
-    find tests -name layerinfo.plist -delete
+  # tests are broken on non x86_64
+  # https://github.com/adobe-type-tools/afdko/issues/1163
+  # https://github.com/adobe-type-tools/afdko/issues/1216
+  doCheck = stdenv.isx86_64;
+  checkInputs = [ pytest ];
+  checkPhase = ''
+    PATH="$PATH:$out/bin" py.test
   '';
-  disabledTests = lib.optionals (!runAllTests) [
-    # Disable slow tests, reduces test time ~25 %
-    "test_report"
-    "test_post_overflow"
-    "test_cjk"
-    "test_extrapolate"
-    "test_filename_without_dir"
-    "test_overwrite"
-    "test_options"
-  ] ++ lib.optionals stdenv.hostPlatform.isAarch64 [
-    # aarch64-only (?) failure, unknown reason so far
-    # https://github.com/adobe-type-tools/afdko/issues/1425
-    "test_spec"
-  ];
 
-  passthru.tests = {
-    fullTestsuite = afdko.override { runAllTests = true; };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Adobe Font Development Kit for OpenType";
     homepage = "https://adobe-type-tools.github.io/afdko/";
     license = licenses.asl20;

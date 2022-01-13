@@ -1,24 +1,29 @@
-{ stdenv, lib, fetchurl, pkg-config, meson, ninja, docutils
-, libpthreadstubs, libpciaccess
-, withValgrind ? valgrind-light.meta.available, valgrind-light
+{ stdenv, lib, fetchurl, pkgconfig, meson, ninja, libpthreadstubs, libpciaccess
+, withValgrind ? valgrind-light.meta.available, valgrind-light, fetchpatch
 }:
 
 stdenv.mkDerivation rec {
   pname = "libdrm";
-  version = "2.4.109";
+  version = "2.4.103";
 
   src = fetchurl {
     url = "https://dri.freedesktop.org/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "09kzrdsd14zr0i3izvi5mck4vqccl3c9hr84r9i4is0zikh554v2";
+    sha256 = "08h2nnf4w96b4ql7485mvjgbbsb8rwc0qa93fdm1cq34pbyszq1z";
   };
 
   outputs = [ "out" "dev" "bin" ];
 
-  nativeBuildInputs = [ pkg-config meson ninja docutils ];
+  nativeBuildInputs = [ pkgconfig meson ninja ];
   buildInputs = [ libpthreadstubs libpciaccess ]
     ++ lib.optional withValgrind valgrind-light;
 
   patches = [ ./cross-build-nm-path.patch ];
+
+  postPatch = ''
+    for a in */*-symbol-check ; do
+      patchShebangs $a
+    done
+  '';
 
   mesonFlags = [
     "-Dnm-path=${stdenv.cc.targetPrefix}nm"
@@ -27,26 +32,14 @@ stdenv.mkDerivation rec {
   ] ++ lib.optionals (stdenv.isAarch32 || stdenv.isAarch64) [
     "-Dtegra=true"
     "-Detnaviv=true"
-  ];
+  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "-Dintel=false";
 
-  meta = with lib; {
-    homepage = "https://gitlab.freedesktop.org/mesa/drm";
-    downloadPage = "https://dri.freedesktop.org/libdrm/";
-    description = "Direct Rendering Manager library and headers";
-    longDescription = ''
-      A userspace library for accessing the DRM (Direct Rendering Manager) on
-      Linux, BSD and other operating systems that support the ioctl interface.
-      The library provides wrapper functions for the ioctls to avoid exposing
-      the kernel interface directly, and for chipsets with drm memory manager,
-      support for tracking relocations and buffers.
-      New functionality in the kernel DRM drivers typically requires a new
-      libdrm, but a new libdrm will always work with an older kernel.
+  enableParallelBuilding = true;
 
-      libdrm is a low-level library, typically used by graphics drivers such as
-      the Mesa drivers, the X drivers, libva and similar projects.
-    '';
-    license = licenses.mit;
-    platforms = platforms.unix;
-    maintainers = with maintainers; [ primeos ];
+  meta = {
+    homepage = "https://dri.freedesktop.org/libdrm/";
+    description = "Library for accessing the kernel's Direct Rendering Manager";
+    license = "bsd";
+    platforms = lib.platforms.unix;
   };
 }

@@ -1,4 +1,4 @@
-{lib, buildPythonPackage, fetchFromGitHub, bap, requests}:
+{stdenv, buildPythonPackage, fetchFromGitHub, bap, requests}:
 
 buildPythonPackage rec {
   pname = "bap";
@@ -14,7 +14,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Platform for binary analysis. It is written in OCaml, but can be used from other languages.";
     homepage = "https://github.com/BinaryAnalysisPlatform/bap/";
     maintainers = [ maintainers.maurer ];

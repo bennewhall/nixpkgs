@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "p910nd";
@@ -10,8 +10,7 @@ stdenv.mkDerivation rec {
   };
 
   postPatch = ''
-    substituteInPlace Makefile --replace "/usr" ""
-    substituteInPlace Makefile --replace "gcc" "${stdenv.cc.targetPrefix}cc"
+    sed -e "s|/usr||g" -i Makefile
   '';
 
   makeFlags = [ "DESTDIR=$(out)" "BINDIR=/bin" ];
@@ -25,7 +24,7 @@ stdenv.mkDerivation rec {
     mv $out/etc $out/share/doc/examples
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Small printer daemon passing jobs directly to the printer";
     longDescription = ''
       p910nd is a small printer daemon intended for diskless platforms that
@@ -40,6 +39,6 @@ stdenv.mkDerivation rec {
     homepage = "http://p910nd.sourceforge.net/";
     downloadPage = "https://sourceforge.net/projects/p910nd/";
     license = licenses.gpl2;
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

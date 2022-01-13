@@ -1,19 +1,13 @@
-{ lib, stdenv, targetPackages, fetchurl, fetchpatch, noSysDirs
+{ stdenv, targetPackages, fetchurl, fetchpatch, noSysDirs
 , langC ? true, langCC ? true, langFortran ? false
 , langObjC ? stdenv.targetPlatform.isDarwin
 , langObjCpp ? stdenv.targetPlatform.isDarwin
 , langJava ? false
 , langGo ? false
-, reproducibleBuild ? true
 , profiledCompiler ? false
 , langJit ? false
 , staticCompiler ? false
-, # N.B. the defult is intentionally not from an `isStatic`. See
-  # https://gcc.gnu.org/install/configure.html - this is about target
-  # platform libraries not host platform ones unlike normal. But since
-  # we can't rebuild those without also rebuilding the compiler itself,
-  # we opt to always build everything unlike our usual policy.
-  enableShared ? true
+, enableShared ? true
 , enableLTO ? true
 , texinfo ? null
 , perl ? null # optional, for texi2pod (then pod2man); required for Java
@@ -21,7 +15,7 @@
 , libelf                      # optional, for link-time optimizations (LTO)
 , cloog ? null, isl ? null # optional, for the Graphite optimization framework.
 , zlib ? null, boehmgc ? null
-, zip ? null, unzip ? null, pkg-config ? null
+, zip ? null, unzip ? null, pkgconfig ? null
 , gtk2 ? null, libart_lgpl ? null
 , libX11 ? null, libXt ? null, libSM ? null, libICE ? null, libXtst ? null
 , libXrender ? null, xorgproto ? null
@@ -59,11 +53,7 @@ assert langGo -> langCC;
 # threadsCross is just for MinGW
 assert threadsCross != null -> stdenv.targetPlatform.isWindows;
 
-# profiledCompiler builds inject non-determinism in one of the compilation stages.
-# If turned on, we can't provide reproducible builds anymore
-assert reproducibleBuild -> profiledCompiler == false;
-
-with lib;
+with stdenv.lib;
 with builtins;
 
 let majorVersion = "4";
@@ -86,13 +76,6 @@ let majorVersion = "4";
         ../struct-ucontext-4.8.patch
         ../sigsegv-not-declared.patch
         ../res_state-not-declared.patch
-        # gcc-11 compatibility
-        (fetchpatch {
-          name = "gcc4-char-reload.patch";
-          url = "https://gcc.gnu.org/git/?p=gcc.git;a=commitdiff_plain;h=d57c99458933a21fdf94f508191f145ad8d5ec58";
-          includes = [ "gcc/reload.h" ];
-          sha256 = "sha256-66AMP7/ajunGKAN5WJz/yPn42URZ2KN51yPrFdsxEuM=";
-        })
       ];
 
     javaEcj = fetchurl {
@@ -173,7 +156,7 @@ stdenv.mkDerivation ({
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ texinfo which gettext ]
     ++ (optional (perl != null) perl)
-    ++ (optional javaAwtGtk pkg-config);
+    ++ (optional javaAwtGtk pkgconfig);
 
   # For building runtime libs
   depsBuildTarget =
@@ -202,17 +185,17 @@ stdenv.mkDerivation ({
   depsTargetTarget = optional (!crossStageStatic && threadsCross != null) threadsCross;
 
   preConfigure = import ../common/pre-configure.nix {
-    inherit lib;
-    inherit version targetPlatform hostPlatform langJava langGo;
+    inherit (stdenv) lib;
+    inherit version hostPlatform langJava langGo;
   };
 
   dontDisableStatic = true;
 
-  configurePlatforms = [ "build" "host" "target" ];
+  # TODO(@Ericson2314): Always pass "--target" and always prefix.
+  configurePlatforms = [ "build" "host" ] ++ stdenv.lib.optional (targetPlatform != hostPlatform) "target";
 
   configureFlags = import ../common/configure-flags.nix {
     inherit
-      lib
       stdenv
       targetPackages
       crossStageStatic libcCross
@@ -282,7 +265,7 @@ stdenv.mkDerivation ({
 
   inherit
     (import ../common/extra-target-flags.nix {
-      inherit lib stdenv crossStageStatic libcCross threadsCross;
+      inherit stdenv crossStageStatic libcCross threadsCross;
     })
     EXTRA_FLAGS_FOR_TARGET
     EXTRA_LDFLAGS_FOR_TARGET
@@ -301,7 +284,7 @@ stdenv.mkDerivation ({
 
   meta = {
     homepage = "https://gcc.gnu.org/";
-    license = lib.licenses.gpl3Plus;  # runtime support libraries are typically LGPLv3+
+    license = stdenv.lib.licenses.gpl3Plus;  # runtime support libraries are typically LGPLv3+
     description = "GNU Compiler Collection, version ${version}"
       + (if stripped then "" else " (with debugging info)");
 
@@ -314,9 +297,13 @@ stdenv.mkDerivation ({
       compiler used in the GNU system including the GNU/Linux variant.
     '';
 
-    maintainers = with lib.maintainers; [ veprbl ];
+    maintainers = with stdenv.lib.maintainers; [ peti veprbl ];
 
-    platforms = lib.platforms.unix;
+    platforms =
+      stdenv.lib.platforms.linux ++
+      stdenv.lib.platforms.freebsd ++
+      stdenv.lib.platforms.illumos ++
+      stdenv.lib.platforms.darwin;
     badPlatforms = [ "x86_64-darwin" ];
   };
 }

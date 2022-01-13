@@ -10,7 +10,7 @@
 , libsecret
 , mimetic
 , mkDerivation
-, pkg-config
+, pkgconfig
 , qgpgme
 , qtbase
 , qtkeychain
@@ -59,7 +59,7 @@ in mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
     qttools
     gnupg
   ];

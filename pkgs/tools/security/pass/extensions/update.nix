@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "pass-update";
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Pass extension that provides an easy flow for updating passwords";
     homepage = "https://github.com/roddhjav/pass-update";
     license = licenses.gpl3Plus;

@@ -7,21 +7,20 @@
 
 buildPythonPackage rec {
   pname = "aiolifx-effects";
-  version = "0.2.2";
-  disabled = !isPy3k;
+  version = "0.2.1";
 
   src = fetchPypi {
     inherit version;
     pname = "aiolifx_effects";
-    sha256 = "sha256-qkXJDYdJ+QyQWn/u7g6t4QJG1uSqle+a5RhTkPPsHKo=";
+    sha256 = "cb4ac52deeb220783fc6449251cf40833fcffa28648270be64b1b3e83e06b503";
   };
-
-  propagatedBuildInputs = [ aiolifx ];
 
   # tests are not implemented
   doCheck = false;
 
-  pythonImportsCheck = [ "aiolifx_effects" ];
+  disabled = !isPy3k;
+
+  propagatedBuildInputs = [ aiolifx ];
 
   meta = with lib; {
     homepage = "https://github.com/amelchio/aiolifx_effects";

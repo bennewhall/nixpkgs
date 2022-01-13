@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libsodium }:
+{ stdenv, fetchFromGitHub, libsodium }:
 
 stdenv.mkDerivation {
   pname = "quicktun";
@@ -22,7 +22,7 @@ stdenv.mkDerivation {
     install -vD out/quicktun* -t $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Very simple, yet secure VPN software";
     homepage = "http://wiki.ucis.nl/QuickTun";
     maintainers = [ maintainers.fpletz ];

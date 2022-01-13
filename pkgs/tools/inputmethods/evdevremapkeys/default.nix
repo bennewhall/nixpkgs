@@ -1,8 +1,11 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python3Packages }:
 
-python3Packages.buildPythonPackage rec {
+let
+  pythonPackages = python3Packages;
+
+in pythonPackages.buildPythonPackage rec {
+  name = "${pname}-0.1.0";
   pname = "evdevremapkeys";
-  version = "0.1.0";
 
   src = fetchFromGitHub {
     owner = "philipl";
@@ -11,19 +14,14 @@ python3Packages.buildPythonPackage rec {
     sha256 = "0c9slflakm5jqd8s1zpxm7gmrrk0335m040d7m70hnsak42jvs2f";
   };
 
-  propagatedBuildInputs = with python3Packages; [
+  propagatedBuildInputs = with pythonPackages; [ 
     pyyaml
     pyxdg
     python-daemon
     evdev
   ];
 
-  # hase no tests
-  doCheck = false;
-
-  pythonImportsCheck = [ "evdevremapkeys" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/philipl/evdevremapkeys";
     description = "Daemon to remap events on linux input devices";
     license = licenses.mit;

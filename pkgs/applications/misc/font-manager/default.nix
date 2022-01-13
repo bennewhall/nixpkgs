@@ -1,51 +1,21 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, meson
-, fetchpatch
-, ninja
-, gettext
-, python3
-, pkg-config
-, libxml2
-, json-glib
-, sqlite
-, itstool
-, yelp-tools
-, vala
-, gsettings-desktop-schemas
-, gtk3
-, gnome
-, desktop-file-utils
-, wrapGAppsHook
-, gobject-introspection
-, libsoup
-, glib-networking
-, webkitgtk
+{ stdenv, fetchFromGitHub, meson, ninja, gettext, python3,
+  pkgconfig, libxml2, json-glib , sqlite, itstool, librsvg, yelp-tools,
+  vala, gtk3, gnome3, desktop-file-utils, wrapGAppsHook, gobject-introspection
 }:
 
 stdenv.mkDerivation rec {
   pname = "font-manager";
-  version = "0.8.7";
+  version = "0.7.9";
 
   src = fetchFromGitHub {
     owner = "FontManager";
     repo = "master";
     rev = version;
-    sha256 = "lqXjGSsiWaMJGyr1c2Wt/bs4F8q51mQ1+f6vbZRQzVs=";
+    sha256 = "1nc0i824v2szz0j9a5rwl8gygih15xbxnxpnx9d3wr0yq9057q6q";
   };
 
-  patches = [
-    # Fix compilation with latest Vala.
-    # https://github.com/FontManager/font-manager/issues/240
-    (fetchpatch {
-      url = "https://github.com/FontManager/font-manager/commit/f9c4621389dae5999ca9d2f3c8402c2512a9ea60.patch";
-      sha256 = "ZEJZSUYFLKmiHpVusO3ZUXMLUzJbbbCSqMjCtwlzPRY=";
-    })
-  ];
-
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     meson
     ninja
     gettext
@@ -63,16 +33,9 @@ stdenv.mkDerivation rec {
     libxml2
     json-glib
     sqlite
-    gsettings-desktop-schemas # for font settings
+    librsvg
     gtk3
-    gnome.adwaita-icon-theme
-    libsoup
-    glib-networking # for SSL so that Google Fonts can load
-    webkitgtk
-  ];
-
-  mesonFlags = [
-    "-Dreproducible=true" # Do not hardcode build directory…
+    gnome3.adwaita-icon-theme
   ];
 
   postPatch = ''
@@ -80,7 +43,7 @@ stdenv.mkDerivation rec {
     patchShebangs meson_post_install.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://fontmanager.github.io/";
     description = "Simple font management for GTK desktop environments";
     longDescription = ''
@@ -92,7 +55,7 @@ stdenv.mkDerivation rec {
 
       Font Manager is NOT a professional-grade font management solution.
     '';
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     platforms = platforms.unix;
     maintainers = [ maintainers.romildo ];
   };

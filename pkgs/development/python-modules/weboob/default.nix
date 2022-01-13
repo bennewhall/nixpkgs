@@ -1,12 +1,12 @@
 { lib, buildPythonPackage, fetchPypi, isPy27
 , Babel
 , cssselect
-, python-dateutil
+, dateutil
 , feedparser
-, futures ? null
+, futures
 , gdata
 , gnupg
-, google-api-python-client
+, google_api_python_client
 , html2text
 , libyaml
 , lxml
@@ -52,11 +52,11 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     Babel
     cssselect
-    python-dateutil
+    dateutil
     feedparser
     gdata
     gnupg
-    google-api-python-client
+    google_api_python_client
     html2text
     libyaml
     lxml

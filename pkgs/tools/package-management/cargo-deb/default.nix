@@ -3,32 +3,29 @@
 , fetchFromGitHub
 , rustPlatform
 , rust
-, libiconv
 , Security
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "cargo-deb";
-  version = "1.30.0";
+  version = "1.24.0";
 
   src = fetchFromGitHub {
     owner = "mmstick";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-rAmG6Aj0D9dHVueh1BN1Chhit+XFhqGib1WTvMDy0LI=";
+    rev = "b49351f6770aa7aeb053dd1d4a02d6b086caad2a";
+    sha256 = "1hs96yv0awgi7ggpxp7k3n21jpv642sm0529b21hs9ib6kp4vs8s";
   };
 
-  buildInputs = lib.optionals stdenv.isDarwin [ libiconv Security ];
+  buildInputs = lib.optionals stdenv.isDarwin [ Security ];
 
-  cargoSha256 = "sha256-MEpyEdjLWNZvqE7gJLvQ169tgmJRzec4vqQI9fF3xr8=";
+  cargoSha256 = "1vqnnqn6rzkdi239bh3lk7gaxr7w6v3c4ws4ya1ah04g6v9hkzlw";
+
+  checkType = "debug";
 
   preCheck = ''
     substituteInPlace tests/command.rs \
-      --replace 'target/debug' "target/${rust.toRustTarget stdenv.buildPlatform}/release"
-
-    # This is an FHS specific assert depending on glibc location
-    substituteInPlace src/dependencies.rs \
-      --replace 'assert!(deps.iter().any(|d| d.starts_with("libc")));' '// no libc assert here'
+      --replace 'target/debug' "target/${rust.toRustTarget stdenv.buildPlatform}/debug"
   '';
 
   meta = with lib; {

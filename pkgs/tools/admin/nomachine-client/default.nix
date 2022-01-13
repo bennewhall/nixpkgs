@@ -1,10 +1,10 @@
-{ lib, stdenv, file, fetchurl, makeWrapper,
+{ stdenv, file, fetchurl, makeWrapper,
   autoPatchelfHook, jsoncpp, libpulseaudio }:
 let
-  versionMajor = "7.6";
-  versionMinor = "2";
-  versionBuild_x86_64 = "4";
-  versionBuild_i686 = "1";
+  versionMajor = "6.12";
+  versionMinor = "3";
+  versionBuild_x86_64 = "7";
+  versionBuild_i686 = "8";
 in
   stdenv.mkDerivation rec {
     pname = "nomachine-client";
@@ -13,18 +13,23 @@ in
     src =
       if stdenv.hostPlatform.system == "x86_64-linux" then
         fetchurl {
-          url = "https://download.nomachine.com/download/${versionMajor}/Linux/nomachine_${version}_${versionBuild_x86_64}_x86_64.tar.gz";
-          sha256 = "1kkdf9dlp4j453blnwp1sds4r3h3fy863pvhdh466mrq3f10qca8";
+          urls = [
+            "https://download.nomachine.com/download/${versionMajor}/Linux/nomachine_${version}_${versionBuild_x86_64}_x86_64.tar.gz"
+            "https://web.archive.org/web/https://download.nomachine.com/download/${versionMajor}/Linux/nomachine_${version}_${versionBuild_x86_64}_x86_64.tar.gz"
+          ];
+          sha256 = "1dqsqwxbd77g6gc0hvjmmg4flm3vwwv5y98m8d9wxyybp37vkmgd";
         }
       else if stdenv.hostPlatform.system == "i686-linux" then
         fetchurl {
-          url = "https://download.nomachine.com/download/${versionMajor}/Linux/nomachine_${version}_${versionBuild_i686}_i686.tar.gz";
-          sha256 = "0h4c90hzhbg0qdb585bc9gry9cf9hd8r53m2jha4fdqhzd95ydln";
+          urls = [
+            "https://download.nomachine.com/download/${versionMajor}/Linux/nomachine_${version}_${versionBuild_i686}_i686.tar.gz"
+            "https://web.archive.org/web/https://download.nomachine.com/download/${versionMajor}/Linux/nomachine_${version}_${versionBuild_i686}_i686.tar.gz"
+          ];
+          sha256 = "1q14hxjy66s5cpq19rshscsm679csb6p16c5p2agh5zd64cr4am6";
         }
       else
         throw "NoMachine client is not supported on ${stdenv.hostPlatform.system}";
 
-    # nxusb-legacy is only needed for kernel versions < 3
     postUnpack = ''
       mv $(find . -type f -name nxclient.tar.gz) .
       mv $(find . -type f -name nxplayer.tar.gz) .
@@ -32,8 +37,6 @@ in
       tar xf nxclient.tar.gz
       tar xf nxplayer.tar.gz
       rm $(find . -maxdepth 1 -type f)
-      rm -r NX/share/src/nxusb-legacy
-      rm NX/bin/nxusbd-legacy NX/lib/libnxusb-legacy.so
     '';
 
     nativeBuildInputs = [ file makeWrapper autoPatchelfHook ];
@@ -78,15 +81,16 @@ in
     dontBuild = true;
     dontStrip = true;
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       description = "NoMachine remote desktop client (nxplayer)";
       homepage = "https://www.nomachine.com/";
       license = {
-        fullName = "NoMachine 7 End-User License Agreement";
-        url = "https://www.nomachine.com/licensing-7";
+        fullName = "NoMachine 6 End-User License Agreement";
+        url = "https://www.nomachine.com/licensing-6";
         free = false;
       };
       maintainers = with maintainers; [ talyz ];
       platforms = [ "x86_64-linux" "i686-linux" ];
     };
   }
+

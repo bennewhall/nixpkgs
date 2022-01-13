@@ -1,56 +1,25 @@
-{ lib
-, fetchFromGitHub
-, python3
-}:
+{ lib, fetchFromGitHub, python3 }:
 
 python3.pkgs.buildPythonApplication rec {
-  pname = "theharvester";
-  version = "4.0.3";
+  pname = "theHarvester";
+  version = "3.1";
 
   src = fetchFromGitHub {
     owner = "laramies";
     repo = pname;
-    rev = version;
-    sha256 = "sha256-Ckouhe/Uq6Dv9p/LRpPQkiKuYrwrl/Z7KkYYamDHav8=";
+    rev = "V${version}";
+    sha256 = "0lxzxfa9wbzim50d2jmd27i57szd0grm1dfayhnym86jn01qpvn3";
   };
 
-  propagatedBuildInputs = with python3.pkgs; [
-    aiodns
-    aiofiles
-    aiohttp
-    aiomultiprocess
-    aiosqlite
-    beautifulsoup4
-    censys
-    certifi
-    dnspython
-    fastapi
-    lxml
-    netaddr
-    orjson
-    plotly
-    pyppeteer
-    pyyaml
-    requests
-    retrying
-    shodan
-    slowapi
-    starlette
-    uvicorn
-    uvloop
+  propagatedBuildInputs = with python3.pkgs; [ 
+    aiodns beautifulsoup4 dns grequests netaddr
+    plotly pyyaml requests retrying shodan texttable
   ];
 
-  checkInputs = with  python3.pkgs; [
-    pytest
-    pytest-asyncio
-  ];
+  checkInputs = [ python3.pkgs.pytest ];
 
+  checkPhase = "runHook preCheck ; pytest tests/test_myparser.py ; runHook postCheck";
   # We don't run other tests (discovery modules) because they require network access
-  checkPhase = ''
-    runHook preCheck
-    pytest tests/test_myparser.py
-    runHook postCheck
-  '';
 
   meta = with lib; {
     description = "Gather E-mails, subdomains and names from different public sources";
@@ -62,6 +31,6 @@ python3.pkgs.buildPythonApplication rec {
     '';
     homepage = "https://github.com/laramies/theHarvester";
     maintainers = with maintainers; [ c0bw3b treemo ];
-    license = licenses.gpl2Only;
+    license = licenses.gpl2;
   };
 }

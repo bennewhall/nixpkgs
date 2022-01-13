@@ -1,4 +1,4 @@
-{ lib, fetchPypi, buildPythonPackage, six, pytest }:
+{ stdenv, fetchPypi, buildPythonPackage, six, pytest }:
 
 buildPythonPackage rec {
   pname = "fake-useragent";
@@ -13,7 +13,7 @@ buildPythonPackage rec {
 
   checkInputs = [ pytest ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Up to date simple useragent faker with real world database";
     homepage = "https://github.com/hellysmile/fake-useragent";
     license = licenses.asl20;

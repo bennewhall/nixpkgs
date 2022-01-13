@@ -1,8 +1,7 @@
-{ buildGoPackage, lib, fetchFromGitHub }:
+{ buildGoPackage, stdenv, fetchFromGitHub }:
 
 buildGoPackage rec {
-  pname = "curl-unix-socket";
-  version = "unstable-2015-04-10";
+  name = "curl-unix-socket-2015-04-10";
 
   src = fetchFromGitHub {
     owner = "Soulou";
@@ -22,7 +21,7 @@ buildGoPackage rec {
     runHook postBuild
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Run HTTP requests over UNIX socket";
     license = licenses.mit;
     homepage = "https://github.com/Soulou/curl-unix-socket";

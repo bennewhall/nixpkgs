@@ -1,11 +1,6 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, pbr
-, requests
-, pytestCheckHook
-, waitress
-}:
+{ lib, buildPythonPackage, fetchPypi
+, pbr, requests
+, pytest, pytestpep8, waitress }:
 
 buildPythonPackage rec {
   pname = "requests-unixsocket";
@@ -19,10 +14,10 @@ buildPythonPackage rec {
   nativeBuildInputs = [ pbr ];
   propagatedBuildInputs = [ requests ];
 
-  checkInputs = [ pytestCheckHook waitress ];
-
-  preCheck = ''
+  checkInputs = [ pytest pytestpep8 waitress ];
+  checkPhase = ''
     rm pytest.ini
+    py.test
   '';
 
   meta = with lib; {

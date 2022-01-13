@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, gtk3, moka-icon-theme, faba-icon-theme, gnome-icon-theme, hicolor-icon-theme }:
+{ stdenv, fetchFromGitHub, autoreconfHook, gtk3, moka-icon-theme, faba-icon-theme, gnome-icon-theme, hicolor-icon-theme }:
 
 stdenv.mkDerivation rec {
   pname = "faba-mono-icons";
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "The full set of Faba monochrome panel icons";
     homepage = "https://snwh.org/moka";
     license = licenses.gpl3;

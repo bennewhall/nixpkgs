@@ -1,4 +1,4 @@
-{stdenv, lib, fetchurl, ocaml, findlib, ounit, expat}:
+{stdenv, fetchurl, ocaml, findlib, ounit, expat}:
 
 let
   pname = "ocaml-expat";
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://www.xs4all.nl/~mmzeeman/ocaml/";
     description = "An ocaml wrapper for the Expat XML parsing library";
-    license = lib.licenses.mit;
-    maintainers = [ lib.maintainers.roconnor ];
+    license = stdenv.lib.licenses.mit;
+    maintainers = [ stdenv.lib.maintainers.roconnor ];
   };
 }

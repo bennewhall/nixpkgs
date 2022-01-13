@@ -1,4 +1,4 @@
-{lib, stdenv, fetchurl, fetchpatch}:
+{stdenv, fetchurl, fetchpatch}:
 
 stdenv.mkDerivation {
   pname = "par";
@@ -18,10 +18,7 @@ stdenv.mkDerivation {
     })
   ];
 
-  makefile = "protoMakefile";
-  preBuild = ''
-    makeFlagsArray+=(CC="${stdenv.cc.targetPrefix}cc -c" LINK1=${stdenv.cc.targetPrefix}cc)
-  '';
+  buildPhase = ''make -f protoMakefile'';
 
   installPhase = ''
     mkdir -p $out/bin
@@ -32,7 +29,7 @@ stdenv.mkDerivation {
   '';
 
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.nicemice.net/par/";
     description = "Paragraph reflow for email";
     platforms = platforms.unix;

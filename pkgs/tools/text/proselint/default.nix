@@ -1,19 +1,19 @@
-{ lib, fetchurl, buildPythonApplication, click, future, six }:
+{ stdenv, fetchurl, buildPythonApplication, click, future, six }:
 
 buildPythonApplication rec {
   pname = "proselint";
-  version = "0.13.0";
+  version = "0.10.2";
 
   doCheck = false; # fails to pass because it tries to run in home directory
 
   src = fetchurl {
     url = "mirror://pypi/p/proselint/${pname}-${version}.tar.gz";
-    sha256 = "7dd2b63cc2aa390877c4144fcd3c80706817e860b017f04882fbcd2ab0852a58";
+    sha256 = "017risn0j1bjy9ygzfgphjnyjl4gk7wbrr4qv1vvrlan60wyp1rs";
   };
 
   propagatedBuildInputs = [ click future six ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A linter for prose";
     homepage = "http://proselint.com";
     license = licenses.bsd3;

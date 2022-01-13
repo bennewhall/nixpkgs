@@ -1,56 +1,27 @@
-{ lib
-, fetchFromGitea
-, buildPythonApplication
-, pbr
-, requests
-, setuptools
-, genericUpdater
-, common-updater-scripts
-}:
+{ lib, fetchurl, buildPythonApplication, pbr, requests, setuptools }:
 
 buildPythonApplication rec {
   pname = "git-review";
-  version = "2.2.0";
+  version = "1.28.0";
 
   # Manually set version because prb wants to get it from the git
   # upstream repository (and we are installing from tarball instead)
   PBR_VERSION = version;
 
-  src = fetchFromGitea {
-    domain = "opendev.org";
-    owner = "opendev";
-    repo = pname;
-    rev = version;
-    sha256 = "sha256-2+X5fPxB2FIp1fwqEUc+W0gH2NjhF/V+La+maE+XEpo=";
+  src = fetchurl {
+    url = "https://opendev.org/opendev/${pname}/archive/${version}.tar.gz";
+    sha256 = "1y1jzb0hlprynwwr4q5y4x06641qrhj0k69mclabnmhfam9g8ygm";
   };
 
-  outputs = [ "out" "man" ];
+  propagatedBuildInputs = [ pbr requests setuptools ];
 
-  nativeBuildInputs = [
-    pbr
-  ];
-
-  propagatedBuildInputs = [
-    requests
-    setuptools # implicit dependency, used to get package version through pkg_resources
-  ];
-
-  # Don't run tests because they pull in external dependencies
-  # (a specific build of gerrit + maven plugins), and I haven't figured
-  # out how to work around this yet.
+  # Don't do tests because they require gerrit which is not packaged
   doCheck = false;
 
-  pythonImportsCheck = [ "git_review" ];
-
-  passthru.updateScript = genericUpdater {
-    inherit pname version;
-    versionLister = "${common-updater-scripts}/bin/list-git-tags ${src.meta.homepage}";
-  };
-
   meta = with lib; {
-    description = "Tool to submit code to Gerrit";
     homepage = "https://opendev.org/opendev/git-review";
+    description = "Tool to submit code to Gerrit";
     license = licenses.asl20;
-    maintainers = with maintainers; [ kira-bruneau ];
+    maintainers = with maintainers; [ metadark ];
   };
 }

@@ -8,7 +8,7 @@
 with lib;
 
 let
-  inherit (lib) optionals versionAtLeast;
+  inherit (stdenv.lib) optionals versionAtLeast;
 
   pname = "vg";
   version = "0.9.4";

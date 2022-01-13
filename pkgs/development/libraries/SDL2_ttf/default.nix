@@ -1,4 +1,4 @@
-{ lib, stdenv, pkg-config, darwin, fetchurl, SDL2, freetype, libGL }:
+{ stdenv, darwin, fetchurl, SDL2, freetype, libGL }:
 
 stdenv.mkDerivation rec {
   pname = "SDL2_ttf";
@@ -9,14 +9,12 @@ stdenv.mkDerivation rec {
     sha256 = "0cyd48dipc0m399qy8s03lci8b0bpiy8xlkvrm2ia7wcv0dfpv59";
   };
 
-  configureFlags = lib.optional stdenv.isDarwin "--disable-sdltest";
-
-  nativeBuildInputs = [ pkg-config ];
+  configureFlags = stdenv.lib.optional stdenv.isDarwin "--disable-sdltest";
 
   buildInputs = [ SDL2 freetype libGL ]
-    ++ lib.optional stdenv.isDarwin darwin.libobjc;
+    ++ stdenv.lib.optional stdenv.isDarwin darwin.libobjc;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "SDL TrueType library";
     platforms = platforms.unix;
     license = licenses.zlib;

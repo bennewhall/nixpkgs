@@ -8,7 +8,7 @@ in
 
 runCommand "${mailman.name}-wrapped" {
   inherit (mailman) meta;
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
   passthru = mailman.passthru // { unwrapped = mailman; };
 } ''
   mkdir -p "$out/bin"

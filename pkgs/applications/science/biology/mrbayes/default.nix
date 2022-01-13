@@ -1,18 +1,18 @@
-{ lib, stdenv, fetchFromGitHub, readline }:
+{stdenv, fetchurl, readline}:
 
 stdenv.mkDerivation rec {
-  pname = "mrbayes";
-  version = "3.2.7a";
+  # FIXME: replace Makefile so we can build MPI & MAC support
 
-  src = fetchFromGitHub {
-    owner = "NBISweden";
-    repo = "MrBayes";
-    rev = "v${version}";
-    sha256 = "sha256-pkkxZ6YHRn/I1SJpT9A+EK4S5hWGmFdcDBJS0zh5mLA=";
+  name = "mrbayes-3.1.2";
+  src = fetchurl {
+    url = "mirror://sourceforge/mrbayes/${name}.tar.gz";
+    sha256 = "1x7j8ca5wjrqrxmcpvd375ydm3s2pbkzykv8xfhg1jc037g560n6";
   };
+  builder = ./builder.sh;
+  buildInputs = [readline];
 
-  meta = with lib; {
-    description = "Bayesian Inference of Phylogeny";
+  meta = with stdenv.lib; {
+    description     = "Bayesian Inference of Phylogeny";
     longDescription = ''
       Bayesian inference of phylogeny is based upon a
       quantity called the posterior probability distribution of trees, which is
@@ -22,9 +22,8 @@ stdenv.mkDerivation rec {
       MrBayes uses a simulation technique called Markov chain Monte Carlo (or
       MCMC) to approximate the posterior probabilities of trees.
     '';
-    maintainers = with maintainers; [ ];
-    license = licenses.gpl2Plus;
-    homepage = "https://nbisweden.github.io/MrBayes/";
+    license     = licenses.gpl2;
+    homepage    = "http://mrbayes.csit.fsu.edu/";
     platforms = platforms.linux;
   };
 }

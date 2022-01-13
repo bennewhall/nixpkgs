@@ -1,8 +1,10 @@
-{ lib, stdenv, fetchFromGitHub, cmake, fftw, fftwFloat, boost166, opencl-clhpp, ocl-icd }:
+{ stdenv, fetchFromGitHub, cmake, fftw, fftwFloat, boost166, opencl-clhpp, ocl-icd }:
 
-stdenv.mkDerivation rec {
-  pname = "clfft";
+let
   version = "2.12.2";
+in stdenv.mkDerivation {
+  pname = "clfft";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "clMathLibraries";
@@ -17,7 +19,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ fftw fftwFloat boost166 opencl-clhpp ocl-icd ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Library containing FFT functions written in OpenCL";
     longDescription = ''
       clFFT is a software library containing FFT functions written in OpenCL.
@@ -27,5 +29,6 @@ stdenv.mkDerivation rec {
     homepage = "http://clmathlibraries.github.io/clFFT/";
     platforms = [ "i686-linux" "x86_64-linux" ];
     maintainers = with maintainers; [ chessai ];
+    inherit version;
   };
 }

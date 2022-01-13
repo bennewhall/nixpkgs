@@ -1,11 +1,13 @@
-{ lib, fetchurl, stdenv }:
+{ fetchurl, stdenv }:
 
-stdenv.mkDerivation rec{
-  pname = "antiword";
-  version = "0.37";
+let
+  name = "antiword-0.37";
+in
+stdenv.mkDerivation {
+  inherit name;
 
   src = fetchurl {
-    url = "http://www.winfield.demon.nl/linux/antiword-${version}.tar.gz";
+    url = "http://www.winfield.demon.nl/linux/${name}.tar.gz";
     sha256 = "1b7mi1l20jhj09kyh0bq14qzz8vdhhyf35gzwsq43mn6rc7h0b4f";
   };
 
@@ -21,8 +23,9 @@ stdenv.mkDerivation rec{
   meta = {
     homepage = "http://www.winfield.demon.nl/";
     description = "Convert MS Word documents to plain text or PostScript";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
 
-    platforms = with lib.platforms; linux ++ darwin;
+    maintainers = [ stdenv.lib.maintainers.peti ];
+    platforms = with stdenv.lib.platforms; linux ++ darwin;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, acpica-tools, python3 }:
+{ stdenv, fetchurl, iasl, python }:
 
 stdenv.mkDerivation rec {
 
@@ -10,11 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "1zc1brgafbbf5hmdr1qc1p859cabpz73l8sklq83xa4sn9icqw7b";
   };
 
-  nativeBuildInputs = [ python3 ];
-
-  buildInputs = [ acpica-tools ];
-
-  strictDeps = true;
+  buildInputs = [ iasl python ];
 
   hardeningDisable = [ "pic" "stackprotector" "fortify" ];
 
@@ -34,7 +30,7 @@ stdenv.mkDerivation rec {
     cp out/Csm16.bin $out/Csm16.bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Open source implementation of a 16bit X86 BIOS";
     longDescription = ''
       SeaBIOS is an open source implementation of a 16bit X86 BIOS.
@@ -47,3 +43,4 @@ stdenv.mkDerivation rec {
     platforms = [ "i686-linux" "x86_64-linux" ];
   };
 }
+

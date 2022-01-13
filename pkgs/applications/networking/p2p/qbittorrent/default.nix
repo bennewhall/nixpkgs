@@ -1,34 +1,29 @@
-{ mkDerivation, lib, fetchFromGitHub, makeWrapper, pkg-config
-, boost, libtorrent-rasterbar, qtbase, qttools, qtsvg
-, debugSupport ? false
+{ mkDerivation, lib, fetchFromGitHub, pkgconfig
+, boost, libtorrentRasterbar, qtbase, qttools, qtsvg
+, debugSupport ? false # Debugging
 , guiSupport ? true, dbus ? null # GUI (disable to run headless)
 , webuiSupport ? true # WebUI
-, trackerSearch ? true, python3 ? null
 }:
 
 assert guiSupport -> (dbus != null);
-assert trackerSearch -> (python3 != null);
-
 with lib;
+
 mkDerivation rec {
   pname = "qbittorrent";
-  version = "4.3.9";
+  version = "4.3.0.1";
 
   src = fetchFromGitHub {
     owner = "qbittorrent";
-    repo = "qBittorrent";
+    repo = "qbittorrent";
     rev = "release-${version}";
-    sha256 = "sha256-pFHeozx72qVjA3cmW6GK058IIAOWmyNm1UQVCQ1v5EU=";
+    sha256 = "068sf24mjvc2idimgpzvf7gjk8n9xrr3qqlqfx5j3j598ckm3yfp";
   };
 
-  enableParallelBuilding = true;
-
   # NOTE: 2018-05-31: CMake is working but it is not officially supported
-  nativeBuildInputs = [ makeWrapper pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  buildInputs = [ boost libtorrent-rasterbar qtbase qttools qtsvg ]
-    ++ optional guiSupport dbus # D(esktop)-Bus depends on GUI support
-    ++ optional trackerSearch python3;
+  buildInputs = [ boost libtorrentRasterbar qtbase qttools qtsvg ]
+    ++ optional guiSupport dbus; # D(esktop)-Bus depends on GUI support
 
   # Otherwise qm_gen.pri assumes lrelease-qt5, which does not exist.
   QMAKE_LRELEASE = "lrelease";
@@ -40,17 +35,12 @@ mkDerivation rec {
     ++ optional (!webuiSupport) "--disable-webui"
     ++ optional debugSupport "--enable-debug";
 
-  postInstall = "wrapProgram $out/bin/${
-    if guiSupport
-    then "qbittorrent"
-    else "qbittorrent-nox"
-  } --prefix PATH : ${makeBinPath [ python3 ]}";
+  enableParallelBuilding = true;
 
   meta = {
     description = "Featureful free software BitTorrent client";
     homepage    = "https://www.qbittorrent.org/";
-    changelog   = "https://github.com/qbittorrent/qBittorrent/blob/release-${version}/Changelog";
-    license     = licenses.gpl2Plus;
+    license     = licenses.gpl2;
     platforms   = platforms.linux;
     maintainers = with maintainers; [ Anton-Latukha ];
   };

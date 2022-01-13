@@ -1,7 +1,7 @@
-{ lib
+{ stdenv
 , fetchFromGitHub
 , rustPlatform
-, pkg-config
+, pkgconfig
 , extra-cmake-modules
 , libX11
 , libXi
@@ -10,7 +10,6 @@
 , openssl
 , xclip
 , xdotool
-, makeWrapper
 }:
 
 rustPlatform.buildRustPackage rec {
@@ -24,12 +23,11 @@ rustPlatform.buildRustPackage rec {
     sha256 = "1q47r43midkq9574gl8gdv3ylvrnbhdc39rrw4y4yk6jbdf5wwkm";
   };
 
-  cargoSha256 = "0ba5skn5s6qh0blf6bvivzvqc2l8v488l9n3x98pmf6nygrikfdb";
+  cargoSha256 = "0mxksifjagx25qkyg6ym0zlhal8014j8iim54cd44ndbkkiqlyxc";
 
   nativeBuildInputs = [
     extra-cmake-modules
-    pkg-config
-    makeWrapper
+    pkgconfig
   ];
 
   buildInputs = [
@@ -37,7 +35,6 @@ rustPlatform.buildRustPackage rec {
     libXtst
     libXi
     libnotify
-    xclip
     openssl
     xdotool
   ];
@@ -45,12 +42,7 @@ rustPlatform.buildRustPackage rec {
   # Some tests require networking
   doCheck = false;
 
-  postInstall = ''
-    wrapProgram $out/bin/espanso \
-      --prefix PATH : ${lib.makeBinPath [ libnotify xclip ]}
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Cross-platform Text Expander written in Rust";
     homepage = "https://espanso.org";
     license = licenses.gpl3Plus;

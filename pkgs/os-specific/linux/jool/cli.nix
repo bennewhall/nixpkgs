@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, pkg-config, libnl, iptables }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, libnl, iptables }:
 
 let
   sourceAttrs = (import ./source.nix) { inherit fetchFromGitHub; };
@@ -9,7 +9,7 @@ stdenv.mkDerivation {
 
   src = sourceAttrs.src;
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [ libnl iptables ];
 
   makeFlags = [ "-C" "src/usr" ];
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
     sed -e 's%^XTABLES_SO_DIR = .*%XTABLES_SO_DIR = '"$out"'/lib/xtables%g' -i src/usr/iptables/Makefile
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.jool.mx/";
     description = "Fairly compliant SIIT and Stateful NAT64 for Linux - CLI tools";
     platforms = platforms.linux;

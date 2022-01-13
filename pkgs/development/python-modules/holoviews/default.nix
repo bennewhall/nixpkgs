@@ -11,31 +11,32 @@
 , bokeh
 , scipy
 , panel
-, colorcet
 }:
 
 buildPythonPackage rec {
   pname = "holoviews";
-  version = "1.14.7";
+  version = "1.13.5";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "8d8d171227e9c9eaadd4b037b3ddaa01055a33bacbdbeb57a5efbd273986665f";
+    sha256 = "3f8a00ce1cc67a388a3a949441accd7e7e9ca9960ba16b49ee96a50305105a01";
   };
 
   propagatedBuildInputs = [
-    colorcet
-    numpy
-    pandas
-    panel
     param
+    numpy
     pyviz-comms
+    ipython
+    notebook
+    pandas
+    matplotlib
+    bokeh
+    scipy
+    panel
   ];
 
   # tests not fully included with pypi release
   doCheck = false;
-
-  pythonImportsCheck = [ "holoviews" ];
 
   meta = with lib; {
     description = "Python data analysis and visualization seamless and simple";

@@ -1,32 +1,31 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, perlPackages, beancount }:
+{ stdenv, fetchFromGitHub, makeWrapper, perlPackages, beancount }:
 
-with lib;
+with stdenv.lib;
 
 let
   perlDeps = with perlPackages; [
-    DateCalc
-    DateTimeFormatStrptime
-    enum
-    FileBaseDir
-    GetoptLongDescriptive
-    ListMoreUtils
-    RegexpCommon
+    ConfigOnion DateCalc
+    FileBaseDir YAMLLibYAML
+    GetoptLongDescriptive DateTimeFormatStrptime
     StringInterpolate
-    YAMLLibYAML
   ];
 
 in stdenv.mkDerivation rec {
   pname = "ledger2beancount";
-  version = "2.6";
+  version = "2.1";
 
   src = fetchFromGitHub {
-    owner = "beancount";
+    owner = "zacchiro";
     repo = "ledger2beancount";
     rev = version;
-    sha256 = "sha256-0Br+zuSUYrNP+ZL/FtNoaYoYBYho5kVfxu0tqKJSuBk=";
+    sha256 = "0w88jb1x0w02jwwf6ipx3cxr89kzffrrdqws3556zrvvs01bh84j";
   };
 
-  dontBuild = true;
+  phases = [
+    "unpackPhase"
+    "installPhase"
+    "fixupPhase"
+  ];
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ perlPackages.perl beancount ] ++ perlDeps;
@@ -51,7 +50,7 @@ in stdenv.mkDerivation rec {
 
       Conversion is based on (concrete) syntax, so that information that is not meaningful for accounting reasons but still valuable (e.g., comments, formatting, etc.) can be preserved.
     '';
-    homepage = "https://github.com/beancount/ledger2beancount";
+    homepage = "https://github.com/zacchiro/ledger2beancount";
     license = licenses.gpl3Plus;
     platforms = platforms.all;
     maintainers = with maintainers; [ pablovsky ];

@@ -1,4 +1,4 @@
-{ lib, stdenv, buildPythonPackage, fetchPypi, setuptools-scm }:
+{ stdenv, buildPythonPackage, fetchPypi, setuptools_scm }:
 
 buildPythonPackage rec {
   pname = "configparser";
@@ -12,13 +12,13 @@ buildPythonPackage rec {
   # No tests available
   doCheck = false;
 
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools_scm ];
 
   preConfigure = ''
     export LC_ALL=${if stdenv.isDarwin then "en_US" else "C"}.UTF-8
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Updated configparser from Python 3.7 for Python 2.6+.";
     license = licenses.mit;
     homepage = "https://github.com/jaraco/configparser";

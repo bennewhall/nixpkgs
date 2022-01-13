@@ -1,10 +1,10 @@
 # Build a version of idris with a set of packages visible
 # packages: The packages visible to idris
-{ lib, idris, symlinkJoin, makeWrapper }: packages:
+{ stdenv, idris, symlinkJoin, makeWrapper }: packages:
 
-let paths = lib.closePropagation packages;
+let paths = stdenv.lib.closePropagation packages;
 in
-lib.appendToName "with-packages" (symlinkJoin {
+stdenv.lib.appendToName "with-packages" (symlinkJoin {
 
   inherit (idris) name;
 

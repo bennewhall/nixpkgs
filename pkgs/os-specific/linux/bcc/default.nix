@@ -1,28 +1,25 @@
-{ lib, stdenv, fetchFromGitHub
-, makeWrapper, cmake, llvmPackages
+{ stdenv, fetchurl, fetchpatch
+, makeWrapper, cmake, llvmPackages, kernel
 , flex, bison, elfutils, python, luajit, netperf, iperf, libelf
-, bash, libbpf, nixosTests
-, audit
+, systemtap, bash
 }:
 
 python.pkgs.buildPythonApplication rec {
   pname = "bcc";
-  version = "0.23.0";
+  version = "0.17.0";
 
   disabled = !stdenv.isLinux;
 
-  src = fetchFromGitHub {
-    owner = "iovisor";
-    repo = "bcc";
-    rev = "v${version}";
-    sha256 = "sha256-iLVUwJTDQ8Bn38sgHOcIR8TYxIB+gIlfTgr9+gPU0gE=";
+  src = fetchurl {
+    url = "https://github.com/iovisor/bcc/releases/download/v${version}/bcc-src-with-submodule.tar.gz";
+    sha256 = "sha256-aEy8WwtKGaf7GZOTK5IHhwzenqU2U+vpWrcNWMCGvMw=";
   };
   format = "other";
 
   buildInputs = with llvmPackages; [
-    llvm llvm.dev libclang
+    llvm clang-unwrapped kernel
     elfutils luajit netperf iperf
-    flex bash libbpf
+    systemtap.stapBuild flex bash
   ];
 
   patches = [
@@ -32,26 +29,20 @@ python.pkgs.buildPythonApplication rec {
   ];
 
   propagatedBuildInputs = [ python.pkgs.netaddr ];
-  nativeBuildInputs = [ makeWrapper cmake flex bison llvmPackages.llvm.dev ];
+  nativeBuildInputs = [ makeWrapper cmake flex bison ]
+    # libelf is incompatible with elfutils-libelf
+    ++ stdenv.lib.filter (x: x != libelf) kernel.moduleBuildDependencies;
 
   cmakeFlags = [
-    "-DBCC_KERNEL_MODULES_DIR=/run/booted-system/kernel-modules/lib/modules"
+    "-DBCC_KERNEL_MODULES_DIR=${kernel.dev}/lib/modules"
     "-DREVISION=${version}"
     "-DENABLE_USDT=ON"
     "-DENABLE_CPP_API=ON"
-    "-DCMAKE_USE_LIBBPF_PACKAGE=ON"
   ];
-
-  # to replace this executable path:
-  # https://github.com/iovisor/bcc/blob/master/src/python/bcc/syscall.py#L384
-  ausyscall = "${audit}/bin/ausyscall";
 
   postPatch = ''
     substituteAll ${./libbcc-path.patch} ./libbcc-path.patch
     patch -p1 < libbcc-path.patch
-
-    substituteAll ${./absolute-ausyscall.patch} ./absolute-ausyscall.patch
-    patch -p1 < absolute-ausyscall.patch
   '';
 
   postInstall = ''
@@ -77,14 +68,10 @@ python.pkgs.buildPythonApplication rec {
     wrapPythonProgramsIn "$out/share/bcc/tools" "$out $pythonPath"
   '';
 
-  passthru.tests = {
-    bpf = nixosTests.bpf;
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Dynamic Tracing Tools for Linux";
     homepage    = "https://iovisor.github.io/bcc/";
     license     = licenses.asl20;
-    maintainers = with maintainers; [ ragge mic92 thoughtpolice martinetd ];
+    maintainers = with maintainers; [ ragge mic92 thoughtpolice ];
   };
 }

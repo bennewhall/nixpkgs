@@ -1,22 +1,20 @@
-{ lib
+{ stdenv
 , fetchFromGitLab
 , meson
 , ninja
 , pkg-config
 , python3
 , docbook_xml_dtd_43
-, docbook-xsl-nons
+, docbook_xsl
 , libxslt
 , gettext
-, gnome
+, gnome3
 , withDblatex ? false, dblatex
 }:
 
 python3.pkgs.buildPythonApplication rec {
   pname = "gtk-doc";
-  version = "1.33.2";
-
-  outputDevdoc = "out";
+  version = "1.33.0";
 
   format = "other";
 
@@ -25,19 +23,14 @@ python3.pkgs.buildPythonApplication rec {
     owner = "GNOME";
     repo = pname;
     rev = version;
-    sha256 = "A6OXpazrJ05SUIO1ZPVN0xHTXOSov8UnPvUolZAv/Iw=";
+    sha256 = "ahOTEWwVVwHt8TDWBnPKHIAUq0GXllEvMRmaKul1Tq0=";
   };
 
   patches = [
     passthru.respect_xml_catalog_files_var_patch
   ];
 
-  strictDeps = true;
-
-  depsBuildBuild = [
-    python3
-    pkg-config
-  ];
+  outputDevdoc = "out";
 
   nativeBuildInputs = [
     pkg-config
@@ -49,14 +42,15 @@ python3.pkgs.buildPythonApplication rec {
 
   buildInputs = [
     docbook_xml_dtd_43
-    docbook-xsl-nons
+    docbook_xsl
     libxslt
-  ] ++ lib.optionals withDblatex [
+  ] ++ stdenv.lib.optionals withDblatex [
     dblatex
   ];
 
   pythonPath = with python3.pkgs; [
     pygments # Needed for https://gitlab.gnome.org/GNOME/gtk-doc/blob/GTK_DOC_1_32/meson.build#L42
+    (anytree.override { withGraphviz = false; })
     lxml
   ];
 
@@ -77,16 +71,16 @@ python3.pkgs.buildPythonApplication rec {
   passthru = {
     # Consumers are expected to copy the m4 files to their source tree, let them reuse the patch
     respect_xml_catalog_files_var_patch = ./respect-xml-catalog-files-var.patch;
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
       versionPolicy = "none";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tools to extract documentation embedded in GTK and GNOME source code";
-    homepage = "https://gitlab.gnome.org/GNOME/gtk-doc";
-    license = licenses.gpl2Plus;
-    maintainers = teams.gnome.members ++ (with maintainers; [ pSub ]);
+    homepage = "https://www.gtk.org/gtk-doc";
+    license = licenses.gpl2;
+    maintainers = with maintainers; [ pSub worldofpeace ];
   };
 }

@@ -1,6 +1,6 @@
 { stdenv, fetchurl, lib
 , ncurses, openssl, aspell, gnutls, gettext
-, zlib, curl, pkg-config, libgcrypt
+, zlib, curl, pkgconfig, libgcrypt
 , cmake, makeWrapper, libobjc, libresolv, libiconv
 , asciidoctor # manpages
 , guileSupport ? true, guile
@@ -10,7 +10,6 @@
 , rubySupport ? true, ruby
 , tclSupport ? true, tcl
 , extraBuildInputs ? []
-, fetchpatch
 }:
 
 let
@@ -28,19 +27,18 @@ let
   in
     assert lib.all (p: p.enabled -> ! (builtins.elem null p.buildInputs)) plugins;
     stdenv.mkDerivation rec {
-      version = "3.3";
+      version = "3.0";
       pname = "weechat";
-
-      hardeningEnable = [ "pie" ];
 
       src = fetchurl {
         url = "https://weechat.org/files/src/weechat-${version}.tar.bz2";
-        sha256 = "sha256-GnSi7uMxiyWSQau75q07NlX1ikaBeWOdrzOf9f0jnBM=";
+        sha256 = "0ciddvyhyp38fnfsi1plj3z8d76f28lbzbxib2857vw7rzyqfcky";
       };
 
       outputs = [ "out" "man" ] ++ map (p: p.name) enabledPlugins;
 
-      cmakeFlags = with lib; [
+      enableParallelBuilding = true;
+      cmakeFlags = with stdenv.lib; [
         "-DENABLE_MAN=ON"
         "-DENABLE_DOC=ON"
         "-DENABLE_JAVASCRIPT=OFF"  # Requires v8 <= 3.24.3, https://github.com/weechat/weechat/issues/360
@@ -50,30 +48,25 @@ let
         ++ map (p: "-D${p.cmakeFlag}=" + (if p.enabled then "ON" else "OFF")) plugins
         ;
 
-      nativeBuildInputs = [ cmake pkg-config makeWrapper asciidoctor ];
-      buildInputs = with lib; [
-          ncurses openssl aspell gnutls gettext zlib curl
-          libgcrypt ]
+      buildInputs = with stdenv.lib; [
+          ncurses openssl aspell gnutls gettext zlib curl pkgconfig
+          libgcrypt makeWrapper cmake asciidoctor
+          ]
         ++ optionals stdenv.isDarwin [ libobjc libresolv ]
         ++ concatMap (p: p.buildInputs) enabledPlugins
         ++ extraBuildInputs;
 
       NIX_CFLAGS_COMPILE = "-I${python}/include/${python.libPrefix}"
         # Fix '_res_9_init: undefined symbol' error
-        + (lib.optionalString stdenv.isDarwin "-DBIND_8_COMPAT=1 -lresolv");
+        + (stdenv.lib.optionalString stdenv.isDarwin "-DBIND_8_COMPAT=1 -lresolv");
 
-      postInstall = with lib; ''
+      postInstall = with stdenv.lib; ''
         for p in ${concatMapStringsSep " " (p: p.name) enabledPlugins}; do
           from=$out/lib/weechat/plugins/$p.so
           to=''${!p}/lib/weechat/plugins/$p.so
           mkdir -p $(dirname $to)
           mv $from $to
         done
-      '';
-
-      doInstallCheck = true;
-      installCheckPhase = ''
-        $out/bin/weechat --version
       '';
 
       meta = {
@@ -84,8 +77,8 @@ let
           (eg. adding python modules for scripts that would require them, etc.)
           on https://nixos.org/nixpkgs/manual/#sec-weechat .
         '';
-        license = lib.licenses.gpl3;
-        maintainers = with lib.maintainers; [ lovek323 lheckemann ];
-        platforms = lib.platforms.unix;
+        license = stdenv.lib.licenses.gpl3;
+        maintainers = with stdenv.lib.maintainers; [ lovek323 lheckemann ];
+        platforms = stdenv.lib.platforms.unix;
       };
     }

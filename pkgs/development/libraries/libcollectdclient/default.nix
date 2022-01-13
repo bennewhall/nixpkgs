@@ -1,5 +1,5 @@
-{ lib, collectd }:
-with lib;
+{ stdenv, collectd }:
+with stdenv.lib;
 
 collectd.overrideAttrs (oldAttrs: {
   name = "libcollectdclient-${collectd.version}";
@@ -12,7 +12,7 @@ collectd.overrideAttrs (oldAttrs: {
 
   postInstall = "rm -rf $out/{bin,etc,sbin,share}";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C Library for collectd, a daemon which collects system performance statistics periodically";
     homepage = "http://collectd.org";
     license = licenses.gpl2;

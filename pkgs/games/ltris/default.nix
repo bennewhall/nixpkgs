@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, SDL, SDL_mixer }:
+{ stdenv, fetchurl, SDL, SDL_mixer }:
 
 stdenv.mkDerivation rec {
   pname = "ltris";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   patchPhase = "patch -p0 < ${./gcc5_compliance.diff}";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tetris clone from the LGames series";
     homepage = "http://lgames.sourceforge.net/LBreakout2/";
     license = licenses.gpl2;

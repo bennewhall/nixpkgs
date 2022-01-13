@@ -59,7 +59,7 @@ stdenv.mkDerivation rec {
     ''}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Iconic font aggregator, collection, & patcher. 3,600+ icons, 50+ patched fonts";
     longDescription = ''
       Nerd Fonts is a project that attempts to patch as many developer targeted

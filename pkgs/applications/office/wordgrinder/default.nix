@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, makeWrapper
+{ stdenv, fetchFromGitHub, pkgconfig, makeWrapper
 , lua52Packages, libXft, ncurses, ninja, readline, zlib }:
 
 stdenv.mkDerivation rec {
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     "OBJDIR=$TMP/wg-build"
   ];
 
-  preBuild = lib.optionalString stdenv.isLinux ''
+  preBuild = stdenv.lib.optionalString stdenv.isLinux ''
     makeFlagsArray+=('XFT_PACKAGE=--cflags={} --libs={-lX11 -lXft}')
   '';
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
   dontConfigure = true;
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     makeWrapper
     ninja
   ];
@@ -38,25 +38,25 @@ stdenv.mkDerivation rec {
     ncurses
     readline
     zlib
-  ] ++ lib.optionals stdenv.isLinux [
+  ] ++ stdenv.lib.optionals stdenv.isLinux [
     libXft
   ];
 
   # To be able to find <Xft.h>
-  NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isLinux "-I${libXft.dev}/include/X11";
+  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isLinux "-I${libXft.dev}/include/X11";
 
   # Binaries look for LuaFileSystem library (lfs.so) at runtime
   postInstall = ''
     wrapProgram $out/bin/wordgrinder --set LUA_CPATH "${lua52Packages.luafilesystem}/lib/lua/5.2/lfs.so";
-  '' + lib.optionalString stdenv.isLinux ''
+  '' + stdenv.lib.optionalString stdenv.isLinux ''
     wrapProgram $out/bin/xwordgrinder --set LUA_CPATH "${lua52Packages.luafilesystem}/lib/lua/5.2/lfs.so";
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Text-based word processor";
     homepage = "https://cowlark.com/wordgrinder";
     license = licenses.mit;
     maintainers = with maintainers; [ matthiasbeyer ];
-    platforms = with lib.platforms; linux ++ darwin;
+    platforms = with stdenv.lib.platforms; linux ++ darwin;
   };
 }

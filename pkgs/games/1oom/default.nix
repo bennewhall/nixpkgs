@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitLab, autoreconfHook, libsamplerate, SDL2, SDL2_mixer, readline }:
+{ stdenv, fetchFromGitLab, autoreconfHook, libsamplerate, SDL2, SDL2_mixer, readline }:
 
 stdenv.mkDerivation rec {
   pname = "1oom";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
       HACKING NEWS PHILOSOPHY README doc/*.txt
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://kilgoretroutmaskreplicant.gitlab.io/plain-html/";
     description = "Master of Orion (1993) game engine recreation";
     license = licenses.gpl2Only;

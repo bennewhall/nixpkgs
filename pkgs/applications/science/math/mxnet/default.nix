@@ -1,5 +1,5 @@
-{ config, stdenv, lib, fetchurl, fetchpatch, bash, cmake
-, opencv3, gtest, blas, gomp, llvmPackages, perl
+{ config, stdenv, lib, fetchurl, bash, cmake
+, opencv3, gtest, blas, perl
 , cudaSupport ? config.cudaSupport or false, cudatoolkit, nvidia_x11
 , cudnnSupport ? cudaSupport, cudnn
 }:
@@ -8,35 +8,18 @@ assert cudnnSupport -> cudaSupport;
 
 stdenv.mkDerivation rec {
   pname = "mxnet";
-  version = "1.8.0";
+  version = "1.6.0";
 
   src = fetchurl {
-    name = "apache-mxnet-src-${version}-incubating.tar.gz";
-    url = "https://dlcdn.apache.org/incubator/mxnet/${version}/apache-mxnet-src-${version}-incubating.tar.gz";
-    hash = "sha256-la/5hYlaukCcCNVRRRCuOLiEkM+2KBqzpf8PWCbI21Q=";
+    url = "https://github.com/apache/incubator-mxnet/releases/download/${version}/apache-mxnet-src-${version}-incubating.tar.gz";
+    sha256 = "1vvdb7pfh63kb9fzs6gqp95q550a3ck4cj9mqxlk9wwhkh30dsq1";
   };
-
-  patches = [
-    # Fix build error https://github.com/apache/incubator-mxnet/issues/19405
-    (fetchpatch {
-      name = "mxnet-fix-gcc-linker-error-1.patch";
-      url = "https://github.com/apache/incubator-mxnet/commit/78e31d66d19e385ca4ef73245ce79a47e375d8d1.diff";
-      sha256 = "sha256-UfmGhh4RbvrEOXe6IJxHm1Aqpy1gS6gHxrX5KQBXjv4=";
-    })
-    (fetchpatch {
-      name = "mxnet-fix-gcc-linker-error-2.patch";
-      url = "https://github.com/apache/incubator-mxnet/commit/9bfe3116aabd01049fdbd90855cb245a30b795df.diff";
-      sha256 = "sha256-BL7Zf7Bgn0qpai9HbQ6LBxZNa3iLjVJSe5nxZgqI/fw=";
-    })
-  ];
 
   nativeBuildInputs = [ cmake perl ];
 
   buildInputs = [ opencv3 gtest blas.provider ]
-    ++ lib.optional stdenv.cc.isGNU gomp
-    ++ lib.optional stdenv.cc.isClang llvmPackages.openmp
-    ++ lib.optionals cudaSupport [ cudatoolkit nvidia_x11 ]
-    ++ lib.optional cudnnSupport cudnn;
+              ++ lib.optionals cudaSupport [ cudatoolkit nvidia_x11 ]
+              ++ lib.optional cudnnSupport cudnn;
 
   cmakeFlags =
     [ "-DUSE_MKL_IF_AVAILABLE=OFF" ]
@@ -60,11 +43,13 @@ stdenv.mkDerivation rec {
     rm "$out"/lib/*.a
   '';
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "Lightweight, Portable, Flexible Distributed/Mobile Deep Learning with Dynamic, Mutation-aware Dataflow Dep Scheduler";
     homepage = "https://mxnet.incubator.apache.org/";
     maintainers = with maintainers; [ abbradar ];
     license = licenses.asl20;
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

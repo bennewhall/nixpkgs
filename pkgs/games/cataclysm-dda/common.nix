@@ -1,11 +1,11 @@
-{ lib, stdenv, runtimeShell, pkg-config, gettext, ncurses, CoreFoundation
+{ stdenv, runtimeShell, pkgconfig, gettext, ncurses, CoreFoundation
 , tiles, SDL2, SDL2_image, SDL2_mixer, SDL2_ttf, freetype, Cocoa
 , debug
 , useXdgDir
 }:
 
 let
-  inherit (lib) optionals optionalString;
+  inherit (stdenv.lib) optionals optionalString;
 
   cursesDeps = [ gettext ncurses ]
     ++ optionals stdenv.isDarwin [ CoreFoundation ];
@@ -13,15 +13,17 @@ let
   tilesDeps = [ SDL2 SDL2_image SDL2_mixer SDL2_ttf freetype ]
     ++ optionals stdenv.isDarwin [ Cocoa ];
 
-  patchDesktopFile = ''
-    substituteInPlace $out/share/applications/org.cataclysmdda.CataclysmDDA.desktop \
-      --replace "Exec=cataclysm-tiles" "Exec=$out/bin/cataclysm-tiles"
+  installXDGAppLauncher = ''
+    launcher="$out/share/applications/cataclysm-dda.desktop"
+    install -D -m 444 data/xdg/*cataclysm-dda.desktop -T "$launcher"
+    sed -i "$launcher" -e "s,\(Exec=\)\(cataclysm-tiles\),\1$out/bin/\2,"
+    install -D -m 444 data/xdg/cataclysm-dda.svg -t $out/share/icons/hicolor/scalable/apps
   '';
 
   installMacOSAppLauncher = ''
     app=$out/Applications/Cataclysm.app
-    install -D -m 444 build-data/osx/Info.plist -t $app/Contents
-    install -D -m 444 build-data/osx/AppIcon.icns -t $app/Contents/Resources
+    install -D -m 444 data/osx/Info.plist -t $app/Contents
+    install -D -m 444 data/osx/AppIcon.icns -t $app/Contents/Resources
     mkdir $app/Contents/MacOS
     launcher=$app/Contents/MacOS/Cataclysm.sh
     cat << EOF > $launcher
@@ -35,7 +37,7 @@ in
 stdenv.mkDerivation {
   pname = "cataclysm-dda";
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = cursesDeps ++ optionals tiles tilesDeps;
 
@@ -56,25 +58,28 @@ stdenv.mkDerivation {
   ] ++ optionals tiles [
     "TILES=1" "SOUND=1"
   ] ++ optionals stdenv.isDarwin [
-    "NATIVE=osx"
-    "CLANG=1"
-    "OSX_MIN=${stdenv.targetPlatform.darwinMinVersion}"
+    "NATIVE=osx" "CLANG=1"
   ];
 
   postInstall = optionalString tiles
   ( if !stdenv.isDarwin
-    then patchDesktopFile
+    then installXDGAppLauncher
     else installMacOSAppLauncher
   );
 
   dontStrip = debug;
+
+  # https://hydra.nixos.org/build/65193254
+  # src/weather_data.cpp:203:1: fatal error: opening dependency file obj/tiles/weather_data.d: No such file or directory
+  # make: *** [Makefile:687: obj/tiles/weather_data.o] Error 1
+  enableParallelBuilding = false;
 
   passthru = {
     isTiles = tiles;
     isCurses = !tiles;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A free, post apocalyptic, zombie infested rogue-like";
     longDescription = ''
       Cataclysm: Dark Days Ahead is a roguelike set in a post-apocalyptic world.
@@ -101,7 +106,7 @@ stdenv.mkDerivation {
     '';
     homepage = "https://cataclysmdda.org/";
     license = licenses.cc-by-sa-30;
-    maintainers = with maintainers; [ mnacamura DeeUnderscore ];
+    maintainers = with maintainers; [ mnacamura ];
     platforms = platforms.unix;
   };
 }

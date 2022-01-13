@@ -1,4 +1,4 @@
-{ lib, stdenv, libdiscid, buildPythonPackage, fetchPypi }:
+{ stdenv, libdiscid, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "discid";
@@ -17,7 +17,7 @@ buildPythonPackage rec {
                   "_open_library('${libdiscid}/lib/libdiscid${extension}')"
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python binding of libdiscid";
     homepage    = "https://python-discid.readthedocs.org/";
     license     = licenses.lgpl3Plus;

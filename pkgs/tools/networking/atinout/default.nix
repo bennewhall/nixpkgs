@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchgit, ronn, mount }:
+{ stdenv, fetchgit, ronn, mount }:
 
 stdenv.mkDerivation rec {
-  pname = "atinout";
+  name = "atinout-${version}";
   version = "0.9.2-alpha";
 
-  NIX_CFLAGS_COMPILE = lib.optionalString (!stdenv.cc.isClang) "-Werror=implicit-fallthrough=0";
-  LANG = if stdenv.isDarwin then "en_US.UTF-8" else "C.UTF-8";
+  NIX_CFLAGS_COMPILE = "-Werror=implicit-fallthrough=0";
+  LANG = "C.UTF-8";
   nativeBuildInputs = [ ronn mount ];
 
   src = fetchgit {
@@ -14,13 +14,11 @@ stdenv.mkDerivation rec {
     sha256 = "0bninv2bklz7ly140cxx8iyaqjlq809jjx6xqpimn34ghwsaxbpv";
   };
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
-
   installPhase = ''
     make PREFIX=$out install
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://atinout.sourceforge.net";
     description = "Tool for talking to modems";
     platforms = platforms.unix;

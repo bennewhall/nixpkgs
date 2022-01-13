@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, nettools }:
+{ stdenv, fetchFromGitHub, nettools }:
 
 stdenv.mkDerivation rec {
   pname = "hans";
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     install -D -m0755 hans $out/bin/hans
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tunnel IPv4 over ICMP";
     longDescription = ''
       Hans makes it possible to tunnel IPv4 through ICMP echo packets, so you

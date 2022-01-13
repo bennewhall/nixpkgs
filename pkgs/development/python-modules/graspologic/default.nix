@@ -3,19 +3,19 @@
 , isPy27
 , fetchFromGitHub
 , pytestCheckHook
-, pytest-cov
+, pytestcov
 , hyppo
 , matplotlib
 , networkx
 , numpy
-, scikit-learn
+, scikitlearn
 , scipy
 , seaborn
 }:
 
 buildPythonPackage rec {
   pname = "graspologic";
-  version = "0.3.1";
+  version = "0.3";
 
   disabled = isPy27;
 
@@ -23,7 +23,7 @@ buildPythonPackage rec {
     owner = "microsoft";
     repo = "graspologic";
     rev = "v${version}";
-    sha256 = "07dmfb1aplha01d22b41js7634dac4v28pv1l3bzssqhi4yyds7h";
+    sha256 = "0lab76qiryxvwl6zrcikhnxil1xywl0wkkm2vzi4v9mdzpa7w29r";
   };
 
   propagatedBuildInputs = [
@@ -31,17 +31,17 @@ buildPythonPackage rec {
     matplotlib
     networkx
     numpy
-    scikit-learn
+    scikitlearn
     scipy
     seaborn
   ];
 
-  checkInputs = [ pytestCheckHook pytest-cov ];
-  pytestFlagsArray = [ "tests" "--ignore=docs" "--ignore=tests/test_sklearn.py" ];
+  checkInputs = [ pytestCheckHook pytestcov ];
+  pytestFlagsArray = [ "tests" "--ignore=docs" ];
   disabledTests = [ "gridplot_outputs" ];
 
   meta = with lib; {
-    homepage = "https://graspologic.readthedocs.io";
+    homepage = "https://graspy.neurodata.io";
     description = "A package for graph statistical algorithms";
     license = licenses.asl20;  # changing to `licenses.mit` in next release
     maintainers = with maintainers; [ bcdarwin ];

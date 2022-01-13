@@ -1,38 +1,26 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, glibcLocales
-, pytest
-}:
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k
+, glibcLocales, pytest }:
 
 buildPythonPackage rec {
   pname = "ephem";
-  version = "4.1.1";
-  format = "setuptools";
+  version = "3.7.7.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-26ngXHjOkQrnWgY1GlWSR5GRqNxXCsDNbRinfpgTiHM=";
+    sha256 = "36b51a8dc7cfdeb456dd6b8ab811accab8341b2d562ee3c6f4c86f6d3dbb984e";
   };
 
-  checkInputs = [
-    glibcLocales
-    pytest
-  ];
-
+  patchFlags = [ "-p0" ];
+  checkInputs = [ pytest glibcLocales ];
   # JPLTest uses assets not distributed in package
   checkPhase = ''
-    LC_ALL="en_US.UTF-8" pytest --pyargs ephem.tests -k "not JPLTest"
+    LC_ALL="en_US.UTF-8" py.test --pyargs ephem.tests -k "not JPLTest"
   '';
 
-  pythonImportsCheck = [
-    "ephem"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Compute positions of the planets and stars";
-    homepage = "https://github.com/brandon-rhodes/pyephem";
-    license = licenses.mit;
+    homepage = "https://pypi.python.org/pypi/ephem/";
+    license = licenses.lgpl3;
     maintainers = with maintainers; [ chrisrosset ];
   };
 }

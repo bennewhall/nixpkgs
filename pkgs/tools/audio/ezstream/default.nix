@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, libiconv, libshout, taglib, libxml2, pkg-config }:
+{ stdenv, fetchurl, libiconv, libshout, taglib, libxml2, pkgconfig }:
 
 stdenv.mkDerivation rec {
   pname = "ezstream";
@@ -10,11 +10,11 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ libiconv libshout taglib libxml2 ];
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A command line source client for Icecast media streaming servers";
     longDescription = ''
       Ezstream is a command line source client for Icecast media

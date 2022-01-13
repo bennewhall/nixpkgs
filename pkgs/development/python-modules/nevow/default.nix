@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy3k, twisted }:
+{ stdenv, buildPythonPackage, fetchpatch, fetchPypi, isPy3k, twisted }:
 
 buildPythonPackage rec {
   pname = "Nevow";
@@ -18,7 +18,7 @@ buildPythonPackage rec {
     trial formless nevow
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Nevow, a web application construction kit for Python";
     longDescription = ''
       Nevow - Pronounced as the French "nouveau", or "noo-voh", Nevow

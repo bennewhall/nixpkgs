@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, cmake, makeWrapper, itk4, vtk_7, Cocoa }:
+{ stdenv, fetchFromGitHub, fetchpatch, cmake, makeWrapper, itk4, vtk_7, Cocoa }:
 
 stdenv.mkDerivation rec {
   pname    = "ANTs";
@@ -20,9 +20,11 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [ cmake makeWrapper ];
-  buildInputs = [ itk4 vtk_7 ] ++ lib.optionals stdenv.isDarwin [ Cocoa ];
+  buildInputs = [ itk4 vtk_7 ] ++ stdenv.lib.optional stdenv.isDarwin [ Cocoa ];
 
   cmakeFlags = [ "-DANTS_SUPERBUILD=FALSE" "-DUSE_VTK=TRUE" ];
+
+  enableParallelBuilding = true;
 
   postInstall = ''
     for file in $out/bin/*; do
@@ -30,7 +32,7 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ANTsX/ANTs";
     description = "Advanced normalization toolkit for medical image registration and other processing";
     maintainers = with maintainers; [ bcdarwin ];

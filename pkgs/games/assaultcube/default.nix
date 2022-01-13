@@ -1,8 +1,8 @@
-{ fetchFromGitHub, lib, stdenv, makeDesktopItem, openal, pkg-config, libogg,
+{ fetchFromGitHub, stdenv, makeDesktopItem, openal, pkgconfig, libogg,
   libvorbis, SDL, SDL_image, makeWrapper, zlib, file,
   client ? true, server ? true }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
 
@@ -17,12 +17,12 @@ stdenv.mkDerivation rec {
     sha256 = "1vfn3d55vmmipdykrcfvgk6dddi9y95vlclsliirm7jdp20f15hd";
   };
 
-  nativeBuildInputs = [ makeWrapper pkg-config ];
+  nativeBuildInputs = [ makeWrapper pkgconfig ];
 
   buildInputs = [ file zlib ] ++ optionals client [ openal SDL SDL_image libogg libvorbis ];
 
   targets = (optionalString server "server") + (optionalString client " client");
-  makeFlags = [ "-C source/src" "CXX=${stdenv.cc.targetPrefix}c++" targets ];
+  makeFlags = [ "-C source/src" "CXX=c++" targets ];
 
   desktop = makeDesktopItem {
     name = "AssaultCube";
@@ -67,6 +67,6 @@ stdenv.mkDerivation rec {
     homepage = "https://assault.cubers.net";
     maintainers = [ ];
     platforms = platforms.linux; # should work on darwin with a little effort.
-    license = lib.licenses.unfree;
+    license = stdenv.lib.licenses.zlib;
   };
 }

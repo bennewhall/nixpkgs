@@ -2,13 +2,11 @@
 
 buildDunePackage rec {
   pname = "tyxml";
-  version = "4.5.0";
-
-  useDune2 = true;
+  version = "4.4.0";
 
   src = fetchurl {
     url = "https://github.com/ocsigen/tyxml/releases/download/${version}/tyxml-${version}.tbz";
-    sha256 = "0s30f72m457c3gbdmdwbx7ls9zg806nvm83aiz9qkpglbppwr6n6";
+    sha256 = "0c150h2f4c4id73ickkdqkir3jya66m6c7f5jxlp4caw9bfr8qsi";
   };
 
   propagatedBuildInputs = [ uutf re ];
@@ -19,7 +17,7 @@ buildDunePackage rec {
     license = licenses.lgpl21;
     maintainers = with maintainers; [
       gal_bolle vbgl
-    ];
+      ];
   };
 
 }

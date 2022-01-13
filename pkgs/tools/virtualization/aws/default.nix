@@ -1,12 +1,11 @@
-{ lib, stdenv, fetchurl, perl, curl }:
+{ stdenv, fetchurl, perl, curl }:
 
 stdenv.mkDerivation {
-  pname = "aws";
-  version = "2019.06.18";
+  name = "aws-1.75";
 
   src = fetchurl {
-    url = "https://raw.github.com/timkay/aws/ac68eb5191c52f069b9aa0c9a99808f8a4430833/aws";
-    sha256 = "02bym9wicqpdr7mdim13zw5ssh97xfswzab9q29rsbg7058ddbil";
+    url = "https://raw.github.com/timkay/aws/2f2ff99f9f5111ea708ae6cd14d20e264748e72b/aws";
+    sha256 = "0d5asv73a58yb1bb1jpsw3c7asd62y86z5fwpg4llhjzkx79maj6";
   };
 
   buildInputs = [ perl ];
@@ -23,7 +22,7 @@ stdenv.mkDerivation {
   meta = {
     homepage = "https://www.timkay.com/aws/";
     description = "Command-line utility for working with Amazon EC2, S3, SQS, ELB, IAM and SDB";
-    license = lib.licenses.gpl3Plus;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl3Plus;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

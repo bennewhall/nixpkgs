@@ -1,16 +1,16 @@
-{ lib, stdenv, fetchurl, pkg-config, gettext, itstool, libxml2, gtk3, file, mate, hicolor-icon-theme, wrapGAppsHook, mateUpdateScript }:
+{ stdenv, fetchurl, pkgconfig, gettext, itstool, libxml2, gtk3, file, mate, hicolor-icon-theme, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
   pname = "engrampa";
-  version = "1.26.0";
+  version = "1.24.1";
 
   src = fetchurl {
-    url = "https://pub.mate-desktop.org/releases/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "1qsy0ynhj1v0kyn3g3yf62g31rwxmpglfh9xh0w5lc9j5k1b5kcp";
+    url = "https://pub.mate-desktop.org/releases/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0akjnz85qkpiqgj1ccn41rzbfid4l3r3nsm4s9s779ilzd7f097y";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     gettext
     itstool
     wrapGAppsHook
@@ -32,13 +32,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  passthru.updateScript = mateUpdateScript { inherit pname version; };
-
-  meta = with lib; {
+  meta = {
     description = "Archive Manager for MATE";
     homepage = "https://mate-desktop.org";
-    license = with licenses; [ gpl2Plus lgpl2Plus fdl11Plus ];
-    platforms = platforms.unix;
-    maintainers = teams.mate.members;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = [ stdenv.lib.maintainers.romildo ];
   };
 }

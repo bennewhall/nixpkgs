@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitLab
 , fetchpatch
 , meson
@@ -19,7 +19,7 @@
 
 stdenv.mkDerivation rec {
   pname = "malcontent";
-  version = "0.10.3";
+  version = "0.9.0";
 
   outputs = [ "bin" "out" "lib" "pam" "dev" "man" "installedTests" ];
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     owner = "pwithnall";
     repo = pname;
     rev = version;
-    sha256 = "sha256-SA4QyzV/aNUmyr9BYTsemx5x7S6WpxdTBK6zmVMkwh4=";
+    sha256 = "DEtibrGgHSgRjaarAzizzLN1xsJKXl+LCQ29FmpPoJo=";
   };
 
   patches = [
@@ -90,7 +90,7 @@ stdenv.mkDerivation rec {
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     # We need to install Polkit & AccountsService data files in `out`
     # but `buildEnv` only uses `bin` when both `bin` and `out` are present.
     outputsToInstall = [ "bin" "out" "man" ];

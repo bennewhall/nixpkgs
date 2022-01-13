@@ -1,60 +1,36 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, pythonOlder
-
-# propgatedBuildInputs
-, adal
-, certifi
-, google-auth
-, python-dateutil
-, pyyaml
-, requests
-, requests_oauthlib
-, urllib3
-, websocket-client
-
-# tests
-, pytestCheckHook
-, mock
-}:
+{ stdenv, buildPythonPackage, fetchPypi, pythonAtLeast,
+  ipaddress, websocket_client, urllib3, pyyaml, requests_oauthlib, python-dateutil, google_auth, adal,
+  isort, pytest, coverage, mock, sphinx, autopep8, pep8, codecov, recommonmark, nose }:
 
 buildPythonPackage rec {
   pname = "kubernetes";
-  version = "20.13.0";
-  format = "setuptools";
-  disabled = pythonOlder "3.6";
+  version = "12.0.1";
 
-  src = fetchFromGitHub {
-    owner = "kubernetes-client";
-    repo = "python";
-    rev = "v${version}";
-    sha256 = "sha256-zZb5jEQEluY1dfa7UegW+P7MV86ESqOey7kkC74ETlM=";
-    fetchSubmodules = true;
+  prePatch = ''
+    sed -e 's/sphinx>=1.2.1,!=1.3b1,<1.4 # BSD/sphinx/' -i test-requirements.txt
+
+    # This is used to randomize tests, which is not reproducible. Drop it.
+    sed -e '/randomize/d' -i test-requirements.txt
+  ''
+  # This is a python2 and python3.2 only requiremet since it is a backport of a python-3.3 api.
+  + (if (pythonAtLeast "3.3")  then ''
+    sed -e '/ipaddress/d' -i requirements.txt
+  '' else "");
+
+  doCheck = pythonAtLeast "3";
+  checkPhase = ''
+    py.test --ignore=kubernetes/dynamic/test_client.py
+  '';
+
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "ec52ea01d52e2ec3da255992f7e859f3a76f2bdb51cf65ba8cd71dfc309d8daa";
   };
 
-  propagatedBuildInputs = [
-    adal
-    certifi
-    google-auth
-    python-dateutil
-    pyyaml
-    requests
-    requests_oauthlib
-    urllib3
-    websocket-client
-  ];
+  checkInputs = [ isort coverage pytest mock sphinx autopep8 pep8 codecov recommonmark nose ];
+  propagatedBuildInputs = [ ipaddress websocket_client urllib3 pyyaml requests_oauthlib python-dateutil google_auth adal ];
 
-  pythonImportsCheck = [
-    "kubernetes"
-  ];
-
-  checkInputs = [
-    mock
-    pytestCheckHook
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Kubernetes python client";
     homepage = "https://github.com/kubernetes-client/python";
     license = licenses.asl20;

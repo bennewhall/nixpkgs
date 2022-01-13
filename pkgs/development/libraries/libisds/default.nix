@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , expat
 , gpgme
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ expat gpgme libgcrypt libxml2 libxslt curl docbook_xsl ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Client library for accessing SOAP services of Czech government-provided Databox infomation system";
     homepage = "http://xpisar.wz.cz/libisds/";
     license = licenses.lgpl3;

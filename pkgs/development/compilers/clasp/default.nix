@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, fetchFromGitLab
+{ stdenv, fetchFromGitHub, fetchFromGitLab
 , llvmPackages
 , cmake, boehmgc, gmp, zlib, ncurses, boost, libelf
-, python3, git, sbcl
+, python, git, sbcl
 , wafHook
 }:
 let
@@ -67,19 +67,19 @@ stdenv.mkDerivation rec {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [ cmake python3 git sbcl wafHook ] ++
+  nativeBuildInputs = [ cmake python git sbcl wafHook ] ++
     (with llvmPackages; [ llvm clang ]);
 
   buildInputs = with llvmPackages;
   (
-   builtins.map (x: lib.overrideDerivation x
+   builtins.map (x: stdenv.lib.overrideDerivation x
            (x: {NIX_CFLAGS_COMPILE= (x.NIX_CFLAGS_COMPILE or "") + " -frtti"; }))
    [ llvm clang clang-unwrapped clang ]) ++
   [
     gmp zlib ncurses
     boost boehmgc libelf
     (boost.override {enableStatic = true; enableShared = false;})
-    (lib.overrideDerivation boehmgc
+    (stdenv.lib.overrideDerivation boehmgc
       (x: {configureFlags = (x.configureFlags or []) ++ ["--enable-static"];}))
   ];
 
@@ -118,10 +118,11 @@ stdenv.mkDerivation rec {
   CLASP_SRC_DONTTOUCH = "true";
 
   meta = {
-    description = "A Common Lisp implementation based on LLVM with C++ integration";
-    license = lib.licenses.lgpl21Plus ;
-    maintainers = [lib.maintainers.raskin];
-    platforms = lib.platforms.linux;
+    inherit version;
+    description = ''A Common Lisp implementation based on LLVM with C++ integration'';
+    license = stdenv.lib.licenses.lgpl21Plus ;
+    maintainers = [stdenv.lib.maintainers.raskin];
+    platforms = stdenv.lib.platforms.linux;
     # Large, long to build, a private build of clang is needed, a prerelease.
     hydraPlatforms = [];
     homepage = "https://github.com/drmeister/clasp";

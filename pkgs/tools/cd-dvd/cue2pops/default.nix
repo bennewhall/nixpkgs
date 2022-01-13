@@ -1,11 +1,9 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-}:
+{ stdenv, fetchFromGitHub }:
 
+with stdenv.lib;
 stdenv.mkDerivation {
   pname = "cue2pops";
-  version = "unstable-2018-01-04";
+  version = "git-2018-01-04";
 
   src = fetchFromGitHub {
     owner = "makefu";
@@ -16,14 +14,14 @@ stdenv.mkDerivation {
 
   dontConfigure = true;
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = ["CC=cc"];
 
   installPhase = ''
     install --directory --mode=755 $out/bin
     install --mode=755 cue2pops $out/bin
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Convert CUE to ISO suitable to POPStarter";
     homepage = "https://github.com/makefu/cue2pops-linux";
     maintainers = with maintainers; [ AndersonTorres ];

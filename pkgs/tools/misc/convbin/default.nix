@@ -1,23 +1,19 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 }:
 
 stdenv.mkDerivation rec {
   pname = "convbin";
-  version = "3.7";
+  version = "3.0";
 
   src = fetchFromGitHub {
     owner = "mateoconlechuga";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-zCRM62xwaPaN8+cg+CeaqK/9hKpZmSBBeUOQqAvQGYw=";
+    sha256 = "0n502zj8igm583kbfvyv7zhd97vb71jac41ncb9jr2yz2v5ir8j9";
   };
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace Makefile --replace "-flto" ""
-  '';
-
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = [ "CC=cc" ];
 
   checkPhase = ''
     pushd test
@@ -32,7 +28,7 @@ stdenv.mkDerivation rec {
     install -Dm755 bin/convbin $out/bin/convbin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Converts files to other formats";
     longDescription = ''
       This program is used to convert files to other formats,

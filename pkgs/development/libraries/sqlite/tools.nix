@@ -1,28 +1,28 @@
-{ lib, stdenv, fetchurl, unzip, sqlite, tcl, Foundation }:
+{ stdenv, fetchurl, unzip, sqlite, tcl, Foundation }:
 
 let
-  archiveVersion = import ./archive-version.nix lib;
+  archiveVersion = import ./archive-version.nix stdenv.lib;
   mkTool = { pname, makeTarget, description, homepage }: stdenv.mkDerivation rec {
     inherit pname;
-    version = "3.37.0";
+    version = "3.33.0";
 
     src = assert version == sqlite.version; fetchurl {
-      url = "https://sqlite.org/2021/sqlite-src-${archiveVersion version}.zip";
-      sha256 = "sha256-cJd/s5Qhh9RidBOv3pqUkvoCuVSFCBK1OXS2ox7Oj68=";
+      url = "https://sqlite.org/2020/sqlite-src-${archiveVersion version}.zip";
+      sha256 = "1f09srlrmcab1sf8j2d89s2kvknlbxk7mbsiwpndw9mall27dgwh";
     };
 
     nativeBuildInputs = [ unzip ];
-    buildInputs = [ tcl ] ++ lib.optional stdenv.isDarwin Foundation;
+    buildInputs = [ tcl ] ++ stdenv.lib.optional stdenv.isDarwin Foundation;
 
     makeFlags = [ makeTarget ];
 
     installPhase = "install -Dt $out/bin ${makeTarget}";
 
-    meta = with lib; {
+    meta = with stdenv.lib; {
       inherit description homepage;
-      downloadPage = "http://sqlite.org/download.html";
+      downloadPage = http://sqlite.org/download.html;
       license = licenses.publicDomain;
-      maintainers = with maintainers; [ johnazoidberg ];
+      maintainers = with maintainers; [ pesterhazy johnazoidberg ];
       platforms = platforms.unix;
     };
   };

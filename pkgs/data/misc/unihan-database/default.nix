@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , unzip
 }:
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Unicode Han Database";
     homepage = "https://www.unicode.org/";
     license = licenses.unicode-dfs-2016;

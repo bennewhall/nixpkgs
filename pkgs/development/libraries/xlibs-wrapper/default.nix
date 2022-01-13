@@ -1,4 +1,4 @@
-{lib, stdenv, packages}:
+{stdenv, packages}:
 
 stdenv.mkDerivation {
   name = "xlibs-wrapper";
@@ -11,11 +11,11 @@ stdenv.mkDerivation {
   propagatedBuildInputs = packages;
 
   preferLocalBuild = true;
-
+} // {
   # For compatability with XFree86.
-  passthru.buildClientLibs = true;
+  buildClientLibs = true;
 
   meta = {
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

@@ -5,9 +5,8 @@
 }:
 
 mkDerivation {
-  pname = "kcharselect";
+  name = "kcharselect";
   meta = {
-    homepage = "https://apps.kde.org/kcharselect/";
     license = lib.licenses.gpl2Plus;
     maintainers = [ lib.maintainers.schmittlauch ];
     description = "A tool to select special characters from all installed fonts and copy them into the clipboard";

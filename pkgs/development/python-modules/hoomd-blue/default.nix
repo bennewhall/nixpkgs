@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchgit
+{ stdenv, fetchgit
 , cmake, pkgconfig
 , python
 , mpi ? null
@@ -29,9 +29,11 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ cmake pkgconfig ];
-  buildInputs = lib.optionals withMPI [ mpi ];
+  buildInputs = stdenv.lib.optionals withMPI [ mpi ];
   propagatedBuildInputs = [ python.pkgs.numpy ]
-   ++ lib.optionals withMPI [ python.pkgs.mpi4py ];
+   ++ stdenv.lib.optionals withMPI [ python.pkgs.mpi4py ];
+
+  enableParallelBuilding = true;
 
   dontAddPrefix = true;
   cmakeFlags = [
@@ -52,7 +54,7 @@ stdenv.mkDerivation rec {
   doCheck = false;
   checkTarget = "test";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://glotzerlab.engin.umich.edu/hoomd-blue/";
     description = "HOOMD-blue is a general-purpose particle simulation toolkit";
     license = licenses.bsdOriginal;

@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 , gettext
-, pkg-config
+, pkgconfig
 , wrapGAppsHook
 , anthy
 , ibus
@@ -13,11 +13,11 @@
 
 stdenv.mkDerivation rec {
   pname = "ibus-anthy";
-  version = "1.5.14";
+  version = "1.5.11";
 
   src = fetchurl {
     url = "https://github.com/ibus/ibus-anthy/releases/download/${version}/${pname}-${version}.tar.gz";
-    sha256 = "sha256-yGlNoY0LiRpI9NdaDezjfsvKbRsay2QQGnqEytEEbZs=";
+    sha256 = "1zwgswpibh67sgbza8kvg03v06maxc08ihkgm5hmh333sjq9d5c0";
   };
 
   buildInputs = [
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     gettext
     gobject-introspection
-    pkg-config
+    pkgconfig
     wrapGAppsHook
   ];
 
@@ -46,7 +46,7 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/share/ibus/component/anthy.xml --replace \$\{exec_prefix\} $out
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     isIbusEngine = true;
     description = "IBus interface to the anthy input method";
     homepage = "https://github.com/fujiwarat/ibus-anthy";

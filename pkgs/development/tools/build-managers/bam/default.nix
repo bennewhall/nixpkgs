@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, lua5_3, python3 }:
+{ stdenv, fetchFromGitHub, lua5_3, python }:
 
 stdenv.mkDerivation rec {
   pname = "bam";
@@ -11,13 +11,11 @@ stdenv.mkDerivation rec {
     sha256 = "13br735ig7lygvzyfd15fc2rdygrqm503j6xj5xkrl1r7w2wipq6";
   };
 
-  nativeBuildInputs = [ lua5_3 python3 ];
+  buildInputs = [ lua5_3 python ];
 
-  buildPhase = "${stdenv.shell} make_unix.sh";
+  buildPhase = ''${stdenv.shell} make_unix.sh'';
 
-  checkPhase = "${python3.interpreter} scripts/test.py";
-
-  strictDeps = true;
+  checkPhase = ''${python.interpreter} scripts/test.py'';
 
   installPhase = ''
     mkdir -p "$out/share/bam"
@@ -26,7 +24,7 @@ stdenv.mkDerivation rec {
     cp bam "$out/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Yet another build manager";
     maintainers = with maintainers;
     [

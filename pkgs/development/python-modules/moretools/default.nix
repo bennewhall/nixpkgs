@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 , six, pathpy, zetup, pytest
 , decorator }:
 
@@ -19,7 +19,7 @@ buildPythonPackage rec {
   checkInputs = [ six pathpy pytest ];
   propagatedBuildInputs = [ decorator ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       Many more basic tools for python 2/3 extending itertools, functools, operator and collections
     '';

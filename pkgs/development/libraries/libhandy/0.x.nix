@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchFromGitLab, meson, ninja, pkg-config, gobject-introspection, vala
+{ stdenv, fetchFromGitLab, meson, ninja, pkgconfig, gobject-introspection, vala
 , gtk-doc, docbook_xsl, docbook_xml_dtd_43
-, gtk3, gnome
-, dbus, xvfb-run, libxml2
+, gtk3, gnome3
+, dbus, xvfb_run, libxml2
 , hicolor-icon-theme
 }:
 
@@ -21,11 +21,11 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    meson ninja pkg-config gobject-introspection vala libxml2
+    meson ninja pkgconfig gobject-introspection vala libxml2
     gtk-doc docbook_xsl docbook_xml_dtd_43
   ];
-  buildInputs = [ gnome.gnome-desktop gtk3 libxml2 ];
-  checkInputs = [ dbus xvfb-run hicolor-icon-theme ];
+  buildInputs = [ gnome3.gnome-desktop gtk3 libxml2 ];
+  checkInputs = [ dbus xvfb_run hicolor-icon-theme ];
 
   mesonFlags = [
     "-Dgtk_doc=true"
@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
       meson test --print-errorlogs
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library full of GTK widgets for mobile phones";
     homepage = "https://source.puri.sm/Librem5/libhandy";
     license = licenses.lgpl21Plus;

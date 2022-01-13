@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, pkg-config, gettext
+{ stdenv, fetchurl, cmake, pkgconfig, gettext
 , gtk2, libcanberra, libnotify, pcre, sqlite, xorg
 , harfbuzz
 }:
@@ -14,11 +14,13 @@ stdenv.mkDerivation rec {
 
   outputs = [ "dev" "out" "bin" ];
 
-  nativeBuildInputs = [ cmake pkg-config gettext ];
+  nativeBuildInputs = [ cmake pkgconfig gettext ];
 
   propagatedBuildInputs = [
     gtk2 libcanberra libnotify pcre sqlite xorg.libXdmcp xorg.libpthreadstubs
   ];
+
+  enableParallelBuilding = true;
 
   cmakeFlags = [
     "-DINSTALL_CMAKE_MODULESDIR=lib/cmake"
@@ -36,7 +38,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Provides functionality for gaming input devices";
     homepage = "https://sourceforge.net/projects/libgaminggear/";
-    platforms = lib.platforms.linux;
-    license = lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2Plus;
   };
 }

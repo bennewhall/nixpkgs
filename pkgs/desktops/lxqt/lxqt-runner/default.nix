@@ -2,7 +2,7 @@
 , mkDerivation
 , fetchFromGitHub
 , cmake
-, pkg-config
+, pkgconfig
 , lxqt-build-tools
 , qtbase
 , qttools
@@ -20,18 +20,18 @@
 
 mkDerivation rec {
   pname = "lxqt-runner";
-  version = "1.0.0";
+  version = "0.15.0";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "06b7l2jkh0h4ikddh82nxkz7qhg5ap7l016klg3jl2x659z59hpj";
+    sha256 = "1x6s4k27cvj2k51hwpcp3l686c2am504ckry4fm76h0mlnkffjm5";
   };
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
     lxqt-build-tools
   ];
 
@@ -52,9 +52,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/lxqt-runner";
     description = "Tool used to launch programs quickly by typing their names";
-    license = licenses.lgpl21Plus;
+    homepage = "https://github.com/lxqt/lxqt-runner";
+    license = licenses.lgpl21;
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];
   };

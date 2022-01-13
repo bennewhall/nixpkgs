@@ -1,38 +1,33 @@
 { stdenv
-, lib
 , fetchurl
-, meson
-, ninja
-, pkg-config
+, pkgconfig
 , gobject-introspection
 , vala
 , gtk-doc
-, docbook-xsl-nons
+, docbook_xsl
 , docbook_xml_dtd_412
 , libxml2
 , gst_all_1
-, gnome
+, gnome3
 }:
 
 stdenv.mkDerivation rec {
   pname = "gupnp-dlna";
-  version = "0.12.0";
+  version = "0.10.5";
 
   outputs = [ "out" "dev" "devdoc" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "PVO5b4W8VijTPjZ+yb8q2zjvKzTXrQQ0proM9K2QSOY=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0spzd2saax7w776p5laixdam6d7smyynr9qszhbmq7f14y13cghj";
   };
 
   nativeBuildInputs = [
-    meson
-    ninja
-    pkg-config
+    pkgconfig
     gobject-introspection
     vala
     gtk-doc
-    docbook-xsl-nons
+    docbook_xsl
     docbook_xml_dtd_412
   ];
 
@@ -41,8 +36,8 @@ stdenv.mkDerivation rec {
     gst_all_1.gst-plugins-base
   ];
 
-  mesonFlags = [
-    "-Dgtk_doc=true"
+  configureFlags = [
+    "--enable-gtk-doc"
   ];
 
   doCheck = true;
@@ -53,13 +48,12 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
-      versionPolicy = "odd-unstable";
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://wiki.gnome.org/Projects/GUPnP/";
     description = "Library to ease DLNA-related bits for applications using GUPnP";
     license = licenses.lgpl2Plus;

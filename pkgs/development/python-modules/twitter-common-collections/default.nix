@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , twitter-common-lang
@@ -15,7 +15,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ twitter-common-lang ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Twitter's common collections";
     homepage    = "https://twitter.github.io/commons/";
     license     = licenses.asl20;

@@ -1,19 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchurl, cmake }:
 
 stdenv.mkDerivation rec {
   pname = "primesieve";
-  version = "7.7";
+  version = "7.5";
 
-  nativeBuildInputs = [ cmake ];
+  nativeBuildInputs = [cmake];
 
-  src = fetchFromGitHub {
-    owner = "kimwalisch";
-    repo = "primesieve";
-    rev = "v${version}";
-    sha256 = "sha256-1Gfo00yaf7zHzCLfu/abWqeM0qBuLu+f+lowFFnWFxY=";
+  src = fetchurl {
+    url = "https://github.com/kimwalisch/primesieve/archive/v${version}.tar.gz";
+    sha256 = "0g60br3p8di92jx3pr2bb51xh15gg57l7qvwzwn7xf7l585hgi7v";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Fast C/C++ prime number generator";
     homepage = "https://primesieve.org/";
     license = licenses.bsd2;

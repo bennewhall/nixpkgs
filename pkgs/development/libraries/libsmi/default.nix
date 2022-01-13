@@ -1,4 +1,4 @@
-{ lib, stdenv , fetchurl }:
+{ stdenv , fetchurl }:
 
 stdenv.mkDerivation rec {
   pname = "libsmi";
@@ -9,10 +9,10 @@ stdenv.mkDerivation rec {
     sha256 = "1lslaxr2qcj6hf4naq5n5mparfhmswsgq4wa7zm2icqvvgdcq6pj";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Library to Access SMI MIB Information";
     homepage = "https://www.ibr.cs.tu-bs.de/projects/libsmi/index.html";
     license = licenses.free;
-    platforms = lib.platforms.linux ++ lib.platforms.darwin;
+    platforms = stdenv.lib.platforms.linux ++ stdenv.lib.platforms.darwin;
   };
 }

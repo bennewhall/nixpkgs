@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, libX11 }:
+{ stdenv, fetchurl, libX11 }:
 
 stdenv.mkDerivation rec {
-  pname = "xchainkeys";
-  version = "0.11";
+  name = "xchainkeys-0.11";
 
   src = fetchurl {
-    url = "http://henning-bekel.de/download/xchainkeys/xchainkeys-${version}.tar.gz";
+    url = "http://henning-bekel.de/download/xchainkeys/${name}.tar.gz";
     sha256 = "1rpqs7h5krral08vqxwb0imy33z17v5llvrg5hy8hkl2ap7ya0mn";
   };
 
@@ -14,7 +13,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "http://henning-bekel.de/xchainkeys/";
     description = "A standalone X11 program to create chained key bindings";
-    license = lib.licenses.gpl3;
-    platforms = lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl3;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

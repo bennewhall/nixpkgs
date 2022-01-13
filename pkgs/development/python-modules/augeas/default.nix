@@ -12,7 +12,7 @@ buildPythonPackage rec {
 
     # TODO: not very nice!
     postPatch =
-      let libname = "libaugeas${stdenv.hostPlatform.extensions.sharedLibrary}";
+      let libname = if stdenv.isDarwin then "libaugeas.dylib" else "libaugeas.so";
       in
       ''
         substituteInPlace augeas/ffi.py \

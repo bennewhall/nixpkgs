@@ -31,6 +31,7 @@ let
                        else stdenv.hostPlatform.extensions.sharedLibrary;
 
 
+  isILP64 = blasProvider.blas64 or false;
   blasImplementation = lib.getName blasProvider;
 
 in
@@ -82,7 +83,7 @@ stdenv.mkDerivation {
   patchelf --set-rpath "$(patchelf --print-rpath $out/lib/libblas${canonicalExtension}):${lib.getLib blasProvider}/lib" $out/lib/libblas${canonicalExtension}
 '' else if stdenv.hostPlatform.isDarwin then ''
   install_name_tool \
-    -id $out/lib/libblas${canonicalExtension} \
+    -id libblas${canonicalExtension} \
     -add_rpath ${lib.getLib blasProvider}/lib \
     $out/lib/libblas${canonicalExtension}
 '' else "") + ''
@@ -114,7 +115,7 @@ EOF
   patchelf --set-rpath "$(patchelf --print-rpath $out/lib/libcblas${canonicalExtension}):${lib.getLib blasProvider}/lib" $out/lib/libcblas${canonicalExtension}
 '' else if stdenv.hostPlatform.isDarwin then ''
   install_name_tool \
-    -id $out/lib/libcblas${canonicalExtension} \
+    -id libcblas${canonicalExtension} \
     -add_rpath ${lib.getLib blasProvider}/lib \
     $out/lib/libcblas${canonicalExtension}
 '' else "") + ''
@@ -131,7 +132,7 @@ Description: BLAS C implementation
 Cflags: -I$dev/include
 Libs: -L$out/lib -lcblas
 EOF
-'' + lib.optionalString (blasImplementation == "mkl") ''
+'' + stdenv.lib.optionalString (blasImplementation == "mkl") ''
   mkdir -p $out/nix-support
   echo 'export MKL_INTERFACE_LAYER=${lib.optionalString isILP64 "I"}LP64,GNU' > $out/nix-support/setup-hook
   ln -s $out/lib/libblas${canonicalExtension} $out/lib/libmkl_rt${stdenv.hostPlatform.extensions.sharedLibrary}

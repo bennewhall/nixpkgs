@@ -1,6 +1,8 @@
 { lib
 , buildPythonPackage
 , fetchPypi
+, python
+, isPy3k
 }:
 
 buildPythonPackage rec {

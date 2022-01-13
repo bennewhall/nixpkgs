@@ -1,24 +1,19 @@
-{ lib, stdenv, fetchFromGitHub, jre_headless, jdk, ant, saxon }:
+{ stdenv, fetchFromGitHub, jre_headless, jdk, ant, saxon }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "jing-trang";
-  version = "20181222";
+  version = "20151127";
 
   src = fetchFromGitHub {
     owner = "relaxng";
     repo = "jing-trang";
-    rev = "V${version}";
-    sha256 = "sha256-Krupa3MGk5UaaQsaNpPMZuIUzHJytDiksz9ysCPkFS4=";
-    fetchSubmodules = true;
+    rev = "47a0cbdaec2d48824b78a1c19879ac7875509598"; # needed to compile with jdk8
+    sha256 = "1hhn52z9mv1x9nyvyqnmzg5yrs2lzm9xac7i15izppv02wp32qha";
   };
 
   buildInputs = [ jdk ant saxon ];
 
   CLASSPATH = "lib/saxon.jar";
-
-  patches = [
-    ./no-git-during-build.patch
-  ];
 
   preBuild = "ant";
 
@@ -37,10 +32,7 @@ stdenv.mkDerivation rec {
     chmod +x "$out"/bin/*
   '';
 
-  doCheck = true;
-  checkPhase = "ant test";
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A RELAX NG validator in Java";
     # The homepage is www.thaiopensource.com, but it links to googlecode.com
     # for downloads and call it the "project site".

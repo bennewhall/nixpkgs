@@ -1,29 +1,20 @@
-{ lib
-, fetchFromGitHub
-, bash
-, autoconf
-, automake
-, libtool
-, pkg-config
-, libcangjie
-, sqlite
-, buildPythonPackage
-, cython
+{ stdenv, fetchurl, bash, autoconf, automake, libtool, pkgconfig, libcangjie
+, sqlite, buildPythonPackage, cython
 }:
 
-buildPythonPackage {
+let
+  rev = "361bb413203fd43bab624d98edf6f7d20ce6bfd3";
+in buildPythonPackage {
   pname = "pycangjie";
-  version = "unstable-2015-05-03";
+  version = "1.3_rev_${rev}";
   format = "other";
 
-  src = fetchFromGitHub {
-    owner = "Cangjians";
-    repo = "pycangjie";
-    rev = "361bb413203fd43bab624d98edf6f7d20ce6bfd3";
-    sha256 = "sha256-sS0Demzm89WtEIN4Efz0OTsUQ/c3gIX+/koekQGOca4=";
+  src = fetchurl {
+    url = "https://github.com/Cangjians/pycangjie/archive/${rev}.tar.gz";
+    sha256 = "12yi09nyffmn4va7lzk4irw349qzlbxgsnb89dh15cnw0xmrin05";
   };
 
-  nativeBuildInputs = [ pkg-config libtool autoconf automake cython ];
+  nativeBuildInputs = [ pkgconfig libtool autoconf automake cython ];
   buildInputs = [ libcangjie sqlite ];
 
   preConfigure = ''
@@ -35,7 +26,7 @@ buildPythonPackage {
 
   doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python wrapper to libcangjie";
     homepage = "http://cangjians.github.io/projects/pycangjie/";
     license = licenses.lgpl3Plus;

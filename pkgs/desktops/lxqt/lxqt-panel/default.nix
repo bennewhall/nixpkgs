@@ -2,8 +2,8 @@
 , mkDerivation
 , fetchFromGitHub
 , cmake
-, pkg-config
-, alsa-lib
+, pkgconfig
+, alsaLib
 , kguiaddons
 , kwindowsystem
 , libXdamage
@@ -30,23 +30,23 @@
 
 mkDerivation rec {
   pname = "lxqt-panel";
-  version = "1.0.0";
+  version = "0.15.1";
 
   src = fetchFromGitHub {
     owner = "lxqt";
     repo = pname;
     rev = version;
-    sha256 = "0i63jyjg31336davjdak7z3as34gazx1lri65fk2f07kka9dx1jl";
+    sha256 = "0f3sjzkria61nz342daxps2w57wnx6laq9iww8hha7rbi24yw2sd";
   };
 
   nativeBuildInputs = [
     cmake
-    pkg-config
+    pkgconfig
     lxqt-build-tools
   ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     kguiaddons
     kwindowsystem
     libXdamage
@@ -73,9 +73,9 @@ mkDerivation rec {
   passthru.updateScript = lxqtUpdateScript { inherit pname version src; };
 
   meta = with lib; {
-    homepage = "https://github.com/lxqt/lxqt-panel";
     description = "The LXQt desktop panel";
-    license = licenses.lgpl21Plus;
+    homepage = "https://github.com/lxqt/lxqt-panel";
+    license = licenses.lgpl21;
     platforms = platforms.linux;
     maintainers = with maintainers; [ romildo ];
   };

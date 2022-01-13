@@ -1,16 +1,16 @@
-{ lib, stdenv,
+{ stdenv,
   fetchFromGitHub,
   autoreconfHook,
   bison,
   flex,
   glib,
-  pkg-config,
+  pkgconfig,
   json_c,
   xen,
   libvirt,
   xenSupport ? true }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "libvmi";
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ glib libvirt json_c ] ++ (optional xenSupport xen);
-  nativeBuildInputs = [ autoreconfHook bison flex pkg-config ];
+  nativeBuildInputs = [ autoreconfHook bison flex pkgconfig ];
 
   configureFlags = optional (!xenSupport) "--disable-xen";
 
@@ -36,8 +36,8 @@ stdenv.mkDerivation rec {
     patchelf --set-rpath "$oldrpath:${makeLibraryPath [ xen ]}" "$libvmi"
   '';
 
-  meta = with lib; {
-    homepage = "https://libvmi.com/";
+  meta = with stdenv.lib; {
+    homepage = "http://libvmi.com/";
     description = "A C library for virtual machine introspection";
     longDescription = ''
       LibVMI is a C library with Python bindings that makes it easy to monitor the low-level

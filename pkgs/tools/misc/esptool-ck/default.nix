@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "esptool-ck";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     cp esptool $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "ESP8266/ESP32 build helper tool";
     homepage = "https://github.com/igrr/esptool-ck";
     license = licenses.gpl2;

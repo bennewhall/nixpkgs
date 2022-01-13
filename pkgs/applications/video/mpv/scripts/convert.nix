@@ -1,7 +1,7 @@
-{ stdenvNoCC, fetchgit, lib
+{ stdenv, fetchgit, lib
 , yad, mkvtoolnix-cli, libnotify }:
 
-stdenvNoCC.mkDerivation {
+stdenv.mkDerivation {
   pname = "mpv-convert-script";
   version = "2016-03-18";
   src = fetchgit {
@@ -12,17 +12,15 @@ stdenvNoCC.mkDerivation {
 
   patches = [ ./convert.patch ];
 
-  postPatch = ''
-    substituteInPlace convert_script.lua \
-      --replace 'mkvpropedit_exe = "mkvpropedit"' \
-                'mkvpropedit_exe = "${mkvtoolnix-cli}/bin/mkvpropedit"' \
-      --replace 'mkvmerge_exe = "mkvmerge"' \
-                'mkvmerge_exe = "${mkvtoolnix-cli}/bin/mkvmerge"' \
-      --replace 'yad_exe = "yad"' \
-                'yad_exe = "${yad}/bin/yad"' \
-      --replace 'notify_send_exe = "notify-send"' \
-                'notify_send_exe = "${libnotify}/bin/notify-send"' \
-
+  postPatch =
+    let
+      t = k: v: '' 'local ${k} = "${v}"' '';
+      subs = var: orig: repl: "--replace " + t var orig + t var repl;
+    in ''
+      substituteInPlace convert_script.lua \
+        ${subs "NOTIFY_CMD" "notify-send" "${libnotify}/bin/notify-send"} \
+        ${subs "YAD_CMD" "yad" "${yad}/bin/yad"} \
+        ${subs "MKVMERGE_CMD" "mkvmerge" "${mkvtoolnix-cli}/bin/mkvmerge"}
   '';
 
   dontBuild = true;
@@ -32,15 +30,14 @@ stdenvNoCC.mkDerivation {
   '';
   passthru.scriptName = "convert_script.lua";
 
-  meta = with lib; {
+  meta = {
     description = "Convert parts of a video while you are watching it in mpv";
     homepage = "https://gist.github.com/Zehkul/25ea7ae77b30af959be0";
-    maintainers = [ maintainers.Profpatsch ];
+    maintainers = [ lib.maintainers.Profpatsch ];
     longDescription = ''
       When this script is loaded into mpv, you can hit Alt+W to mark the beginning
       and Alt+W again to mark the end of the clip. Then a settings window opens.
     '';
-    # author was asked to add a license https://gist.github.com/Zehkul/25ea7ae77b30af959be0#gistcomment-3715700
-    license = licenses.unfree;
   };
 }
+

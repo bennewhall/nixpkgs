@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, pkg-config, SDL, SDL_image, libjpeg, libpng, libtiff }:
+{ stdenv, fetchurl, fetchpatch, pkgconfig, SDL, SDL_image, libjpeg, libpng, libtiff }:
 
 stdenv.mkDerivation rec {
   pname = "zgv";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "1fk4i9x0cpnpn3llam0zy2pkmhlr2hy3iaxhxg07v9sizd4dircj";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ SDL SDL_image libjpeg libpng libtiff ];
 
   hardeningDisable = [ "format" ];
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     cp src/zgv $out/bin
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.svgalib.org/rus/zgv/";
     description = "Picture viewer with a thumbnail-based selector";
     license = licenses.gpl2;

@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , fetchurl
 , fetchFromGitHub
 , unzip
@@ -17,7 +17,7 @@ python3.pkgs.buildPythonApplication rec {
       rev = "v${version}";
       sha256 = "0ndrnxwii8lag6vrjpwpf5n36hhv223bb46d431l9gsigbizv0hl";
     })
-  ] ++ lib.optional enableDefaultMusicPack (
+  ] ++ stdenv.lib.optional enableDefaultMusicPack (
     fetchurl {
       url = "http://www.emhsoft.com/singularity/endgame-singularity-music-007.zip";
       sha256 = "0vf2qaf66jh56728pq1zbnw50yckjz6pf6c6qw6dl7vk60kkqnpb";
@@ -29,7 +29,7 @@ python3.pkgs.buildPythonApplication rec {
   propagatedBuildInputs = with python3.pkgs; [ pygame numpy polib ];
 
   # Add the music
-  postInstall = lib.optionalString enableDefaultMusicPack ''
+  postInstall = stdenv.lib.optionalString enableDefaultMusicPack ''
     cp -R "../endgame-singularity-music-007" \
           "$(echo $out/lib/python*/site-packages/singularity)/music"
           # ↑ we cannot glob on [...]/music, it doesn't exist yet
@@ -42,14 +42,7 @@ python3.pkgs.buildPythonApplication rec {
       A simulation of a true AI. Go from computer to computer, pursued by the
       entire world. Keep hidden, and you might have a chance
     '';
-    # License details are in LICENSE.txt
-    license = with lib.licenses; [
-      gpl2Plus # most of the code, some translations
-      mit # recursive_fix_pickle, polib
-      cc-by-sa-30 # data and artwork, some translations
-      free # earth images from NASA, some fonts
-      cc0 # cick0.wav
-    ];
-    maintainers = with lib.maintainers; [ fgaz ];
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ fgaz ];
   };
 }

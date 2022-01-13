@@ -1,9 +1,13 @@
-{ lib, stdenv, fetchurl, autoconf, automake, libtool, dos2unix, libpgf, freeimage, doxygen }:
+{ stdenv, fetchurl, autoconf, automake, libtool, dos2unix, libpgf, freeimage, doxygen }:
 
-with lib;
-stdenv.mkDerivation rec {
-  pname = "pgf";
+with stdenv.lib;
+
+let
   version = "6.14.12";
+in
+stdenv.mkDerivation {
+  pname = "pgf";
+  inherit version;
 
   src = fetchurl {
     url = "mirror://sourceforge/libpgf/pgf-console-src-${version}.tar.gz";
@@ -25,7 +29,7 @@ stdenv.mkDerivation rec {
   meta = {
     homepage = "https://www.libpgf.org/";
     description = "Progressive Graphics Format command line program";
-    license = lib.licenses.lgpl21Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.lgpl21Plus;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, firmwareLinuxNonfree, libarchive }:
+{ stdenv, firmwareLinuxNonfree, libarchive }:
 
 stdenv.mkDerivation {
   name = "amd-ucode-${firmwareLinuxNonfree.version}";
@@ -20,7 +20,7 @@ stdenv.mkDerivation {
     echo kernel/x86/microcode/AuthenticAMD.bin | bsdcpio -o -H newc -R 0:0 > $out/amd-ucode.img
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "AMD Processor microcode patch";
     homepage = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git";
     license = licenses.unfreeRedistributableFirmware;

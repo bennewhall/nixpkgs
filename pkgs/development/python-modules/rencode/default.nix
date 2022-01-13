@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchgit
 , cython
@@ -16,7 +16,7 @@ buildPythonPackage {
 
   buildInputs = [ cython ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/aresch/rencode";
     description = "Fast (basic) object serialization similar to bencode";
     license = licenses.gpl3;

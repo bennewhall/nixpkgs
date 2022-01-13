@@ -1,6 +1,4 @@
-{ lib, stdenv, fetchurl
-, pkg-config
-, libxml2, findXMLCatalogs, gettext, python3, libgcrypt
+{ stdenv, fetchurl, fetchpatch, libxml2, findXMLCatalogs, gettext, python, libgcrypt
 , cryptoSupport ? false
 , pythonSupport ? stdenv.buildPlatform == stdenv.hostPlatform
 }:
@@ -14,41 +12,38 @@ stdenv.mkDerivation rec {
     sha256 = "0zrzz6kjdyavspzik6fbkpvfpbd25r2qg6py5nnjaabrsr3bvccq";
   };
 
-  outputs = [ "bin" "dev" "out" "man" "doc" ] ++ lib.optional pythonSupport "py";
-
-  nativeBuildInputs = [
-    pkg-config
-  ];
+  outputs = [ "bin" "dev" "out" "man" "doc" ] ++ stdenv.lib.optional pythonSupport "py";
 
   buildInputs = [ libxml2.dev ]
-    ++ lib.optional stdenv.isDarwin gettext
-    ++ lib.optionals pythonSupport [ libxml2.py python3 ]
-    ++ lib.optionals cryptoSupport [ libgcrypt ];
+    ++ stdenv.lib.optional stdenv.isDarwin gettext
+    ++ stdenv.lib.optionals pythonSupport [ libxml2.py python ]
+    ++ stdenv.lib.optionals cryptoSupport [ libgcrypt ];
 
   propagatedBuildInputs = [ findXMLCatalogs ];
 
   configureFlags = [
+    "--with-libxml-prefix=${libxml2.dev}"
     "--without-debug"
     "--without-mem-debug"
     "--without-debugger"
-  ] ++ lib.optional pythonSupport "--with-python=${python3}"
-    ++ lib.optional (!cryptoSupport) "--without-crypto";
+  ] ++ stdenv.lib.optional pythonSupport "--with-python=${python}"
+    ++ stdenv.lib.optional (!cryptoSupport) "--without-crypto";
 
   postFixup = ''
     moveToOutput bin/xslt-config "$dev"
     moveToOutput lib/xsltConf.sh "$dev"
     moveToOutput share/man/man1 "$bin"
-  '' + lib.optionalString pythonSupport ''
+  '' + stdenv.lib.optionalString pythonSupport ''
     mkdir -p $py/nix-support
     echo ${libxml2.py} >> $py/nix-support/propagated-build-inputs
-    moveToOutput ${python3.libPrefix} "$py"
+    moveToOutput ${python.libPrefix} "$py"
   '';
 
   passthru = {
     inherit pythonSupport;
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://xmlsoft.org/XSLT/";
     description = "A C library and tools to do XSL transformations";
     license = licenses.mit;

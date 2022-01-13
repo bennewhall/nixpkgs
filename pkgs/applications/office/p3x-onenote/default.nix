@@ -1,4 +1,4 @@
-{ lib, stdenv, appimageTools, desktop-file-utils, fetchurl }:
+{ stdenv, appimageTools, desktop-file-utils, fetchurl }:
 
 let
   version = "2020.10.111";
@@ -45,7 +45,7 @@ appimageTools.wrapType2 rec {
       --delete-original $out/p3x-onenote.desktop
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/patrikx3/onenote";
     description = "Linux Electron Onenote - A Linux compatible version of OneNote";
     license = licenses.mit;

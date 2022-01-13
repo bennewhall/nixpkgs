@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub
-, cmake, pkg-config, perl
+{ stdenv, fetchFromGitHub
+, cmake, pkgconfig, perl
 , gettext, fuse, openssl, tinyxml2
 }:
 
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ gettext fuse openssl tinyxml2 ];
-  nativeBuildInputs = [ cmake pkg-config perl ];
+  nativeBuildInputs = [ cmake pkgconfig perl ];
 
   cmakeFlags =
     [ "-DUSE_INTERNAL_TINYXML=OFF"
@@ -23,10 +23,12 @@ stdenv.mkDerivation rec {
       "-DINSTALL_LIBENCFS=ON"
     ];
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "An encrypted filesystem in user-space via FUSE";
     homepage = "https://vgough.github.io/encfs";
-    license = with licenses; [ gpl3Plus lgpl3Plus ];
-    platforms = platforms.unix;
+    license = with licenses; [ gpl3 lgpl3 ];
+    platforms = with platforms; linux;
   };
 }

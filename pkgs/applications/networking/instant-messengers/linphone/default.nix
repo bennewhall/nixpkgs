@@ -10,7 +10,7 @@
 , cyrus_sasl
 , fetchFromGitLab
 , fetchurl
-, ffmpeg
+, ffmpeg_3
 , gdk-pixbuf
 , glib
 , gnused
@@ -36,7 +36,8 @@
 , openldap
 , ortp
 , pango
-, pkg-config
+, pkgconfig
+, python
 , qtbase
 , qtgraphicaleffects
 , qtquickcontrols2
@@ -44,14 +45,14 @@
 , readline
 , speex
 , sqlite
-
+, stdenv
 , udev
 , zlib
 }:
 
 mkDerivation rec {
   pname = "linphone-desktop";
-  version = "4.2.5";
+  version = "4.2.4";
 
   src = fetchFromGitLab {
     domain = "gitlab.linphone.org";
@@ -86,7 +87,7 @@ mkDerivation rec {
     bzrtp
     cairo
     cyrus_sasl
-    ffmpeg
+    ffmpeg_3
     gdk-pixbuf
     glib
     gtk2
@@ -124,7 +125,7 @@ mkDerivation rec {
     graphviz
     intltool
     makeWrapper
-    pkg-config
+    pkgconfig
   ];
 
   cmakeFlags = [
@@ -174,12 +175,13 @@ mkDerivation rec {
     ln -s ${liblinphone}/share/belr/grammars/* $out/share/belr/grammars/
     mkdir -p $out/share/linphone
     ln -s ${liblinphone}/share/linphone/* $out/share/linphone/
+    mkdir $out/lib # prevent warning
   '';
 
   meta = with lib; {
     homepage = "https://www.linphone.org/";
     description = "Open source SIP phone for voice/video calls and instant messaging";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     platforms = platforms.linux;
     maintainers = with maintainers; [ jluttine ];
   };

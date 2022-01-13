@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl, imake, libX11, libXtst, libXext, gccmakedep }:
+{ stdenv, fetchurl, imake, libX11, libXtst, libXext, gccmakedep }:
 
-stdenv.mkDerivation rec {
-  pname = "x2x";
-  version = "1.27";
+stdenv.mkDerivation {
+  name = "x2x-1.27";
 
   src = fetchurl {
-    url = "https://github.com/downloads/dottedmag/x2x/x2x-${version}.tar.gz";
+    url = "https://github.com/downloads/dottedmag/x2x/x2x-1.27.tar.gz";
     sha256 = "0dha0kn1lbc4as0wixsvk6bn4innv49z9a0sm5wlx4q1v0vzqzyj";
   };
 
@@ -21,7 +20,7 @@ stdenv.mkDerivation rec {
     install -D x2x.1 $out/man/man1/x2x.1
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Allows the keyboard, mouse on one X display to be used to control another X display";
     homepage = "https://github.com/dottedmag/x2x";
     license = licenses.bsd3;

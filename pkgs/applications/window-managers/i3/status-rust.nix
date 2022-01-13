@@ -1,47 +1,34 @@
-{ lib
+{ stdenv
 , rustPlatform
 , fetchFromGitHub
-, pkg-config
+, pkgconfig
 , makeWrapper
 , dbus
 , libpulseaudio
 , notmuch
-, openssl
 , ethtool
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "i3status-rust";
-  version = "0.20.7";
+  version = "0.14.3";
 
   src = fetchFromGitHub {
     owner = "greshake";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-7RfDNjTUQtVZUeRGBnd2ygSkFJOoPrNF/Bwy8GWo7To=";
+    sha256 = "1k9dgmd4wz9950kr35da31rhph43gmvg8dif7hg1xw41xch6bi60";
   };
 
-  cargoSha256 = "sha256-alZJm2/hhloKQn7QeUA2IMgGl86Lz8xNpZkoMHCcjVI=";
+  cargoSha256 = "0qqkcgl9iz4kxl1a2vv2p7vy7wxn970y28jynf3n7hfp16i3liy2";
 
-  nativeBuildInputs = [ pkg-config makeWrapper ];
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
 
-  buildInputs = [ dbus libpulseaudio notmuch openssl ];
+  buildInputs = [ dbus libpulseaudio notmuch ];
 
-  buildFeatures = [
-    "notmuch"
-    "maildir"
-    "pulseaudio"
+  cargoBuildFlags = [
+    "--features=notmuch"
   ];
-
-  prePatch = ''
-    substituteInPlace src/util.rs \
-      --replace "/usr/share/i3status-rust" "$out/share"
-  '';
-
-  postInstall = ''
-    mkdir -p $out/share
-    cp -R examples files/* $out/share
-  '';
 
   postFixup = ''
     wrapProgram $out/bin/i3status-rs --prefix PATH : "${ethtool}/bin"
@@ -50,7 +37,7 @@ rustPlatform.buildRustPackage rec {
   # Currently no tests are implemented, so we avoid building the package twice
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Very resource-friendly and feature-rich replacement for i3status";
     homepage = "https://github.com/greshake/i3status-rust";
     license = licenses.gpl3;

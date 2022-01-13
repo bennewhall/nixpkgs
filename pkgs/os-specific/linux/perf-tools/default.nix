@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, perl }:
+{ stdenv, fetchFromGitHub, perl }:
 
 stdenv.mkDerivation {
-  pname = "perf-tools";
-  version = "unstable-2017-12-19";
+  name = "perf-tools-20171219";
 
   src = fetchFromGitHub {
     owner = "brendangregg";
@@ -35,11 +34,11 @@ stdenv.mkDerivation {
       mv $d/man $out/share/
     '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     platforms = platforms.linux;
     homepage = "https://github.com/brendangregg/perf-tools";
     description = "Performance analysis tools based on Linux perf_events (aka perf) and ftrace";
     maintainers = [ maintainers.eelco ];
-    license = licenses.gpl2Plus;
+    license = licenses.gpl2;
   };
 }

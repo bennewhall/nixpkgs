@@ -1,25 +1,13 @@
-{ stdenv
-, fetchFromGitHub
-, imagemagick
-}:
+{ stdenv, fetchFromGitHub, imagemagick }:
 
 stdenv.mkDerivation {
-  pname = "nixos-icons";
-  version = "2021-02-24";
-
-  src = fetchFromGitHub {
+  name = "nixos-icons-2017-03-16";
+  srcs = fetchFromGitHub {
     owner = "NixOS";
     repo = "nixos-artwork";
-    rev = "488c22aad523c709c44169d3e88d34b4691c20dc";
-    sha256 = "ZoanCzn4pqGB1fyMzMyGQVT0eIhNdL7ZHJSn1VZWVRs=";
+    rev = "783ca1249fc4cfe523ad4e541f37e2229891bc8b";
+    sha256 = "0wp08b1gh2chs1xri43wziznyjcplx0clpsrb13wzyscv290ay5a";
   };
-
-  nativeBuildInputs = [
-    imagemagick
-  ];
-
-  makeFlags = [
-    "DESTDIR=${placeholder "out"}"
-    "prefix="
-  ];
+  makeFlags = [ "DESTDIR=$(out)" "prefix=" ];
+  nativeBuildInputs = [ imagemagick ];
 }

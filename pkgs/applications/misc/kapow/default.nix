@@ -1,4 +1,4 @@
-{ lib, stdenv, qmake, fetchFromGitHub, qtbase, qttools, wrapQtAppsHook }:
+{ stdenv, qmake, fetchFromGitHub, qtbase, qttools, wrapQtAppsHook }:
 
 stdenv.mkDerivation rec {
   pname = "kapow";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ qtbase ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Punch clock to track time spent on projects";
     homepage = "https://gottcode.org/kapow/";
     maintainers = with maintainers; [ orivej ];

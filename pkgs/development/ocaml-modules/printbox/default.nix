@@ -1,24 +1,21 @@
-{ lib, fetchFromGitHub, buildDunePackage, ocaml, uucp, uutf, mdx }:
+{ lib, fetchFromGitHub, buildDunePackage, uucp, uutf }:
 
 buildDunePackage rec {
   pname = "printbox";
-  version = "0.5";
+  version = "0.4";
 
-  useDune2 = true;
-
-  minimumOCamlVersion = "4.03";
+  minimumOCamlVersion = "4.05";
 
   src = fetchFromGitHub {
     owner = "c-cube";
     repo = pname;
     rev = version;
-    sha256 = "099yxpp7d9bms6dwzp9im7dv1qb801hg5rx6awpx3rpfl4cvqfn2";
+    sha256 = "0bq2v37v144i00h1zwyqhkfycxailr245n97yff0f7qnidxprix0";
   };
 
-  checkInputs = [ uucp uutf mdx.bin ];
+  checkInputs = lib.optionals doCheck [ uucp uutf ];
 
-  # mdx is not available for OCaml < 4.07
-  doCheck = lib.versionAtLeast ocaml.version "4.07";
+  doCheck = true;
 
   meta = {
     homepage = "https://github.com/c-cube/printbox/";

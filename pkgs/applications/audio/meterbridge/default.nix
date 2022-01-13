@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, SDL, SDL_image, libjack2
+{ stdenv, fetchurl, pkgconfig, SDL, SDL_image, libjack2
 }:
 
 stdenv.mkDerivation rec {
@@ -13,10 +13,10 @@ stdenv.mkDerivation rec {
   patches = [ ./buf_rect.patch ./fix_build_with_gcc-5.patch];
 
   buildInputs =
-    [ pkg-config SDL SDL_image libjack2
+    [ pkgconfig SDL SDL_image libjack2
     ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Various meters (VU, PPM, DPM, JF, SCO) for Jack Audio Connection Kit";
     homepage = "http://plugin.org.uk/meterbridge/";
     license = licenses.gpl2;

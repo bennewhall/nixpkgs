@@ -1,29 +1,29 @@
-{ lib, fetchFromGitHub, mkDerivation, cmake, protobuf
+{ stdenv, fetchFromGitHub, mkDerivation, cmake, protobuf
 , qtbase, qtmultimedia, qttools, qtwebsockets, wrapQtAppsHook
 }:
 
 mkDerivation rec {
   pname = "cockatrice";
-  version = "2021-02-03-Development-2.8.1-beta";
+  version = "2020-08-23-Release-2.7.5";
 
   src = fetchFromGitHub {
     owner = "Cockatrice";
     repo = "Cockatrice";
     rev = version;
-    sha256 = "0g1d7zq4lh4jf08mvvgp6m2r2gdvy4y1mhf46c0s8607h2l8vavh";
+    sha256 = "1yaxm7q0ja3rgx197hh8ynjc6ncc4hm0qdn9v7f0l4fbv0bdpv34";
   };
 
   buildInputs = [
-     qtbase qtmultimedia protobuf qttools qtwebsockets
+    cmake qtbase qtmultimedia protobuf qttools qtwebsockets
   ];
 
-  nativeBuildInputs = [ cmake wrapQtAppsHook ];
+  nativeBuildInputs = [ wrapQtAppsHook ];
 
   meta = {
     homepage = "https://github.com/Cockatrice/Cockatrice";
     description = "A cross-platform virtual tabletop for multiplayer card games";
-    license = lib.licenses.gpl2Plus;
-    maintainers = with lib.maintainers; [ evanjs ];
-    platforms = with lib.platforms; linux;
+    license = stdenv.lib.licenses.gpl2;
+    maintainers = with stdenv.lib.maintainers; [ evanjs ];
+    platforms = with stdenv.lib.platforms; linux;
   };
 }

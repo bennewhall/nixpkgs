@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libusb1 }:
+{ stdenv, fetchFromGitHub, libusb1 }:
 
 stdenv.mkDerivation rec {
   pname = "ipad_charge";
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/{bin,lib/udev/rules.d}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Apple device USB charging utility for Linux";
     longDescription = ''

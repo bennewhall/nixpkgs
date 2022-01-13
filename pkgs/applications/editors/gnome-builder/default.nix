@@ -1,17 +1,17 @@
 { stdenv
-, lib
 , ctags
-, cmark
 , appstream-glib
 , desktop-file-utils
+, docbook_xsl
+, docbook_xml_dtd_43
 , fetchurl
 , flatpak
-, gnome
+, gnome3
 , libgit2-glib
-, gi-docgen
 , gobject-introspection
 , glade
 , gspell
+, gtk-doc
 , gtk3
 , gtksourceview4
 , json-glib
@@ -25,7 +25,7 @@
 , ostree
 , pcre
 , pcre2
-, pkg-config
+, pkgconfig
 , python3
 , sysprof
 , template-glib
@@ -34,28 +34,29 @@
 , webkitgtk
 , wrapGAppsHook
 , dbus
-, xvfb-run
+, xvfb_run
+, glib
 }:
 
 stdenv.mkDerivation rec {
   pname = "gnome-builder";
-  version = "41.3";
-
-  outputs = [ "out" "devdoc" ];
+  version = "3.38.1";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.major version}/${pname}-${version}.tar.xz";
-    sha256 = "4iUPyOnp8gAsRS5ZUNgmhXNNPESAs1Fnq1CKyHAlCeE=";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "06wcyfrwcjyj2vcqyw0z3sy1r4qxpcdpwqq1qmpsaphpz8acycjn";
   };
 
   nativeBuildInputs = [
     appstream-glib
     desktop-file-utils
-    gi-docgen
+    docbook_xsl
+    docbook_xml_dtd_43
     gobject-introspection
+    gtk-doc
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     python3.pkgs.wrapPython
     wrapGAppsHook
@@ -63,9 +64,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     ctags
-    cmark
     flatpak
-    gnome.devhelp
+    gnome3.devhelp
     glade
     libgit2-glib
     libpeas
@@ -90,14 +90,17 @@ stdenv.mkDerivation rec {
 
   checkInputs = [
     dbus
-    xvfb-run
+    xvfb_run
   ];
+
+  outputs = [ "out" "devdoc" ];
 
   prePatch = ''
     patchShebangs build-aux/meson/post_install.py
   '';
 
   mesonFlags = [
+    "-Dpython_libprefix=${python3.libPrefix}"
     "-Ddocs=true"
 
     # Making the build system correctly detect clang header and library paths
@@ -133,16 +136,9 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  postFixup = ''
-    # Cannot be in postInstall, otherwise _multioutDocs hook in preFixup will move right back.
-    moveToOutput share/doc/libide "$devdoc"
-  '';
+  passthru.updateScript = gnome3.updateScript { packageName = pname; };
 
-  passthru.updateScript = gnome.updateScript {
-    packageName = pname;
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An IDE for writing GNOME-based software";
     longDescription = ''
       Global search, auto-completion, source code map, documentation

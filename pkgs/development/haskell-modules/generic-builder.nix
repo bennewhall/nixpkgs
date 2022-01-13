@@ -1,4 +1,4 @@
-{ lib, stdenv, buildPackages, buildHaskellPackages, ghc
+{ stdenv, buildPackages, buildHaskellPackages, ghc
 , jailbreak-cabal, hscolour, cpphs, nodejs
 , ghcWithHoogle, ghcWithPackages
 }:
@@ -7,7 +7,7 @@ let
   isCross = stdenv.buildPlatform != stdenv.hostPlatform;
   inherit (buildPackages)
     fetchurl removeReferencesTo
-    pkg-config coreutils gnugrep gnused glibcLocales;
+    pkgconfig coreutils gnugrep gnused glibcLocales;
 in
 
 { pname
@@ -22,10 +22,10 @@ in
 , buildFlags ? []
 , haddockFlags ? []
 , description ? null
-, doCheck ? !isCross && lib.versionOlder "7.4" ghc.version
+, doCheck ? !isCross && stdenv.lib.versionOlder "7.4" ghc.version
 , doBenchmark ? false
 , doHoogle ? true
-, doHaddockQuickjump ? doHoogle && lib.versionAtLeast ghc.version "8.6"
+, doHaddockQuickjump ? doHoogle && stdenv.lib.versionAtLeast ghc.version "8.6"
 , editedCabalFile ? null
 # aarch64 outputs otherwise exceed 2GB limit
 , enableLibraryProfiling ? !(ghc.isGhcjs or stdenv.targetPlatform.isAarch64 or false)
@@ -33,18 +33,17 @@ in
 , profilingDetail ? "exported-functions"
 # TODO enable shared libs for cross-compiling
 , enableSharedExecutables ? false
-, enableSharedLibraries ? !stdenv.hostPlatform.isStatic && (ghc.enableShared or false)
+, enableSharedLibraries ? (ghc.enableShared or false)
 , enableDeadCodeElimination ? (!stdenv.isDarwin)  # TODO: use -dead_strip for darwin
 , enableStaticLibraries ? !(stdenv.hostPlatform.isWindows or stdenv.hostPlatform.isWasm)
-, enableHsc2hsViaAsm ? stdenv.hostPlatform.isWindows && lib.versionAtLeast ghc.version "8.4"
+, enableHsc2hsViaAsm ? stdenv.hostPlatform.isWindows && stdenv.lib.versionAtLeast ghc.version "8.4"
 , extraLibraries ? [], librarySystemDepends ? [], executableSystemDepends ? []
 # On macOS, statically linking against system frameworks is not supported;
 # see https://developer.apple.com/library/content/qa/qa1118/_index.html
 # They must be propagated to the environment of any executable linking with the library
 , libraryFrameworkDepends ? [], executableFrameworkDepends ? []
 , homepage ? "https://hackage.haskell.org/package/${pname}"
-, platforms ? with lib.platforms; all # GHC can cross-compile
-, badPlatforms ? lib.platforms.none
+, platforms ? with stdenv.lib.platforms; all # GHC can cross-compile
 , hydraPlatforms ? null
 , hyperlinkSource ? true
 , isExecutable ? false, isLibrary ? !isExecutable
@@ -52,16 +51,13 @@ in
 , license
 , enableParallelBuilding ? true
 , maintainers ? null
-, changelog ? null
-, mainProgram ? null
 , doCoverage ? false
 , doHaddock ? !(ghc.isHaLVM or false)
-, doHaddockInterfaces ? doHaddock && lib.versionAtLeast ghc.version "9.0.1"
 , passthru ? {}
-, pkg-configDepends ? [], libraryPkgconfigDepends ? [], executablePkgconfigDepends ? [], testPkgconfigDepends ? [], benchmarkPkgconfigDepends ? []
+, pkgconfigDepends ? [], libraryPkgconfigDepends ? [], executablePkgconfigDepends ? [], testPkgconfigDepends ? [], benchmarkPkgconfigDepends ? []
 , testDepends ? [], testHaskellDepends ? [], testSystemDepends ? [], testFrameworkDepends ? []
 , benchmarkDepends ? [], benchmarkHaskellDepends ? [], benchmarkSystemDepends ? [], benchmarkFrameworkDepends ? []
-, testTarget ? "", testFlags ? []
+, testTarget ? ""
 , broken ? false
 , preCompileBuildDriver ? null, postCompileBuildDriver ? null
 , preUnpack ? null, postUnpack ? null
@@ -75,7 +71,7 @@ in
 , shellHook ? ""
 , coreSetup ? false # Use only core packages to build Setup.hs.
 , useCpphs ? false
-, hardeningDisable ? null
+, hardeningDisable ? stdenv.lib.optional (ghc.isHaLVM or false) "all"
 , enableSeparateBinOutput ? false
 , enableSeparateDataOutput ? false
 , enableSeparateDocOutput ? doHaddock
@@ -99,7 +95,7 @@ assert stdenv.hostPlatform.isWasm -> enableStaticLibraries == false;
 
 let
 
-  inherit (lib) optional optionals optionalString versionOlder versionAtLeast
+  inherit (stdenv.lib) optional optionals optionalString versionOlder versionAtLeast
                        concatStringsSep enableFeature optionalAttrs;
 
   isGhcjs = ghc.isGhcjs or false;
@@ -186,7 +182,7 @@ let
   parallelBuildingFlags = "-j$NIX_BUILD_CORES" + optionalString stdenv.isLinux " +RTS -A64M -RTS";
 
   crossCabalFlagsString =
-    lib.optionalString isCross (" " + lib.concatStringsSep " " crossCabalFlags);
+    stdenv.lib.optionalString isCross (" " + stdenv.lib.concatStringsSep " " crossCabalFlags);
 
   buildFlagsString = optionalString (buildFlags != []) (" " + concatStringsSep " " buildFlags);
 
@@ -217,7 +213,7 @@ let
     (enableFeature doBenchmark "benchmarks")
     "--enable-library-vanilla"  # TODO: Should this be configurable?
     (enableFeature enableLibraryForGhci "library-for-ghci")
-  ] ++ optionals (enableDeadCodeElimination && (lib.versionOlder "8.0.1" ghc.version)) [
+  ] ++ optionals (enableDeadCodeElimination && (stdenv.lib.versionOlder "8.0.1" ghc.version)) [
      "--ghc-option=-split-sections"
   ] ++ optionals dontStrip [
     "--disable-library-stripping"
@@ -227,11 +223,7 @@ let
   ] ++ optionals isCross ([
     "--configure-option=--host=${stdenv.hostPlatform.config}"
   ] ++ crossCabalFlags
-  ) ++ optionals enableSeparateBinOutput [
-    "--bindir=${binDir}"
-  ] ++ optionals (doHaddockInterfaces && isLibrary) [
-    "--ghc-options=-haddock"
-  ];
+  ) ++ optionals enableSeparateBinOutput ["--bindir=${binDir}"];
 
   setupCompileFlags = [
     (optionalString (!coreSetup) "-${nativePackageDbFlag}=$setupPackageConfDir")
@@ -242,7 +234,7 @@ let
 
   isHaskellPkg = x: x ? isHaskellLibrary;
 
-  allPkgconfigDepends = pkg-configDepends ++ libraryPkgconfigDepends ++ executablePkgconfigDepends ++
+  allPkgconfigDepends = pkgconfigDepends ++ libraryPkgconfigDepends ++ executablePkgconfigDepends ++
                         optionals doCheck testPkgconfigDepends ++ optionals doBenchmark benchmarkPkgconfigDepends;
 
   depsBuildBuild = [ nativeGhc ];
@@ -251,7 +243,7 @@ let
     optionals doCheck testToolDepends ++
     optionals doBenchmark benchmarkToolDepends;
   nativeBuildInputs =
-    [ ghc removeReferencesTo ] ++ optional (allPkgconfigDepends != []) pkg-config ++
+    [ ghc removeReferencesTo ] ++ optional (allPkgconfigDepends != []) pkgconfig ++
     setupHaskellDepends ++ collectedToolDepends;
   propagatedBuildInputs = buildDepends ++ libraryHaskellDepends ++ executableHaskellDepends ++ libraryFrameworkDepends;
   otherBuildInputsHaskell =
@@ -291,12 +283,12 @@ let
       continue
     fi
   '';
-in lib.fix (drv:
+in stdenv.lib.fix (drv:
 
-assert allPkgconfigDepends != [] -> pkg-config != null;
+assert allPkgconfigDepends != [] -> pkgconfig != null;
 
 stdenv.mkDerivation ({
-  inherit pname version;
+  name = "${pname}-${version}";
 
   outputs = [ "out" ]
          ++ (optional enableSeparateDataOutput "data")
@@ -424,17 +416,6 @@ stdenv.mkDerivation ({
   configurePlatforms = [];
   inherit configureFlags;
 
-  # Note: the options here must be always added, regardless of whether the
-  # package specifies `hardeningDisable`.
-  hardeningDisable = lib.optionals (args ? hardeningDisable) hardeningDisable
-    ++ lib.optional (ghc.isHaLVM or false) "all"
-    # Static libraries (ie. all of pkgsStatic.haskellPackages) fail to build
-    # because by default Nix adds `-pie` to the linker flags: this
-    # conflicts with the `-r` and `-no-pie` flags added by GHC (see
-    # https://gitlab.haskell.org/ghc/ghc/-/issues/19580). hardeningDisable
-    # changes the default Nix behavior regarding adding "hardening" flags.
-    ++ lib.optional enableStaticLibraries "pie";
-
   configurePhase = ''
     runHook preConfigure
 
@@ -442,7 +423,7 @@ stdenv.mkDerivation ({
 
     echo configureFlags: $configureFlags
     ${setupCommand} configure $configureFlags 2>&1 | ${coreutils}/bin/tee "$NIX_BUILD_TOP/cabal-configure.log"
-    ${lib.optionalString (!allowInconsistentDependencies) ''
+    ${stdenv.lib.optionalString (!allowInconsistentDependencies) ''
       if ${gnugrep}/bin/egrep -q -z 'Warning:.*depends on multiple versions' "$NIX_BUILD_TOP/cabal-configure.log"; then
         echo >&2 "*** abort because of serious configure-time warning from Cabal"
         exit 1
@@ -461,13 +442,9 @@ stdenv.mkDerivation ({
 
   inherit doCheck;
 
-  # Run test suite(s) and pass `checkFlags` as well as `checkFlagsArray`.
-  # `testFlags` are added to `checkFlagsArray` each prefixed with
-  # `--test-option`, so Cabal passes it to the underlying test suite binary.
   checkPhase = ''
     runHook preCheck
-    checkFlagsArray+=(${lib.escapeShellArgs (builtins.map (opt: "--test-option=${opt}") testFlags)})
-    ${setupCommand} test ${testTarget} $checkFlags ''${checkFlagsArray:+"''${checkFlagsArray[@]}"}
+    ${setupCommand} test ${testTarget}
     runHook postCheck
   '';
 
@@ -478,7 +455,7 @@ stdenv.mkDerivation ({
         ${optionalString doHoogle "--hoogle"} \
         ${optionalString doHaddockQuickjump "--quickjump"} \
         ${optionalString (isLibrary && hyperlinkSource) "--hyperlink-source"} \
-        ${lib.concatStringsSep " " haddockFlags}
+        ${stdenv.lib.concatStringsSep " " haddockFlags}
     ''}
     runHook postHaddock
   '';
@@ -486,13 +463,8 @@ stdenv.mkDerivation ({
   installPhase = ''
     runHook preInstall
 
-    ${if !isLibrary && buildTarget == "" then "${setupCommand} install"
-      # ^^ if the project is not a library, and no build target is specified, we can just use "install".
-      else if !isLibrary then "${setupCommand} copy ${buildTarget}"
-      # ^^ if the project is not a library, and we have a build target, then use "copy" to install
-      # just the target specified; "install" will error here, since not all targets have been built.
-    else ''
-      ${setupCommand} copy ${buildTarget}
+    ${if !isLibrary then "${setupCommand} install" else ''
+      ${setupCommand} copy
       local packageConfDir="$out/lib/${ghc.name}/package.conf.d"
       local packageConfFile="$packageConfDir/${pname}-${version}.conf"
       mkdir -p "$packageConfDir"
@@ -520,7 +492,7 @@ stdenv.mkDerivation ({
       done
     ''}
     ${optionalString doCoverage "mkdir -p $out/share && cp -r dist/hpc $out/share"}
-    ${optionalString (enableSharedExecutables && isExecutable && !isGhcjs && stdenv.isDarwin && lib.versionOlder ghc.version "7.10") ''
+    ${optionalString (enableSharedExecutables && isExecutable && !isGhcjs && stdenv.isDarwin && stdenv.lib.versionOlder ghc.version "7.10") ''
       for exe in "${binDir}/"* ; do
         install_name_tool -add_rpath "$out/lib/ghc-${ghc.version}/${pname}-${version}" "$exe"
       done
@@ -560,10 +532,10 @@ stdenv.mkDerivation ({
         libraryPkgconfigDepends
         librarySystemDepends
         libraryToolDepends
-        pkg-configDepends
+        pkgconfigDepends
         setupHaskellDepends
         ;
-    } // lib.optionalAttrs doCheck {
+    } // stdenv.lib.optionalAttrs doCheck {
       inherit
         testDepends
         testFrameworkDepends
@@ -572,7 +544,7 @@ stdenv.mkDerivation ({
         testSystemDepends
         testToolDepends
         ;
-    } // lib.optionalAttrs doBenchmark {
+    } // stdenv.lib.optionalAttrs doBenchmark {
       inherit
         benchmarkDepends
         benchmarkFrameworkDepends
@@ -589,7 +561,7 @@ stdenv.mkDerivation ({
       inherit propagatedBuildInputs otherBuildInputs allPkgconfigDepends;
       haskellBuildInputs = isHaskellPartition.right;
       systemBuildInputs = isHaskellPartition.wrong;
-      isHaskellPartition = lib.partition
+      isHaskellPartition = stdenv.lib.partition
         isHaskellPkg
         (propagatedBuildInputs ++ otherBuildInputs ++ depsBuildBuild ++ nativeBuildInputs);
     };
@@ -636,22 +608,22 @@ stdenv.mkDerivation ({
         ghcEnv = withPackages (_:
           otherBuildInputsHaskell ++
           propagatedBuildInputs ++
-          lib.optionals (!isCross) setupHaskellDepends);
+          stdenv.lib.optionals (!isCross) setupHaskellDepends);
 
-        ghcCommandCaps = lib.toUpper ghcCommand';
+        ghcCommandCaps = stdenv.lib.toUpper ghcCommand';
       in stdenv.mkDerivation ({
         inherit name shellHook;
 
-        depsBuildBuild = lib.optional isCross ghcEnvForBuild;
+        depsBuildBuild = stdenv.lib.optional isCross ghcEnvForBuild;
         nativeBuildInputs =
-          [ ghcEnv ] ++ optional (allPkgconfigDepends != []) pkg-config ++
+          [ ghcEnv ] ++ optional (allPkgconfigDepends != []) pkgconfig ++
           collectedToolDepends;
         buildInputs =
           otherBuildInputsSystem;
         phases = ["installPhase"];
         installPhase = "echo $nativeBuildInputs $buildInputs > $out";
         LANG = "en_US.UTF-8";
-        LOCALE_ARCHIVE = lib.optionalString (stdenv.hostPlatform.libc == "glibc") "${buildPackages.glibcLocales}/lib/locale/locale-archive";
+        LOCALE_ARCHIVE = stdenv.lib.optionalString (stdenv.hostPlatform.libc == "glibc") "${buildPackages.glibcLocales}/lib/locale/locale-archive";
         "NIX_${ghcCommandCaps}" = "${ghcEnv}/bin/${ghcCommand}";
         "NIX_${ghcCommandCaps}PKG" = "${ghcEnv}/bin/${ghcCommand}-pkg";
         # TODO: is this still valid?
@@ -670,9 +642,6 @@ stdenv.mkDerivation ({
          // optionalAttrs (args ? description)    { inherit description; }
          // optionalAttrs (args ? maintainers)    { inherit maintainers; }
          // optionalAttrs (args ? hydraPlatforms) { inherit hydraPlatforms; }
-         // optionalAttrs (args ? badPlatforms)   { inherit badPlatforms; }
-         // optionalAttrs (args ? changelog)      { inherit changelog; }
-         // optionalAttrs (args ? mainProgram)    { inherit mainProgram; }
          ;
 
 }
@@ -698,6 +667,7 @@ stdenv.mkDerivation ({
 // optionalAttrs (args ? preFixup)               { inherit preFixup; }
 // optionalAttrs (args ? postFixup)              { inherit postFixup; }
 // optionalAttrs (args ? dontStrip)              { inherit dontStrip; }
+// optionalAttrs (args ? hardeningDisable)       { inherit hardeningDisable; }
 // optionalAttrs (stdenv.buildPlatform.libc == "glibc"){ LOCALE_ARCHIVE = "${glibcLocales}/lib/locale/locale-archive"; }
 )
 )

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 , gdk-pixbuf
 , gtk-engine-murrine
@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "GTK theme with skeuomorphism design";
     homepage = "https://www.pling.com/p/1363834/";
     license = licenses.gpl3Only;

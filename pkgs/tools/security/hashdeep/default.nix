@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
-stdenv.mkDerivation rec {
-  pname = "hashdeep";
-  version = "4.4";
+let version = "4.4";
+in stdenv.mkDerivation {
+  name = "hashdeep-${version}";
 
   src = fetchFromGitHub {
     owner = "jessek";
@@ -13,15 +13,11 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A set of cross-platform tools to compute hashes";
     homepage = "https://github.com/jessek/hashdeep";
     license = licenses.gpl2;
-    maintainers = [ maintainers.karantan ];
-    platforms = platforms.all;
-    # Build fails on Darwin:
-    # > ./xml.h:103:82: error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal]
-    # >     void xmlout(const std::string &tag,const int64_t value){ xmlprintf(tag,"","%"PRId64,value); }
-    broken = stdenv.isDarwin;
+    platforms = with platforms; linux ++ freebsd ++ openbsd;
+    maintainers = [ stdenv.lib.maintainers.karantan ];
   };
 }

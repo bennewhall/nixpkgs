@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, bison, flex, perl, gmp, mpfr, enableGist ? true, qtbase }:
+{ stdenv, fetchFromGitHub, bison, flex, perl, gmp, mpfr, enableGist ? true, qtbase }:
 
 stdenv.mkDerivation rec {
   pname = "gecode";
@@ -12,12 +12,11 @@ stdenv.mkDerivation rec {
   };
 
   enableParallelBuilding = true;
-  dontWrapQtApps = true;
   nativeBuildInputs = [ bison flex ];
   buildInputs = [ perl gmp mpfr ]
-    ++ lib.optional enableGist qtbase;
+    ++ stdenv.lib.optional enableGist qtbase;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     license = licenses.mit;
     homepage = "https://www.gecode.org";
     description = "Toolkit for developing constraint-based systems";

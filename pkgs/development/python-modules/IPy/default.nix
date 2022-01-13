@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, nose }:
+{ stdenv, buildPythonPackage, fetchPypi, nose }:
 
 buildPythonPackage rec {
   pname = "IPy";
@@ -15,7 +15,7 @@ buildPythonPackage rec {
     nosetests -e fuzz
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Class and tools for handling of IPv4 and IPv6 addresses and networks";
     homepage = "https://github.com/autocracy/python-ipy";
     license = licenses.bsdOriginal;

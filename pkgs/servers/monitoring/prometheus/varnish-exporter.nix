@@ -2,16 +2,16 @@
 
 buildGoModule rec {
   pname = "prometheus_varnish_exporter";
-  version = "1.6";
+  version = "unstable-2020-03-26";
 
   src = fetchFromGitHub {
     owner = "jonnenauha";
     repo = "prometheus_varnish_exporter";
-    rev = version;
-    sha256 = "1cp7c1w237r271m8b1y8pj5jy7j2iadp4vbislxfyp4kga9i4dcc";
+    rev = "f0f90fc69723de8b716cda16cb419e8a025130ff";
+    sha256 = "1viiiyvhpr7cnf8ykaaq4fzgg9xvn4hnlhv7cagy3jkjlmz60947";
   };
 
-  vendorSha256 = "1cslg29l9mmyhpdz14ca9m18iaz4hhznplz8fmi3wa3l8r7ih751";
+  vendorSha256 = "1h9iz3sbz02hb8827hcssqlfg2ag3ymq38siffw9wzajslzhp9sx";
 
   nativeBuildInputs = [ makeWrapper ];
 

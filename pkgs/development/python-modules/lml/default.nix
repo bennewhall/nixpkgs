@@ -1,7 +1,7 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
+, nose
 , mock
 }:
 
@@ -15,12 +15,11 @@ buildPythonPackage rec {
   };
 
   checkInputs = [
-    pytestCheckHook
+    nose
     mock
   ];
 
-  # Tests broken.
-  doCheck = false;
+  checkPhase = "nosetests";
 
   meta = {
     description = "Load me later. A lazy plugin management system for Python";

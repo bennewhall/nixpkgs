@@ -26,12 +26,12 @@ stdenv.mkDerivation rec {
     chmod a+x "$out/Applications/${appName}.app/Contents/MacOS/mscore"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Music notation and composition software";
     homepage = "https://musescore.org/";
     license = licenses.gpl2;
     platforms = platforms.darwin;
-    maintainers = [];
+    maintainers = with maintainers; [ yurrriq ];
     repositories.git = "https://github.com/musescore/MuseScore";
   };
 }

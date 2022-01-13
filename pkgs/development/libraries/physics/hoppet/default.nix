@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gfortran, perl }:
+{ stdenv, fetchurl, gfortran, perl }:
 
 stdenv.mkDerivation rec {
   pname = "hoppet";
@@ -9,7 +9,8 @@ stdenv.mkDerivation rec {
     sha256 = "0j7437rh4xxbfzmkjr22ry34xm266gijzj6mvrq193fcsfzipzdz";
   };
 
-  nativeBuildInputs = [ perl gfortran  ];
+  buildInputs = [ gfortran ];
+  nativeBuildInputs = [ perl ];
 
   enableParallelBuilding = true;
 
@@ -17,7 +18,7 @@ stdenv.mkDerivation rec {
     patchShebangs .
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Higher Order Perturbative Parton Evolution Toolkit";
     license     = licenses.gpl2;
     homepage    = "https://hoppet.hepforge.org";

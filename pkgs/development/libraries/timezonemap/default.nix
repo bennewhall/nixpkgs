@@ -1,7 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , autoreconfHook
 , fetchbzr
-, pkg-config
+, pkgconfig
 , gtk3
 , glib
 , file
@@ -12,16 +12,16 @@
 
 stdenv.mkDerivation rec {
   pname = "timezonemap";
-  version = "0.4.5.1";
+  version = "0.4.5";
 
   src = fetchbzr {
     url = "lp:timezonemap";
     rev = "58";
-    sha256 = "sha256-wCJXwgnN+aZVerjQCm8oT3xIcwmc4ArcEoCh9pMrt+E=";
+    sha256 = "1qdp5f9zd8c02bf0mq4w15rlhz2g51phml5qg9asdyfd1715f8n0";
   };
 
   nativeBuildInputs = [
-    pkg-config
+    pkgconfig
     autoreconfHook
     gobject-introspection
   ];
@@ -55,7 +55,7 @@ stdenv.mkDerivation rec {
     sed "s|/usr/share/libtimezonemap|$out/share/libtimezonemap|g" -i ./src/tz.h
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://launchpad.net/timezonemap";
     description = "A GTK+3 Timezone Map Widget";
     license = licenses.gpl2;

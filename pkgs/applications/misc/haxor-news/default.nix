@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python3, fetchpatch }:
+{ stdenv, fetchFromGitHub, python3, fetchpatch }:
 
 
 let
@@ -7,7 +7,7 @@ let
       self = py;
 
       # not compatible with prompt_toolkit >=2.0
-      prompt-toolkit = super.prompt-toolkit.overridePythonAttrs (oldAttrs: rec {
+      prompt_toolkit = super.prompt_toolkit.overridePythonAttrs (oldAttrs: rec {
         name = "${oldAttrs.pname}-${version}";
         version = "1.0.18";
         src = oldAttrs.src.override {
@@ -15,7 +15,6 @@ let
           sha256 = "09h1153wgr5x2ny7ds0w2m81n3bb9j8hjb8sjfnrg506r01clkyx";
         };
       });
-      click = self.callPackage ../../../development/python-modules/click/7.nix { };
     };
   };
 in
@@ -38,7 +37,7 @@ buildPythonApplication rec {
     colorama
     requests
     pygments
-    prompt-toolkit
+    prompt_toolkit
     six
   ];
 
@@ -51,7 +50,7 @@ buildPythonApplication rec {
     ${python.interpreter} -m unittest discover -s tests -v
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/donnemartin/haxor-news";
     description = "Browse Hacker News like a haxor";
     license = licenses.asl20;

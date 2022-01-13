@@ -1,41 +1,37 @@
-{ lib
-, buildPythonPackage
-, pythonOlder
-, fetchFromGitHub
-, pytestCheckHook
-, requests
-}:
+{ stdenv, buildPythonPackage, pythonOlder, fetchFromGitHub, pytest, requests }:
 
 buildPythonPackage rec {
   pname = "fritzconnection";
-  version = "1.7.2";
-  format = "setuptools";
-
-  disabled = pythonOlder "3.6";
+  version = "1.2.1";
 
   src = fetchFromGitHub {
     owner = "kbr";
     repo = pname;
     rev = version;
-    sha256 = "sha256-TT0mc3ID+R5Dhm0xSMpyg68wZR70xJfRfgPkHkvLstA=";
+    sha256 = "17z4shs56ci9mxmilppv5xy9gbnbp6p1h2ms6x55nkvwndacrp7x";
   };
 
-  propagatedBuildInputs = [
-    requests
-  ];
+  disabled = pythonOlder "3.5";
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  # Exclude test files from build, which cause ImportMismtachErrors and
+  # otherwise missing resources during tests. This patch can be dropped once
+  # https://github.com/kbr/fritzconnection/pull/39 is merged.
+  prePatch = ''
+    substituteInPlace setup.py \
+      --replace 'find_packages()' 'find_packages(exclude=["*.tests"])'
+  '';
 
-  pythonImportsCheck = [
-    "fritzconnection"
-  ];
+  propagatedBuildInputs = [ requests ];
 
-  meta = with lib; {
-    description = "Python module to communicate with the AVM Fritz!Box";
-    homepage = "https://github.com/kbr/fritzconnection";
-    changelog = "https://fritzconnection.readthedocs.io/en/${version}/sources/changes.html";
+  checkInputs = [ pytest ];
+
+  checkPhase = ''
+    pytest
+  '';
+
+  meta = with stdenv.lib; {
+    description = "Python-Tool to communicate with the AVM FritzBox using the TR-064 protocol";
+    homepage = "https://bitbucket.org/kbr/fritzconnection";
     license = licenses.mit;
     maintainers = with maintainers; [ dotlambda valodim ];
   };

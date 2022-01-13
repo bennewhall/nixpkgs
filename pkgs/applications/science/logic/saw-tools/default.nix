@@ -1,7 +1,7 @@
-{ lib, stdenv, fetchurl, gmp4, ncurses, zlib, clang }:
+{ stdenv, fetchurl, gmp4, ncurses, zlib, clang }:
 
 let
-  libPath = lib.makeLibraryPath
+  libPath = stdenv.lib.makeLibraryPath
     [ stdenv.cc.libc
       stdenv.cc.cc
       gmp4
@@ -48,11 +48,13 @@ stdenv.mkDerivation {
     done
   '';
 
+  phases = "unpackPhase installPhase fixupPhase";
+
   meta = {
     description = "Tools for software verification and analysis";
     homepage    = "https://saw.galois.com";
-    license     = lib.licenses.bsd3;
-    platforms   = lib.platforms.linux;
-    maintainers = [ lib.maintainers.thoughtpolice ];
+    license     = stdenv.lib.licenses.unfreeRedistributable;
+    platforms   = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
   };
 }

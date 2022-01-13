@@ -1,7 +1,7 @@
 { mkDerivation, lib, extra-cmake-modules, kdoctools, ki18n, kio, libkdegames }:
 
 mkDerivation {
-  pname = "klines";
+  name = "klines";
   meta = with lib; {
     homepage = "https://kde.org/applications/en/games/org.kde.klines";
     description = "A simple but highly addictive one player game";

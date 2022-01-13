@@ -1,33 +1,34 @@
-{ lib, stdenv, makeWrapper, fetchurl, dpkg, alsa-lib, atk, cairo, cups, dbus, expat
-, fontconfig, freetype, gdk-pixbuf, glib, gnome2, pango, mesa, nspr, nss, gtk3
+{ stdenv, makeWrapper, fetchurl, dpkg, alsaLib, atk, cairo, cups, dbus, expat
+, fontconfig, freetype, gdk-pixbuf, glib, gnome2, pango, nspr, nss, gtk3, gtk2
 , at-spi2-atk, gsettings-desktop-schemas, gobject-introspection, wrapGAppsHook
 , libX11, libXScrnSaver, libXcomposite, libXcursor, libXdamage, libXext
 , libXfixes, libXi, libXrandr, libXrender, libXtst, libxcb, nghttp2
 , libudev0-shim, glibc, curl, openssl, autoPatchelfHook }:
 
 let
-  runtimeLibs = lib.makeLibraryPath [
+  runtimeLibs = stdenv.lib.makeLibraryPath [
     curl
     glibc
     libudev0-shim
     nghttp2
     openssl
+    stdenv.cc.cc
   ];
 in stdenv.mkDerivation rec {
   pname = "insomnia";
-  version = "2021.7.2";
+  version = "2020.5.1";
 
   src = fetchurl {
     url =
       "https://github.com/Kong/insomnia/releases/download/core%40${version}/Insomnia.Core-${version}.deb";
-    sha256 = "sha256-HkQWW4h2+XT5Xi4oiIiMPnrRKw+GIyjGMQ5B1NrBARU=";
+    sha256 = "18wbyf5qq2x0dzaf6bprs4nhv0ckrgq679l3w61p1yf4y3j7xwn4";
   };
 
   nativeBuildInputs =
     [ autoPatchelfHook dpkg makeWrapper gobject-introspection wrapGAppsHook ];
 
   buildInputs = [
-    alsa-lib
+    alsaLib
     at-spi2-atk
     atk
     cairo
@@ -40,6 +41,7 @@ in stdenv.mkDerivation rec {
     glib
     gnome2.GConf
     pango
+    gtk2
     gtk3
     gsettings-desktop-schemas
     libX11
@@ -54,9 +56,9 @@ in stdenv.mkDerivation rec {
     libXrender
     libXtst
     libxcb
-    mesa # for libgbm
     nspr
     nss
+    stdenv.cc.cc
   ];
 
   dontBuild = true;
@@ -79,7 +81,7 @@ in stdenv.mkDerivation rec {
     wrapProgram "$out/bin/insomnia" --prefix LD_LIBRARY_PATH : ${runtimeLibs}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://insomnia.rest/";
     description = "The most intuitive cross-platform REST API Client";
     license = licenses.mit;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, pkg-config, libsixel }:
+{ stdenv, fetchFromGitHub, pkgconfig, libsixel }:
 
 stdenv.mkDerivation {
   pname = "SDL_sixel";
@@ -13,10 +13,10 @@ stdenv.mkDerivation {
 
   configureFlags = [ "--enable-video-sixel" ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libsixel ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A cross-platform multimedia library, that supports sixel graphics on consoles";
     homepage    = "https://github.com/saitoha/SDL1.2-SIXEL";
     maintainers = with maintainers; [ vrthra ];

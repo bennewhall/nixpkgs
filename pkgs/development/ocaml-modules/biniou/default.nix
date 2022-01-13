@@ -1,10 +1,8 @@
-{ lib, fetchFromGitHub, buildDunePackage, easy-format }:
+{ stdenv, fetchFromGitHub, buildDunePackage, easy-format }:
 
 buildDunePackage rec {
   pname = "biniou";
   version = "1.2.1";
-
-  useDune2 = true;
 
   src = fetchFromGitHub {
     owner = "ocaml-community";
@@ -22,7 +20,7 @@ buildDunePackage rec {
   meta = {
     inherit (src.meta) homepage;
     description = "Binary data format designed for speed, safety, ease of use and backward compatibility as protocols evolve";
-    maintainers = [ lib.maintainers.vbgl ];
-    license = lib.licenses.bsd3;
+    maintainers = [ stdenv.lib.maintainers.vbgl ];
+    license = stdenv.lib.licenses.bsd3;
   };
 }

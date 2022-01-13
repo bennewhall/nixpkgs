@@ -1,23 +1,24 @@
-{ lib, buildGoPackage, fetchFromGitHub, pkg-config, pcsclite }:
+{ lib, buildGoPackage, fetchFromGitHub, pkgconfig, pcsclite }:
 
 buildGoPackage rec {
   pname = "keycard-cli";
-  version = "0.6.0";
+  version = "0.4.0";
 
   goPackagePath = "github.com/status-im/keycard-cli";
   subPackages = [ "." ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ pcsclite ];
 
   src = fetchFromGitHub {
     owner = "status-im";
     repo = pname;
     rev = version;
-    sha256 = "sha256-ejFvduZs3eWc6efr9o4pXb6qw2QWWQTtkTxF80vOGNU=";
+    sha256 = "0917vl5lw8wgvyn5l8q6xa8bqh342fibaa38syr8hmz8b09qkh38";
   };
 
-  ldflags = [
+  buildFlagsArray = [
+    "-ldflags="
     "-X main.version=${version}"
   ];
 

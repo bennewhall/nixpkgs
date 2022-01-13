@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , numpy
@@ -22,7 +22,7 @@ buildPythonPackage rec {
   #No tests included
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Interfaces and utilities for the NEURON simulator and analysis of neural data";
     maintainers = [ maintainers.nico202 ];
     license = licenses.mit;

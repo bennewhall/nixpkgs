@@ -9,11 +9,11 @@
 , singular
 , gap
 , giac
-, maxima
+, maxima-ecl
 , pari
 , gmp
 , gfan
-, python3
+, python2
 , flintqs
 , eclib
 , ntl
@@ -42,7 +42,7 @@ let
     pari
     gmp
     gfan
-    maxima
+    maxima-ecl
     eclib
     flintqs
     ntl
@@ -50,11 +50,11 @@ let
   ];
 
   # remove python prefix, replace "-" in the name by "_", apply patch_names
-  # python3.8-some-pkg-1.0 -> some_pkg-1.0
+  # python2.7-some-pkg-1.0 -> some_pkg-1.0
   pkg_to_spkg_name = pkg: patch_names: let
     parts = lib.splitString "-" pkg.name;
-    # remove python3.8-
-    stripped_parts = if (builtins.head parts) == python3.libPrefix then builtins.tail parts else parts;
+    # remove python2.7-
+    stripped_parts = if (builtins.head parts) == python2.libPrefix then builtins.tail parts else parts;
     version = lib.last stripped_parts;
     orig_pkgname = lib.init stripped_parts;
     pkgname = patch_names (lib.concatStringsSep "_" orig_pkgname);

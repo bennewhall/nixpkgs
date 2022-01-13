@@ -1,6 +1,7 @@
-{ lib, stdenv
+{ stdenv
 , buildPythonPackage
 , fetchFromGitiles
+, isPy3k
 }:
 
 buildPythonPackage {
@@ -13,12 +14,12 @@ buildPythonPackage {
     sha256 = "0r9phq5yrmj968vdvy9vivli35wn1j9a6iwshp69wl7q4p0x8q2b";
   };
 
-  patches = lib.optionals stdenv.isDarwin [
+  patches = stdenv.lib.optionals stdenv.isDarwin [
     ./no-darwin-cflags.patch
     ./no-xcode.patch
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool to generate native build files";
     homepage = "https://chromium.googlesource.com/external/gyp/+/master/README.md";
     license = licenses.bsd3;

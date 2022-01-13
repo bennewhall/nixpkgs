@@ -1,13 +1,8 @@
-{ lib, stdenv
-, fetchFromGitHub
-, cmake
-, llvmPackages
-, enableAVX ? stdenv.hostPlatform.avxSupport
-}:
-
+{ stdenv, fetchFromGitHub, cmake, llvmPackages, enableAVX ? false }:
 stdenv.mkDerivation rec {
   pname = "NGT";
   version = "v1.12.3-alpha";
+  nativeBuildInputs = [ cmake ];
 
   src = fetchFromGitHub {
     owner = "yahoojapan";
@@ -16,13 +11,13 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-nu0MJNpaenOB4+evoSVLKmPIuZXVj1Rm9x53+TfhezY=";
   };
 
-  nativeBuildInputs = [ cmake ];
   buildInputs = [ llvmPackages.openmp ];
-
-  NIX_ENFORCE_NO_NATIVE = ! enableAVX;
+  NIX_ENFORCE_NO_NATIVE=! enableAVX;
   __AVX2__ = if enableAVX then 1 else 0;
 
-  meta = with lib; {
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     homepage = "https://github.com/yahoojapan/NGT";
     description = "Nearest Neighbor Search with Neighborhood Graph and Tree for High-dimensional Data";
     platforms = platforms.linux ++ platforms.darwin;

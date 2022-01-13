@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub, installShellFiles }:
+{ stdenv, buildGoPackage, fetchFromGitHub, fuse, installShellFiles }:
 
 buildGoPackage rec {
   pname = "tmsu";
@@ -14,6 +14,7 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
+  buildInputs = [ fuse ];
   nativeBuildInputs = [ installShellFiles ];
 
   preBuild = ''
@@ -23,20 +24,17 @@ buildGoPackage rec {
   '';
 
   postInstall = ''
-    # can't do "mv TMSU tmsu" on case-insensitive filesystems
-    mv $out/bin/{TMSU,tmsu.tmp}
-    mv $out/bin/{tmsu.tmp,tmsu}
-
+    mv $out/bin/{TMSU,tmsu}
     cp src/misc/bin/* $out/bin/
     installManPage src/misc/man/tmsu.1
     installShellCompletion --zsh src/misc/zsh/_tmsu
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage    = "http://www.tmsu.org";
     description = "A tool for tagging your files using a virtual filesystem";
     maintainers = with maintainers; [ pSub ];
-    license     = licenses.gpl3Plus;
-    platforms   = platforms.unix;
+    license     = licenses.gpl3;
+    platforms   = platforms.linux;
   };
 }

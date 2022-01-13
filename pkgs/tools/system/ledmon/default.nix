@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, perl, udev, sg3_utils }:
+{ stdenv, fetchFromGitHub, perl, udev, sg3_utils }:
 
 stdenv.mkDerivation rec {
   pname = "ledmon";
@@ -25,11 +25,11 @@ stdenv.mkDerivation rec {
     "LEDMON_INSTDIR=${placeholder "out"}/sbin"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/intel/ledmon";
     description = "Enclosure LED Utilities";
     platforms = platforms.linux;
     license = with licenses; [ gpl2 ];
-    maintainers = with lib.maintainers; [ sorki ];
+    maintainers = with stdenv.lib.maintainers; [ sorki ];
   };
 }

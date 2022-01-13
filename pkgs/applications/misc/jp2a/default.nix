@@ -1,43 +1,25 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, libjpeg
-, libpng
-, ncurses
-, autoreconfHook
-, autoconf-archive
-, pkg-config
-, bash-completion
-}:
+{ stdenv, fetchFromGitHub, libjpeg, autoreconfHook }:
 
 stdenv.mkDerivation rec {
-  version = "1.1.1";
+  version = "1.0.7";
   pname = "jp2a";
 
   src = fetchFromGitHub {
-    owner = "Talinx";
+    owner = "cslarsen";
     repo = "jp2a";
     rev = "v${version}";
-    sha256 = "sha256-CUyJMVvzXniK5fdZBuWUK9GLSGJyL5Zig49ikGOGRTw=";
+    sha256 = "12a1z9ba2j16y67f41y8ax5sgv1wdjd71pg7circdxkj263n78ql";
   };
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  nativeBuildInputs = [
-    autoreconfHook
-    autoconf-archive
-    pkg-config
-    bash-completion
-  ];
-  buildInputs = [ libjpeg libpng ncurses ];
+  nativeBuildInputs = [ autoreconfHook ];
+  buildInputs = [ libjpeg ];
 
-  installFlags = [ "bashcompdir=\${out}/share/bash-completion/completions" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://csl.name/jp2a/";
     description = "A small utility that converts JPG images to ASCII";
-    license = licenses.gpl2Only;
-    maintainers = [ maintainers.FlorianFranzen ];
+    license = licenses.gpl2;
     platforms = platforms.unix;
   };
 }

@@ -1,8 +1,8 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , nix-update-script
-, pkg-config
+, pantheon
+, pkgconfig
 , meson
 , ninja
 , vala
@@ -11,7 +11,6 @@
 , gtk3
 , granite
 , libgee
-, libhandy
 , clutter-gst
 , clutter-gtk
 , gst_all_1
@@ -21,20 +20,28 @@
 
 stdenv.mkDerivation rec {
   pname = "elementary-videos";
-  version = "2.8.1";
+  version = "2.7.2";
+
+  repoName = "videos";
 
   src = fetchFromGitHub {
     owner = "elementary";
-    repo = "videos";
+    repo = repoName;
     rev = version;
-    sha256 = "sha256-Ki6i9u+oXOBTH+dVJ9RgBxszD7Wvdrfahd9abyjFYJY=";
+    sha256 = "sha256-MSyhCXsziQ0MD4lGp9X/9odidjT/L+2Aihwd1qCGvB0=";
+  };
+
+  passthru = {
+    updateScript = nix-update-script {
+      attrPath = "pantheon.${pname}";
+    };
   };
 
   nativeBuildInputs = [
     desktop-file-utils
     meson
     ninja
-    pkg-config
+    pkgconfig
     python3
     vala
     wrapGAppsHook
@@ -53,7 +60,6 @@ stdenv.mkDerivation rec {
     gstreamer
     gtk3
     libgee
-    libhandy
   ];
 
   postPatch = ''
@@ -61,18 +67,11 @@ stdenv.mkDerivation rec {
     patchShebangs meson/post_install.py
   '';
 
-  passthru = {
-    updateScript = nix-update-script {
-      attrPath = "pantheon.${pname}";
-    };
-  };
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Video player and library app designed for elementary OS";
     homepage = "https://github.com/elementary/videos";
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = teams.pantheon.members;
-    mainProgram = "io.elementary.videos";
+    maintainers = pantheon.maintainers;
   };
 }

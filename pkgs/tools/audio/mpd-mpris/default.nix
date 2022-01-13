@@ -1,17 +1,17 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{ stdenv, buildGoModule, fetchFromGitHub }:
 
 buildGoModule rec {
   pname = "mpd-mpris";
-  version = "0.3.1";
+  version = "0.3.0";
 
   src = fetchFromGitHub {
     owner = "natsukagami";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-eI7/E5rhNCZfURwGkfa0f+Yie1EU8zR9r+1eAqrlmVY=";
+    sha256 = "1kzjbv04b2garb99l64wdq8yksnm4pbhkgyzh89j5j3gb9k55zal";
   };
 
-  vendorSha256 = "sha256-GmdD/4VYp3KeblNGgltFWHdOnK5qsBa2ygIYOBrH+b0=";
+  vendorSha256 = "1ggrqwd3h602rav1dc3amsf4wxsq8mdq4ijkdsg759sqhpzl6rqs";
 
   doCheck = false;
 
@@ -24,11 +24,11 @@ buildGoModule rec {
     cp mpd-mpris.service $out/lib/systemd/user
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An implementation of the MPRIS protocol for MPD";
     homepage = "https://github.com/natsukagami/mpd-mpris";
     license = licenses.mit;
     maintainers = with maintainers; [ doronbehar ];
-    platforms = platforms.unix;
+    platforms = platforms.linux;
   };
 }

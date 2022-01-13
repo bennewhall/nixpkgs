@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ lib, buildPythonPackage, fetchPypi, fetchpatch
 , chart-studio
 , colorlover
 , ipython

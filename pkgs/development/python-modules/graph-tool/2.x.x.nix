@@ -2,17 +2,19 @@
 , pkg-config, boost, expat, scipy, cgal, gmp, mpfr
 , gobject-introspection, pygobject3, gtk3, matplotlib, ncurses
 , buildPythonPackage
+, fetchpatch
+, pythonAtLeast
 , lib
 }:
 
 buildPythonPackage rec {
   pname = "graph-tool";
   format = "other";
-  version = "2.43";
+  version = "2.32";
 
   src = fetchurl {
     url = "https://downloads.skewed.de/graph-tool/graph-tool-${version}.tar.bz2";
-    hash = "sha256-XxvuCUIgz7JIaNsPr0f44v/Sb3fdcJmVhC5NnomNqGw=";
+    sha256 = "0jir6fhi09lf8xf56dcsdk2knx32vq8wrzh0d0zdp22n7baavq70";
   };
 
   configureFlags = [

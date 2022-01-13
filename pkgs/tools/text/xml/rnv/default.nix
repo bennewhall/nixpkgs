@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, expat }:
+{ stdenv, fetchurl, expat }:
 
 stdenv.mkDerivation rec {
   pname = "rnv";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ expat ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Relax NG Compact Syntax validator";
     homepage = "http://www.davidashen.net/rnv.html";
     license = licenses.bsd3;

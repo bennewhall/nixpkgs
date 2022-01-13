@@ -1,7 +1,7 @@
-{ lib, buildPackages, fetchFromGitHub, perl, buildLinux, structuredExtraConfig ? {}, ... } @ args:
+{ stdenv, buildPackages, fetchFromGitHub, perl, buildLinux, structuredExtraConfig ? {}, ... } @ args:
 let
-  mptcpVersion = "0.95.1";
-  modDirVersion = "4.19.126";
+  mptcpVersion = "0.95";
+  modDirVersion = "4.19.55";
 in
 buildLinux ({
   version = "${modDirVersion}-mptcp_v${mptcpVersion}";
@@ -9,18 +9,18 @@ buildLinux ({
 
   extraMeta = {
     branch = "4.19";
-    maintainers = with lib.maintainers; [ teto layus ];
+    maintainers = with stdenv.lib.maintainers; [ teto layus ];
   };
 
   src = fetchFromGitHub {
     owner = "multipath-tcp";
     repo = "mptcp";
     rev = "v${mptcpVersion}";
-    sha256 = "sha256-J9UXhkI49cq83EtojLHieRtp8fT3LXTJNIqb+mUwZdM=";
+    sha256 = "04a66iq5vsiz8mkpszfxmqknz7y4w3lsckrcz6q1syjpk0pdyiyw";
   };
 
-  structuredExtraConfig = lib.mkMerge [
-    (import ./mptcp-config.nix { inherit lib; })
+  structuredExtraConfig = stdenv.lib.mkMerge [
+    (import ./mptcp-config.nix { inherit stdenv; })
     structuredExtraConfig
   ];
 

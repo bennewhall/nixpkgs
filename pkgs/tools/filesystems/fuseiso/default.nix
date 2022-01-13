@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, autoreconfHook, pkg-config, fuse, glib, zlib }:
+{ stdenv, fetchurl, fetchpatch, autoreconfHook, pkgconfig, fuse, glib, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "fuseiso";
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ fuse glib zlib ];
 
@@ -46,7 +46,7 @@ stdenv.mkDerivation rec {
     install -Dm444 -t $out/share/doc/${pname} NEWS README
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "FUSE module to mount ISO filesystem images";
     homepage = "https://sourceforge.net/projects/fuseiso";
     license = licenses.gpl2;

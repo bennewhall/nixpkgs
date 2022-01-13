@@ -1,30 +1,27 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, pytestCheckHook
+, pytest
 }:
 
 buildPythonPackage rec {
   pname = "iso8601";
-  version = "0.1.16";
+  version = "0.1.13";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-NlMvd8yABZTo8WZB7a5/G695MvBdjlCFRblfxTxtyFs=";
+    sha256 = "f7dec22af52025d4526be94cc1303c7d8f5379b746a3f54a8c8446384392eeb1";
   };
 
-  checkInputs = [
-    pytestCheckHook
-  ];
+  checkInputs = [ pytest ];
 
-  pytestFlagsArray = [ "iso8601" ];
+  checkPhase = ''
+    py.test iso8601
+  '';
 
-  pythonImportsCheck = [ "iso8601" ];
-
-  meta = with lib; {
+  meta = {
+    homepage = "https://bitbucket.org/micktwomey/pyiso8601/";
     description = "Simple module to parse ISO 8601 dates";
-    homepage = "https://pyiso8601.readthedocs.io/";
-    license = with licenses; [ mit ];
-    maintainers = with maintainers; [ fab ];
+    maintainers = with lib.maintainers; [ phreedom ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchhg, autoconf, sqlite }:
+{ stdenv, fetchhg, autoconf, sqlite }:
 
 stdenv.mkDerivation rec {
   pname = "vcprompt";
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
     makeFlags="$makeFlags PREFIX=$out"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = ''
       A little C program that prints a short string with barebones information
       about the current working directory for various version control systems

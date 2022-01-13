@@ -1,45 +1,49 @@
 { mkDerivation
 , stdenv
-, lib
 , fetchFromGitHub
 , qmake
-, pkg-config
-, qttools
 , qtbase
-, rtaudio
-, rtmidi
+, qttools
+, alsaSupport ? stdenv.hostPlatform.isLinux
+, alsaLib
+, pulseSupport ? stdenv.hostPlatform.isLinux
+, libpulseaudio
+, jackSupport ? stdenv.hostPlatform.isUnix
+, libjack2
 }:
+let
 
+  inherit (stdenv.lib) optional optionals;
+
+in
 mkDerivation rec {
   pname = "bambootracker";
-  version = "0.5.0";
+  version = "0.4.5";
 
   src = fetchFromGitHub {
-    owner = "BambooTracker";
+    owner = "rerrahkr";
     repo = "BambooTracker";
     rev = "v${version}";
-    fetchSubmodules = true;
-    sha256 = "1mpbvhsmrn0wdmxfp3n5dwv4474qlhy47r3vwc2jwdslq6vgl1fa";
+    sha256 = "0ibi0sykxf6cp5la2c4pgxf5gvy56yv259fbmdwdrdyv6vlddf42";
   };
 
-  nativeBuildInputs = [ qmake qttools pkg-config ];
+  sourceRoot = "source/BambooTracker";
 
-  buildInputs = [ qtbase rtaudio rtmidi ];
+  nativeBuildInputs = [ qmake qttools ];
 
-  qmakeFlags = [ "CONFIG+=system_rtaudio" "CONFIG+=system_rtmidi" ];
+  buildInputs = [ qtbase ]
+    ++ optional alsaSupport alsaLib
+    ++ optional pulseSupport libpulseaudio
+    ++ optional jackSupport libjack2;
 
-  postConfigure = "make qmake_all";
+  qmakeFlags = [ "CONFIG+=release" "CONFIG-=debug" ]
+    ++ optional pulseSupport "CONFIG+=use_pulse"
+    ++ optionals jackSupport [ "CONFIG+=use_jack" "CONFIG+=jack_has_rename" ];
 
-  postInstall = lib.optionalString stdenv.hostPlatform.isDarwin ''
-    mkdir -p $out/Applications
-    mv $out/{bin,Applications}/BambooTracker.app
-    ln -s $out/{Applications/BambooTracker.app/Contents/MacOS,bin}/BambooTracker
-  '';
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tracker for YM2608 (OPNA) which was used in NEC PC-8801/9801 series computers";
-    homepage = "https://bambootracker.github.io/BambooTracker/";
-    license = licenses.gpl2Plus;
+    homepage = "https://github.com/rerrahkr/BambooTracker";
+    license = licenses.gpl2Only;
     platforms = platforms.all;
     maintainers = with maintainers; [ OPNA2608 ];
   };

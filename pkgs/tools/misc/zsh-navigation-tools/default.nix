@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "zsh-navigation-tools";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     cp .config/znt/n-* $out/share/zsh/site-functions/.config/znt
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Curses-based tools for ZSH";
     homepage = "https://github.com/psprint/zsh-navigation-tools";
     license = licenses.gpl3;

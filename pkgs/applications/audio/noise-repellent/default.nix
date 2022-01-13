@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, pkg-config, fftwFloat, lv2 }:
+{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, fftwFloat, lv2 }:
 
 stdenv.mkDerivation rec {
   pname = "noise-repellent";
@@ -14,12 +14,12 @@ stdenv.mkDerivation rec {
 
   mesonFlags = ("--prefix=${placeholder "out"}/lib/lv2");
 
-  nativeBuildInputs = [ meson ninja pkg-config ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
   buildInputs = [
     fftwFloat lv2
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An lv2 plugin for broadband noise reduction";
     homepage    = "https://github.com/lucianodato/noise-repellent";
     license     = licenses.gpl3;

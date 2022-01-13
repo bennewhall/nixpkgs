@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, makeWrapper, pkg-config, alsa-lib, dbus, libjack2
+{ stdenv, fetchFromGitHub, fetchpatch, makeWrapper, pkgconfig, alsaLib, dbus, libjack2
 , python3Packages , meson, ninja }:
 
 stdenv.mkDerivation rec {
@@ -12,8 +12,8 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-WNt74tSWV8bY4TnpLp86PsnrjkqWynJJt3Ra4gZl2fQ=";
   };
 
-  nativeBuildInputs = [ pkg-config makeWrapper meson ninja ];
-  buildInputs = [ alsa-lib dbus libjack2 ] ++
+  nativeBuildInputs = [ pkgconfig makeWrapper meson ninja ];
+  buildInputs = [ alsaLib dbus libjack2 ] ++
                 (with python3Packages; [ python dbus-python ]);
 
   postInstall = ''
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/bin/a2j --replace "a2j_control" "$out/bin/a2j_control"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Daemon for exposing legacy ALSA sequencer applications in JACK MIDI system";
     license = licenses.gpl2;
     maintainers = [ maintainers.goibhniu ];

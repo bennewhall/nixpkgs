@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl
-, linkStatic ? with stdenv.hostPlatform; isStatic || isCygwin
+{ stdenv, fetchurl
+, linkStatic ? (stdenv.hostPlatform.system == "i686-cygwin")
 , autoreconfHook
 }:
 
@@ -10,7 +10,7 @@
 
 stdenv.mkDerivation rec {
   pname = "bzip2";
-  version = "1.0.6.0.2";
+  version = "1.0.6.0.1";
 
   /* We use versions patched to use autotools style properly,
       saving lots of trouble. */
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
         "ftp://ftp.mplayerhq.hu/pub/linux/suse"
         "http://ftp.suse.com/pub" # the original patched version but slow
       ];
-    sha256 = "sha256-FnhwNy4OHe8d5M6iYCClkxzcB/EHXg0veXwv43ZlxbA=";
+    sha256 = "0b5b5p8c7bslc6fslcr1nj9136412v3qcvbg6yxi9argq9g72v8c";
   };
 
   nativeBuildInputs = [ autoreconfHook ];
@@ -40,16 +40,14 @@ stdenv.mkDerivation rec {
   outputs = [ "bin" "dev" "out" "man" ];
 
   configureFlags =
-    lib.optionals linkStatic [ "--enable-static" "--disable-shared" ];
+    stdenv.lib.optionals linkStatic [ "--enable-static" "--disable-shared" ];
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "High-quality data compression program";
-    homepage = "https://www.sourceware.org/bzip2";
-    changelog = "https://sourceware.org/git/?p=bzip2.git;a=blob;f=CHANGES;hb=HEAD";
     license = licenses.bsdOriginal;
     platforms = platforms.all;
-    maintainers = with maintainers; [ mic92 ];
+    maintainers = [];
   };
 }

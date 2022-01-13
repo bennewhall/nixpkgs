@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) buildPackages.cracklib;
   buildInputs = [ zlib gettext ];
 
-  postPatch = lib.optionalString (stdenv.hostPlatform == stdenv.buildPlatform) ''
+  postPatch = stdenv.lib.optionalString (stdenv.hostPlatform == stdenv.buildPlatform) ''
     chmod +x util/cracklib-format
     patchShebangs util
 

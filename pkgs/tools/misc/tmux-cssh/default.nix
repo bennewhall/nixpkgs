@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, makeWrapper, tmux }:
+{ stdenv, fetchFromGitHub, makeWrapper, tmux }:
 
 stdenv.mkDerivation {
-  pname = "tmux-cssh";
-  version = "unstable-2015-10-15";
+  name = "tmux-cssh-20151015";
 
   src = fetchFromGitHub {
     owner = "dennishafemann";
@@ -11,7 +10,7 @@ stdenv.mkDerivation {
     sha256 = "473e27f3b69864b905d1340d97917cd202705c761611eb3aec4c24521f69b52c";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ makeWrapper ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -34,9 +33,9 @@ stdenv.mkDerivation {
       like most server do.
       '';
 
-    license = lib.licenses.asl20;
+    license = stdenv.lib.licenses.asl20;
 
-    platforms = lib.platforms.unix;
-    maintainers = with lib.maintainers; [ zimbatm ];
+    platforms = stdenv.lib.platforms.unix;
+    maintainers = with stdenv.lib.maintainers; [ zimbatm ];
   };
 }

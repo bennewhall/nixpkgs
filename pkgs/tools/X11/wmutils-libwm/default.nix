@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libxcb }:
+{ stdenv, fetchFromGitHub, libxcb }:
 
 stdenv.mkDerivation rec {
   pname = "wmutils-libwm";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   installFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A small library for X window manipulation";
     homepage = "https://github.com/wmutils/libwm";
     license = licenses.isc;

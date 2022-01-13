@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, jdk }:
+{ stdenv, fetchurl, jdk }:
 
 stdenv.mkDerivation rec {
   pname = "emem";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "18x3s3jrph8k3pc75jgwkfqazygpsx93zjxx68zms58my17cybh1";
   };
 
-  dontUnpack = true;
+  phases = [ "buildPhase" "installPhase" ];
 
   buildPhase = ''
     mkdir -p $out/bin $out/share/java
@@ -28,7 +28,7 @@ EOF
     chmod +x $out/bin/${pname}
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/ebzzry/emem";
     description = "A trivial Markdown to HTML converter";
     license = licenses.epl10;

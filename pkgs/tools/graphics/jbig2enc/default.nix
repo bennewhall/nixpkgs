@@ -1,14 +1,11 @@
-{ lib, stdenv, fetchFromGitHub, leptonica, zlib, libwebp, giflib, libjpeg, libpng, libtiff }:
+{ stdenv, fetchurl, leptonica, zlib, libwebp, giflib, libjpeg, libpng, libtiff }:
 
-stdenv.mkDerivation rec {
-  pname = "jbig2enc";
-  version = "0.28";
+stdenv.mkDerivation {
+  name = "jbig2enc-0.28";
 
-  src = fetchFromGitHub {
-    owner = "agl";
-    repo = "jbig2enc";
-    rev = "${version}-dist";
-    hash = "sha256-Y3IVTjvO5tqn/O076y/llnTyenKpbx1WyT/JFZ/s0VY=";
+  src = fetchurl {
+    url = "https://github.com/agl/jbig2enc/archive/0.28-dist.tar.gz";
+    sha256 = "1wc0lmqz4jag3rhhk1xczlqpfv2qqp3fz7wzic2lba3vsbi1rrw3";
   };
 
   propagatedBuildInputs = [ leptonica zlib libwebp giflib libjpeg libpng libtiff ];
@@ -29,7 +26,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Encoder for the JBIG2 image compression format";
-    license = lib.licenses.asl20;
-    platforms = lib.platforms.all;
+    license = stdenv.lib.licenses.asl20;
+    platforms = stdenv.lib.platforms.all;
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 stdenv.mkDerivation rec {
   pname = "ladspa-sdk";
   version = "1.15";
@@ -21,8 +21,8 @@ stdenv.mkDerivation rec {
       three example programs (applyplugin, analyseplugin and listplugins).
     '';
     homepage = "http://www.ladspa.org/ladspa_sdk/overview.html";
-    license = lib.licenses.lgpl2;
-    maintainers = [ lib.maintainers.magnetophon ];
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.lgpl2;
+    maintainers = [ stdenv.lib.maintainers.magnetophon ];
+    platforms = stdenv.lib.platforms.linux;
   };
 }

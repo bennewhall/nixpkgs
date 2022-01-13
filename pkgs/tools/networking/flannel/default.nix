@@ -1,33 +1,26 @@
-{ lib, buildGoModule, fetchFromGitHub, nixosTests }:
+{ lib, buildGoPackage, fetchFromGitHub }:
 
 with lib;
 
-buildGoModule rec {
+buildGoPackage rec {
   pname = "flannel";
-  version = "0.15.1";
+  version = "0.13.0";
   rev = "v${version}";
 
-  vendorSha256 = null;
+  goPackagePath = "github.com/coreos/flannel";
 
   src = fetchFromGitHub {
     inherit rev;
-    owner = "flannel-io";
+    owner = "coreos";
     repo = "flannel";
-    sha256 = "1p4rz4kdiif8i78zgxhw6dd0c1bq159f6l1idvig5apph7zi2bwm";
+    sha256 = "0mmswnaybwpf18h832haapcs5b63wn5w2hax0smm3inldiggsbw8";
   };
-
-  ldflags = [ "-X github.com/flannel-io/flannel/version.Version=${rev}" ];
-
-  # TestRouteCache/TestV6RouteCache fail with "Failed to create newns: operation not permitted"
-  doCheck = false;
-
-  passthru.tests = { inherit (nixosTests) flannel; };
 
   meta = {
     description = "Network fabric for containers, designed for Kubernetes";
     license = licenses.asl20;
-    homepage = "https://github.com/flannel-io/flannel";
-    maintainers = with maintainers; [ johanot offline ];
+    homepage = "https://github.com/coreos/flannel";
+    maintainers = with maintainers; [johanot offline];
     platforms = with platforms; linux;
   };
 }

@@ -1,14 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, cmake }:
+{ stdenv, fetchurl, cmake }:
 
 stdenv.mkDerivation rec {
-  pname = "yajl";
-  version = "2.1.0";
+  name = "yajl-2.1.0";
 
-  src = fetchFromGitHub {
-    owner = "lloyd";
-    repo = "yajl";
-    rev = version;
-    sha256 = "00yj06drb6izcxfxfqlhimlrb089kka0w0x8k27pyzyiq7qzcvml";
+  src = fetchurl {
+    url = "https://github.com/lloyd/yajl/tarball/2.1.0";
+    name = "${name}.tar.gz";
+    sha256 = "0f6yrjc05aa26wfi7lqn2gslm19m6rm81b30ksllpkappvh162ji";
   };
 
   nativeBuildInputs = [ cmake ];
@@ -20,8 +18,8 @@ stdenv.mkDerivation rec {
       C, and a small validating JSON generator.
     '';
     homepage = "http://lloyd.github.com/yajl/";
-    license = lib.licenses.isc;
-    platforms = with lib.platforms; linux ++ darwin;
-    maintainers = with lib.maintainers; [ maggesi ];
+    license = stdenv.lib.licenses.isc;
+    platforms = with stdenv.lib.platforms; linux ++ darwin;
+    maintainers = with stdenv.lib.maintainers; [ maggesi ];
   };
 }

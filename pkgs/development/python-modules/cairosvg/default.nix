@@ -1,51 +1,25 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, isPy3k
-, cairocffi
-, cssselect2
-, defusedxml
-, pillow
-, tinycss2
-, pytestCheckHook
-}:
+{ stdenv, buildPythonPackage, fetchPypi, isPy3k, fetchpatch
+, cairocffi, cssselect2, defusedxml, pillow, tinycss2
+, pytest, pytestrunner, pytestcov, pytest-flake8, pytest-isort }:
 
 buildPythonPackage rec {
   pname = "CairoSVG";
-  version = "2.5.2";
+  version = "2.5.0";
+
   disabled = !isPy3k;
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-sLmSnPXboAUXjXRqgDb88AJVUPSYylTbYYczIjhHg7w=";
+    sha256 = "3fc50d10f0cbef53b3ee376a97a88d81bbd9e2f190f7e63de08431a1a08e9afa";
   };
 
   propagatedBuildInputs = [ cairocffi cssselect2 defusedxml pillow tinycss2 ];
 
-  propagatedNativeBuildInputs = [ cairocffi ];
+  checkInputs = [ pytest pytestrunner pytestcov pytest-flake8 pytest-isort ];
 
-  checkInputs = [ pytestCheckHook ];
-
-  postPatch = ''
-    substituteInPlace setup.cfg \
-      --replace "pytest-runner" "" \
-      --replace "pytest-flake8" "" \
-      --replace "pytest-isort" "" \
-      --replace "pytest-cov" "" \
-      --replace "--flake8" "" \
-      --replace "--isort" ""
-  '';
-
-  pytestFlagsArray = [
-    "cairosvg/test_api.py"
-  ];
-
-  pythonImportsCheck = [ "cairosvg" ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://cairosvg.org";
-    license = licenses.lgpl3Plus;
+    license = licenses.lgpl3;
     description = "SVG converter based on Cairo";
-    maintainers = with maintainers; [ SuperSandro2000 ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   name = "proj-datumgrid";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     cp nad2bin $out/bin/
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Repository for proj datum grids";
     homepage = "https://proj4.org";
     license = licenses.mit;

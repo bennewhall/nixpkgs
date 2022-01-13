@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkg-config, glib, popt, zlib, libcanberra-gtk2
+{ stdenv, fetchurl, pkgconfig, glib, popt, zlib, libcanberra-gtk2
 , intltool, libbonobo, GConf, gnome_vfs, libtool, libogg
 }:
 
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ popt zlib intltool GConf gnome_vfs libcanberra-gtk2 libtool ];
   propagatedBuildInputs = [ glib libbonobo libogg ];
 }

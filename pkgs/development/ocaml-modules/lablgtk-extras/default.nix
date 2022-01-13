@@ -1,15 +1,11 @@
-{ stdenv, lib, fetchFromGitLab, ocaml, findlib, camlp4, config-file, lablgtk, xmlm }:
+{ stdenv, fetchFromGitHub, ocaml, findlib, camlp4, config-file, lablgtk, xmlm }:
 
-if !lib.versionAtLeast ocaml.version "4.02"
-|| lib.versionAtLeast ocaml.version "4.13"
-then throw "lablgtk-extras is not available for OCaml ${ocaml.version}"
-else
+assert stdenv.lib.versionAtLeast (stdenv.lib.getVersion ocaml) "4.02";
 
 stdenv.mkDerivation rec {
   version = "1.6";
   name = "ocaml${ocaml.version}-lablgtk-extras-${version}";
-  src = fetchFromGitLab {
-    domain = "framagit.org";
+  src = fetchFromGitHub {
     owner = "zoggy";
     repo = "lablgtk-extras";
     rev = "release-${version}";
@@ -22,10 +18,10 @@ stdenv.mkDerivation rec {
   createFindlibDestdir = true;
 
   meta = {
-    inherit (ocaml.meta) platforms;
-    maintainers = with lib.maintainers; [ vbgl ];
-    homepage = "https://framagit.org/zoggy/lablgtk-extras/";
+    platforms = ocaml.meta.platforms or [];
+    maintainers = with stdenv.lib.maintainers; [ vbgl ];
+    homepage = "http://gtk-extras.forge.ocamlcore.org/";
     description = "A collection of libraries and modules useful when developing OCaml/LablGtk2 applications";
-    license = lib.licenses.lgpl2Plus;
+    license = stdenv.lib.licenses.lgpl2Plus;
   };
 }

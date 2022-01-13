@@ -1,13 +1,16 @@
-import ./make-test-python.nix ({ pkgs, lib, ... }: {
+# Test for NixOS' container support.
+
+import ./make-test-python.nix ({ pkgs, ...} : {
   name = "containers-extra_veth";
-  meta = {
-    maintainers = with lib.maintainers; [ kampfschlaefer ];
+  meta = with pkgs.stdenv.lib.maintainers; {
+    maintainers = [ kampfschlaefer ];
   };
 
   machine =
     { pkgs, ... }:
     { imports = [ ../modules/installer/cd-dvd/channel.nix ];
       virtualisation.writableStore = true;
+      virtualisation.memorySize = 768;
       virtualisation.vlans = [];
 
       networking.useDHCP = false;
@@ -44,7 +47,7 @@ import ./make-test-python.nix ({ pkgs, lib, ... }: {
             };
         };
 
-      virtualisation.additionalPaths = [ pkgs.stdenv ];
+      virtualisation.pathsInNixDB = [ pkgs.stdenv ];
     };
 
   testScript =

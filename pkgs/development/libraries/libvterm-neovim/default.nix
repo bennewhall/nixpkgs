@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ stdenv
 , fetchFromGitHub
 , perl
 , libtool
@@ -17,14 +16,15 @@ stdenv.mkDerivation {
     sha256 = "0r6yimzbkgrsi9aaxwvxahai2lzgjd1ysblr6m6by5w459853q3n";
   };
 
-  nativeBuildInputs = [ perl libtool ];
+  buildInputs = [ perl ];
+  nativeBuildInputs = [ libtool ];
 
   makeFlags = [ "PREFIX=$(out)" ]
-    ++ lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool";
+    ++ stdenv.lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool";
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "VT220/xterm/ECMA-48 terminal emulator library";
     homepage = "http://www.leonerd.org.uk/code/libvterm/";
     license = licenses.mit;

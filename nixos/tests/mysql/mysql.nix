@@ -1,28 +1,6 @@
-import ./../make-test-python.nix ({ pkgs, ...}:
-
-
-let
-  # Setup common users
-  users = { ... }:
-  {
-    users.groups.testusers = { };
-
-    users.users.testuser = {
-      isSystemUser = true;
-      group = "testusers";
-    };
-
-    users.users.testuser2 = {
-      isSystemUser = true;
-      group = "testusers";
-    };
-  };
-
-in
-
-{
+import ./../make-test-python.nix ({ pkgs, ...} : {
   name = "mysql";
-  meta = with pkgs.lib.maintainers; {
+  meta = with pkgs.stdenv.lib.maintainers; {
     maintainers = [ eelco shlevy ];
   };
 
@@ -31,8 +9,8 @@ in
       { pkgs, ... }:
 
       {
-        imports = [ users ];
-
+        users.users.testuser = { };
+        users.users.testuser2 = { };
         services.mysql.enable = true;
         services.mysql.initialDatabases = [
           { name = "testdb3"; schema = ./testdb.sql; }
@@ -62,8 +40,12 @@ in
       { pkgs, ... }:
 
       {
-        imports = [ users ];
+        # prevent oom:
+        # Kernel panic - not syncing: Out of memory: compulsory panic_on_oom is enabled
+        virtualisation.memorySize = 1024;
 
+        users.users.testuser = { };
+        users.users.testuser2 = { };
         services.mysql.enable = true;
         services.mysql.initialDatabases = [
           { name = "testdb3"; schema = ./testdb.sql; }
@@ -93,8 +75,8 @@ in
       { pkgs, ... }:
 
       {
-        imports = [ users ];
-
+        users.users.testuser = { };
+        users.users.testuser2 = { };
         services.mysql.enable = true;
         services.mysql.initialScript = pkgs.writeText "mariadb-init.sql" ''
           ALTER USER root@localhost IDENTIFIED WITH unix_socket;
@@ -116,7 +98,7 @@ in
         }];
         services.mysql.settings = {
           mysqld = {
-            plugin-load-add = [ "ha_mroonga.so" "ha_rocksdb.so" ];
+            plugin-load-add = [ "ha_tokudb.so" "ha_rocksdb.so" ];
           };
         };
         services.mysql.package = pkgs.mariadb;
@@ -190,20 +172,6 @@ in
         "echo 'use testdb; select test_id from tests;' | sudo -u testuser mysql -u testuser -N | grep 42"
     )
 
-    # Check if Mroonga plugin works
-    mariadb.succeed(
-        "echo 'use testdb; create table mroongadb (test_id INT, PRIMARY KEY (test_id)) ENGINE = Mroonga;' | sudo -u testuser mysql -u testuser"
-    )
-    mariadb.succeed(
-        "echo 'use testdb; insert into mroongadb values (25);' | sudo -u testuser mysql -u testuser"
-    )
-    mariadb.succeed(
-        "echo 'use testdb; select test_id from mroongadb;' | sudo -u testuser mysql -u testuser -N | grep 25"
-    )
-    mariadb.succeed(
-        "echo 'use testdb; drop table mroongadb;' | sudo -u testuser mysql -u testuser"
-    )
-
     # Check if RocksDB plugin works
     mariadb.succeed(
         "echo 'use testdb; create table rocksdb (test_id INT, PRIMARY KEY (test_id)) ENGINE = RocksDB;' | sudo -u testuser mysql -u testuser"
@@ -216,6 +184,20 @@ in
     )
     mariadb.succeed(
         "echo 'use testdb; drop table rocksdb;' | sudo -u testuser mysql -u testuser"
+    )
+  '' + pkgs.stdenv.lib.optionalString pkgs.stdenv.isx86_64 ''
+    # Check if TokuDB plugin works
+    mariadb.succeed(
+        "echo 'use testdb; create table tokudb (test_id INT, PRIMARY KEY (test_id)) ENGINE = TokuDB;' | sudo -u testuser mysql -u testuser"
+    )
+    mariadb.succeed(
+        "echo 'use testdb; insert into tokudb values (25);' | sudo -u testuser mysql -u testuser"
+    )
+    mariadb.succeed(
+        "echo 'use testdb; select test_id from tokudb;' | sudo -u testuser mysql -u testuser -N | grep 25"
+    )
+    mariadb.succeed(
+        "echo 'use testdb; drop table tokudb;' | sudo -u testuser mysql -u testuser"
     )
   '';
 })

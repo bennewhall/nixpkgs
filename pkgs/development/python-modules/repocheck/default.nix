@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchFromGitHub
 }:
@@ -14,7 +14,7 @@ buildPythonPackage rec {
     owner = "kynikos";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Check the status of code repositories under a root directory";
     license = licenses.gpl3Plus;

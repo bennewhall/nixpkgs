@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pyasn1
@@ -26,7 +26,7 @@ buildPythonPackage rec {
     py.test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A collection of ASN.1-based protocols modules";
     homepage = "https://pypi.python.org/pypi/pyasn1-modules";
     license = licenses.bsd3;

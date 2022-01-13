@@ -3,7 +3,6 @@
 , coursier
 , autoPatchelfHook
 , installShellFiles
-, makeWrapper
 , jre
 , lib
 , zlib
@@ -11,90 +10,83 @@
 
 stdenv.mkDerivation rec {
   pname = "bloop";
-  version = "1.4.11";
+  version = "1.4.5";
 
   bloop-coursier-channel = fetchurl {
     url = "https://github.com/scalacenter/bloop/releases/download/v${version}/bloop-coursier.json";
-    sha256 = "CoF/1nggjaL17SWmWDcKicfgoyqpOSZUse8f+3TgD0E=";
+    sha256 = "0a3ayvq62nbfrcs2xgrfqg27h0wf9x28pxabmwd8y0ncafsnifjy";
   };
 
   bloop-bash = fetchurl {
     url = "https://github.com/scalacenter/bloop/releases/download/v${version}/bash-completions";
-    sha256 = "2mt+zUEJvQ/5ixxFLZ3Z0m7uDSj/YE9sg/uNMjamvdE=";
+    sha256 = "1ldxlqv353gvhdn4yq7z506ywvnjv6fjsi8wigwhzg89876pwsys";
   };
 
   bloop-fish = fetchurl {
     url = "https://github.com/scalacenter/bloop/releases/download/v${version}/fish-completions";
-    sha256 = "oBKlzHa1fbzhf60jfzuXvqaUb/xuoLYawigRQQOCSN0=";
+    sha256 = "1pa8h81l2498q8dbd83fzipr99myjwxpy8xdgzhvqzdmfv6aa4m0";
   };
 
   bloop-zsh = fetchurl {
     url = "https://github.com/scalacenter/bloop/releases/download/v${version}/zsh-completions";
-    sha256 = "WNMsPwBfd5EjeRbRtc06lCEVI2FVoLfrqL82OR0G7/c=";
+    sha256 = "1xzg0qfkjdmzm3mvg82mc4iia8cl7b6vbl8ng4ir2xsz00zjrlsq";
   };
 
   bloop-coursier = stdenv.mkDerivation rec {
     name = "${pname}-coursier-${version}";
 
     platform = if stdenv.isLinux && stdenv.isx86_64 then "x86_64-pc-linux"
-    else if stdenv.isDarwin && stdenv.isx86_64 then "x86_64-apple-darwin"
-    else throw "unsupported platform";
+               else if stdenv.isDarwin && stdenv.isx86_64 then "x86_64-apple-darwin"
+               else throw "unsupported platform";
 
-    dontUnpack = true;
+    phases = [ "installPhase" ];
     installPhase = ''
-      runHook preInstall
-
       export COURSIER_CACHE=$(pwd)
       export COURSIER_JVM_CACHE=$(pwd)
 
       mkdir channel
       ln -s ${bloop-coursier-channel} channel/bloop.json
-      ${coursier}/bin/cs install --install-dir . --install-platform ${platform} --default-channels=false --channel channel --only-prebuilt=true bloop
+      ${coursier}/bin/coursier install --install-dir $out --install-platform ${platform} --default-channels=false --channel channel --only-prebuilt=true bloop
 
-      # Only keeping the binary, we'll wrap it ourselves
-      # This guarantees the output of this fixed-output derivation doesn't have references to itself
-      install -D -m 0755 .bloop.aux $out
-
-      runHook postInstall
-    '';
+      # Remove binary part of the coursier launcher script to make derivation output hash stable
+      sed -i '5,$ d' $out/bloop
+   '';
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = if stdenv.isLinux && stdenv.isx86_64 then "0c02n779z4l7blzla5820bzfhblbp5nlizx9f8wns4miwnph357f"
-    else if stdenv.isDarwin && stdenv.isx86_64 then "1gy5k9ii86rxyv2v9if4n1clvmb1hi4ym32mp6miwgcjla10sv30"
-    else throw "unsupported platform";
+    outputHash     = if stdenv.isLinux && stdenv.isx86_64 then "0wh02djny3a9882423lh4kf67z981d1ky85gfphsw52fbdhbzmn9"
+                     else if stdenv.isDarwin && stdenv.isx86_64 then "0db30zbqpa9q285hspaba124dfnnr1gmlrxwwvn9szxz1d55n417"
+                     else throw "unsupported platform";
   };
 
   dontUnpack = true;
-  nativeBuildInputs = [ autoPatchelfHook installShellFiles makeWrapper ];
+  nativeBuildInputs = [ autoPatchelfHook installShellFiles ];
   buildInputs = [ stdenv.cc.cc.lib zlib ];
   propagatedBuildInputs = [ jre ];
 
   installPhase = ''
-    runHook preInstall
-
     export COURSIER_CACHE=$(pwd)
     export COURSIER_JVM_CACHE=$(pwd)
 
-    install -D -m 0755 ${bloop-coursier} $out/.bloop-wrapped
+    mkdir -p $out/bin
+    cp ${bloop-coursier}/bloop $out/bloop
+    cp ${bloop-coursier}/.bloop.aux $out/.bloop.aux
+    ln -s $out/bloop $out/bin/bloop
 
-    makeWrapper $out/.bloop-wrapped $out/bin/bloop \
-      --set CS_NATIVE_LAUNCHER true \
-      --set IS_CS_INSTALLED_LAUNCHER true
+    # patch the bloop launcher so that it works when symlinked
+    sed "s|\$(dirname \"\$0\")|$out|" -i $out/bloop
 
     #Install completions
     installShellCompletion --name bloop --bash ${bloop-bash}
     installShellCompletion --name _bloop --zsh ${bloop-zsh}
     installShellCompletion --name bloop.fish --fish ${bloop-fish}
-
-    runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://scalacenter.github.io/bloop/";
     license = licenses.asl20;
     description = "A Scala build server and command-line tool to make the compile and test developer workflows fast and productive in a build-tool-agnostic way";
     platforms = [ "x86_64-linux" "x86_64-darwin" ];
-    maintainers = with maintainers; [ kubukoz tomahna ];
+    maintainers = with maintainers; [ tomahna ];
   };
 }

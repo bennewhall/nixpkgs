@@ -1,25 +1,25 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pyparsing
 , six
 , pytestCheckHook
 , pretend
-, setuptools
+, flit-core
 }:
 
 buildPythonPackage rec {
   pname = "packaging";
-  version = "20.9";
+  version = "20.7";
   format = "pyproject";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-WzJ6wTINyGPcpy9FFOzAhvMRhnRLhKIwN0zB/Xdv6uU=";
+    sha256 = "Ba87uF0yA3fbKBzyVKsFDhp+vL9UEGhamkB+GKH4EjY=";
   };
 
   nativeBuildInputs = [
-    setuptools
+    flit-core
   ];
 
   propagatedBuildInputs = [ pyparsing six ];
@@ -29,10 +29,14 @@ buildPythonPackage rec {
     pretend
   ];
 
+  checkPhase = ''
+    py.test tests
+  '';
+
   # Prevent circular dependency
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Core utilities for Python packages";
     homepage = "https://github.com/pypa/packaging";
     license = [ licenses.bsd2 licenses.asl20 ];

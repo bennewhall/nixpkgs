@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchFromGitHub, libXft, imlib2, giflib, libexif, conf ? null }:
+{ stdenv, fetchFromGitHub, libXft, imlib2, giflib, libexif, conf ? null }:
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   pname = "sxiv";
@@ -27,8 +27,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Simple X Image Viewer";
     homepage = "https://github.com/muennich/sxiv";
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.linux;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = with maintainers; [ jfrankenau ];
   };
 }

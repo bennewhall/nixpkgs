@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, perl
+{ stdenv, fetchurl, pkgconfig, perl
 , buildsystem
 , libparserutils
 }:
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-nnriU+bJBp51frmtTkhG84tNtSwMoBUURqn6Spd3NbY=";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     perl
     libparserutils
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     "NSSHARED=${buildsystem}/share/netsurf-buildsystem"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/projects/hubbub/";
     description = "HTML5 parser library for netsurf browser";
     longDescription = ''

@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 }:
 
@@ -16,7 +16,7 @@ stdenv.mkDerivation {
     cp -R * "$out/share/pari/"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "PARI database needed by ellap for large primes";
     homepage = "http://pari.math.u-bordeaux.fr/";
     license = licenses.gpl2Plus;

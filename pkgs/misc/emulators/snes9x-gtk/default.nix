@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchFromGitHub, meson, ninja, pkg-config, wrapGAppsHook
-, SDL2, zlib, gtk3, libxml2, libXv, libepoxy, minizip, pulseaudio, portaudio }:
+{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, wrapGAppsHook
+, SDL2, zlib, gtk3, libxml2, libXv, epoxy, minizip, pulseaudio, portaudio }:
 
 stdenv.mkDerivation rec {
   pname = "snes9x-gtk";
@@ -12,13 +12,14 @@ stdenv.mkDerivation rec {
     sha256 = "12hpn7zcdvp30ldpw2zf115yjqv55n1ldjbids7vx0lvbpr06dm1";
   };
 
-  nativeBuildInputs = [ meson ninja pkg-config wrapGAppsHook ];
-  buildInputs = [ SDL2 zlib gtk3 libxml2 libXv libepoxy minizip pulseaudio portaudio ];
+  enableParallelBuilding = true;
+  nativeBuildInputs = [ meson ninja pkgconfig wrapGAppsHook ];
+  buildInputs = [ SDL2 zlib gtk3 libxml2 libXv epoxy minizip pulseaudio portaudio ];
 
   preConfigure = "cd gtk";
 
-  meta = with lib; {
-    homepage = "https://www.snes9x.com";
+  meta = with stdenv.lib; {
+    homepage = "http://www.snes9x.com";
     description = "Super Nintendo Entertainment System (SNES) emulator";
 
     longDescription = ''
@@ -28,8 +29,7 @@ stdenv.mkDerivation rec {
       includes some real gems that were only ever released in Japan.
     '';
 
-    # see https://github.com/snes9xgit/snes9x/blob/master/LICENSE for exact details
-    license = licenses.unfreeRedistributable;
+    license = licenses.lgpl2;
     maintainers = with maintainers; [ qknight ];
     platforms = platforms.linux;
   };

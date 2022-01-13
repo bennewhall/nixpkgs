@@ -1,35 +1,35 @@
 { fetchurl
-, lib, stdenv
+, stdenv
 , gtk
-, pkg-config
+, pkgconfig
 , libgsf
 , libofx
 , intltool
 , wrapGAppsHook
 , libsoup
-, gnome
+, gnome3
 }:
 
 stdenv.mkDerivation rec {
   pname = "grisbi";
-  version = "2.0.5";
+  version = "1.2.2";
 
   src = fetchurl {
     url = "mirror://sourceforge/grisbi/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-vTrbq/xLTfwF7/YtKzZFiiSw8A0HzzWin2ry8gPHej8=";
+    sha256 = "1piiyyxjsjbw9gcqydvknzxmmfgh8kdqal12ywrxyxih2afwnvbw";
   };
 
-  nativeBuildInputs = [ pkg-config wrapGAppsHook ];
+  nativeBuildInputs = [ pkgconfig wrapGAppsHook ];
   buildInputs = [
     gtk
     libgsf
     libofx
     intltool
     libsoup
-    gnome.adwaita-icon-theme
+    gnome3.adwaita-icon-theme
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A personnal accounting application";
     longDescription = ''
       Grisbi is an application written by French developers, so it perfectly

@@ -1,11 +1,10 @@
-{ fetchurl, lib, stdenv, zlib, bzip2 }:
+{ fetchurl, stdenv, zlib, bzip2 }:
 
 stdenv.mkDerivation rec {
-  pname = "tokyocabinet";
-  version = "1.4.48";
+  name = "tokyocabinet-1.4.48";
 
   src = fetchurl {
-    url = "https://dbmx.net/tokyocabinet/${pname}-${version}.tar.gz";
+    url = "http://fallabs.com/tokyocabinet/${name}.tar.gz";
     sha256 = "140zvr0n8kvsl0fbn2qn3f2kh3yynfwnizn4dgbj47m975yg80x0";
   };
 
@@ -36,9 +35,9 @@ stdenv.mkDerivation rec {
          robustness, supports 64-bit architecture.
       '';
 
-    license = lib.licenses.lgpl2Plus;
+    license = stdenv.lib.licenses.lgpl2Plus;
 
     maintainers = [ ];
-    platforms = lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

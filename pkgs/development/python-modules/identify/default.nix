@@ -1,40 +1,20 @@
-{ lib
-, buildPythonPackage
-, editdistance-s
-, fetchFromGitHub
-, pytestCheckHook
-, pythonOlder
-, ukkonen
-}:
+{ lib, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "identify";
-  version = "2.4.1";
-  format = "setuptools";
+  version = "1.5.10";
 
-  disabled = pythonOlder "3.7";
-
-  src = fetchFromGitHub {
-    owner = "pre-commit";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-+kfIpmJ6Gnb33MZ7NZrE8oVSBbZLuRfIvfCbstxJFX0=";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "943cd299ac7f5715fcb3f684e2fc1594c1e0f22a90d15398e5888143bd4144b5";
   };
 
-  checkInputs = [
-    editdistance-s
-    pytestCheckHook
-    ukkonen
-  ];
-
-  pythonImportsCheck = [
-    "identify"
-  ];
+  # Tests not included in PyPI tarball
+  doCheck = false;
 
   meta = with lib; {
     description = "File identification library for Python";
     homepage = "https://github.com/chriskuehl/identify";
     license = licenses.mit;
-    maintainers = with maintainers; [ fab ];
   };
 }

@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "elfinfo";
@@ -12,7 +12,7 @@ buildGoPackage rec {
     sha256 = "1n8bg0rcq9fqa6rdnk6x9ngvm59hcayblkpjv9j5myn2vmm6fv8m";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Small utility for showing information about ELF files";
     homepage = "https://elfinfo.roboticoverlords.org/";
     license = licenses.mit;

@@ -1,54 +1,35 @@
-{ lib
-, rustPlatform
-, fetchCrate
-, installShellFiles
-, makeWrapper
-, pkg-config
-, ronn
-, openssl
-, stdenv
-, libiconv
-, Security
-}:
+{ stdenv, lib, fetchFromGitHub, makeWrapper, rustPlatform
+, openssl, pkgconfig, darwin, libiconv }:
 
 rustPlatform.buildRustPackage rec {
   pname = "httplz";
-  version = "1.12.2";
+  version = "1.9.2";
 
-  src = fetchCrate {
-    inherit version;
-    pname = "https";
-    sha256 = "sha256-FhxNYss6n0AJEszpJ7+6CAJE2sdsflWQkvSLakTnFdY=";
+  src = fetchFromGitHub {
+    owner = "thecoshman";
+    repo = "http";
+    rev = "v${version}";
+    sha256 = "154alxxclz78r29m656c8yahnzq0vd64s4sp19h0ca92dfw4s46y";
   };
 
-  cargoSha256 = "sha256-wyksA3RYpGkD6nhllNv8WkUwEdml4TiPM2a4GzfBD1o=";
-
-  nativeBuildInputs = [
-    installShellFiles
-    makeWrapper
-    pkg-config
-    ronn
-  ];
-
+  nativeBuildInputs = [ makeWrapper pkgconfig ];
   buildInputs = [ openssl ] ++ lib.optionals stdenv.isDarwin [
-    libiconv
-    Security
+    libiconv darwin.apple_sdk.frameworks.Security
   ];
 
-  cargoBuildFlags = [ "--bin" "httplz" ];
+  cargoBuildFlags = [ "--bin httplz" ];
+  cargoPatches = [ ./cargo-lock.patch ];
+  cargoSha256 = "1rpwzrr9bvw375vn97y5fqhraqz35d3ani9kfflvn2758x3g8gwf";
 
   postInstall = ''
-    sed -E 's/http(`| |\(|$)/httplz\1/g' http.md > httplz.1.ronn
-    RUBYOPT=-Eutf-8:utf-8 ronn --organization "http developers" -r httplz.1.ronn
-    installManPage httplz.1
     wrapProgram $out/bin/httplz \
       --prefix PATH : "${openssl}/bin"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A basic http server for hosting a folder fast and simply";
     homepage = "https://github.com/thecoshman/http";
     license = licenses.mit;
-    maintainers = with maintainers; [ figsoda ];
+    maintainers = with maintainers; [ bbigras ];
   };
 }

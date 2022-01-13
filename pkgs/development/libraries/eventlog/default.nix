@@ -1,19 +1,14 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchurl }:
 
-stdenv.mkDerivation rec {
-  pname = "eventlog";
-  version = "0.2.13";
+stdenv.mkDerivation {
+  name = "eventlog-0.2.12";
 
-  src = fetchFromGitHub {
-    owner = "balabit";
-    repo = "eventlog";
-    rev = "a5c19163ba131f79452c6dfe4e31c2b4ce4be741";
-    sha256 = "0a2za3hs7wzy14z7mfgldy1r9xdlqv97yli9wlm8xldr0amsx869";
+  src = fetchurl {
+    url = "http://www.balabit.com/downloads/files/eventlog/0.2/eventlog_0.2.12.tar.gz";
+    sha256 = "494dac8e01dc5ce323df2ad554d94874938dab51aa025987677b2bc6906a9c66";
   };
 
-  nativeBuildInputs = [ autoreconfHook ];
-
-  meta = with lib; {
+  meta = {
     description = "Syslog event logger library";
     longDescription = ''
       The EventLog library aims to be a replacement of the simple syslog() API
@@ -24,7 +19,7 @@ stdenv.mkDerivation rec {
       combination of description and tag/value pairs.
     '';
     homepage = "https://www.balabit.com/support/community/products/";
-    license = licenses.bsd3;
-    platforms = platforms.unix;
+    license = stdenv.lib.licenses.bsd3;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

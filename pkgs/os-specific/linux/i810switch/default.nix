@@ -1,8 +1,9 @@
-{ lib, stdenv, fetchurl, pciutils }:
+{ stdenv, fetchurl, pciutils }:
 
 stdenv.mkDerivation {
-  pname = "i810switch";
-  version = "0.6.5";
+  name = "i810switch-0.6.5";
+
+  phases = "unpackPhase installPhase";
 
   installPhase = "
     sed -i -e 's+/usr++' Makefile
@@ -16,11 +17,10 @@ stdenv.mkDerivation {
     sha256 = "d714840e3b14e1fa9c432c4be0044b7c008d904dece0d611554655b979cad4c3";
   };
 
-  meta = with lib; {
+  meta = {
     description = "A utility for switching between the LCD and external VGA display on Intel graphics cards";
     homepage = "http://www16.plala.or.jp/mano-a-mano/i810switch.html";
-    maintainers = with maintainers; [ ];
-    license = licenses.gpl2;
-    platforms = platforms.linux;
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

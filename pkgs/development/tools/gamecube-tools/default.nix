@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook
+{ stdenv, fetchFromGitHub, autoreconfHook
 , freeimage, libGL }:
 
 stdenv.mkDerivation rec {
-  version = "1.0.4";
+  version = "1.0.2";
   pname = "gamecube-tools";
 
   nativeBuildInputs = [ autoreconfHook ];
@@ -12,10 +12,10 @@ stdenv.mkDerivation rec {
     owner = "devkitPro";
     repo  = "gamecube-tools";
     rev = "v${version}";
-    sha256 = "sha256-0iMY2LokfsYgHzIuFc8RlrVlJCURqVqprP54PG4oW0M=";
+    sha256 = "0zvpkzqvl8iv4ndzhkjkmrzpampyzgb91spv0h2x2arl8zy4z7ca";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tools for gamecube/wii projects";
     homepage = "https://github.com/devkitPro/gamecube-tools/";
     license = licenses.gpl2;

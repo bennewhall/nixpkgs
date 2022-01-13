@@ -1,4 +1,4 @@
-{ lib, fetchurl, makeWrapper, patchelf, pkgs, stdenv, SDL, libglvnd, libogg, libvorbis, curl, openal }:
+{ fetchurl, makeWrapper, patchelf, pkgs, stdenv, SDL, libglvnd, libogg, libvorbis, curl, openal }:
 
 stdenv.mkDerivation {
   pname = "openarena";
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
   installPhase = let
     gameDir = "$out/openarena-$version";
     interpreter = "$(< \"$NIX_CC/nix-support/dynamic-linker\")";
-    libPath = lib.makeLibraryPath [ SDL libglvnd libogg libvorbis curl openal ];
+    libPath = stdenv.lib.makeLibraryPath [ SDL libglvnd libogg libvorbis curl openal ];
     arch = {
       "x86_64-linux" = "x86_64";
       "i386-linux" = "i386";
@@ -36,8 +36,8 @@ stdenv.mkDerivation {
   meta = {
     description = "Crossplatform openarena client";
     homepage = "http://openarena.ws/";
-    maintainers = [ lib.maintainers.wyvie ];
+    maintainers = [ stdenv.lib.maintainers.wyvie ];
     platforms = [ "i386-linux" "x86_64-linux" ];
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

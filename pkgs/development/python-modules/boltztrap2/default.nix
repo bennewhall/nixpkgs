@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , spglib
@@ -36,7 +36,7 @@ buildPythonPackage rec {
     py.test
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://www.boltztrap.org/";
     description = "Band-structure interpolator and transport coefficient calculator";
     license = licenses.gpl3;

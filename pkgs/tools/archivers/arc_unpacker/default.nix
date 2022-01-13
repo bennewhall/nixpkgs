@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, cmake, makeWrapper, boost, libpng, libiconv
-, libjpeg, zlib, openssl, libwebp, catch2 }:
+{ stdenv, fetchFromGitHub, cmake, makeWrapper, boost, libpng, libjpeg, zlib
+, openssl, libwebp, catch }:
 
 stdenv.mkDerivation rec {
-  pname = "arc_unpacker";
-  version = "unstable-2021-05-17";
+  pname = "arc_unpacker-unstable";
+  version = "2019-01-28";
 
   src = fetchFromGitHub {
     owner = "vn-tools";
@@ -11,48 +11,37 @@ stdenv.mkDerivation rec {
     # Since the latest release (0.11) doesn't build, we've opened an upstream
     # issue in https://github.com/vn-tools/arc_unpacker/issues/187 to ask if a
     # a new release is upcoming
-    rev = "9c2781fcf3ead7641e873b65899f6abeeabb2fc8";
-    sha256 = "1xxrc9nww0rla3yh10z6glv05ax4rynwwbd0cdvkp7gyqzrv97xp";
+    rev = "b9843a13e2b67a618020fc12918aa8d7697ddfd5";
+    sha256 = "0wpl30569cip3im40p3n22s11x0172a3axnzwmax62aqlf8kdy14";
   };
 
-  nativeBuildInputs = [ cmake makeWrapper catch2 ];
-  buildInputs = [ boost libpng libjpeg zlib openssl libwebp ]
-    ++ lib.optionals stdenv.isDarwin [ libiconv ];
+  nativeBuildInputs = [ cmake makeWrapper catch ];
+  buildInputs = [ boost libpng libjpeg zlib openssl libwebp ];
 
   postPatch = ''
-    cp ${catch2}/include/catch2/catch.hpp tests/test_support/catch.h
+    cp ${catch}/include/catch/catch.hpp tests/test_support/catch.h
   '';
 
   checkPhase = ''
-    runHook preCheck
-
     pushd ..
     ./build/run_tests
     popd
-
-    runHook postCheck
   '';
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out/bin $out/share/doc/arc_unpacker $out/libexec/arc_unpacker
     cp arc_unpacker $out/libexec/arc_unpacker/arc_unpacker
     cp ../GAMELIST.{htm,js} $out/share/doc/arc_unpacker
     cp -r ../etc $out/libexec/arc_unpacker
     makeWrapper $out/libexec/arc_unpacker/arc_unpacker $out/bin/arc_unpacker
-
-    runHook postInstall
   '';
 
-  # A few tests fail on aarch64-linux
-  doCheck = !(stdenv.isLinux && stdenv.isAarch64);
+  doCheck = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tool to extract files from visual novel archives";
     homepage = "https://github.com/vn-tools/arc_unpacker";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ midchildan ];
-    platforms = platforms.all;
   };
 }

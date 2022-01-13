@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pytestCheckHook, nose, libarchive, glibcLocales, isPy27
+{ stdenv, buildPythonPackage, fetchFromGitHub, pytestCheckHook, nose, libarchive, glibcLocales, isPy27
 # unrar is non-free software
 , useUnrar ? false, unrar
 }:
@@ -28,13 +28,14 @@ buildPythonPackage rec {
        else
         ''--replace 'ALT_TOOL = "bsdtar"' "ALT_TOOL = \"${libarchive}/bin/bsdtar\""
         '')
-     + "";
+     + ''
+   '';
   # the tests only work with the standard unrar package
   doCheck = useUnrar;
   LC_ALL = "en_US.UTF-8";
   pythonImportsCheck = [ "rarfile" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "RAR archive reader for Python";
     homepage = "https://github.com/markokr/rarfile";
     license = licenses.isc;

@@ -1,8 +1,9 @@
 { lib, pythonPackages, fetchFromGitHub }:
 
-pythonPackages.buildPythonApplication rec {
+let version = "0.1.2"; in
+pythonPackages.buildPythonApplication {
   pname = "nixbang";
-  version = "0.1.2";
+  inherit version;
   namePrefix = "";
 
   src = fetchFromGitHub {

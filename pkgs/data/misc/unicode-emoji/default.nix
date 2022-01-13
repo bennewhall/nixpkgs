@@ -1,6 +1,7 @@
-{ lib
+{ stdenv
 , fetchurl
 , symlinkJoin
+, lib
 }:
 
 let
@@ -49,7 +50,7 @@ symlinkJoin rec {
 
   passthru = srcs;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Unicode Emoji Data Files";
     homepage = "https://home.unicode.org/emoji/";
     license = licenses.unicode-dfs-2016;

@@ -1,54 +1,38 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, click
-, pyscard
-, pycountry
-, terminaltables
-, pytestCheckHook
-, pythonOlder
+{ stdenv, buildPythonPackage, fetchFromGitHub
+, click, enum-compat, pyscard, pycountry, terminaltables
+, pytestCheckHook, pythonOlder
 }:
 
 buildPythonPackage rec {
   pname = "emv";
-  version = "1.0.14";
-  format = "setuptools";
-
+  version = "1.0.11";
   disabled = pythonOlder "3.4";
 
   src = fetchFromGitHub {
     owner = "russss";
     repo = "python-emv";
     rev = "v${version}";
-    hash = "sha256-MnaeQZ0rA3i0CoUA6HgJQpwk5yo4rm9e+pc5XzRd1eg=";
+    hash = "sha256:1715hcba3fdi0i5awnrjdjnk74p66sxm9349pd8bb717zrh4gpj7";
   };
 
+  checkInputs = [ pytestCheckHook ];
   propagatedBuildInputs = [
+    enum-compat
     click
     pyscard
     pycountry
     terminaltables
   ];
 
-  checkInputs = [
-    pytestCheckHook
-  ];
-
-  postPatch = ''
+  # argparse is part of the standardlib
+  prePatch = ''
     substituteInPlace setup.py \
-      --replace '"enum-compat==0.0.3",' "" \
-      --replace '"argparse==1.4.0",' "" \
-      --replace "click==7.1.2" "click" \
-      --replace "pyscard==2.0.0" "pyscard"
+      --replace '"argparse==1.4.0",' ""
   '';
 
-  pythonImportsCheck = [
-    "emv"
-  ];
-
-  meta = with lib; {
-    description = "Implementation of the EMV chip-and-pin smartcard protocol";
+  meta = with stdenv.lib; {
     homepage = "https://github.com/russss/python-emv";
+    description = "Implementation of the EMV chip-and-pin smartcard protocol";
     license = licenses.mit;
     maintainers = with maintainers; [ lukegb ];
   };

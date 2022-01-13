@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, omake, ocaml, flex, bison }:
+{ stdenv, fetchurl, omake, ocaml, flex, bison }:
 
 let
   version = "2.1";
@@ -25,10 +25,10 @@ stdenv.mkDerivation {
 
   installPhase = "mkdir -p $out/bin && cp tj* $out/bin";
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "An efficient implementation of the Lambda Prolog language";
     homepage = "https://github.com/teyjus/teyjus";
-    license = lib.licenses.gpl3;
+    license = stdenv.lib.licenses.gpl3;
     maintainers = [ maintainers.bcdarwin ];
     platforms = platforms.linux;
   };

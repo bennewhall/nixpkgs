@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, kernel }:
+{ stdenv, fetchurl, kernel }:
 
-assert lib.versionOlder kernel.version "4.10";
+assert stdenv.lib.versionOlder kernel.version "4.10";
 
 stdenv.mkDerivation rec {
   name = "e1000e-${version}-${kernel.version}";
@@ -32,6 +32,6 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Linux kernel drivers for Intel Ethernet adapters and LOMs (LAN On Motherboard)";
     homepage = "http://e1000.sf.net/";
-    license = lib.licenses.gpl2;
+    license = stdenv.lib.licenses.gpl2;
   };
 }

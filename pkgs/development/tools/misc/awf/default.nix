@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, autoreconfHook, gtk2, gtk3, pkg-config
+{ stdenv, fetchFromGitHub, autoreconfHook, gtk2, gtk3, pkgconfig
 , wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     sha256 = "0jl2kxwpvf2n8974zzyp69mqhsbjnjcqm39y0jvijvjb1iy8iman";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkg-config wrapGAppsHook ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig wrapGAppsHook ];
 
   buildInputs = [ gtk2 gtk3 ];
 
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     ./autogen.sh
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A Widget Factory";
     longDescription = ''
       A widget factory is a theme preview application for gtk2 and

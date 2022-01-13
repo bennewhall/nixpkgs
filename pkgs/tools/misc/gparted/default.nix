@@ -1,16 +1,14 @@
-{ lib, stdenv, fetchurl, intltool, gettext, coreutils, gnused, gnome
-, gnugrep, parted, glib, libuuid, pkg-config, gtkmm3, libxml2
+{ stdenv, fetchurl, intltool, gettext, makeWrapper, coreutils, gnused, gnome3
+, gnugrep, parted, glib, libuuid, pkgconfig, gtkmm3, libxml2
 , gpart, hdparm, procps, util-linux, polkit, wrapGAppsHook, substituteAll
-, mtools, dosfstools
 }:
 
 stdenv.mkDerivation rec {
-  pname = "gparted";
-  version = "1.3.1";
+  name = "gparted-1.1.0";
 
   src = fetchurl {
-    url = "mirror://sourceforge/gparted/${pname}-${version}.tar.gz";
-    sha256 = "sha256-Xu4ubXSxXvlrE7OiMQyGjtIpjgM0ECHn0SpamKHR4Qk=";
+    url = "mirror://sourceforge/gparted/${name}.tar.gz";
+    sha256 = "092rgwjh1825fal6v3yafq2wr0i61hh0a2n0j4296zn0zdx7pzp2";
   };
 
   # Tries to run `pkexec --version` to get version.
@@ -25,12 +23,12 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--disable-doc" ];
 
-  buildInputs = [ parted glib libuuid gtkmm3 libxml2 polkit.bin gnome.adwaita-icon-theme  ];
-  nativeBuildInputs = [ intltool gettext pkg-config wrapGAppsHook ];
+  buildInputs = [ parted glib libuuid gtkmm3 libxml2 polkit.bin gnome3.adwaita-icon-theme  ];
+  nativeBuildInputs = [ intltool gettext pkgconfig wrapGAppsHook ];
 
   preFixup = ''
     gappsWrapperArgs+=(
-       --prefix PATH : "${lib.makeBinPath [ gpart hdparm util-linux procps coreutils gnused gnugrep mtools dosfstools ]}"
+       --prefix PATH : "${stdenv.lib.makeBinPath [ gpart hdparm util-linux procps coreutils gnused gnugrep ]}"
     )
   '';
 
@@ -40,7 +38,7 @@ stdenv.mkDerivation rec {
       $out/share/polkit-1/actions/org.gnome.gparted.policy
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Graphical disk partitioning tool";
     longDescription = ''
       GNOME Partition Editor for creating, reorganizing, and deleting disk

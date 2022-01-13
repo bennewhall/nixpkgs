@@ -1,56 +1,31 @@
-{ lib, stdenv, fetchFromGitLab, gfortran, perl, procps
+{ stdenv, fetchFromGitLab, symlinkJoin, gfortran, perl, procps
 , libyaml, libxc, fftw, blas, lapack, gsl, netcdf, arpack, autoreconfHook
-, python3
-, enableFma ? stdenv.hostPlatform.fmaSupport
-, enableFma4 ? stdenv.hostPlatform.fma4Support
-, enableAvx ? stdenv.hostPlatform.avx2Support
-, enableAvx512 ? stdenv.hostPlatform.avx512Support
 }:
 
 assert (!blas.isILP64) && (!lapack.isILP64);
 
 stdenv.mkDerivation rec {
   pname = "octopus";
-  version = "11.3";
+  version = "10.0";
 
   src = fetchFromGitLab {
     owner = "octopus-code";
     repo = "octopus";
     rev = version;
-    sha256 = "0n04yvnc0rg3lvnkkdpbwkfl6zg544260p3s65vwkc5dflrhk34r";
+    sha256 = "1c6q20y0x9aacwa7vp6gj3yvfzain7hnk6skxmvg3wazp02l91kn";
   };
 
-  nativeBuildInputs = [
-    perl
-    procps
-    autoreconfHook
-    gfortran
-  ];
+  nativeBuildInputs = [ perl procps autoreconfHook ];
+  buildInputs = [ libyaml gfortran libxc blas lapack gsl fftw netcdf arpack ];
 
-  buildInputs = [
-    libyaml
-    libxc
-    blas
-    lapack
-    gsl
-    fftw
-    netcdf
-    arpack
-    (python3.withPackages (ps: [ ps.pyyaml ]))
-  ];
-
-  configureFlags = with lib; [
+  configureFlags = [
     "--with-yaml-prefix=${libyaml}"
     "--with-blas=-lblas"
     "--with-lapack=-llapack"
     "--with-fftw-prefix=${fftw.dev}"
     "--with-gsl-prefix=${gsl}"
     "--with-libxc-prefix=${libxc}"
-    "--enable-openmp"
-  ] ++ optional enableFma "--enable-fma3"
-    ++ optional enableFma4 "--enable-fma4"
-    ++ optional enableAvx "--enable-avx"
-    ++ optional enableAvx512 "--enable-avx512";
+  ];
 
   doCheck = false;
   checkTarget = "check-short";
@@ -65,11 +40,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Real-space time dependent density-functional theory code";
     homepage = "https://octopus-code.org";
     maintainers = with maintainers; [ markuskowa ];
-    license = with licenses; [ gpl2Only asl20 lgpl3Plus bsd3 ];
+    license = licenses.gpl2;
     platforms = [ "x86_64-linux" ];
   };
 }

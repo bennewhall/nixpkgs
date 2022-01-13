@@ -1,34 +1,34 @@
-{ lib, stdenv, fetchurl, pkg-config, meson, ninja, python3, gtk3, glibmm, cairomm, pangomm, atkmm, libepoxy, gnome }:
+{ stdenv, fetchurl, pkgconfig, gtk3, glibmm, cairomm, pangomm, atkmm, epoxy, gnome3 }:
 
 stdenv.mkDerivation rec {
   pname = "gtkmm";
-  version = "3.24.5";
+  version = "3.24.2";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "1ri2msp3cmzi6r65ghwb8gfavfaxv0axpwi3q60nm7v8hvg36qw5";
+    url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1hxdnhavjyvbcpxhd5z17l9fj4182028s66lc0s16qqqrldhjwbd";
   };
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ pkg-config meson ninja python3 ];
-  buildInputs = [ libepoxy ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ epoxy ];
 
   propagatedBuildInputs = [ glibmm gtk3 atkmm cairomm pangomm ];
+
+  enableParallelBuilding = true;
 
   # https://bugzilla.gnome.org/show_bug.cgi?id=764521
   doCheck = false;
 
   passthru = {
-    updateScript = gnome.updateScript {
+    updateScript = gnome3.updateScript {
       packageName = pname;
       attrPath = "${pname}3";
-      versionPolicy = "odd-unstable";
-      freeze = true;
     };
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "C++ interface to the GTK graphical user interface library";
 
     longDescription = ''
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
 
     license = licenses.lgpl2Plus;
 
-    maintainers = with maintainers; [ raskin ];
+    maintainers = with maintainers; [ raskin vcunat ];
     platforms = platforms.unix;
   };
 }

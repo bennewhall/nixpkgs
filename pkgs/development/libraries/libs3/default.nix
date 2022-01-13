@@ -1,8 +1,7 @@
-{ lib, stdenv, fetchFromGitHub, curl, libxml2 }:
+{ stdenv, fetchFromGitHub, curl, libxml2 }:
 
 stdenv.mkDerivation {
-  pname = "libs3";
-  version = "unstable-2018-12-03";
+  name = "libs3-2018-12-03";
 
   src = fetchFromGitHub {
     owner = "bji";
@@ -15,7 +14,7 @@ stdenv.mkDerivation {
 
   makeFlags = [ "DESTDIR=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/bji/libs3";
     description = "A library for interfacing with amazon s3";
     license = licenses.lgpl3Plus;

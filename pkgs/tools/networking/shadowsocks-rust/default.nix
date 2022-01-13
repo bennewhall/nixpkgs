@@ -1,34 +1,25 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, CoreServices, libiconv }:
+{ stdenv, fetchFromGitHub, rustPlatform, pkgconfig, openssl, libsodium, Security }:
 
 rustPlatform.buildRustPackage rec {
   pname = "shadowsocks-rust";
-  version = "1.12.5";
+  version = "1.8.23";
 
   src = fetchFromGitHub {
     rev = "v${version}";
     owner = "shadowsocks";
     repo = pname;
-    sha256 = "sha256-whPaFb+4mYOWmtFc/a+NkH9avCfOnGnAvqz3UFTt+RY=";
+    sha256 = "1ylasv33478cgwmr8wrd4705azfzrw495w629ncynamv7z17w3k3";
   };
 
-  cargoSha256 = "sha256-w7AqNsa9lolPEiHEv7E4XGaFV/UbCeYvmWekr9YzO6Q=";
+  cargoSha256 = "060k2dil38bx4zb5nnkr3mj6aayginbhr3aqjv0h071q0vlvp05p";
 
-  RUSTC_BOOTSTRAP = 1;
+  SODIUM_USE_PKG_CONFIG = 1;
 
-  buildInputs = lib.optionals stdenv.isDarwin [ CoreServices libiconv ];
+  buildInputs = [ openssl libsodium ]
+    ++ stdenv.lib.optionals stdenv.isDarwin [ Security ];
+  nativeBuildInputs = [ pkgconfig ];
 
-  # all of these rely on connecting to www.example.com:80
-  checkFlags = [
-    "--skip=http_proxy"
-    "--skip=tcp_tunnel"
-    "--skip=udp_tunnel"
-    "--skip=udp_relay"
-    "--skip=socks4_relay_connect"
-    "--skip=socks5_relay_aead"
-    "--skip=socks5_relay_stream"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/shadowsocks/shadowsocks-rust";
     description = "A Rust port of shadowsocks";
     license = licenses.mit;

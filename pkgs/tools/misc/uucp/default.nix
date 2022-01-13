@@ -1,11 +1,10 @@
-{ lib, stdenv, fetchurl }:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  pname = "uucp";
-  version = "1.07";
+  name = "uucp-1.07";
 
   src = fetchurl {
-    url = "mirror://gnu/uucp/uucp-${version}.tar.gz";
+    url = "mirror://gnu/uucp/${name}.tar.gz";
     sha256 = "0b5nhl9vvif1w3wdipjsk8ckw49jj1w85xw1mmqi3zbcpazia306";
   };
 
@@ -30,9 +29,9 @@ stdenv.mkDerivation rec {
 
     homepage = "https://www.gnu.org/software/uucp/uucp.html";
 
-    license = lib.licenses.gpl2Plus;
+    license = stdenv.lib.licenses.gpl2Plus;
 
-    platforms = lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
     maintainers = [ ];
   };
 }

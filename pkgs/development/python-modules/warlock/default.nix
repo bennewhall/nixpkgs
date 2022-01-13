@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , six
@@ -18,7 +18,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ six jsonpatch jsonschema jsonpointer ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/bcwaldon/warlock";
     description = "Python object model built on JSON schema and JSON patch";
     license = licenses.asl20;

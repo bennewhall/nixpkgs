@@ -1,4 +1,4 @@
-{ lib, stdenv, cmake, boost, bison, flex, fetchFromGitHub, perl
+{ stdenv, cmake, boost, bison, flex, fetchFromGitHub, perl
 , python3, python3Packages, zlib, minisat, cryptominisat }:
 
 stdenv.mkDerivation rec {
@@ -24,7 +24,10 @@ stdenv.mkDerivation rec {
     )
   '';
 
-  meta = with lib; {
+  # seems to build fine now, may revert if concurrency does become an issue
+  enableParallelBuilding = true;
+
+  meta = with stdenv.lib; {
     description = "Simple Theorem Prover";
     maintainers = with maintainers; [ ];
     platforms = platforms.linux;

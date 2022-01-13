@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , six
@@ -8,16 +8,16 @@
 
 buildPythonPackage rec {
   pname = "ofxparse";
-  version = "0.21";
+  version = "0.20";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "19y4sp5l9jqiqzzlbqdfiab42qx7d84n4xm4s7jfq397666vcyh5";
+    sha256 = "0zn3grc6xhgzcc81qc3dxkkwk731cjjqqhb46smw12lk09cdnigb";
   };
 
   propagatedBuildInputs = [ six beautifulsoup4 lxml ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://sites.google.com/site/ofxparse";
     description = "Tools for working with the OFX (Open Financial Exchange) file format";
     license = licenses.mit;

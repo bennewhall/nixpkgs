@@ -1,16 +1,16 @@
-{ lib, stdenv
+{ stdenv
 , fetchFromGitHub
 }:
 
 stdenv.mkDerivation rec {
   pname = "oppai-ng";
-  version = "4.1.0";
+  version = "3.3.0";
 
   src = fetchFromGitHub {
     owner = "Francesco149";
     repo = pname;
     rev = version;
-    sha256 = "sha256-L9eraLOWm1tMImS8bLB9T4Md4VdTSxqI9Bt4r8eqxqs=";
+    sha256 = "0ymprwyv92pr58851wzryymhfznnpwcbg4m1yri0c9cyzvabwmfk";
   };
 
   buildPhase = ''
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     install -D liboppai.so $out/lib/liboppai.so
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Difficulty and pp calculator for osu!";
     homepage = "https://github.com/Francesco149/oppai-ng";
     license = licenses.unlicense;

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, autoreconfHook, sqlite }:
+{ stdenv, fetchurl, autoreconfHook, sqlite }:
 
 stdenv.mkDerivation rec {
   pname = "mps";
@@ -23,8 +23,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "A flexible memory management and garbage collection library";
     homepage    = "https://www.ravenbrook.com/project/mps";
-    license     = lib.licenses.sleepycat;
-    platforms   = lib.platforms.linux;
-    maintainers = [ lib.maintainers.thoughtpolice ];
+    license     = stdenv.lib.licenses.sleepycat;
+    platforms   = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
   };
 }

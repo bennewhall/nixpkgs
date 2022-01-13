@@ -1,12 +1,11 @@
-{ fetchurl, mkDerivation, fetchpatch, stdenv, lib, pkg-config, autoreconfHook, wrapGAppsHook
-, libgpg-error, libassuan, qtbase, wrapQtAppsHook
-, ncurses, gtk2, gcr, libcap, libsecret
-, enabledFlavors ? [ "curses" "tty" "gtk2" "emacs" ]
-  ++ lib.optionals stdenv.isLinux [ "gnome3" ]
-  ++ lib.optionals (stdenv.hostPlatform.system != "aarch64-darwin") [ "qt" ]
+{ fetchurl, mkDerivation, fetchpatch, stdenv, lib, pkgconfig, autoreconfHook, wrapGAppsHook
+, libgpgerror, libassuan, qtbase, wrapQtAppsHook
+, ncurses, gtk2, gcr
+, libcap ? null, libsecret ? null
+, enabledFlavors ? [ "curses" "tty" "gtk2" "qt" "emacs" ] ++ lib.optionals stdenv.isLinux [ "gnome3" ]
 }:
 
-with lib;
+with stdenv.lib;
 
 assert isList enabledFlavors && enabledFlavors != [];
 
@@ -42,17 +41,16 @@ in
 
 pinentryMkDerivation rec {
   pname = "pinentry";
-  version = "1.2.0";
+  version = "1.1.0";
 
   src = fetchurl {
     url = "mirror://gnupg/pinentry/${pname}-${version}.tar.bz2";
-    sha256 = "sha256-EAcgRaPgQ9BYH5HNVnb8rH/+6VehZjat7apPWDphZHA=";
+    sha256 = "0w35ypl960pczg5kp6km3dyr000m1hf0vpwwlh72jjkjza36c1v8";
   };
 
-  nativeBuildInputs = [ pkg-config autoreconfHook ]
+  nativeBuildInputs = [ pkgconfig autoreconfHook ]
     ++ concatMap(f: flavorInfo.${f}.nativeBuildInputs or []) enabledFlavors;
-  buildInputs = [ libgpg-error libassuan libsecret ]
-    ++ lib.optional (!stdenv.isDarwin) libcap
+  buildInputs = [ libgpgerror libassuan libcap libsecret ]
     ++ concatMap(f: flavorInfo.${f}.buildInputs or []) enabledFlavors;
 
   dontWrapGApps = true;
@@ -91,7 +89,7 @@ pinentryMkDerivation rec {
 
   passthru = { flavors = enabledFlavors; };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "http://gnupg.org/aegypten2/";
     description = "GnuPG’s interface to passphrase input";
     license = licenses.gpl2Plus;

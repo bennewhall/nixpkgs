@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi
+{ stdenv, buildPythonPackage, fetchPypi
 }:
 buildPythonPackage rec {
   pname = "constantly";
@@ -9,7 +9,7 @@ buildPythonPackage rec {
     sha256 = "0dgwdla5kfpqz83hfril716inm41hgn9skxskvi77605jbmp4qsq";
   };
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/twisted/constantly";
     description = "symbolic constant support";
     license = licenses.mit;

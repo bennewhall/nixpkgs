@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libxcb, libXinerama
+{ stdenv, fetchFromGitHub, libxcb, libXinerama
 , xcbutil, xcbutilkeysyms, xcbutilwm
 }:
 
@@ -17,10 +17,10 @@ stdenv.mkDerivation rec {
 
   makeFlags = [ "PREFIX=$(out)" ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A tiling window manager based on binary space partitioning";
     homepage = "https://github.com/baskerville/bspwm";
-    maintainers = with maintainers; [ meisternu epitrochoid ];
+    maintainers = with maintainers; [ meisternu epitrochoid rvolosatovs ];
     license = licenses.bsd2;
     platforms = platforms.linux;
   };

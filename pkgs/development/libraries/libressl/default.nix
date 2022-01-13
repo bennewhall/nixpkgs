@@ -1,16 +1,6 @@
-{ stdenv
-, fetchurl
-, lib
-, cmake
-, cacert
-, fetchpatch
-, buildShared ? !stdenv.hostPlatform.isStatic
-}:
+{ stdenv, fetchurl, lib, cmake, cacert, fetchpatch, buildShared ? true }:
 
 let
-  ldLibPathEnvName = if stdenv.isDarwin
-    then "DYLD_LIBRARY_PATH"
-    else "LD_LIBRARY_PATH";
 
   generic = { version, sha256, patches ? [] }: stdenv.mkDerivation rec {
     pname = "libressl";
@@ -40,30 +30,17 @@ let
     # removing ./configure pre-config.
     preConfigure = ''
       rm configure
-      substituteInPlace CMakeLists.txt \
-        --replace 'exec_prefix \''${prefix}' "exec_prefix ${placeholder "bin"}" \
-        --replace 'libdir      \''${exec_prefix}' 'libdir \''${prefix}'
     '';
 
     inherit patches;
 
     # Since 2.9.x the default location can't be configured from the build using
     # DEFAULT_CA_FILE anymore, instead we have to patch the default value.
-    postPatch = ''
-      patchShebangs tests/
-      ${lib.optionalString (lib.versionAtLeast version "2.9.2") ''
-        substituteInPlace ./tls/tls_config.c --replace '"/etc/ssl/cert.pem"' '"${cacert}/etc/ssl/certs/ca-bundle.crt"'
-      ''}
+    postPatch = lib.optionalString (lib.versionAtLeast version "2.9.2") ''
+      substituteInPlace ./tls/tls_config.c --replace '"/etc/ssl/cert.pem"' '"${cacert}/etc/ssl/certs/ca-bundle.crt"'
     '';
 
-    doCheck = true;
-    preCheck = ''
-      export PREVIOUS_${ldLibPathEnvName}=$${ldLibPathEnvName}
-      export ${ldLibPathEnvName}="$${ldLibPathEnvName}:$(realpath tls/):$(realpath ssl/):$(realpath crypto/)"
-    '';
-    postCheck = ''
-      export ${ldLibPathEnvName}=$PREVIOUS_${ldLibPathEnvName}
-    '';
+    enableParallelBuilding = true;
 
     outputs = [ "bin" "dev" "out" "man" "nc" ];
 
@@ -86,12 +63,13 @@ let
   };
 
 in {
-  libressl_3_2 = generic {
-    version = "3.2.7";
-    sha256 = "112bjfrwwqlk0lak7fmfhcls18ydf62cp7gxghf4gklpfl1zyckw";
+  libressl_3_0 = generic {
+    version = "3.0.2";
+    sha256 = "13ir2lpxz8y1m151k7lrx306498nzfhwlvgkgv97v5cvywmifyyz";
   };
-  libressl_3_4 = generic {
-    version = "3.4.1";
-    sha256 = "0766yxb599lx7qmlmsddiw9wgminz9mc311mav5q23l0rbkflz0h";
+
+  libressl_3_1 = generic {
+    version = "3.1.4";
+    sha256 = "1dnbbnr43jashxivnafmh9gnn57c7ayva788ba03z633k6f18k21";
   };
 }

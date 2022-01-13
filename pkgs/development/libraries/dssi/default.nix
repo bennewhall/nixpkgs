@@ -1,5 +1,5 @@
-{ lib, stdenv, fetchurl, ladspaH, libjack2, liblo, alsa-lib, qt4, libX11, libsndfile, libSM
-, libsamplerate, libtool, autoconf, automake, xorgproto, libICE, pkg-config
+{ stdenv, fetchurl, ladspaH, libjack2, liblo, alsaLib, qt4, libX11, libsndfile, libSM
+, libsamplerate, libtool, autoconf, automake, xorgproto, libICE, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -12,11 +12,11 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ ladspaH libjack2 liblo alsa-lib qt4 libX11 libsndfile libSM
-      libsamplerate libtool autoconf automake xorgproto libICE pkg-config
+    [ ladspaH libjack2 liblo alsaLib qt4 libX11 libsndfile libSM
+      libsamplerate libtool autoconf automake xorgproto libICE pkgconfig
     ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A plugin SDK for virtual instruments";
     maintainers = with maintainers;
     [

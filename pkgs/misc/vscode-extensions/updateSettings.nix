@@ -6,7 +6,7 @@
 }:
 ##User Input
 { settings      ? {}
-# if marked as true will create an empty json file if does not exist
+# if marked as true will create an empty json file if does not exists
 , createIfDoesNotExists ? true
 , vscodeSettingsFile ? ".vscode/settings.json"
 , userSettingsFolder ? ""

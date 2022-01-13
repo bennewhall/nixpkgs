@@ -1,4 +1,4 @@
-{ lib, stdenv
+{ stdenv
 , fetchurl
 }:
 
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     cp -R * "$out/share/reflexive_polytopes/"
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Reflexive polytopes database";
     license = licenses.gpl2;
     platforms = platforms.all;

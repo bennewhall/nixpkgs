@@ -1,4 +1,4 @@
-{ buildGoPackage, fetchFromGitHub, lib }:
+{ buildGoPackage, fetchFromGitHub, stdenv }:
 
 buildGoPackage rec {
   pname = "devd";
@@ -11,7 +11,7 @@ buildGoPackage rec {
   };
   goPackagePath = "github.com/cortesi/devd";
   subPackages = [ "cmd/devd" ];
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A local webserver for developers";
     homepage = "https://github.com/cortesi/devd";
     license = licenses.mit;

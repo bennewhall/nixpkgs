@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, fetchurl, cmake, pkg-config, SDL, SDL_image, SDL_mixer, SDL_net, SDL_ttf, libpng, librsvg, libxml2 }:
+{ stdenv, fetchFromGitHub, fetchurl, cmake, pkgconfig, SDL, SDL_image, SDL_mixer, SDL_net, SDL_ttf, libpng, librsvg, libxml2 }:
 
 stdenv.mkDerivation rec {
   version = "0.1.1";
@@ -19,10 +19,10 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  nativeBuildInputs = [ cmake pkg-config ];
+  nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ SDL SDL_image SDL_mixer SDL_net SDL_ttf libpng librsvg libxml2 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A library of code shared between tuxmath and tuxtype";
     homepage = "https://github.com/tux4kids/t4kcommon";
     license = licenses.gpl3Plus;

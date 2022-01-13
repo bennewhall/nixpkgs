@@ -1,15 +1,15 @@
-{ stdenv, apulse, libpulseaudio, pkg-config, intltool, autoreconfHook }:
+{ stdenv, apulse, libpulseaudio, pkgconfig, intltool, autoreconfHook }:
 
 stdenv.mkDerivation {
-  pname = "libpressureaudio";
-  version = apulse.version;
+  name = "libpressureaudio-${apulse.version}";
 
   src = libpulseaudio.src;
 
-  nativeBuildInputs = [ pkg-config intltool autoreconfHook ];
+  nativeBuildInputs = [ pkgconfig intltool autoreconfHook ];
 
   dontConfigure = true;
-  dontBuild = true;
+
+  buildPhase = ":";
 
   installPhase = ''
     echo "Copying libraries from apulse."

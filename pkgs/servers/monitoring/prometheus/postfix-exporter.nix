@@ -1,7 +1,7 @@
-{ lib, buildGoPackage, fetchFromGitHub, makeWrapper, nixosTests
+{ stdenv, lib, buildGoPackage, fetchFromGitHub, makeWrapper, nixosTests
 , systemd, withSystemdSupport ? true }:
 
-with lib;
+with stdenv.lib;
 
 buildGoPackage rec {
   pname = "postfix_exporter";
@@ -18,7 +18,7 @@ buildGoPackage rec {
 
   nativeBuildInputs = optional withSystemdSupport makeWrapper;
   buildInputs = optional withSystemdSupport systemd;
-  tags = optional (!withSystemdSupport) "nosystemd";
+  buildFlags = optional (!withSystemdSupport) "-tags nosystemd";
 
   goDeps = ./postfix-exporter-deps.nix;
   extraSrcs = optionals withSystemdSupport [

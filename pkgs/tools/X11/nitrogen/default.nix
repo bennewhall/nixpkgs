@@ -1,15 +1,17 @@
-{ lib, stdenv, fetchurl, pkg-config, glib, gtkmm2 }:
+{ stdenv, fetchurl, pkgconfig, glib, gtkmm2 }:
 
+let version = "1.6.1";
+in
 stdenv.mkDerivation rec {
   pname = "nitrogen";
-  version = "1.6.1";
+  inherit version;
 
   src = fetchurl {
     url = "http://projects.l3ib.org/nitrogen/files/${pname}-${version}.tar.gz";
     sha256 = "0zc3fl1mbhq0iyndy4ysmy8vv5c7xwf54rbgamzfhfvsgdq160pl";
   };
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ glib gtkmm2 ];
 
@@ -26,8 +28,8 @@ stdenv.mkDerivation rec {
       and settings are stored in a human-readable config file.
     '';
     homepage = "https://github.com/l3ib/nitrogen";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
-    maintainers = [ lib.maintainers.auntie ];
+    license = stdenv.lib.licenses.gpl2;
+    platforms = stdenv.lib.platforms.linux;
+    maintainers = [ stdenv.lib.maintainers.auntie ];
   };
 }

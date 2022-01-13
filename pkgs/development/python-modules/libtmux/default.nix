@@ -1,12 +1,12 @@
-{ lib, fetchPypi, buildPythonPackage, pytest }:
+{ stdenv, fetchPypi, buildPythonPackage, pytest }:
 
 buildPythonPackage rec {
   pname = "libtmux";
-  version = "0.10.2";
+  version = "0.8.5";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "a0e958b85ec14cdaabecfa738a0dd51846f05e5c5e9d6749a2bf5160b9f7e1d2";
+    sha256 = "1d35b9f8451944d31c5ed22ed9e6c8e18034adcc75718fcc5b27fbd9621543e1";
   };
 
   checkInputs = [ pytest ];
@@ -17,7 +17,7 @@ buildPythonPackage rec {
   # No tests in archive
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Scripting library for tmux";
     homepage = "https://libtmux.readthedocs.io/";
     license = licenses.bsd3;

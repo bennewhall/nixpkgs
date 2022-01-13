@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ stdenv, fetchurl
 , flex, bison
 , buildsystem
 }:
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     "NSSHARED=${buildsystem}/share/netsurf-buildsystem"
   ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://www.netsurf-browser.org/";
     description = "Generator for JavaScript bindings for netsurf browser";
     license = licenses.mit;

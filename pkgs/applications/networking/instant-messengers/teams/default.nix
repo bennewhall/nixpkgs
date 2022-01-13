@@ -6,26 +6,23 @@
 , dpkg
 , atomEnv
 , libuuid
-, libappindicator-gtk3
 , pulseaudio
 , at-spi2-atk
 , coreutils
 , gawk
-, xdg-utils
-, systemd
-, nodePackages
-, enableRectOverlay ? false }:
+, xdg_utils
+, systemd }:
 
 stdenv.mkDerivation rec {
   pname = "teams";
-  version = "1.4.00.26453";
+  version = "1.3.00.25560";
 
   src = fetchurl {
     url = "https://packages.microsoft.com/repos/ms-teams/pool/main/t/teams/teams_${version}_amd64.deb";
-    sha256 = "0ndqk893l17m42hf5fiiv6mka0v7v8r54kblvb67jsxajdvva5gf";
+    sha256 = "0kpcd9q6v2qh0dzddykisdbi3djbxj2rl70wchlzrb6bx95hkzmc";
   };
 
-  nativeBuildInputs = [ dpkg autoPatchelfHook wrapGAppsHook nodePackages.asar ];
+  nativeBuildInputs = [ dpkg autoPatchelfHook wrapGAppsHook ];
 
   unpackCmd = "dpkg -x $curSrc .";
 
@@ -37,34 +34,13 @@ stdenv.mkDerivation rec {
   runtimeDependencies = [
     (lib.getLib systemd)
     pulseaudio
-    libappindicator-gtk3
   ];
 
   preFixup = ''
-    gappsWrapperArgs+=(--prefix PATH : "${coreutils}/bin:${gawk}/bin")
-    gappsWrapperArgs+=(--add-flags --disable-namespace-sandbox)
-    gappsWrapperArgs+=(--add-flags --disable-setuid-sandbox)
+    gappsWrapperArgs+=(--prefix PATH : "${coreutils}/bin:${gawk}/bin:${xdg_utils}/bin")
   '';
-
-
-  buildPhase = ''
-    runHook preBuild
-
-    asar extract share/teams/resources/app.asar "$TMP/work"
-    substituteInPlace $TMP/work/main.bundle.js \
-        --replace "/usr/share/pixmaps/" "$out/share/pixmaps" \
-        --replace "/usr/bin/xdg-mime" "${xdg-utils}/bin/xdg-mime" \
-        --replace "Exec=/usr/bin/" "Exec=" # Remove usage of absolute path in autostart.
-    asar pack --unpack='{*.node,*.ftz,rect-overlay}' "$TMP/work" share/teams/resources/app.asar
-
-    runHook postBuild
-  '';
-
-  preferLocalBuild = true;
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out/{opt,bin}
 
     mv share/teams $out/opt/
@@ -75,13 +51,9 @@ stdenv.mkDerivation rec {
 
     ln -s $out/opt/teams/teams $out/bin/
 
-    ${lib.optionalString (!enableRectOverlay) ''
     # Work-around screen sharing bug
     # https://docs.microsoft.com/en-us/answers/questions/42095/sharing-screen-not-working-anymore-bug.html
     rm $out/opt/teams/resources/app.asar.unpacked/node_modules/slimcore/bin/rect-overlay
-    ''}
-
-    runHook postInstall
   '';
 
   dontAutoPatchelf = true;
@@ -104,14 +76,9 @@ stdenv.mkDerivation rec {
       echo "Adding runtime dependencies to RPATH of Node module $mod"
       patchelf --set-rpath "$runtime_rpath:$mod_rpath" "$mod"
     done;
-
-    # fix for https://docs.microsoft.com/en-us/answers/questions/298724/open-teams-meeting-link-on-linux-doens39t-work.html?childToView=309406#comment-309406
-    # while we create the wrapper ourselves, gappsWrapperArgs leads to the same issue
-    # another option would be to introduce gappsWrapperAppendedArgs, to allow control of positioning
-    substituteInPlace "$out/bin/teams" --replace '.teams-wrapped"  --disable-namespace-sandbox --disable-setuid-sandbox "$@"' '.teams-wrapped" "$@" --disable-namespace-sandbox --disable-setuid-sandbox'
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Microsoft Teams";
     homepage = "https://teams.microsoft.com";
     downloadPage = "https://teams.microsoft.com/downloads";

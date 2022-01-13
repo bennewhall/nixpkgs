@@ -1,60 +1,32 @@
-{ lib
-, stdenv
+{ stdenv
 , buildPythonPackage
 , fetchPypi
+, argh
 , pathtools
 , pyyaml
-, flaky
-, pytest-timeout
-, pytestCheckHook
-, CoreServices
+, pkgs
 }:
 
 buildPythonPackage rec {
   pname = "watchdog";
-  version = "2.1.6";
-  format = "setuptools";
+  version = "0.10.4";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-o25132x2fL9G9hqRxws7pxgR36CspKMk2UB6Bqi3ouc=";
+    sha256 = "e38bffc89b15bafe2a131f0e1c74924cf07dcec020c2e0a26cccd208831fcd43";
   };
 
-  buildInputs = lib.optionals stdenv.isDarwin [ CoreServices ];
+  buildInputs = stdenv.lib.optionals stdenv.isDarwin
+    [ pkgs.darwin.apple_sdk.frameworks.CoreServices ];
+  propagatedBuildInputs = [ argh pathtools pyyaml ];
 
-  propagatedBuildInputs = [
-    pathtools
-    pyyaml
-  ];
+  doCheck = false;
 
-  checkInputs = [
-    flaky
-    pytest-timeout
-    pytestCheckHook
-  ];
-
-  postPatch = ''
-    substituteInPlace setup.cfg \
-      --replace "--cov=watchdog" "" \
-      --replace "--cov-report=term-missing" ""
-  '';
-
-  disabledTestPaths = [
-    # Tests are flaky
-    "tests/test_inotify_buffer.py"
-  ];
-
-  pythonImportsCheck = [
-    "watchdog"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Python API and shell utilities to monitor file system events";
     homepage = "https://github.com/gorakhargosh/watchdog";
     license = licenses.asl20;
     maintainers = with maintainers; [ goibhniu ];
-    # error: use of undeclared identifier 'kFSEventStreamEventFlagItemCloned'
-    # builds fine on aarch64-darwin
-    broken = stdenv.isDarwin && !stdenv.isAarch64;
   };
+
 }

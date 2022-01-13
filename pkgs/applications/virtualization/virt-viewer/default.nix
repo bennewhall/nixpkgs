@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, pkg-config, intltool, shared-mime-info, wrapGAppsHook
+{ stdenv, fetchurl, pkgconfig, intltool, shared-mime-info, wrapGAppsHook
 , glib, gsettings-desktop-schemas, gtk-vnc, gtk3, libvirt, libvirt-glib, libxml2, vte
 , spiceSupport ? true
 , spice-gtk ? null, spice-protocol ? null, libcap ? null, gdbm ? null
@@ -7,7 +7,7 @@
 assert spiceSupport ->
   spice-gtk != null && spice-protocol != null && libcap != null && gdbm != null;
 
-with lib;
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   baseName = "virt-viewer";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     sha256 = "09a83mzyn3b4nd7wpa659g1zf1fjbzb79rk968bz6k5xl21k7d4i";
   };
 
-  nativeBuildInputs = [ pkg-config intltool shared-mime-info wrapGAppsHook glib ];
+  nativeBuildInputs = [ pkgconfig intltool shared-mime-info wrapGAppsHook glib ];
   buildInputs = [
     glib gsettings-desktop-schemas gtk-vnc gtk3 libvirt libvirt-glib libxml2 vte
   ] ++ optionals spiceSupport [

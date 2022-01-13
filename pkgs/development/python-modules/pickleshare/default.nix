@@ -1,4 +1,4 @@
-{ lib
+{ stdenv
 , buildPythonPackage
 , fetchPypi
 , pathpy
@@ -16,12 +16,12 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [ pathpy ]
-    ++ lib.optional (pythonOlder "3.4") pathlib2;
+    ++ stdenv.lib.optional (pythonOlder "3.4") pathlib2;
 
   # No proper test suite
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Tiny 'shelve'-like database with concurrency support";
     homepage = "https://github.com/vivainio/pickleshare";
     license = licenses.mit;

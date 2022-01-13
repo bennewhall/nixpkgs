@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchurl, libxml2, pkg-config
+{ stdenv, fetchurl, libxml2, pkgconfig, perl
 , compressionSupport ? true, zlib ? null
 , sslSupport ? true, openssl ? null
-, static ? stdenv.hostPlatform.isStatic
-, shared ? !stdenv.hostPlatform.isStatic
+, static ? false
+, shared ? true
 }:
 
 assert compressionSupport -> zlib != null;
@@ -10,37 +10,39 @@ assert sslSupport -> openssl != null;
 assert static || shared;
 
 let
-   inherit (lib) optionals;
+   inherit (stdenv.lib) optionals;
 in
 
 stdenv.mkDerivation rec {
-  version = "0.31.2";
+  version = "0.31.0";
   pname = "neon";
 
   src = fetchurl {
-    url = "https://notroj.github.io/${pname}/${pname}-${version}.tar.gz";
-    sha256 = "0y46dbhiblcvg8k41bdydr3fivghwk73z040ki5825d24ynf67ng";
+    url = "http://www.webdav.org/neon/${pname}-${version}.tar.gz";
+    sha256 = "19dx4rsqrck9jl59y4ad9jf115hzh6pz1hcl2dnlfc84hc86ymc0";
   };
 
   patches = optionals stdenv.isDarwin [ ./0.29.6-darwin-fix-configure.patch ];
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [libxml2 openssl]
-    ++ lib.optional compressionSupport zlib;
+    ++ stdenv.lib.optional compressionSupport zlib;
 
   configureFlags = [
-    (lib.enableFeature shared "shared")
-    (lib.enableFeature static "static")
-    (lib.withFeature compressionSupport "zlib")
-    (lib.withFeature sslSupport "ssl")
+    (stdenv.lib.enableFeature shared "shared")
+    (stdenv.lib.enableFeature static "static")
+    (stdenv.lib.withFeature compressionSupport "zlib")
+    (stdenv.lib.withFeature sslSupport "ssl")
   ];
 
   passthru = {inherit compressionSupport sslSupport;};
 
-  meta = with lib; {
+  checkInputs = [ perl ];
+  doCheck = false; # fails, needs the net
+
+  meta = with stdenv.lib; {
     description = "An HTTP and WebDAV client library";
-    homepage = "https://notroj.github.io/neon/";
-    changelog = "https://github.com/notroj/${pname}/blob/${version}/NEWS";
+    homepage = "http://www.webdav.org/neon/";
     platforms = platforms.unix;
     license = licenses.lgpl2;
   };

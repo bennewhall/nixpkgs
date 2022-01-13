@@ -55,11 +55,11 @@
 
 mkDerivation rec {
   pname   = "digikam";
-  version = "7.4.0";
+  version = "7.1.0";
 
   src = fetchurl {
-    url = "mirror://kde/stable/${pname}/${version}/digiKam-${version}.tar.xz";
-    sha256 = "sha256-0Iq2bacyu0SbwQEG7BHdne+ls1Yt7TdBsEHbuqcVUEo=";
+    url = "mirror://kde/stable/${pname}/${version}/${pname}-${version}.tar.xz";
+    sha256 = "1gmblnsm0aida3yynyddm6jdh59hx3w177hrhfar616z793ch0xi";
   };
 
   nativeBuildInputs = [ cmake doxygen extra-cmake-modules kdoctools wrapGAppsHook ];
@@ -109,12 +109,13 @@ mkDerivation rec {
     threadweaver
   ];
 
+  enableParallelBuilding = true;
+
   cmakeFlags = [
     "-DENABLE_MYSQLSUPPORT=1"
     "-DENABLE_INTERNALMYSQL=1"
     "-DENABLE_MEDIAPLAYER=1"
     "-DENABLE_QWEBENGINE=on"
-    "-DENABLE_APPSTYLES=on"
   ];
 
   dontWrapGApps = true;

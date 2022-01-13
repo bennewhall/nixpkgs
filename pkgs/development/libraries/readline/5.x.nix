@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, ncurses }:
+{ stdenv, fetchurl, ncurses }:
 
 stdenv.mkDerivation {
   name = "readline-5.2";
@@ -10,9 +10,9 @@ stdenv.mkDerivation {
 
   propagatedBuildInputs = [ncurses];
 
-  patches = lib.optional stdenv.isDarwin ./shobj-darwin.patch;
+  patches = stdenv.lib.optional stdenv.isDarwin ./shobj-darwin.patch;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     branch = "5";
     platforms = platforms.unix;
     license = licenses.gpl2;

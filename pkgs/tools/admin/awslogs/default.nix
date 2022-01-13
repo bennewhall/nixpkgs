@@ -1,27 +1,23 @@
-{ lib, fetchFromGitHub, python3Packages }:
+{ stdenv, fetchFromGitHub, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   pname = "awslogs";
-  version = "0.14.0";
+  version = "0.11.0";
 
   src = fetchFromGitHub {
     owner = "jorgebastida";
     repo = "awslogs";
     rev = version;
-    sha256 = "1gyry8b64psvmjcb2lb3yilpa7b17yllga06svls4hi69arvrd8f";
+    sha256 = "0vdpld7r7y78x1lcd5z3qsx047dwichxb8f3447yzl75fnsm75dc";
   };
 
+  doCheck = false;
+
   propagatedBuildInputs = with python3Packages; [
-    boto3 termcolor python-dateutil docutils setuptools jmespath
+    boto3 termcolor dateutil docutils setuptools
   ];
 
-  checkInputs = [ python3Packages.pytestCheckHook ];
-  disabledTests = [
-    "test_main_get_query"
-    "test_main_get_with_color"
-  ];
-
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/jorgebastida/awslogs";
     description = "AWS CloudWatch logs for Humans";
     maintainers = with maintainers; [ dbrock ];

@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, python }:
+{ stdenv, buildPythonPackage, fetchPypi, python }:
 
 buildPythonPackage rec {
   pname = "amqplib";
@@ -17,7 +17,7 @@ buildPythonPackage rec {
     ${python.interpreter} tests/client_0_8/run_all.py
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/barryp/py-amqplib";
     description = "Python client for the Advanced Message Queuing Procotol (AMQP)";
     license = licenses.lgpl21;

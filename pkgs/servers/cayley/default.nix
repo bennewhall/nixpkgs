@@ -1,4 +1,4 @@
-{ lib, buildGoPackage, fetchFromGitHub }:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   pname = "cayley";
@@ -15,15 +15,16 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  ldflags = [
-    "-X=main.Version=${version}"
-  ];
+  buildFlagsArray = ''
+    -ldflags=
+      -X=main.Version=${version}
+  '';
 
   meta = {
     homepage = "https://cayley.io/";
     description = "A graph database inspired by Freebase and Knowledge Graph";
-    maintainers = with lib.maintainers; [ sigma ];
-    license = lib.licenses.asl20;
-    platforms = lib.platforms.unix;
+    maintainers = with stdenv.lib.maintainers; [ sigma ];
+    license = stdenv.lib.licenses.asl20;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

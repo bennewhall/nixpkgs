@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, cmake, qt4, qscintilla }:
+{ stdenv, fetchFromGitHub, cmake, qt4, qscintilla }:
 
 stdenv.mkDerivation rec {
   pname = "sqliteman";
@@ -11,8 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1blzyh1646955d580f71slgdvz0nqx0qacryx0jc9w02yrag17cs";
   };
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ qt4 qscintilla ];
+  buildInputs = [ cmake qt4 qscintilla ];
 
   prePatch = ''
     sed -i 's,m_file(0),m_file(QString()),' Sqliteman/sqliteman/main.cpp
@@ -24,7 +23,7 @@ stdenv.mkDerivation rec {
     sed -i 's,PATHS ''${QT_LIBRARY_DIR},PATHS ${qscintilla}/libs,' cmake/modules/FindQScintilla.cmake
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "A simple but powerful Sqlite3 GUI database manager";
     homepage = "http://sqliteman.yarpen.cz/";
     license = licenses.gpl2Plus;

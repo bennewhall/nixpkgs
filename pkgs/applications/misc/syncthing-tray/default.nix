@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, buildGoPackage, pkg-config, libappindicator-gtk3 }:
+{ stdenv, fetchFromGitHub, buildGoPackage, pkgconfig, libappindicator-gtk3 }:
 
 buildGoPackage rec {
   pname = "syncthing-tray";
@@ -15,10 +15,10 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
-  nativeBuildInputs = [ pkg-config ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libappindicator-gtk3 ];
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "Simple application tray for syncthing";
     homepage = "https://github.com/alex2108/syncthing-tray";
     license = licenses.mit;

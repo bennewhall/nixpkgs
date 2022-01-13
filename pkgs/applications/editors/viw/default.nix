@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, ncurses }:
+{ stdenv, fetchFromGitHub, ncurses }:
 
 stdenv.mkDerivation rec {
   pname = "viw";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ ncurses ];
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
+  makeFlags = [ "CC=cc" ];
   checkFlags = [ "test-command" "test-buffer" "test-state" ];
 
   installPhase = ''
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     install -Dm 644 -t $out/share/doc/${pname} README.md
   '';
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     description = "VI Worsened, a fun and light clone of VI";
     homepage = "https://github.com/lpan/viw";
     license = licenses.gpl3Only;

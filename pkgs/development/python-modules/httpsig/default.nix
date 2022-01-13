@@ -1,10 +1,9 @@
 { lib
 , buildPythonPackage
 , fetchPypi
-, setuptools-scm
+, setuptools_scm
 , pycryptodome
 , requests
-, six
 }:
 
 buildPythonPackage rec {
@@ -16,17 +15,13 @@ buildPythonPackage rec {
     sha256 = "1rkc3zwsq53rjsmc47335m4viljiwdbmw3y2zry4z70j8q1dbmki";
   };
 
-  buildInputs = [
-    setuptools-scm
-  ];
+  buildInputs = [ setuptools_scm ];
+  propagatedBuildInputs = [ pycryptodome requests ];
 
-  propagatedBuildInputs = [
-    pycryptodome
-    requests
-    six
-  ];
-
-  pythonImportsCheck = [ "httpsig" ];
+  # Jailbreak pycryptodome
+  preBuild = ''
+    substituteInPlace setup.py --replace "==3.4.7" ""
+  '';
 
   meta = with lib; {
     description = "Sign HTTP requests with secure signatures";

@@ -31,14 +31,14 @@ in
 
 buildPythonApplication rec {
   pname = "lexicon";
-  version = "3.5.2";
+  version = "3.4.3";
   format = "pyproject";
 
   src = fetchFromGitHub {
     owner = "AnalogJ";
     repo = pname;
     rev = "v${version}";
-    sha256 = "1jsc2ybbf3mbvgzkgliria494dpj23mgqnw2lh43cnd9rgsjvzn3";
+    sha256 = "1ym4gj4xyd69rsc5niilvcb72gys22rjxhj4qd574vyx3ryl34za";
   };
 
   nativeBuildInputs = [
@@ -65,8 +65,8 @@ buildPythonApplication rec {
   checkInputs = [
     mock
     pytest
-    pytest-cov
-    pytest-xdist
+    pytestcov
+    pytest_xdist
     vcrpy
   ];
 

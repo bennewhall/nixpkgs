@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi }:
+{ stdenv, buildPythonPackage, fetchPypi }:
 
 buildPythonPackage rec {
   pname = "strict-rfc3339";
@@ -11,7 +11,7 @@ buildPythonPackage rec {
 
   doCheck = false;
 
-  meta = with lib; {
+  meta = with stdenv.lib; {
     homepage = "https://github.com/danielrichman/strict-rfc3339";
     license = licenses.gpl3;
     description = "Strict, simple, lightweight RFC3339 functions";

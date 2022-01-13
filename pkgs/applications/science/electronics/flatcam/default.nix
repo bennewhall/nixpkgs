@@ -18,7 +18,6 @@ python3Packages.buildPythonApplication rec {
   propagatedBuildInputs = with python3Packages; [
     matplotlib
     numpy
-    packaging
     pyqt4
     Rtree
     scipy

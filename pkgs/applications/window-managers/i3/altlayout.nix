@@ -11,10 +11,6 @@ python3Packages.buildPythonApplication rec {
 
   pythonPath = with python3Packages; [ enum-compat i3ipc docopt ];
 
-  doCheck = false;
-
-  pythonImportsCheck = [ "i3altlayout" ];
-
   meta = with lib; {
     maintainers = with maintainers; [ magnetophon ];
     description = "Helps you handle more efficiently your screen real estate in i3wm by auto-splitting windows on their longest side";
